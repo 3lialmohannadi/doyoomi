@@ -296,7 +296,7 @@ function DayView({ date, tasks, categories, C, tFunc }: any) {
   const dayTasks = tasks.filter((t: any) => t.due_date === key);
 
   return (
-    <View style={{ paddingHorizontal: Spacing.lg, gap: Spacing.sm }}>
+    <View style={styles.dayViewContainer}>
       {dayTasks.length === 0 ? (
         <EmptyState icon="calendar-outline" title={tFunc('noTasksThisDay')} />
       ) : (
@@ -304,12 +304,16 @@ function DayView({ date, tasks, categories, C, tFunc }: any) {
           const cat = categories.find((c: any) => c.id === task.category_id);
           const accentColor = task.priority === 'high' ? C.priorityHigh : task.priority === 'medium' ? C.priorityMedium : C.priorityLow;
           return (
-            <View key={task.id} style={[{ backgroundColor: C.card, borderColor: C.border, borderWidth: 1, borderRadius: Radius.lg, flexDirection: 'row', overflow: 'hidden', ...Shadow.sm }]}>
-              <View style={{ width: 3, backgroundColor: accentColor }} />
-              <View style={{ flex: 1, padding: Spacing.md }}>
-                <Text style={{ ...Typography.bodyMedium, color: C.text, fontFamily: 'Inter_500Medium' }}>{task.title}</Text>
-                {task.due_time && <Text style={{ ...Typography.caption, color: C.textMuted, marginTop: 2 }}>{task.due_time}</Text>}
-                {cat && <Text style={{ ...Typography.label, color: cat.color, marginTop: 4 }}>{cat.name}</Text>}
+            <View key={task.id} style={[styles.dayTaskCard, { backgroundColor: C.card, borderColor: C.border }]}>
+              <View style={[styles.dayTaskAccent, { backgroundColor: accentColor }]} />
+              <View style={styles.dayTaskContent}>
+                <Text style={[styles.dayTaskTitle, { color: C.text }]}>{task.title}</Text>
+                {task.due_time && <Text style={[styles.dayTaskTime, { color: C.textMuted }]}>{task.due_time}</Text>}
+                {cat && (
+                  <View style={[styles.dayTaskCat, { backgroundColor: cat.color + '20' }]}>
+                    <Text style={[styles.dayTaskCatText, { color: cat.color }]}>{cat.name}</Text>
+                  </View>
+                )}
               </View>
             </View>
           );
@@ -326,21 +330,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.md,
+    paddingBottom: Spacing.sm,
   },
   headerTitle: { ...Typography.heading2 },
-  segmentContainer: { paddingHorizontal: Spacing.lg, marginBottom: Spacing.md },
+  segmentContainer: { paddingHorizontal: Spacing.lg, marginBottom: Spacing.sm },
   navRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
+    paddingVertical: Spacing.xs,
   },
   navBtn: { padding: Spacing.sm },
   navLabel: { ...Typography.subtitle, fontFamily: 'Inter_600SemiBold' },
-  dayHeadersRow: { flexDirection: 'row', marginBottom: Spacing.sm },
-  dayHeader: { flex: 1, textAlign: 'center', ...Typography.label, fontFamily: 'Inter_500Medium' },
+  dayHeadersRow: { flexDirection: 'row', marginBottom: Spacing.xs },
+  dayHeader: { flex: 1, textAlign: 'center', fontSize: 12, fontFamily: 'Inter_600SemiBold' },
   calGrid: { flexDirection: 'row', flexWrap: 'wrap' },
   calCell: {
     width: `${100 / 7}%`,
@@ -349,23 +354,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'relative',
   },
-  calDay: { ...Typography.caption, fontFamily: 'Inter_500Medium' },
-  calDot: { width: 4, height: 4, borderRadius: 2, position: 'absolute', bottom: 4 },
+  calDay: { fontSize: 14, fontFamily: 'Inter_500Medium' },
+  calDot: { width: 5, height: 5, borderRadius: 2.5, position: 'absolute', bottom: 4 },
   weekViewRow: {
     flexDirection: 'row',
     paddingHorizontal: Spacing.lg,
     gap: Spacing.sm,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   weekCell: {
     flex: 1,
     borderRadius: Radius.lg,
     alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    gap: 2,
+    paddingVertical: Spacing.md,
+    gap: 4,
   },
-  weekDayLabel: { ...Typography.label },
-  weekDayNum: { ...Typography.subtitle, fontFamily: 'Inter_600SemiBold' },
-  tasksSection: { paddingHorizontal: Spacing.lg, gap: Spacing.md, marginTop: Spacing.md },
-  selectedDateLabel: { ...Typography.captionMedium, fontFamily: 'Inter_500Medium', textTransform: 'uppercase', letterSpacing: 0.5 },
+  weekDayLabel: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  weekDayNum: { fontSize: 18, fontFamily: 'Inter_700Bold' },
+  tasksSection: { paddingHorizontal: Spacing.lg, gap: Spacing.md, marginTop: Spacing.sm },
+  selectedDateLabel: { fontSize: 13, fontFamily: 'Inter_600SemiBold', textTransform: 'uppercase', letterSpacing: 0.5 },
+
+  // Day view
+  dayViewContainer: { paddingHorizontal: Spacing.lg, gap: Spacing.sm },
+  dayTaskCard: {
+    flexDirection: 'row', borderRadius: Radius.lg, borderWidth: 1,
+    overflow: 'hidden', ...Shadow.sm,
+  },
+  dayTaskAccent: { width: 4, alignSelf: 'stretch' },
+  dayTaskContent: { flex: 1, padding: Spacing.md, gap: 4 },
+  dayTaskTitle: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
+  dayTaskTime: { fontSize: 13, fontFamily: 'Inter_400Regular' },
+  dayTaskCat: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, alignSelf: 'flex-start', marginTop: 2 },
+  dayTaskCatText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
 });

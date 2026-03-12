@@ -8,6 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { format, parseISO } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { router } from 'expo-router';
 
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
@@ -164,6 +165,7 @@ export default function HomeScreen() {
             C={C}
             action={tFunc('addNew')}
             onAction={() => setShowTaskForm(true)}
+            onTitlePress={() => router.push('/tasks')}
           >
             <View style={{ gap: Spacing.sm }}>
               {dayTasks.slice(0, 4).map(task => {
@@ -200,7 +202,7 @@ export default function HomeScreen() {
 
         {/* Goals */}
         {topGoals.length > 0 && (
-          <Section title={tFunc('goalsSection')} C={C}>
+          <Section title={tFunc('goalsSection')} C={C} onTitlePress={() => router.push('/goals')}>
             <View style={{ gap: Spacing.md }}>
               {topGoals.map((g, i) => {
                 const pct = g.target_value > 0 ? g.current_value / g.target_value : 0;
@@ -212,7 +214,9 @@ export default function HomeScreen() {
                 ];
                 const grad = goalGradients[i % goalGradients.length];
                 return (
-                  <FunGoalCard key={g.id} goal={g} progress={pct} gradient={grad} C={C} />
+                  <Pressable key={g.id} onPress={() => router.push('/goals')}>
+                    <FunGoalCard goal={g} progress={pct} gradient={grad} C={C} />
+                  </Pressable>
                 );
               })}
             </View>
@@ -260,11 +264,14 @@ function HeroStat({ icon, value, label, color, C }: { icon: any; value: number; 
   );
 }
 
-function Section({ title, children, C, action, onAction }: any) {
+function Section({ title, children, C, action, onAction, onTitlePress }: any) {
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
-        <Text style={[styles.sectionTitle, { color: C.text }]}>{title}</Text>
+        <Pressable onPress={onTitlePress} style={styles.sectionTitleRow} disabled={!onTitlePress}>
+          <Text style={[styles.sectionTitle, { color: C.text }]}>{title}</Text>
+          {onTitlePress && <Ionicons name="chevron-forward" size={16} color={C.textMuted} />}
+        </Pressable>
         {action && (
           <Pressable onPress={onAction} style={[styles.sectionAction, { backgroundColor: C.tint + '15' }]}>
             <Ionicons name="add" size={14} color={C.tint} />
@@ -323,33 +330,26 @@ function FunHabitCard({ habit, onComplete, C }: { habit: any; onComplete: (id: s
   const lastDate = habit.last_completed_at ? format(new Date(habit.last_completed_at), 'yyyy-MM-dd') : null;
   const isDone = lastDate === today;
 
-  const ICONS: Record<string, any> = {
-    leaf: 'leaf', water: 'water', journal: 'journal', 'phone-portrait': 'phone-portrait',
-    fitness: 'fitness', moon: 'moon', book: 'book', nutrition: 'nutrition', walk: 'walk', bed: 'bed',
-  };
-
   return (
     <Pressable
       onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onComplete(habit.id); }}
-      style={[styles.habitCard, !isDone && { borderWidth: 1, borderColor: C.border }]}
+      style={[styles.habitCard, { borderWidth: 1, borderColor: isDone ? habit.color : C.border }]}
     >
       <LinearGradient
         colors={isDone ? [habit.color, habit.color + 'CC'] : [C.card, C.card]}
         style={styles.habitCardInner}
       >
-        <View style={[styles.habitIconBox, { backgroundColor: isDone ? 'rgba(255,255,255,0.25)' : habit.color + '20' }]}>
-          <Ionicons name={(ICONS[habit.icon] ?? 'star') + '-outline'} size={20} color={isDone ? '#fff' : habit.color} />
+        <View style={styles.habitTopRow}>
+          <View style={[styles.habitIconBox, { backgroundColor: isDone ? 'rgba(255,255,255,0.25)' : habit.color + '20' }]}>
+            <Ionicons name={(habit.icon + '-outline') as any} size={22} color={isDone ? '#fff' : habit.color} />
+          </View>
+          {isDone && <Ionicons name="checkmark-circle" size={20} color="#FFD700" />}
         </View>
         <Text style={[styles.habitName, { color: isDone ? '#fff' : C.text }]} numberOfLines={2}>{habit.name}</Text>
         <View style={styles.streakRow}>
-          <Ionicons name="flame" size={13} color={isDone ? '#FFD700' : C.streak} />
+          <Ionicons name="flame" size={14} color={isDone ? '#FFD700' : C.streak} />
           <Text style={[styles.streakNum, { color: isDone ? '#FFD700' : C.streak }]}>{habit.streak_days}</Text>
         </View>
-        {isDone && (
-          <View style={styles.doneCheck}>
-            <Ionicons name="checkmark-circle" size={18} color="#FFD700" />
-          </View>
-        )}
       </LinearGradient>
     </Pressable>
   );
@@ -528,6 +528,7 @@ const styles = StyleSheet.create({
   // Section
   section: { paddingHorizontal: Spacing.lg, marginBottom: Spacing.xl },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.md },
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   sectionTitle: { fontSize: 20, fontFamily: 'Inter_700Bold' },
   sectionAction: { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 5 },
   sectionActionText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
@@ -549,13 +550,13 @@ const styles = StyleSheet.create({
   catPillText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
 
   // Habit card
-  habitCard: { width: 130, borderRadius: Radius.xl, overflow: 'hidden', shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 10, elevation: 4 },
-  habitCardInner: { padding: Spacing.md, gap: Spacing.sm, minHeight: 110, position: 'relative' },
-  habitIconBox: { width: 36, height: 36, borderRadius: Radius.sm, alignItems: 'center', justifyContent: 'center' },
-  habitName: { fontSize: 13, fontFamily: 'Inter_600SemiBold', lineHeight: 17 },
-  streakRow: { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 'auto' as any },
-  streakNum: { fontSize: 13, fontFamily: 'Inter_700Bold' },
-  doneCheck: { position: 'absolute', top: 8, right: 8 },
+  habitCard: { width: 140, borderRadius: Radius.xl, overflow: 'hidden', shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 10, elevation: 4 },
+  habitCardInner: { padding: Spacing.md, gap: Spacing.sm, minHeight: 130 },
+  habitTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  habitIconBox: { width: 40, height: 40, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
+  habitName: { fontSize: 14, fontFamily: 'Inter_600SemiBold', lineHeight: 19 },
+  streakRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 'auto' as any },
+  streakNum: { fontSize: 14, fontFamily: 'Inter_700Bold' },
 
   // Goal card
   goalCard: {

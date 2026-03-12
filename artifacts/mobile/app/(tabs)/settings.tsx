@@ -14,6 +14,7 @@ import { Spacing, Radius } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { ToggleRow } from '../../src/components/ui/ToggleRow';
+import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
 import { Language, Theme, TimeFormat, StartOfWeek } from '../../src/types';
 
 export default function SettingsScreen() {
@@ -26,6 +27,7 @@ export default function SettingsScreen() {
   const lang = profile.language;
 
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showCategories, setShowCategories] = useState(false);
   const [profileName, setProfileName] = useState(profile.name);
   const [profileEmail, setProfileEmail] = useState(profile.email);
 
@@ -94,7 +96,7 @@ export default function SettingsScreen() {
 
           {/* Organization */}
           <SettingSection title={tFunc('organization')} icon="folder-outline" color="#FF6B9D" C={C}>
-            <Pressable style={styles.settingRow}>
+            <Pressable style={styles.settingRow} onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowCategories(true); }}>
               <View style={[styles.settingIcon, { backgroundColor: '#FF6B9D' + '20' }]}>
                 <Ionicons name="folder-outline" size={18} color="#FF6B9D" />
               </View>
@@ -127,6 +129,8 @@ export default function SettingsScreen() {
           </View>
         </View>
       </ScrollView>
+
+      <CategoriesManager visible={showCategories} onClose={() => setShowCategories(false)} />
 
       {/* Profile modal */}
       <Modal visible={showProfileModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowProfileModal(false)}>
