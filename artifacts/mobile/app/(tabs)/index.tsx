@@ -86,17 +86,15 @@ export default function HomeScreen() {
             <AddBtn onPress={() => setShowTaskForm(true)} />
           </View>
 
-          {/* Stats bar inside hero */}
-          <View style={styles.statsRow}>
-            <HeroStat icon="checkmark-circle" value={completedToday} label={tFunc('completed')} color="#00E5A0" />
-            <View style={styles.statDivider} />
-            <HeroStat icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color="#FF6B9D" />
-            <View style={styles.statDivider} />
-            <HeroStat icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color="#FFF" />
-            <View style={styles.statDivider} />
-            <HeroStat icon="flame" value={maxStreak} label={tFunc('streak')} color="#FFB800" />
-          </View>
         </LinearGradient>
+
+        {/* Stats Cards */}
+        <View style={[styles.statsRow, { backgroundColor: C.card, borderColor: C.border }]}>
+          <HeroStat icon="checkmark-circle" value={completedToday} label={tFunc('completed')} color="#00C48C" C={C} />
+          <HeroStat icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color="#FF4D6A" C={C} />
+          <HeroStat icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color={C.tint} C={C} />
+          <HeroStat icon="flame" value={maxStreak} label={tFunc('streak')} color="#FF6B35" C={C} />
+        </View>
 
         {/* Week Strip */}
         <View style={[styles.weekCard, { backgroundColor: C.card, borderColor: C.border, borderWidth: 1, ...Shadow.sm }]}>
@@ -250,12 +248,14 @@ function AddBtn({ onPress }: { onPress: () => void }) {
   );
 }
 
-function HeroStat({ icon, value, label, color }: { icon: any; value: number; label: string; color: string }) {
+function HeroStat({ icon, value, label, color, C }: { icon: any; value: number; label: string; color: string; C: any }) {
   return (
     <View style={styles.heroStat}>
-      <Ionicons name={icon} size={18} color={color} />
-      <Text style={styles.heroStatNum}>{value}</Text>
-      <Text style={styles.heroStatLabel}>{label}</Text>
+      <View style={[styles.heroStatIcon, { backgroundColor: color + '18' }]}>
+        <Ionicons name={icon} size={18} color={color} />
+      </View>
+      <Text style={[styles.heroStatNum, { color: C.text }]}>{value}</Text>
+      <Text style={[styles.heroStatLabel, { color: C.textSecondary }]} numberOfLines={1}>{label}</Text>
     </View>
   );
 }
@@ -450,7 +450,7 @@ const styles = StyleSheet.create({
   // Hero
   hero: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxxl,
+    paddingBottom: Spacing.xxxl + Spacing.md,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -477,15 +477,27 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    marginHorizontal: Spacing.lg,
+    marginTop: -Spacing.xxl,
+    marginBottom: Spacing.md,
     borderRadius: Radius.xl,
+    borderWidth: 1,
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: Spacing.sm,
+    gap: Spacing.xs,
+    shadowColor: '#7C5CFC',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
   },
-  heroStat: { flex: 1, alignItems: 'center', gap: 2 },
-  statDivider: { width: 1, backgroundColor: 'rgba(255,255,255,0.2)', marginVertical: 4 },
-  heroStatNum: { fontSize: 20, fontFamily: 'Inter_700Bold', color: '#fff' },
-  heroStatLabel: { fontSize: 10, fontFamily: 'Inter_500Medium', color: 'rgba(255,255,255,0.7)', textAlign: 'center' },
+  heroStat: { flex: 1, alignItems: 'center', gap: Spacing.xs },
+  heroStatIcon: {
+    width: 36, height: 36, borderRadius: 18,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  heroStatNum: { fontSize: 18, fontFamily: 'Inter_700Bold' },
+  heroStatLabel: { fontSize: 11, fontFamily: 'Inter_500Medium', textAlign: 'center' },
 
   // Week strip
   weekCard: {
@@ -493,7 +505,6 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg,
     borderRadius: Radius.xl,
     padding: Spacing.sm,
-    marginTop: -Spacing.xl,
     marginBottom: Spacing.lg,
   },
   dayPill: { flex: 1, borderRadius: Radius.lg, alignItems: 'center', paddingVertical: 8, gap: 2 },
