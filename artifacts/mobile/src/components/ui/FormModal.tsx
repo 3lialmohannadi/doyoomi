@@ -64,9 +64,9 @@ export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save',
                 colors={['#7C5CFC', '#FF6B9D']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                style={[StyleSheet.absoluteFill, { borderRadius: Radius.lg }]}
+                style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
               />
-              <Ionicons name="checkmark" size={18} color="#fff" />
+              <Ionicons name="checkmark" size={20} color="#fff" />
               <Text style={styles.bottomBtnSaveText}>{saveLabel}</Text>
             </Pressable>
           </View>
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   fieldLabel: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: 'Inter_600SemiBold',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: 'Inter_400Regular',
   },
   selectRow: {
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   selectText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: 'Inter_500Medium',
   },
 
@@ -345,11 +345,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    height: 48,
+    height: 52,
   },
   pressableInputText: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: 'Inter_400Regular',
   },
 
@@ -365,16 +365,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
     borderRadius: Radius.lg,
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.md + 2,
     paddingHorizontal: Spacing.sm,
   },
   priorityDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 9,
+    height: 9,
+    borderRadius: 4.5,
   },
   priorityText: {
-    fontSize: 14,
+    fontSize: 15,
   },
 
   // Category selector
@@ -388,11 +388,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     borderRadius: Radius.lg,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm + 2,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm + 4,
   },
   categoryText: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: 'Inter_500Medium',
   },
 
@@ -401,32 +401,32 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.md,
     paddingHorizontal: Spacing.xl,
-    paddingTop: Spacing.md,
+    paddingTop: Spacing.lg,
     borderTopWidth: 1,
   },
   bottomBtn: {
     flex: 1,
-    borderRadius: Radius.lg,
-    paddingVertical: 14,
+    borderRadius: Radius.xl,
+    height: 54,
     alignItems: 'center',
     justifyContent: 'center',
   },
   bottomBtnText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: 'Inter_600SemiBold',
   },
   bottomBtnSave: {
     flex: 2,
     flexDirection: 'row',
-    borderRadius: Radius.lg,
-    paddingVertical: 14,
+    borderRadius: Radius.xl,
+    height: 54,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 8,
     overflow: 'hidden',
   },
   bottomBtnSaveText: {
-    fontSize: 16,
+    fontSize: 17,
     fontFamily: 'Inter_700Bold',
     color: '#fff',
   },

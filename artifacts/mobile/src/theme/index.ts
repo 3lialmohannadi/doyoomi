@@ -135,15 +135,15 @@ export const ShadowDark = {
 };
 
 export const Typography = {
-  heading1: { fontSize: 34, fontFamily: 'Inter_700Bold', lineHeight: 42 },
-  heading2: { fontSize: 28, fontFamily: 'Inter_700Bold', lineHeight: 34 },
-  heading3: { fontSize: 22, fontFamily: 'Inter_700Bold', lineHeight: 28 },
-  subtitle: { fontSize: 17, fontFamily: 'Inter_600SemiBold', lineHeight: 24 },
-  body: { fontSize: 16, fontFamily: 'Inter_400Regular', lineHeight: 24 },
-  bodyMedium: { fontSize: 16, fontFamily: 'Inter_500Medium', lineHeight: 24 },
-  caption: { fontSize: 14, fontFamily: 'Inter_400Regular', lineHeight: 20 },
-  captionMedium: { fontSize: 14, fontFamily: 'Inter_500Medium', lineHeight: 20 },
-  label: { fontSize: 12, fontFamily: 'Inter_600SemiBold', lineHeight: 16 },
+  heading1: { fontSize: 36, fontFamily: 'Inter_700Bold', lineHeight: 44 },
+  heading2: { fontSize: 30, fontFamily: 'Inter_700Bold', lineHeight: 38 },
+  heading3: { fontSize: 24, fontFamily: 'Inter_700Bold', lineHeight: 30 },
+  subtitle: { fontSize: 18, fontFamily: 'Inter_600SemiBold', lineHeight: 26 },
+  body: { fontSize: 17, fontFamily: 'Inter_400Regular', lineHeight: 26 },
+  bodyMedium: { fontSize: 17, fontFamily: 'Inter_500Medium', lineHeight: 26 },
+  caption: { fontSize: 15, fontFamily: 'Inter_400Regular', lineHeight: 22 },
+  captionMedium: { fontSize: 15, fontFamily: 'Inter_500Medium', lineHeight: 22 },
+  label: { fontSize: 13, fontFamily: 'Inter_600SemiBold', lineHeight: 18 },
 };
 
 export const GRADIENT_PRIMARY: [string, string] = ['#7C5CFC', '#FF6B9D'];

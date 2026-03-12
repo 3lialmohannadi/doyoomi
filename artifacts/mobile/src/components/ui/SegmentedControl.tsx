@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   tab: {
     flex: 1,
     borderRadius: Radius.full,
-    paddingVertical: 7,
+    paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
