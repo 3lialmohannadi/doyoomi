@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import {
   Modal, View, Text, Pressable, ScrollView, TextInput, StyleSheet, Alert,
-  KeyboardAvoidingView, Platform, Dimensions,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -161,8 +161,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
 
       {/* Add/Edit form — full sheet modal */}
       <Modal visible={showForm} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowForm(false)}>
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-          <View style={[styles.formContainer, { backgroundColor: C.background }]}>
+        <View style={[styles.formContainer, { backgroundColor: C.background }]}>
             {/* Form header */}
             <View style={[styles.formHeader, { borderBottomColor: C.border }]}>
               <Pressable onPress={() => setShowForm(false)} style={styles.closeBtn}>
@@ -174,10 +173,11 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               <View style={{ width: 36 }} />
             </View>
 
-            <ScrollView
+            <KeyboardAwareScrollView
               contentContainerStyle={styles.formContent}
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
+              bottomOffset={80}
             >
               {/* Preview icon */}
               <View style={styles.formPreviewSection}>
@@ -197,6 +197,20 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                   style={[styles.formInput, { backgroundColor: C.inputBg, borderColor: C.border, color: C.text }]}
                   autoFocus
                 />
+              </View>
+
+              {/* Live preview */}
+              <View style={styles.formField}>
+                <Text style={[styles.formLabel, { color: C.textSecondary }]}>
+                  {lang === 'ar' ? 'معاينة' : 'Preview'}
+                </Text>
+                <View style={[styles.preview, { backgroundColor: C.card, borderColor: C.border }]}>
+                  <View style={[styles.previewAccent, { backgroundColor: color }]} />
+                  <View style={[styles.previewIconBox, { backgroundColor: color + '18' }]}>
+                    <Ionicons name={(icon + '-outline') as any} size={20} color={color} />
+                  </View>
+                  <Text style={[styles.previewText, { color: C.text }]}>{name || '...'}</Text>
+                </View>
               </View>
 
               {/* Icon picker */}
@@ -247,21 +261,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                   })}
                 </View>
               </View>
-
-              {/* Live preview */}
-              <View style={styles.formField}>
-                <Text style={[styles.formLabel, { color: C.textSecondary }]}>
-                  {lang === 'ar' ? 'معاينة' : 'Preview'}
-                </Text>
-                <View style={[styles.preview, { backgroundColor: C.card, borderColor: C.border }]}>
-                  <View style={[styles.previewAccent, { backgroundColor: color }]} />
-                  <View style={[styles.previewIconBox, { backgroundColor: color + '18' }]}>
-                    <Ionicons name={(icon + '-outline') as any} size={20} color={color} />
-                  </View>
-                  <Text style={[styles.previewText, { color: C.text }]}>{name || '...'}</Text>
-                </View>
-              </View>
-            </ScrollView>
+            </KeyboardAwareScrollView>
 
             {/* Bottom save button */}
             <View style={[styles.formBottomBar, { paddingBottom: insets.bottom + Spacing.md, borderTopColor: C.border }]}>
@@ -283,7 +283,6 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               </Pressable>
             </View>
           </View>
-        </KeyboardAvoidingView>
       </Modal>
     </Modal>
   );

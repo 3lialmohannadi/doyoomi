@@ -1,8 +1,9 @@
 import React from 'react';
 import {
-  Modal, View, Text, Pressable, StyleSheet, ScrollView,
-  TextInput, KeyboardAvoidingView, Platform,
+  Modal, View, Text, Pressable, StyleSheet,
+  TextInput,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,11 +27,7 @@ export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save',
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
-        <View style={[styles.container, { backgroundColor: C.background }]}>
+      <View style={[styles.container, { backgroundColor: C.background }]}>
           {/* Header */}
           <View style={[styles.header, { borderBottomColor: C.border }]}>
             <Pressable onPress={onClose} style={styles.cancelBtn} accessibilityRole="button" accessibilityLabel={cancelLabel}>
@@ -40,13 +37,14 @@ export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save',
             <View style={{ width: 36 }} />
           </View>
 
-          <ScrollView
+          <KeyboardAwareScrollView
             style={styles.scroll}
             contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 100 }]}
             keyboardShouldPersistTaps="handled"
+            bottomOffset={80}
           >
             {children}
-          </ScrollView>
+          </KeyboardAwareScrollView>
 
           {/* Bottom action bar */}
           <View style={[styles.bottomBar, { paddingBottom: insets.bottom + Spacing.md, backgroundColor: C.background, borderTopColor: C.border }]}>
@@ -71,7 +69,6 @@ export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save',
             </Pressable>
           </View>
         </View>
-      </KeyboardAvoidingView>
     </Modal>
   );
 }
