@@ -80,7 +80,7 @@ export default function HomeScreen() {
           <View style={styles.heroContent}>
             <View style={styles.heroLeft}>
               <Text style={styles.greeting}>{getGreeting(lang)}</Text>
-              <Text style={styles.heroTitle}>My.Uoomi</Text>
+              <Text style={styles.heroTitle}>Do.Yoomi</Text>
               <Text style={styles.heroSub}>يومي</Text>
             </View>
             <AddBtn onPress={() => setShowTaskForm(true)} />

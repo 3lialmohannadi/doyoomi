@@ -50,7 +50,7 @@ interface HabitsState {
   loadHabits: () => Promise<void>;
 }
 
-const STORAGE_KEY = '@uoomi_habits';
+const STORAGE_KEY = '@doyoomi_habits';
 const genId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
 export const useHabitsStore = create<HabitsState>((set, get) => ({

@@ -18,7 +18,7 @@ interface CategoriesState {
   loadCategories: () => Promise<void>;
 }
 
-const STORAGE_KEY = '@uoomi_categories';
+const STORAGE_KEY = '@doyoomi_categories';
 const genId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
 export const useCategoriesStore = create<CategoriesState>((set, get) => ({

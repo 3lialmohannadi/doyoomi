@@ -118,7 +118,7 @@ export default function SettingsScreen() {
             >
               <Ionicons name="calendar" size={30} color="#fff" />
             </LinearGradient>
-            <Text style={[styles.aboutName, { color: C.text }]}>My.Uoomi</Text>
+            <Text style={[styles.aboutName, { color: C.text }]}>Do.Yoomi</Text>
             <Text style={[styles.aboutAr, { color: C.tint }]}>يومي</Text>
             <Text style={[styles.aboutTagline, { color: C.textSecondary }]}>{tFunc('yourDayYourWay')}</Text>
             <View style={[styles.versionPill, { backgroundColor: C.tint + '15' }]}>
