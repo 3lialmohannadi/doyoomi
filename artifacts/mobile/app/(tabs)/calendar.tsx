@@ -340,7 +340,7 @@ function DayView({ date, tasks, categories, C, tFunc }: any) {
   );
 }
 
-const DAY_CIRCLE_SIZE = 36;
+const DAY_CIRCLE_SIZE = 38;
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     ...Shadow.sm,
   },
   dayHeadersRow: { flexDirection: 'row', marginBottom: Spacing.sm },
-  dayHeader: { flex: 1, textAlign: 'center', fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  dayHeader: { flex: 1, textAlign: 'center', fontSize: 13, fontFamily: 'Inter_600SemiBold' },
   calGrid: { flexDirection: 'row', flexWrap: 'wrap' },
   calCell: {
     width: `${100 / 7}%`,
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
   calDayCircleSelected: {
     overflow: 'hidden',
   },
-  calDay: { fontSize: 14, fontFamily: 'Inter_500Medium' },
+  calDay: { fontSize: 15, fontFamily: 'Inter_500Medium' },
   calDot: { width: 4, height: 4, borderRadius: 2, marginTop: 2 },
 
   // Week view
@@ -419,8 +419,8 @@ const styles = StyleSheet.create({
   weekCellSelected: {
     overflow: 'hidden',
   },
-  weekDayLabel: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
-  weekDayNum: { fontSize: 17, fontFamily: 'Inter_700Bold' },
+  weekDayLabel: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  weekDayNum: { fontSize: 18, fontFamily: 'Inter_700Bold' },
   weekDot: { width: 4, height: 4, borderRadius: 2, marginTop: 1 },
 
   // Tasks section
@@ -431,8 +431,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.xs,
   },
-  selectedDateLabel: { fontSize: 17, fontFamily: 'Inter_700Bold' },
-  taskCount: { fontSize: 13, fontFamily: 'Inter_500Medium' },
+  selectedDateLabel: { fontSize: 19, fontFamily: 'Inter_700Bold' },
+  taskCount: { fontSize: 14, fontFamily: 'Inter_500Medium' },
 
   // Day view
   dayViewContainer: { paddingHorizontal: Spacing.lg, gap: Spacing.sm, marginTop: Spacing.sm },
@@ -442,8 +442,8 @@ const styles = StyleSheet.create({
   },
   dayTaskAccent: { width: 4, alignSelf: 'stretch' },
   dayTaskContent: { flex: 1, padding: Spacing.md, gap: 4 },
-  dayTaskTitle: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
-  dayTaskTime: { fontSize: 13, fontFamily: 'Inter_400Regular' },
+  dayTaskTitle: { fontSize: 17, fontFamily: 'Inter_600SemiBold' },
+  dayTaskTime: { fontSize: 14, fontFamily: 'Inter_400Regular' },
   dayTaskCat: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, alignSelf: 'flex-start', marginTop: 2 },
   dayTaskCatText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
 });
