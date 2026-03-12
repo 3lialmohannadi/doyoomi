@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
-  ScrollView, StyleSheet, Text, View, Pressable, useColorScheme, Platform,
+  ScrollView, StyleSheet, Text, View, Pressable, Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,7 @@ import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { Colors, Spacing, Typography, Radius, Shadow } from '../../src/theme';
+import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { formatTime, formatDateKey, getTodayString, isOverdue as checkOverdue } from '../../src/utils/date';
 import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
@@ -24,8 +25,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 type CalView = 'month' | 'week' | 'day';
 
 export default function CalendarScreen() {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 

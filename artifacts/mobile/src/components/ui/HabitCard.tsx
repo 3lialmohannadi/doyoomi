@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable, useColorScheme, Alert } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { format } from 'date-fns';
 import { Habit } from '../../types';
-import { Colors, Radius, Shadow, Spacing, Typography } from '../../theme';
+import { Radius, Shadow, Spacing, Typography } from '../../theme';
+import { useAppTheme } from '../../hooks/useAppTheme';
 
 interface HabitCardProps {
   habit: Habit;
@@ -32,8 +33,7 @@ const HABIT_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function HabitCard({ habit, onComplete, onEdit, onDelete, compact = false, t }: HabitCardProps) {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
   const scale = useSharedValue(1);
 
   const today = format(new Date(), 'yyyy-MM-dd');

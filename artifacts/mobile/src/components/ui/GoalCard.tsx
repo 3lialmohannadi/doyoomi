@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable, useColorScheme, Alert } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { Goal } from '../../types';
-import { Colors, Radius, Shadow, Spacing, Typography } from '../../theme';
+import { Radius, Shadow, Spacing, Typography } from '../../theme';
 import { ProgressBar } from './ProgressBar';
+import { useAppTheme } from '../../hooks/useAppTheme';
 
 interface GoalCardProps {
   goal: Goal;
@@ -29,8 +30,7 @@ const GOAL_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
 };
 
 export function GoalCard({ goal, onEdit, onDelete, onIncrement, typeLabel, t }: GoalCardProps) {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
   const progress = goal.target_value > 0 ? goal.current_value / goal.target_value : 0;
   const pct = Math.round(progress * 100);
   const iconName = GOAL_ICONS[goal.icon] ?? 'star-outline';

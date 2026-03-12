@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, useColorScheme } from 'react-native';
-import { Colors, Radius, Typography } from '../../theme';
+import { StyleSheet, Text, View } from 'react-native';
+import { Radius, Typography } from '../../theme';
+import { useAppTheme } from '../../hooks/useAppTheme';
 import { Priority } from '../../types';
 
 interface PriorityBadgeProps {
@@ -9,8 +10,7 @@ interface PriorityBadgeProps {
 }
 
 export function PriorityBadge({ priority, label }: PriorityBadgeProps) {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
 
   const colors: Record<Priority, string> = {
     high: C.priorityHigh,

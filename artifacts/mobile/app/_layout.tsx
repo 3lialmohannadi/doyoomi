@@ -12,7 +12,6 @@ import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { useColorScheme } from "react-native";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useSettingsStore } from "@/src/store/settingsStore";
@@ -22,8 +21,7 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
-  const { profile, loadSettings } = useSettingsStore();
-  const colorScheme = useColorScheme();
+  const { loadSettings } = useSettingsStore();
 
   useEffect(() => {
     loadSettings();

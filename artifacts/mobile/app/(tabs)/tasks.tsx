@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
-  SectionList, StyleSheet, Text, View, TextInput, Pressable, useColorScheme, Platform,
+  SectionList, StyleSheet, Text, View, TextInput, Pressable, Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +10,7 @@ import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { Colors, Spacing, Typography, Radius, Shadow } from '../../src/theme';
+import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { formatDate, formatTime, getTodayString, isOverdue } from '../../src/utils/date';
 import { TaskCard } from '../../src/components/ui/TaskCard';
@@ -30,8 +31,7 @@ const FILTER_GRADIENTS: Record<FilterKey, [string, string]> = {
 };
 
 export default function TasksScreen() {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 

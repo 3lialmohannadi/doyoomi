@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable, useColorScheme } from 'react-native';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors, Radius, Spacing, Typography } from '../../theme';
+import { Radius, Spacing, Typography } from '../../theme';
+import { useAppTheme } from '../../hooks/useAppTheme';
 import * as Haptics from 'expo-haptics';
 
 interface Option {
@@ -17,8 +18,7 @@ interface ToggleRowProps {
 }
 
 export function ToggleRow({ label, options, value, onChange }: ToggleRowProps) {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
 
   return (
     <View style={styles.row}>

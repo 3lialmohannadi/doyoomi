@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  FlatList, StyleSheet, Text, View, useColorScheme, Platform, Pressable,
+  FlatList, StyleSheet, Text, View, Platform, Pressable,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,6 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { Colors, Spacing, Radius, Shadow } from '../../src/theme';
+import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
 import { GoalForm } from '../../src/features/goals/GoalForm';
@@ -30,8 +31,7 @@ const GOAL_ICONS: Record<string, string> = {
 };
 
 export default function GoalsScreen() {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
