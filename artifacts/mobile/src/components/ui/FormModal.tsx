@@ -6,7 +6,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Radius, Shadow, Spacing, Typography } from '../../theme';
+import * as Haptics from 'expo-haptics';
+import { Radius, Spacing, Typography } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
 
 interface FormModalProps {
@@ -30,25 +31,45 @@ export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save',
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <View style={[styles.container, { backgroundColor: C.background }]}>
+          {/* Header */}
           <View style={[styles.header, { borderBottomColor: C.border }]}>
-            <Pressable onPress={onClose} style={styles.headerBtn} accessibilityRole="button" accessibilityLabel={cancelLabel}>
-              <Text style={[styles.headerBtnText, { color: C.textSecondary }]}>{cancelLabel}</Text>
+            <Pressable onPress={onClose} style={styles.cancelBtn} accessibilityRole="button" accessibilityLabel={cancelLabel}>
+              <Ionicons name="close" size={22} color={C.textSecondary} />
             </Pressable>
             <Text style={[styles.headerTitle, { color: C.text }]} accessibilityRole="header">{title}</Text>
-            <Pressable onPress={onSave} style={styles.headerBtn} accessibilityRole="button" accessibilityLabel={saveLabel}>
-              <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.saveGradient}>
-                <Text style={styles.saveText}>{saveLabel}</Text>
-              </LinearGradient>
-            </Pressable>
+            <View style={{ width: 36 }} />
           </View>
 
           <ScrollView
             style={styles.scroll}
-            contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 24 }]}
+            contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 100 }]}
             keyboardShouldPersistTaps="handled"
           >
             {children}
           </ScrollView>
+
+          {/* Bottom action bar */}
+          <View style={[styles.bottomBar, { paddingBottom: insets.bottom + Spacing.md, backgroundColor: C.background, borderTopColor: C.border }]}>
+            <Pressable
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onClose(); }}
+              style={[styles.bottomBtn, { backgroundColor: C.surface, borderColor: C.border, borderWidth: 1 }]}
+            >
+              <Text style={[styles.bottomBtnText, { color: C.textSecondary }]}>{cancelLabel}</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onSave(); }}
+              style={styles.bottomBtnSave}
+            >
+              <LinearGradient
+                colors={['#7C5CFC', '#FF6B9D']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={[StyleSheet.absoluteFill, { borderRadius: Radius.lg }]}
+              />
+              <Ionicons name="checkmark" size={18} color="#fff" />
+              <Text style={styles.bottomBtnSaveText}>{saveLabel}</Text>
+            </Pressable>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </Modal>
@@ -98,7 +119,7 @@ export function FormInput({ value, onChangeText, placeholder, multiline, keyboar
           backgroundColor: C.inputBg,
           borderColor: error ? C.error : C.border,
           color: C.text,
-          minHeight: multiline ? 80 : 44,
+          minHeight: multiline ? 90 : 48,
           textAlignVertical: multiline ? 'top' : 'center',
         },
       ]}
@@ -122,7 +143,7 @@ export function FormSelect({ options, value, onChange }: SelectProps) {
         return (
           <Pressable
             key={opt.key}
-            onPress={() => onChange(opt.key)}
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onChange(opt.key); }}
             style={[
               styles.selectOption,
               {
@@ -141,10 +162,125 @@ export function FormSelect({ options, value, onChange }: SelectProps) {
   );
 }
 
+// Pressable row that looks like an input field (for date/time pickers)
+interface FormPressableInputProps {
+  value: string;
+  placeholder: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  onPress: () => void;
+  error?: boolean;
+}
+
+export function FormPressableInput({ value, placeholder, icon, onPress, error }: FormPressableInputProps) {
+  const { C } = useAppTheme();
+  return (
+    <Pressable
+      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onPress(); }}
+      style={[styles.pressableInput, { backgroundColor: C.inputBg, borderColor: error ? C.error : C.border }]}
+    >
+      <Ionicons name={icon} size={18} color={C.tint} />
+      <Text style={[styles.pressableInputText, { color: value ? C.text : C.textMuted }]}>
+        {value || placeholder}
+      </Text>
+      <Ionicons name="chevron-down" size={16} color={C.textMuted} />
+    </Pressable>
+  );
+}
+
+// Colored priority selector
+interface PrioritySelectorProps {
+  value: string;
+  onChange: (key: string) => void;
+  options: { key: string; label: string }[];
+}
+
+export function PrioritySelector({ value, onChange, options }: PrioritySelectorProps) {
+  const { C } = useAppTheme();
+  const priorityColors: Record<string, string> = {
+    low: C.priorityLow,
+    medium: C.priorityMedium,
+    high: C.priorityHigh,
+  };
+
+  return (
+    <View style={styles.priorityRow}>
+      {options.map((opt) => {
+        const isActive = opt.key === value;
+        const color = priorityColors[opt.key] || C.tint;
+        return (
+          <Pressable
+            key={opt.key}
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onChange(opt.key); }}
+            style={[
+              styles.priorityOption,
+              {
+                backgroundColor: isActive ? color + '20' : C.surface,
+                borderColor: isActive ? color : C.border,
+                borderWidth: isActive ? 2 : 1,
+              },
+            ]}
+          >
+            <View style={[styles.priorityDot, { backgroundColor: color }]} />
+            <Text style={[styles.priorityText, { color: isActive ? color : C.textSecondary, fontFamily: isActive ? 'Inter_600SemiBold' : 'Inter_400Regular' }]}>
+              {opt.label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+// Category selector with icons and colors
+interface CategoryOption {
+  key: string;
+  label: string;
+  color?: string;
+  icon?: string;
+}
+
+interface CategorySelectorProps {
+  value: string;
+  onChange: (key: string) => void;
+  options: CategoryOption[];
+}
+
+export function CategorySelector({ value, onChange, options }: CategorySelectorProps) {
+  const { C } = useAppTheme();
+
+  return (
+    <View style={styles.categoryGrid}>
+      {options.map((opt) => {
+        const isActive = opt.key === value;
+        const color = opt.color || C.textMuted;
+        return (
+          <Pressable
+            key={opt.key}
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onChange(opt.key); }}
+            style={[
+              styles.categoryChip,
+              {
+                backgroundColor: isActive ? color + '20' : C.surface,
+                borderColor: isActive ? color : C.border,
+                borderWidth: isActive ? 2 : 1,
+              },
+            ]}
+          >
+            {opt.icon ? (
+              <Ionicons name={(opt.icon + '-outline') as any} size={16} color={isActive ? color : C.textMuted} />
+            ) : null}
+            <Text style={[styles.categoryText, { color: isActive ? color : C.textSecondary }]} numberOfLines={1}>
+              {opt.label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -154,44 +290,35 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
     borderBottomWidth: 1,
   },
-  headerBtn: {},
-  headerBtnText: {
-    ...Typography.body,
+  cancelBtn: {
+    width: 36, height: 36, borderRadius: 18,
+    alignItems: 'center', justifyContent: 'center',
   },
   headerTitle: {
-    ...Typography.subtitle,
-    fontFamily: 'Inter_600SemiBold',
-  },
-  saveGradient: {
-    borderRadius: Radius.full,
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-  },
-  saveText: {
-    ...Typography.captionMedium,
-    color: '#fff',
-    fontFamily: 'Inter_600SemiBold',
+    fontSize: 18,
+    fontFamily: 'Inter_700Bold',
   },
   scroll: { flex: 1 },
   scrollContent: {
-    padding: Spacing.lg,
-    gap: Spacing.lg,
+    padding: Spacing.xl,
+    gap: Spacing.xl,
   },
   field: {
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   fieldLabel: {
-    ...Typography.caption,
-    fontFamily: 'Inter_500Medium',
+    fontSize: 13,
+    fontFamily: 'Inter_600SemiBold',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   input: {
-    borderRadius: Radius.md,
+    borderRadius: Radius.lg,
     borderWidth: 1,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    ...Typography.body,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    fontSize: 16,
+    fontFamily: 'Inter_400Regular',
   },
   selectRow: {
     flexDirection: 'row',
@@ -199,12 +326,108 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   selectOption: {
-    borderRadius: Radius.md,
+    borderRadius: Radius.lg,
     borderWidth: 1,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
   },
   selectText: {
-    ...Typography.captionMedium,
+    fontSize: 14,
+    fontFamily: 'Inter_500Medium',
+  },
+
+  // Pressable input (for date/time)
+  pressableInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    height: 48,
+  },
+  pressableInputText: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: 'Inter_400Regular',
+  },
+
+  // Priority selector
+  priorityRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  priorityOption: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    borderRadius: Radius.lg,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+  },
+  priorityDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  priorityText: {
+    fontSize: 14,
+  },
+
+  // Category selector
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  categoryChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderRadius: Radius.lg,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm + 2,
+  },
+  categoryText: {
+    fontSize: 14,
+    fontFamily: 'Inter_500Medium',
+  },
+
+  // Bottom bar
+  bottomBar: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+  },
+  bottomBtn: {
+    flex: 1,
+    borderRadius: Radius.lg,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bottomBtnText: {
+    fontSize: 16,
+    fontFamily: 'Inter_600SemiBold',
+  },
+  bottomBtnSave: {
+    flex: 2,
+    flexDirection: 'row',
+    borderRadius: Radius.lg,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    overflow: 'hidden',
+  },
+  bottomBtnSaveText: {
+    fontSize: 16,
+    fontFamily: 'Inter_700Bold',
+    color: '#fff',
   },
 });

@@ -143,9 +143,14 @@ export default function CalendarScreen() {
         {/* Selected date tasks */}
         {(view === 'month' || view === 'week') && (
           <View style={styles.tasksSection}>
-            <Text style={[styles.selectedDateLabel, { color: C.textSecondary }]}>
-              {selectedDate === getTodayString() ? tFunc('today2') : format(parseISO(selectedDate), 'MMMM d, yyyy')}
-            </Text>
+            <View style={styles.tasksSectionHeader}>
+              <Text style={[styles.selectedDateLabel, { color: C.text }]}>
+                {selectedDate === getTodayString() ? tFunc('today2') : format(parseISO(selectedDate), 'MMMM d, yyyy')}
+              </Text>
+              <Text style={[styles.taskCount, { color: C.textMuted }]}>
+                {selectedTasks.length} {tFunc('taskCount')}
+              </Text>
+            </View>
             {selectedTasks.length === 0 ? (
               <EmptyState icon="calendar-outline" title={tFunc('noTasksToday')} />
             ) : (
@@ -371,8 +376,10 @@ const styles = StyleSheet.create({
   },
   weekDayLabel: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
   weekDayNum: { fontSize: 18, fontFamily: 'Inter_700Bold' },
-  tasksSection: { paddingHorizontal: Spacing.lg, gap: Spacing.md, marginTop: Spacing.sm },
-  selectedDateLabel: { fontSize: 13, fontFamily: 'Inter_600SemiBold', textTransform: 'uppercase', letterSpacing: 0.5 },
+  tasksSection: { paddingHorizontal: Spacing.lg, gap: Spacing.md, marginTop: Spacing.lg },
+  tasksSectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  selectedDateLabel: { fontSize: 17, fontFamily: 'Inter_700Bold' },
+  taskCount: { fontSize: 13, fontFamily: 'Inter_500Medium' },
 
   // Day view
   dayViewContainer: { paddingHorizontal: Spacing.lg, gap: Spacing.sm },
