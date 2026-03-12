@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
-  ScrollView, StyleSheet, Text, View, Pressable, useColorScheme, Platform,
+  ScrollView, StyleSheet, Text, View, Pressable, Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,25 +14,24 @@ import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
-import { Colors, Spacing, Typography, Radius, Shadow } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow } from '../../src/theme';
+import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, getGreeting } from '../../src/utils/i18n';
 import { getTodayString, getWeekDays, getDayLabel, formatDateKey, formatTime, isOverdue } from '../../src/utils/date';
 import { HabitForm } from '../../src/features/habits/HabitForm';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
 import { Task, Habit } from '../../src/types';
-import { ProgressBar } from '../../src/components/ui/ProgressBar';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function HomeScreen() {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
   const { tasks, toggleComplete, deleteTask, postponeTask } = useTasksStore();
   const { goals } = useGoalsStore();
-  const { habits, completeHabit, deleteHabit, updateHabit } = useHabitsStore();
+  const { habits, completeHabit } = useHabitsStore();
   const { profile } = useSettingsStore();
   const { categories } = useCategoriesStore();
   const lang = profile.language;
@@ -100,7 +99,7 @@ export default function HomeScreen() {
         </LinearGradient>
 
         {/* Week Strip */}
-        <View style={[styles.weekCard, { backgroundColor: C.card, ...Shadow.md }]}>
+        <View style={[styles.weekCard, { backgroundColor: C.card, borderColor: C.border, borderWidth: 1, ...Shadow.sm }]}>
           {weekDays.map((day) => {
             const key = formatDateKey(day);
             const isSelected = key === selectedDay;
@@ -333,7 +332,7 @@ function FunHabitCard({ habit, onComplete, C }: { habit: any; onComplete: (id: s
   return (
     <Pressable
       onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onComplete(habit.id); }}
-      style={[styles.habitCard, isDone && { opacity: 0.85 }]}
+      style={[styles.habitCard, !isDone && { borderWidth: 1, borderColor: C.border }]}
     >
       <LinearGradient
         colors={isDone ? [habit.color, habit.color + 'CC'] : [C.card, C.card]}

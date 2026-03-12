@@ -1,7 +1,8 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, Pressable, View, useColorScheme } from 'react-native';
+import { ScrollView, StyleSheet, Text, Pressable, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors, Radius, Spacing, Typography } from '../../theme';
+import { Radius, Spacing, Typography } from '../../theme';
+import { useAppTheme } from '../../hooks/useAppTheme';
 import * as Haptics from 'expo-haptics';
 
 interface Chip {
@@ -16,8 +17,7 @@ interface FilterChipsProps {
 }
 
 export function FilterChips({ chips, selected, onSelect }: FilterChipsProps) {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
 
   return (
     <ScrollView

@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable, useColorScheme, Alert } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
 import { Task } from '../../types';
-import { Colors, Radius, Shadow, Spacing, Typography } from '../../theme';
+import { Radius, Shadow, Spacing, Typography } from '../../theme';
 import { PriorityBadge } from './PriorityBadge';
+import { useAppTheme } from '../../hooks/useAppTheme';
 
 interface TaskCardProps {
   task: Task;
@@ -24,8 +25,7 @@ interface TaskCardProps {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorityLabel, timeStr, categoryName, categoryColor, t }: TaskCardProps) {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
   const scale = useSharedValue(1);
 
   const animStyle = useAnimatedStyle(() => ({

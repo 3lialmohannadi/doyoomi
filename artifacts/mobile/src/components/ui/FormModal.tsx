@@ -1,12 +1,13 @@
 import React from 'react';
 import {
   Modal, View, Text, Pressable, StyleSheet, ScrollView,
-  TextInput, KeyboardAvoidingView, Platform, useColorScheme,
+  TextInput, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors, Radius, Shadow, Spacing, Typography } from '../../theme';
+import { Radius, Shadow, Spacing, Typography } from '../../theme';
+import { useAppTheme } from '../../hooks/useAppTheme';
 
 interface FormModalProps {
   visible: boolean;
@@ -19,8 +20,7 @@ interface FormModalProps {
 }
 
 export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save', cancelLabel = 'Cancel', children }: FormModalProps) {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
   const insets = useSafeAreaInsets();
 
   return (
@@ -61,8 +61,7 @@ interface FieldProps {
 }
 
 export function FormField({ label, children }: FieldProps) {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
 
   return (
     <View style={styles.field}>
@@ -81,8 +80,7 @@ interface InputProps {
 }
 
 export function FormInput({ value, onChangeText, placeholder, multiline, keyboardType }: InputProps) {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
 
   return (
     <TextInput
@@ -113,8 +111,7 @@ interface SelectProps {
 }
 
 export function FormSelect({ options, value, onChange }: SelectProps) {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
 
   return (
     <View style={styles.selectRow}>

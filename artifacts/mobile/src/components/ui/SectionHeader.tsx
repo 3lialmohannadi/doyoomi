@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable, useColorScheme } from 'react-native';
-import { Colors, Spacing, Typography } from '../../theme';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { Spacing, Typography } from '../../theme';
+import { useAppTheme } from '../../hooks/useAppTheme';
 
 interface SectionHeaderProps {
   title: string;
@@ -10,8 +11,7 @@ interface SectionHeaderProps {
 }
 
 export function SectionHeader({ title, actionLabel, onAction, rightContent }: SectionHeaderProps) {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
 
   return (
     <View style={styles.container}>

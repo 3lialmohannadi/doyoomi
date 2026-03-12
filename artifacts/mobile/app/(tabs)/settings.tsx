@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   ScrollView, StyleSheet, Text, View, Pressable, Modal, TextInput,
-  useColorScheme, Platform,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,14 +10,14 @@ import * as Haptics from 'expo-haptics';
 
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
-import { Colors, Spacing, Typography, Radius, Shadow } from '../../src/theme';
+import { Spacing, Radius } from '../../src/theme';
+import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { ToggleRow } from '../../src/components/ui/ToggleRow';
 import { Language, Theme, TimeFormat, StartOfWeek } from '../../src/types';
 
 export default function SettingsScreen() {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+  const { C } = useAppTheme();
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
