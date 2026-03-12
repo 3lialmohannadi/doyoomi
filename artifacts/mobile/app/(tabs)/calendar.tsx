@@ -209,7 +209,7 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
   while (cells.length % 7 !== 0) cells.push(null);
 
   return (
-    <View style={{ paddingHorizontal: Spacing.lg, marginBottom: Spacing.md }}>
+    <View style={[styles.calCard, { backgroundColor: C.card, borderColor: C.border }]}>
       <View style={styles.dayHeadersRow}>
         {dayHeaders.map(d => (
           <Text key={d} style={[styles.dayHeader, { color: C.textMuted }]}>{d}</Text>
@@ -224,24 +224,30 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
           const day = parseISO(dayKey).getDate();
 
           return (
-            <Pressable key={dayKey} onPress={() => onSelectDate(dayKey)} style={[styles.calCell, { overflow: 'hidden' }]}>
-              {isSelected && (
-                <LinearGradient
-                  colors={['#7C5CFC', '#FF6B9D']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={[StyleSheet.absoluteFill, { borderRadius: 999 }]}
-                />
-              )}
-              <Text style={[
-                styles.calDay,
-                { color: isSelected ? '#fff' : isToday ? C.tint : C.text },
-                isToday && !isSelected && { fontFamily: 'Inter_700Bold' },
+            <Pressable key={dayKey} onPress={() => onSelectDate(dayKey)} style={styles.calCell}>
+              <View style={[
+                styles.calDayCircle,
+                isSelected && styles.calDayCircleSelected,
+                isToday && !isSelected && { borderWidth: 1.5, borderColor: C.tint },
               ]}>
-                {day}
-              </Text>
-              {hasTasks && !isSelected && (
-                <View style={[styles.calDot, { backgroundColor: C.tint }]} />
+                {isSelected && (
+                  <LinearGradient
+                    colors={['#7C5CFC', '#FF6B9D']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[StyleSheet.absoluteFill, { borderRadius: 999 }]}
+                  />
+                )}
+                <Text style={[
+                  styles.calDay,
+                  { color: isSelected ? '#fff' : isToday ? C.tint : C.text },
+                  isToday && !isSelected && { fontFamily: 'Inter_700Bold' },
+                ]}>
+                  {day}
+                </Text>
+              </View>
+              {hasTasks && (
+                <View style={[styles.calDot, { backgroundColor: isSelected ? C.tint : C.tint }]} />
               )}
             </Pressable>
           );
@@ -259,39 +265,45 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
   const today = getTodayString();
 
   return (
-    <View style={styles.weekViewRow}>
-      {days.map(day => {
-        const key = formatDateKey(day);
-        const isSelected = key === selectedDate;
-        const isToday = key === today;
-        const hasTasks = taskDates.has(key);
+    <View style={[styles.weekCard, { backgroundColor: C.card, borderColor: C.border }]}>
+      <View style={styles.weekViewRow}>
+        {days.map(day => {
+          const key = formatDateKey(day);
+          const isSelected = key === selectedDate;
+          const isToday = key === today;
+          const hasTasks = taskDates.has(key);
 
-        return (
-          <Pressable
-            key={key}
-            onPress={() => onSelectDate(key)}
-            style={[styles.weekCell, { overflow: 'hidden' }]}
-          >
-            {isSelected && (
-              <LinearGradient
-                colors={['#7C5CFC', '#FF6B9D']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[StyleSheet.absoluteFill, { borderRadius: Radius.lg }]}
-              />
-            )}
-            <Text style={[styles.weekDayLabel, { color: isSelected ? 'rgba(255,255,255,0.8)' : C.textMuted }]}>
-              {format(day, 'EEE').slice(0, 2)}
-            </Text>
-            <Text style={[styles.weekDayNum, { color: isSelected ? '#fff' : isToday ? C.tint : C.text }]}>
-              {format(day, 'd')}
-            </Text>
-            {hasTasks && !isSelected && (
-              <View style={[styles.calDot, { backgroundColor: C.tint }]} />
-            )}
-          </Pressable>
-        );
-      })}
+          return (
+            <Pressable
+              key={key}
+              onPress={() => onSelectDate(key)}
+              style={[
+                styles.weekCell,
+                isSelected && styles.weekCellSelected,
+                isToday && !isSelected && { borderWidth: 1.5, borderColor: C.tint },
+              ]}
+            >
+              {isSelected && (
+                <LinearGradient
+                  colors={['#7C5CFC', '#FF6B9D']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={[StyleSheet.absoluteFill, { borderRadius: Radius.md }]}
+                />
+              )}
+              <Text style={[styles.weekDayLabel, { color: isSelected ? 'rgba(255,255,255,0.8)' : C.textMuted }]}>
+                {format(day, 'EEE').slice(0, 2)}
+              </Text>
+              <Text style={[styles.weekDayNum, { color: isSelected ? '#fff' : isToday ? C.tint : C.text }]}>
+                {format(day, 'd')}
+              </Text>
+              {hasTasks && (
+                <View style={[styles.weekDot, { backgroundColor: isSelected ? '#fff' : C.tint }]} />
+              )}
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
   );
 }
@@ -328,6 +340,8 @@ function DayView({ date, tasks, categories, C, tFunc }: any) {
   );
 }
 
+const DAY_CIRCLE_SIZE = 36;
+
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
@@ -338,51 +352,90 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.sm,
   },
   headerTitle: { ...Typography.heading2 },
-  segmentContainer: { paddingHorizontal: Spacing.lg, marginBottom: Spacing.sm },
+  segmentContainer: { paddingHorizontal: Spacing.lg, marginBottom: Spacing.md },
   navRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.md,
     paddingVertical: Spacing.xs,
   },
   navBtn: { padding: Spacing.sm },
   navLabel: { ...Typography.subtitle, fontFamily: 'Inter_600SemiBold' },
-  dayHeadersRow: { flexDirection: 'row', marginBottom: Spacing.xs },
+
+  // Month calendar card
+  calCard: {
+    marginHorizontal: Spacing.lg,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    padding: Spacing.md,
+    paddingBottom: Spacing.sm,
+    ...Shadow.sm,
+  },
+  dayHeadersRow: { flexDirection: 'row', marginBottom: Spacing.sm },
   dayHeader: { flex: 1, textAlign: 'center', fontSize: 12, fontFamily: 'Inter_600SemiBold' },
   calGrid: { flexDirection: 'row', flexWrap: 'wrap' },
   calCell: {
     width: `${100 / 7}%`,
-    aspectRatio: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
+    paddingVertical: 3,
+  },
+  calDayCircle: {
+    width: DAY_CIRCLE_SIZE,
+    height: DAY_CIRCLE_SIZE,
+    borderRadius: DAY_CIRCLE_SIZE / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  calDayCircleSelected: {
+    overflow: 'hidden',
   },
   calDay: { fontSize: 14, fontFamily: 'Inter_500Medium' },
-  calDot: { width: 5, height: 5, borderRadius: 2.5, position: 'absolute', bottom: 4 },
+  calDot: { width: 4, height: 4, borderRadius: 2, marginTop: 2 },
+
+  // Week view
+  weekCard: {
+    marginHorizontal: Spacing.lg,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    padding: Spacing.sm,
+    ...Shadow.sm,
+  },
   weekViewRow: {
     flexDirection: 'row',
-    paddingHorizontal: Spacing.lg,
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
+    gap: Spacing.xs,
   },
   weekCell: {
     flex: 1,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.md,
     alignItems: 'center',
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.sm,
     gap: 4,
+    overflow: 'hidden',
   },
-  weekDayLabel: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
-  weekDayNum: { fontSize: 18, fontFamily: 'Inter_700Bold' },
-  tasksSection: { paddingHorizontal: Spacing.lg, gap: Spacing.md, marginTop: Spacing.lg },
-  tasksSectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  weekCellSelected: {
+    overflow: 'hidden',
+  },
+  weekDayLabel: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
+  weekDayNum: { fontSize: 17, fontFamily: 'Inter_700Bold' },
+  weekDot: { width: 4, height: 4, borderRadius: 2, marginTop: 1 },
+
+  // Tasks section
+  tasksSection: { paddingHorizontal: Spacing.lg, gap: Spacing.md, marginTop: Spacing.xxl },
+  tasksSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.xs,
+  },
   selectedDateLabel: { fontSize: 17, fontFamily: 'Inter_700Bold' },
   taskCount: { fontSize: 13, fontFamily: 'Inter_500Medium' },
 
   // Day view
-  dayViewContainer: { paddingHorizontal: Spacing.lg, gap: Spacing.sm },
+  dayViewContainer: { paddingHorizontal: Spacing.lg, gap: Spacing.sm, marginTop: Spacing.sm },
   dayTaskCard: {
     flexDirection: 'row', borderRadius: Radius.lg, borderWidth: 1,
     overflow: 'hidden', ...Shadow.sm,
