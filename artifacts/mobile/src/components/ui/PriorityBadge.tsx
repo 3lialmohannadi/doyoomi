@@ -22,6 +22,7 @@ export function PriorityBadge({ priority, label }: PriorityBadgeProps) {
 
   return (
     <View style={[styles.badge, { backgroundColor: color + '20' }]}>
+      <View style={[styles.dot, { backgroundColor: color }]} />
       <Text style={[styles.text, { color }]}>{label}</Text>
     </View>
   );
@@ -29,9 +30,17 @@ export function PriorityBadge({ priority, label }: PriorityBadgeProps) {
 
 const styles = StyleSheet.create({
   badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     borderRadius: Radius.full,
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 3,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   text: {
     ...Typography.label,
