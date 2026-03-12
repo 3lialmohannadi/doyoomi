@@ -223,7 +223,7 @@ export default function HomeScreen() {
 
         {/* Weekly vibe chart */}
         <Section title={tFunc('weeklyOverview')} C={C}>
-          <FunWeekChart weekDays={weekDays} tasks={tasks} C={C} />
+          <FunWeekChart weekDays={weekDays} tasks={tasks} C={C} tFunc={tFunc} />
         </Section>
       </ScrollView>
 
@@ -389,7 +389,7 @@ function FunGoalCard({ goal, progress, gradient, C }: any) {
   );
 }
 
-function FunWeekChart({ weekDays, tasks, C }: any) {
+function FunWeekChart({ weekDays, tasks, C, tFunc }: any) {
   const maxVal = 8;
   const data = weekDays.map((d: Date) => {
     const key = formatDateKey(d);
@@ -434,11 +434,11 @@ function FunWeekChart({ weekDays, tasks, C }: any) {
       <View style={styles.chartLegend}>
         <View style={styles.legendItem}>
           <LinearGradient colors={['#7C5CFC', '#A855F7']} style={styles.legendDot} />
-          <Text style={[styles.legendText, { color: C.textSecondary }]}>Done</Text>
+          <Text style={[styles.legendText, { color: C.textSecondary }]}>{tFunc('chartDone')}</Text>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: C.borderLight }]} />
-          <Text style={[styles.legendText, { color: C.textSecondary }]}>Total</Text>
+          <Text style={[styles.legendText, { color: C.textSecondary }]}>{tFunc('chartTotal')}</Text>
         </View>
       </View>
     </View>

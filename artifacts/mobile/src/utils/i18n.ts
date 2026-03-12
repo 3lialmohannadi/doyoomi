@@ -108,6 +108,14 @@ const translations: Record<Language, Record<string, string>> = {
     english: 'English',
     arabic: 'عربي',
 
+    // Chart
+    chartDone: 'Done',
+    chartTotal: 'Total',
+
+    // Misc
+    taskCount: 'tasks',
+    noTasksThisDay: 'No tasks this day',
+
     // Form
     save: 'Save',
     cancel: 'Cancel',
@@ -230,6 +238,14 @@ const translations: Record<Language, Record<string, string>> = {
     hour24: '24 ساعة',
     english: 'English',
     arabic: 'عربي',
+
+    // الرسم البياني
+    chartDone: 'منجز',
+    chartTotal: 'الإجمالي',
+
+    // متفرقات
+    taskCount: 'مهام',
+    noTasksThisDay: 'لا توجد مهام لهذا اليوم',
 
     // النماذج
     save: 'حفظ',

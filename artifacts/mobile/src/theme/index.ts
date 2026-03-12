@@ -1,13 +1,13 @@
 export const Colors = {
   light: {
     background: '#F2EEFF',
-    surface: '#FFFFFF',
+    surface: '#F8F5FF',
     surfaceElevated: '#FFFFFF',
     border: '#E0D8FF',
     borderLight: '#ECE6FF',
     text: '#1A0A4A',
     textSecondary: '#5C4A8A',
-    textMuted: '#A090C8',
+    textMuted: '#8070B0',
     tint: '#7C5CFC',
     tintSecondary: '#FF6B9D',
     tabBar: 'rgba(242,238,255,0.97)',
@@ -105,6 +105,30 @@ export const Shadow = {
     shadowColor: '#7C5CFC',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.2,
+    shadowRadius: 24,
+    elevation: 10,
+  },
+};
+
+export const ShadowDark = {
+  sm: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  md: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 6,
+  },
+  lg: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
     shadowRadius: 24,
     elevation: 10,
   },

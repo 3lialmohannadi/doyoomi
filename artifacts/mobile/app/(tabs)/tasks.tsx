@@ -95,7 +95,7 @@ export default function TasksScreen() {
       <View style={[styles.header, { paddingTop: topPad + Spacing.sm }]}>
         <View>
           <Text style={[styles.headerTitle, { color: C.text }]}>{tFunc('tasks')}</Text>
-          <Text style={[styles.headerSub, { color: C.textSecondary }]}>{filteredTasks.length} tasks</Text>
+          <Text style={[styles.headerSub, { color: C.textSecondary }]}>{filteredTasks.length} {tFunc('taskCount')}</Text>
         </View>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditTask(null); setShowForm(true); }}

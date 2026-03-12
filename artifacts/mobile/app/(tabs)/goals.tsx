@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  FlatList, StyleSheet, Text, View, Platform, Pressable,
+  FlatList, StyleSheet, Text, View, Platform, Pressable, Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -144,7 +144,17 @@ export default function GoalsScreen() {
                     <Text style={[styles.actionText, { color: grad[0] }]}>+1 {t('progress', lang)}</Text>
                   </Pressable>
                   <Pressable
-                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); deleteGoal(item.id); }}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      Alert.alert(
+                        tFunc('deleteGoal'),
+                        item.title,
+                        [
+                          { text: tFunc('cancel'), style: 'cancel' },
+                          { text: tFunc('delete'), style: 'destructive', onPress: () => deleteGoal(item.id) },
+                        ]
+                      );
+                    }}
                     style={[styles.actionBtnIcon, { borderColor: C.error + '30', backgroundColor: C.error + '10' }]}
                   >
                     <Ionicons name="trash-outline" size={16} color={C.error} />
