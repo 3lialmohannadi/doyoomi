@@ -58,7 +58,7 @@ interface GoalsState {
   loadGoals: () => Promise<void>;
 }
 
-const STORAGE_KEY = '@uoomi_goals';
+const STORAGE_KEY = '@doyoomi_goals';
 const genId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
 export const useGoalsStore = create<GoalsState>((set, get) => ({

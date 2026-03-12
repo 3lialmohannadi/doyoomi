@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { Shadow } from '../../theme';
+import { Shadow, GRADIENT_PRIMARY } from '../../theme';
 
 interface AddButtonProps {
   onPress: () => void;
@@ -31,7 +31,7 @@ export function AddButton({ onPress, size = 40 }: AddButtonProps) {
       style={[animStyle, styles.container, { width: size, height: size, borderRadius: size / 2 }, Shadow.md]}
     >
       <LinearGradient
-        colors={['#6C8EF5', '#F0A4C8']}
+        colors={GRADIENT_PRIMARY}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[StyleSheet.absoluteFill, { borderRadius: size / 2 }]}

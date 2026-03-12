@@ -5,7 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
@@ -80,7 +80,7 @@ export default function HomeScreen() {
           <View style={styles.heroContent}>
             <View style={styles.heroLeft}>
               <Text style={styles.greeting}>{getGreeting(lang)}</Text>
-              <Text style={styles.heroTitle}>My.Uoomi</Text>
+              <Text style={styles.heroTitle}>Do.Yoomi</Text>
               <Text style={styles.heroSub}>يومي</Text>
             </View>
             <AddBtn onPress={() => setShowTaskForm(true)} />
@@ -162,7 +162,7 @@ export default function HomeScreen() {
         {/* Today Tasks */}
         {dayTasks.length > 0 && (
           <Section
-            title={selectedDay === today ? tFunc('today2') : format(new Date(selectedDay + 'T00:00:00'), 'MMM d')}
+            title={selectedDay === today ? tFunc('today2') : format(parseISO(selectedDay), 'MMM d')}
             C={C}
             action={tFunc('addNew')}
             onAction={() => setShowTaskForm(true)}
@@ -223,7 +223,7 @@ export default function HomeScreen() {
 
         {/* Weekly vibe chart */}
         <Section title={tFunc('weeklyOverview')} C={C}>
-          <FunWeekChart weekDays={weekDays} tasks={tasks} C={C} />
+          <FunWeekChart weekDays={weekDays} tasks={tasks} C={C} tFunc={tFunc} lang={lang} />
         </Section>
       </ScrollView>
 
@@ -319,9 +319,8 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, C }: any) {
 }
 
 function FunHabitCard({ habit, onComplete, C }: { habit: any; onComplete: (id: string) => void; C: any }) {
-  const { format: fmtDate } = require('date-fns');
-  const today = fmtDate(new Date(), 'yyyy-MM-dd');
-  const lastDate = habit.last_completed_at ? fmtDate(new Date(habit.last_completed_at), 'yyyy-MM-dd') : null;
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const lastDate = habit.last_completed_at ? format(new Date(habit.last_completed_at), 'yyyy-MM-dd') : null;
   const isDone = lastDate === today;
 
   const ICONS: Record<string, any> = {
@@ -389,13 +388,13 @@ function FunGoalCard({ goal, progress, gradient, C }: any) {
   );
 }
 
-function FunWeekChart({ weekDays, tasks, C }: any) {
+function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: any) {
   const maxVal = 8;
   const data = weekDays.map((d: Date) => {
     const key = formatDateKey(d);
     const count = tasks.filter((t: any) => t.due_date === key).length;
     const done = tasks.filter((t: any) => t.due_date === key && t.status === 'completed').length;
-    return { day: getDayLabel(d, 'en').slice(0, 1), count, done };
+    return { day: getDayLabel(d, lang).slice(0, 1), count, done };
   });
 
   const barColors: [string, string][] = [
@@ -434,11 +433,11 @@ function FunWeekChart({ weekDays, tasks, C }: any) {
       <View style={styles.chartLegend}>
         <View style={styles.legendItem}>
           <LinearGradient colors={['#7C5CFC', '#A855F7']} style={styles.legendDot} />
-          <Text style={[styles.legendText, { color: C.textSecondary }]}>Done</Text>
+          <Text style={[styles.legendText, { color: C.textSecondary }]}>{tFunc('chartDone')}</Text>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendDot, { backgroundColor: C.borderLight }]} />
-          <Text style={[styles.legendText, { color: C.textSecondary }]}>Total</Text>
+          <Text style={[styles.legendText, { color: C.textSecondary }]}>{tFunc('chartTotal')}</Text>
         </View>
       </View>
     </View>

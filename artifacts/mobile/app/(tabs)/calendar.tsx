@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { format, getDaysInMonth, startOfMonth, getDay, addMonths, subMonths, addWeeks, subWeeks, startOfWeek, eachDayOfInterval, endOfWeek } from 'date-fns';
+import { format, parseISO, getDaysInMonth, startOfMonth, getDay, addMonths, subMonths, addWeeks, subWeeks, startOfWeek, eachDayOfInterval, endOfWeek } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 
 import { useTasksStore } from '../../src/store/tasksStore';
@@ -137,14 +137,14 @@ export default function CalendarScreen() {
         )}
 
         {view === 'day' && (
-          <DayView date={currentDate} tasks={tasks} categories={categories} C={C} />
+          <DayView date={currentDate} tasks={tasks} categories={categories} C={C} tFunc={tFunc} />
         )}
 
         {/* Selected date tasks */}
         {(view === 'month' || view === 'week') && (
           <View style={styles.tasksSection}>
             <Text style={[styles.selectedDateLabel, { color: C.textSecondary }]}>
-              {selectedDate === getTodayString() ? tFunc('today2') : format(new Date(selectedDate), 'MMMM d, yyyy')}
+              {selectedDate === getTodayString() ? tFunc('today2') : format(parseISO(selectedDate), 'MMMM d, yyyy')}
             </Text>
             {selectedTasks.length === 0 ? (
               <EmptyState icon="calendar-outline" title={tFunc('noTasksToday')} />
@@ -216,13 +216,13 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
           const isToday = dayKey === today;
           const isSelected = dayKey === selectedDate;
           const hasTasks = taskDates.has(dayKey);
-          const day = new Date(dayKey).getDate();
+          const day = parseISO(dayKey).getDate();
 
           return (
             <Pressable key={dayKey} onPress={() => onSelectDate(dayKey)} style={[styles.calCell, { overflow: 'hidden' }]}>
               {isSelected && (
                 <LinearGradient
-                  colors={['#6C8EF5', '#F0A4C8']}
+                  colors={['#7C5CFC', '#FF6B9D']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={[StyleSheet.absoluteFill, { borderRadius: 999 }]}
@@ -269,7 +269,7 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
           >
             {isSelected && (
               <LinearGradient
-                colors={['#6C8EF5', '#F0A4C8']}
+                colors={['#7C5CFC', '#FF6B9D']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={[StyleSheet.absoluteFill, { borderRadius: Radius.lg }]}
@@ -291,14 +291,14 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
   );
 }
 
-function DayView({ date, tasks, categories, C }: any) {
+function DayView({ date, tasks, categories, C, tFunc }: any) {
   const key = formatDateKey(date);
   const dayTasks = tasks.filter((t: any) => t.due_date === key);
 
   return (
     <View style={{ paddingHorizontal: Spacing.lg, gap: Spacing.sm }}>
       {dayTasks.length === 0 ? (
-        <EmptyState icon="calendar-outline" title="No tasks this day" />
+        <EmptyState icon="calendar-outline" title={tFunc('noTasksThisDay')} />
       ) : (
         dayTasks.map((task: any) => {
           const cat = categories.find((c: any) => c.id === task.category_id);

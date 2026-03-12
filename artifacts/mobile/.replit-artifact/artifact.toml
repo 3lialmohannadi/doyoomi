@@ -1,6 +1,6 @@
 kind = "mobile"
 previewPath = "/"
-title = "My.Uoomi — يومي"
+title = "Do.Yoomi — يومي"
 version = "1.0.0"
 id = "artifacts/mobile"
 router = "expo-domain"

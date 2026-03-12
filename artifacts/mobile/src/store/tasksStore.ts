@@ -88,7 +88,7 @@ interface TasksState {
   loadTasks: () => Promise<void>;
 }
 
-const STORAGE_KEY = '@uoomi_tasks';
+const STORAGE_KEY = '@doyoomi_tasks';
 const genId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
 export const useTasksStore = create<TasksState>((set, get) => ({

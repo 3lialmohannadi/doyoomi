@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, Pressable, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Radius, Spacing, Typography } from '../../theme';
+import { Radius, Spacing, Typography, GRADIENT_PRIMARY } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import * as Haptics from 'expo-haptics';
 
@@ -45,7 +45,7 @@ export function FilterChips({ chips, selected, onSelect }: FilterChipsProps) {
           >
             {isActive && (
               <LinearGradient
-                colors={['#6C8EF5', '#F0A4C8']}
+                colors={GRADIENT_PRIMARY}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={StyleSheet.absoluteFill}

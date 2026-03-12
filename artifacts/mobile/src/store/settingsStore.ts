@@ -24,7 +24,7 @@ const DEFAULT_PROFILE: UserProfile = {
   updated_at: new Date().toISOString(),
 };
 
-const STORAGE_KEY = '@uoomi_settings';
+const STORAGE_KEY = '@doyoomi_settings';
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   profile: DEFAULT_PROFILE,

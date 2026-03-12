@@ -71,6 +71,9 @@ export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorit
             onToggle(task.id);
           }}
           style={styles.checkbox}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: isCompleted }}
+          accessibilityLabel={task.title}
         >
           <View style={[
             styles.checkCircle,
@@ -131,7 +134,7 @@ export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorit
           </View>
         </View>
 
-        <Pressable onPress={handleMenu} style={styles.menu} hitSlop={8}>
+        <Pressable onPress={handleMenu} style={styles.menu} hitSlop={8} accessibilityRole="button" accessibilityLabel="Task options">
           <Ionicons name="ellipsis-horizontal" size={18} color={C.textMuted} />
         </Pressable>
       </View>

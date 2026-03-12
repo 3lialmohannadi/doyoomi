@@ -14,7 +14,7 @@ export function EmptyState({ icon, title, subtitle }: EmptyStateProps) {
   const { C } = useAppTheme();
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} accessibilityRole="text" accessibilityLabel={`${title}${subtitle ? '. ' + subtitle : ''}`}>
       <View style={[styles.iconContainer, { backgroundColor: C.tint + '15' }]}>
         <Ionicons name={icon} size={32} color={C.tint} />
       </View>

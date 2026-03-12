@@ -118,7 +118,7 @@ export default function SettingsScreen() {
             >
               <Ionicons name="calendar" size={30} color="#fff" />
             </LinearGradient>
-            <Text style={[styles.aboutName, { color: C.text }]}>My.Uoomi</Text>
+            <Text style={[styles.aboutName, { color: C.text }]}>Do.Yoomi</Text>
             <Text style={[styles.aboutAr, { color: C.tint }]}>يومي</Text>
             <Text style={[styles.aboutTagline, { color: C.textSecondary }]}>{tFunc('yourDayYourWay')}</Text>
             <View style={[styles.versionPill, { backgroundColor: C.tint + '15' }]}>
@@ -191,21 +191,21 @@ const styles = StyleSheet.create({
   heroTitle: { fontSize: 28, fontFamily: 'Inter_700Bold', color: '#fff', marginBottom: Spacing.lg },
   profileCard: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: 'rgba(255,255,255,0.92)',
     borderRadius: Radius.xl, padding: Spacing.md,
     shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 10, elevation: 6,
   },
   avatarBox: {
     width: 50, height: 50, borderRadius: 25,
     alignItems: 'center', justifyContent: 'center',
-    backgroundColor: '#7C5CFC' + '20',
+    backgroundColor: 'rgba(124,92,252,0.2)',
   },
   avatarText: { fontSize: 22, fontFamily: 'Inter_700Bold', color: '#7C5CFC' },
   profileName: { fontSize: 16, fontFamily: 'Inter_700Bold', color: '#1A0A4A' },
-  profileSub: { fontSize: 12, fontFamily: 'Inter_400Regular', color: '#6B5B9B', marginTop: 2 },
+  profileSub: { fontSize: 12, fontFamily: 'Inter_400Regular', color: 'rgba(0,0,0,0.5)', marginTop: 2 },
   editBadge: {
     width: 30, height: 30, borderRadius: 15,
-    backgroundColor: '#7C5CFC' + '15',
+    backgroundColor: 'rgba(124,92,252,0.15)',
     alignItems: 'center', justifyContent: 'center',
   },
   sectionLabel: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: Spacing.sm, marginLeft: 4 },
