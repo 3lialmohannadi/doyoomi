@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { Radius, Spacing, Typography } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import * as Haptics from 'expo-haptics';
@@ -8,6 +9,7 @@ import * as Haptics from 'expo-haptics';
 interface Option {
   key: string;
   label: string;
+  icon?: keyof typeof Ionicons.glyphMap;
 }
 
 interface ToggleRowProps {
@@ -59,21 +61,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.md + 2,
   },
   label: {
-    ...Typography.bodyMedium,
+    fontSize: 16,
+    fontFamily: 'Inter_500Medium',
     flex: 1,
   },
   toggle: {
     flexDirection: 'row',
     borderRadius: Radius.full,
-    padding: 2,
+    padding: 3,
   },
   option: {
     borderRadius: Radius.full,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -85,7 +88,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   optionText: {
-    ...Typography.captionMedium,
-    fontFamily: 'Inter_500Medium',
+    fontSize: 14,
+    fontFamily: 'Inter_600SemiBold',
   },
 });
