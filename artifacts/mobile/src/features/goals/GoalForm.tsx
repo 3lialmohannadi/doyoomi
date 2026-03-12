@@ -81,6 +81,7 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
       onClose={onClose}
       onSave={handleSave}
       saveLabel={t('save', lang)}
+      cancelLabel={t('cancel', lang)}
     >
       <FormField label={t('title', lang)}>
         <FormInput value={title} onChangeText={setTitle} placeholder="Goal title" />

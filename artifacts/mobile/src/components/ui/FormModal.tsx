@@ -14,10 +14,11 @@ interface FormModalProps {
   onClose: () => void;
   onSave: () => void;
   saveLabel?: string;
+  cancelLabel?: string;
   children: React.ReactNode;
 }
 
-export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save', children }: FormModalProps) {
+export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save', cancelLabel = 'Cancel', children }: FormModalProps) {
   const scheme = useColorScheme() ?? 'light';
   const C = Colors[scheme];
   const insets = useSafeAreaInsets();
@@ -31,11 +32,11 @@ export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save',
         <View style={[styles.container, { backgroundColor: C.background }]}>
           <View style={[styles.header, { borderBottomColor: C.border }]}>
             <Pressable onPress={onClose} style={styles.headerBtn}>
-              <Text style={[styles.headerBtnText, { color: C.textSecondary }]}>Cancel</Text>
+              <Text style={[styles.headerBtnText, { color: C.textSecondary }]}>{cancelLabel}</Text>
             </Pressable>
             <Text style={[styles.headerTitle, { color: C.text }]}>{title}</Text>
             <Pressable onPress={onSave} style={styles.headerBtn}>
-              <LinearGradient colors={['#6C8EF5', '#F0A4C8']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.saveGradient}>
+              <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.saveGradient}>
                 <Text style={styles.saveText}>{saveLabel}</Text>
               </LinearGradient>
             </Pressable>
@@ -94,7 +95,7 @@ export function FormInput({ value, onChangeText, placeholder, multiline, keyboar
       style={[
         styles.input,
         {
-          backgroundColor: C.surface,
+          backgroundColor: C.inputBg,
           borderColor: C.border,
           color: C.text,
           minHeight: multiline ? 80 : 44,

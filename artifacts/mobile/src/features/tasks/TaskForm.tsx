@@ -92,6 +92,7 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
       onClose={onClose}
       onSave={handleSave}
       saveLabel={t('save', lang)}
+      cancelLabel={t('cancel', lang)}
     >
       <FormField label={t('title', lang)}>
         <FormInput

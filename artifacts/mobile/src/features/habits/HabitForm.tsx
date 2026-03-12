@@ -56,6 +56,7 @@ export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
       onClose={onClose}
       onSave={handleSave}
       saveLabel={t('save', lang)}
+      cancelLabel={t('cancel', lang)}
     >
       <FormField label={t('habitName', lang)}>
         <FormInput value={name} onChangeText={setName} placeholder="Habit name" />

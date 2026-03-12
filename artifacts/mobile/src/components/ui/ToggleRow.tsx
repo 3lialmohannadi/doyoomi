@@ -37,7 +37,7 @@ export function ToggleRow({ label, options, value, onChange }: ToggleRowProps) {
             >
               {isActive && (
                 <LinearGradient
-                  colors={['#6C8EF5', '#F0A4C8']}
+                  colors={['#7C5CFC', '#FF6B9D']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={StyleSheet.absoluteFill}
