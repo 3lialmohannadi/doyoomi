@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   ScrollView, StyleSheet, Text, View, Pressable, Modal, TextInput,
-  useColorScheme, Platform, Alert,
+  useColorScheme, Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,9 +10,8 @@ import * as Haptics from 'expo-haptics';
 
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
-import { Colors, Spacing, Typography, Radius, Shadow, GRADIENT_PRIMARY } from '../../src/theme';
+import { Colors, Spacing, Typography, Radius, Shadow } from '../../src/theme';
 import { t } from '../../src/utils/i18n';
-import { Card } from '../../src/components/ui/Card';
 import { ToggleRow } from '../../src/components/ui/ToggleRow';
 import { Language, Theme, TimeFormat, StartOfWeek } from '../../src/types';
 
@@ -31,7 +30,6 @@ export default function SettingsScreen() {
   const [profileEmail, setProfileEmail] = useState(profile.email);
 
   const tFunc = (key: string) => t(key, lang);
-
   const topPad = isWeb ? 67 : insets.top;
   const bottomPad = isWeb ? 34 : 0;
 
@@ -42,138 +40,104 @@ export default function SettingsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
-      <View style={[styles.header, { paddingTop: topPad + Spacing.sm }]}>
-        <Text style={[styles.headerTitle, { color: C.text }]}>{tFunc('settings')}</Text>
-      </View>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: Spacing.lg, paddingBottom: bottomPad + 100, gap: Spacing.lg }}
+        contentContainerStyle={{ paddingBottom: bottomPad + 100 }}
       >
-        {/* Profile Card */}
-        <Pressable
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            setProfileName(profile.name);
-            setProfileEmail(profile.email);
-            setShowProfileModal(true);
-          }}
+        {/* Hero header */}
+        <LinearGradient
+          colors={['#FF6B9D', '#A855F7', '#7C5CFC']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.hero, { paddingTop: topPad + Spacing.md }]}
         >
-          <LinearGradient
-            colors={['#6C8EF5', '#B08EF5', '#F0A4C8']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+          <View style={styles.heroDecor1} />
+          <View style={styles.heroDecor2} />
+          <Text style={styles.heroTitle}>{tFunc('settings')}</Text>
+
+          {/* Profile card inside hero */}
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setProfileName(profile.name);
+              setProfileEmail(profile.email);
+              setShowProfileModal(true);
+            }}
             style={styles.profileCard}
           >
-            <View style={styles.profileAvatar}>
-              <Text style={styles.profileAvatarText}>
+            <View style={styles.avatarBox}>
+              <Text style={styles.avatarText}>
                 {profile.name ? profile.name.charAt(0).toUpperCase() : '?'}
               </Text>
             </View>
-            <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>
-                {profile.name || tFunc('noNameSet')}
-              </Text>
-              <Text style={styles.profileSubtitle}>{tFunc('tapToEditProfile')}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.profileName}>{profile.name || tFunc('noNameSet')}</Text>
+              <Text style={styles.profileSub}>{tFunc('tapToEditProfile')}</Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="rgba(255,255,255,0.7)" />
-          </LinearGradient>
-        </Pressable>
+            <View style={styles.editBadge}>
+              <Ionicons name="pencil" size={14} color="#7C5CFC" />
+            </View>
+          </Pressable>
+        </LinearGradient>
 
-        {/* App Settings */}
-        <View>
-          <Text style={[styles.sectionLabel, { color: C.textMuted }]}>{tFunc('appSettings')}</Text>
-          <Card style={{ paddingHorizontal: Spacing.lg }}>
-            <ToggleRow
-              label={tFunc('language')}
-              options={[
-                { key: 'en', label: tFunc('english') },
-                { key: 'ar', label: tFunc('arabic') },
-              ]}
-              value={profile.language}
-              onChange={(v) => setLanguage(v as Language)}
-            />
-            <Separator C={C} />
-            <ToggleRow
-              label={tFunc('theme')}
-              options={[
-                { key: 'light', label: tFunc('light') },
-                { key: 'dark', label: tFunc('dark') },
-              ]}
-              value={profile.theme}
-              onChange={(v) => setTheme(v as Theme)}
-            />
-            <Separator C={C} />
-            <ToggleRow
-              label={tFunc('timeFormat')}
-              options={[
-                { key: '12h', label: tFunc('hour12') },
-                { key: '24h', label: tFunc('hour24') },
-              ]}
-              value={profile.time_format}
-              onChange={(v) => setTimeFormat(v as TimeFormat)}
-            />
-            <Separator C={C} />
-            <ToggleRow
-              label={tFunc('startOfWeek')}
-              options={[
-                { key: 'monday', label: tFunc('monday') },
-                { key: 'sunday', label: tFunc('sunday') },
-              ]}
-              value={profile.start_of_week}
-              onChange={(v) => setStartOfWeek(v as StartOfWeek)}
-            />
-          </Card>
-        </View>
+        <View style={{ paddingHorizontal: Spacing.lg, gap: Spacing.xl, marginTop: Spacing.xl }}>
+          {/* App settings */}
+          <SettingSection title={tFunc('appSettings')} icon="settings-outline" color="#7C5CFC" C={C}>
+            <ToggleRow label={tFunc('language')} options={[{ key: 'en', label: 'EN' }, { key: 'ar', label: 'عربي' }]} value={profile.language} onChange={(v) => setLanguage(v as Language)} />
+            <Divider C={C} />
+            <ToggleRow label={tFunc('theme')} options={[{ key: 'light', label: tFunc('light') }, { key: 'dark', label: tFunc('dark') }]} value={profile.theme} onChange={(v) => setTheme(v as Theme)} />
+            <Divider C={C} />
+            <ToggleRow label={tFunc('timeFormat')} options={[{ key: '12h', label: '12h' }, { key: '24h', label: '24h' }]} value={profile.time_format} onChange={(v) => setTimeFormat(v as TimeFormat)} />
+            <Divider C={C} />
+            <ToggleRow label={tFunc('startOfWeek')} options={[{ key: 'monday', label: 'Mon' }, { key: 'sunday', label: 'Sun' }]} value={profile.start_of_week} onChange={(v) => setStartOfWeek(v as StartOfWeek)} />
+          </SettingSection>
 
-        {/* Organization */}
-        <View>
-          <Text style={[styles.sectionLabel, { color: C.textMuted }]}>{tFunc('organization')}</Text>
-          <Card style={{ paddingHorizontal: Spacing.lg }}>
+          {/* Organization */}
+          <SettingSection title={tFunc('organization')} icon="folder-outline" color="#FF6B9D" C={C}>
             <Pressable style={styles.settingRow}>
-              <View style={[styles.settingIcon, { backgroundColor: C.tint + '20' }]}>
-                <Ionicons name="folder-outline" size={18} color={C.tint} />
+              <View style={[styles.settingIcon, { backgroundColor: '#FF6B9D' + '20' }]}>
+                <Ionicons name="folder-outline" size={18} color="#FF6B9D" />
               </View>
               <Text style={[styles.settingLabel, { color: C.text }]}>{tFunc('categories')}</Text>
               <View style={styles.settingRight}>
-                <Text style={[styles.settingValue, { color: C.textSecondary }]}>{categories.length}</Text>
+                <View style={[styles.countBadge, { backgroundColor: C.tint + '18' }]}>
+                  <Text style={[styles.countText, { color: C.tint }]}>{categories.length}</Text>
+                </View>
                 <Ionicons name="chevron-forward" size={16} color={C.textMuted} />
               </View>
             </Pressable>
-          </Card>
-        </View>
+          </SettingSection>
 
-        {/* About */}
-        <View>
-          <Text style={[styles.sectionLabel, { color: C.textMuted }]}>{tFunc('about')}</Text>
-          <Card style={{ padding: Spacing.xl, alignItems: 'center', gap: Spacing.sm }}>
+          {/* About */}
+          <View style={[styles.aboutCard, { backgroundColor: C.card, borderColor: C.border }]}>
             <LinearGradient
-              colors={['#6C8EF5', '#F0A4C8']}
+              colors={['#7C5CFC', '#FF6B9D']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.aboutLogo}
             >
-              <Ionicons name="calendar" size={28} color="#fff" />
+              <Ionicons name="calendar" size={30} color="#fff" />
             </LinearGradient>
-            <Text style={[styles.aboutAppName, { color: C.text }]}>My.Uoomi — يومي</Text>
+            <Text style={[styles.aboutName, { color: C.text }]}>My.Uoomi</Text>
+            <Text style={[styles.aboutAr, { color: C.tint }]}>يومي</Text>
             <Text style={[styles.aboutTagline, { color: C.textSecondary }]}>{tFunc('yourDayYourWay')}</Text>
-            <View style={[styles.versionBadge, { backgroundColor: C.borderLight }]}>
-              <Text style={[styles.versionText, { color: C.textMuted }]}>{tFunc('version')} 1.0.0</Text>
+            <View style={[styles.versionPill, { backgroundColor: C.tint + '15' }]}>
+              <Text style={[styles.versionText, { color: C.tint }]}>v1.0.0</Text>
             </View>
-          </Card>
+          </View>
         </View>
       </ScrollView>
 
-      {/* Profile Modal */}
+      {/* Profile modal */}
       <Modal visible={showProfileModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowProfileModal(false)}>
-        <View style={[styles.modalContainer, { backgroundColor: C.background }]}>
+        <View style={[styles.modal, { backgroundColor: C.background }]}>
           <View style={[styles.modalHeader, { borderBottomColor: C.border }]}>
             <Pressable onPress={() => setShowProfileModal(false)}>
               <Text style={[styles.modalCancel, { color: C.textSecondary }]}>{tFunc('cancel')}</Text>
             </Pressable>
             <Text style={[styles.modalTitle, { color: C.text }]}>{tFunc('profile')}</Text>
             <Pressable onPress={saveProfile}>
-              <LinearGradient colors={['#6C8EF5', '#F0A4C8']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.saveGradient}>
+              <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.saveGrad}>
                 <Text style={styles.saveText}>{tFunc('save')}</Text>
               </LinearGradient>
             </Pressable>
@@ -181,25 +145,11 @@ export default function SettingsScreen() {
           <View style={{ padding: Spacing.lg, gap: Spacing.lg }}>
             <View style={styles.formField}>
               <Text style={[styles.formLabel, { color: C.textSecondary }]}>{tFunc('name')}</Text>
-              <TextInput
-                value={profileName}
-                onChangeText={setProfileName}
-                placeholder="Your name"
-                placeholderTextColor={C.textMuted}
-                style={[styles.formInput, { backgroundColor: C.surface, borderColor: C.border, color: C.text }]}
-              />
+              <TextInput value={profileName} onChangeText={setProfileName} placeholder="Your name" placeholderTextColor={C.textMuted} style={[styles.formInput, { backgroundColor: C.surface, borderColor: C.border, color: C.text }]} />
             </View>
             <View style={styles.formField}>
               <Text style={[styles.formLabel, { color: C.textSecondary }]}>{tFunc('email')}</Text>
-              <TextInput
-                value={profileEmail}
-                onChangeText={setProfileEmail}
-                placeholder="your@email.com"
-                placeholderTextColor={C.textMuted}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                style={[styles.formInput, { backgroundColor: C.surface, borderColor: C.border, color: C.text }]}
-              />
+              <TextInput value={profileEmail} onChangeText={setProfileEmail} placeholder="your@email.com" placeholderTextColor={C.textMuted} keyboardType="email-address" autoCapitalize="none" style={[styles.formInput, { backgroundColor: C.surface, borderColor: C.border, color: C.text }]} />
             </View>
           </View>
         </View>
@@ -208,94 +158,91 @@ export default function SettingsScreen() {
   );
 }
 
-function Separator({ C }: { C: any }) {
+function SettingSection({ title, icon, color, C, children }: any) {
+  return (
+    <View>
+      <View style={styles.sectionLabel}>
+        <View style={[styles.sectionIcon, { backgroundColor: color + '18' }]}>
+          <Ionicons name={icon} size={14} color={color} />
+        </View>
+        <Text style={[styles.sectionTitle, { color: C.textSecondary }]}>{title}</Text>
+      </View>
+      <View style={[styles.card, { backgroundColor: C.card, borderColor: C.border }]}>
+        {children}
+      </View>
+    </View>
+  );
+}
+
+function Divider({ C }: { C: any }) {
   return <View style={{ height: 1, backgroundColor: C.borderLight }} />;
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: {
+  hero: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.md,
+    paddingBottom: Spacing.xxxl,
+    position: 'relative',
+    overflow: 'hidden',
   },
-  headerTitle: { ...Typography.heading2 },
-  sectionLabel: {
-    ...Typography.label,
-    fontFamily: 'Inter_600SemiBold',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-    marginBottom: Spacing.sm,
-    marginLeft: 4,
-  },
+  heroDecor1: { position: 'absolute', left: -40, top: -40, width: 160, height: 160, borderRadius: 80, backgroundColor: 'rgba(255,255,255,0.1)' },
+  heroDecor2: { position: 'absolute', right: -20, bottom: 10, width: 120, height: 120, borderRadius: 60, backgroundColor: 'rgba(255,255,255,0.07)' },
+  heroTitle: { fontSize: 28, fontFamily: 'Inter_700Bold', color: '#fff', marginBottom: Spacing.lg },
   profileCard: {
-    borderRadius: Radius.xl,
-    padding: Spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.md,
-    ...Shadow.md,
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    borderRadius: Radius.xl, padding: Spacing.md,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 10, elevation: 6,
   },
-  profileAvatar: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
+  avatarBox: {
+    width: 50, height: 50, borderRadius: 25,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: '#7C5CFC' + '20',
   },
-  profileAvatarText: { ...Typography.heading3, color: '#fff' },
-  profileInfo: { flex: 1 },
-  profileName: { ...Typography.subtitle, color: '#fff' },
-  profileSubtitle: { ...Typography.caption, color: 'rgba(255,255,255,0.75)', marginTop: 2 },
-  settingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.md,
-    paddingVertical: Spacing.md,
+  avatarText: { fontSize: 22, fontFamily: 'Inter_700Bold', color: '#7C5CFC' },
+  profileName: { fontSize: 16, fontFamily: 'Inter_700Bold', color: '#1A0A4A' },
+  profileSub: { fontSize: 12, fontFamily: 'Inter_400Regular', color: '#6B5B9B', marginTop: 2 },
+  editBadge: {
+    width: 30, height: 30, borderRadius: 15,
+    backgroundColor: '#7C5CFC' + '15',
+    alignItems: 'center', justifyContent: 'center',
   },
-  settingIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: Radius.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
+  sectionLabel: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: Spacing.sm, marginLeft: 4 },
+  sectionIcon: { width: 22, height: 22, borderRadius: 6, alignItems: 'center', justifyContent: 'center' },
+  sectionTitle: { fontSize: 12, fontFamily: 'Inter_700Bold', textTransform: 'uppercase', letterSpacing: 0.8 },
+  card: {
+    borderRadius: Radius.xl, borderWidth: 1,
+    paddingHorizontal: Spacing.lg, overflow: 'hidden',
+    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2,
   },
-  settingLabel: { ...Typography.bodyMedium, flex: 1 },
-  settingRight: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  settingValue: { ...Typography.caption },
-  aboutLogo: {
-    width: 72,
-    height: 72,
-    borderRadius: Radius.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.sm,
+  settingRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: Spacing.md, gap: Spacing.md },
+  settingIcon: { width: 36, height: 36, borderRadius: Radius.sm, alignItems: 'center', justifyContent: 'center' },
+  settingLabel: { flex: 1, fontSize: 15, fontFamily: 'Inter_500Medium' },
+  settingRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  countBadge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
+  countText: { fontSize: 12, fontFamily: 'Inter_700Bold' },
+  aboutCard: {
+    borderRadius: Radius.xl, borderWidth: 1,
+    padding: Spacing.xl, alignItems: 'center', gap: Spacing.sm,
+    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2,
   },
-  aboutAppName: { ...Typography.heading3 },
-  aboutTagline: { ...Typography.caption },
-  versionBadge: { borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 4, marginTop: 4 },
-  versionText: { ...Typography.label },
-  modalContainer: { flex: 1 },
+  aboutLogo: { width: 76, height: 76, borderRadius: Radius.xl, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
+  aboutName: { fontSize: 22, fontFamily: 'Inter_700Bold' },
+  aboutAr: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
+  aboutTagline: { fontSize: 13, fontFamily: 'Inter_400Regular' },
+  versionPill: { borderRadius: Radius.full, paddingHorizontal: 14, paddingVertical: 5, marginTop: 4 },
+  versionText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  modal: { flex: 1 },
   modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.xl,
-    paddingBottom: Spacing.md,
-    borderBottomWidth: 1,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg, paddingTop: Spacing.xl, paddingBottom: Spacing.md, borderBottomWidth: 1,
   },
-  modalCancel: { ...Typography.body },
-  modalTitle: { ...Typography.subtitle, fontFamily: 'Inter_600SemiBold' },
-  saveGradient: { borderRadius: Radius.full, paddingHorizontal: 16, paddingVertical: 6 },
-  saveText: { ...Typography.captionMedium, color: '#fff', fontFamily: 'Inter_600SemiBold' },
+  modalCancel: { fontSize: 15, fontFamily: 'Inter_400Regular' },
+  modalTitle: { fontSize: 17, fontFamily: 'Inter_700Bold' },
+  saveGrad: { borderRadius: Radius.full, paddingHorizontal: 16, paddingVertical: 6 },
+  saveText: { fontSize: 13, fontFamily: 'Inter_600SemiBold', color: '#fff' },
   formField: { gap: Spacing.xs },
-  formLabel: { ...Typography.caption, fontFamily: 'Inter_500Medium', textTransform: 'uppercase', letterSpacing: 0.5 },
-  formInput: {
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 12,
-    ...Typography.body,
-  },
+  formLabel: { fontSize: 11, fontFamily: 'Inter_600SemiBold', textTransform: 'uppercase', letterSpacing: 0.5 },
+  formInput: { borderRadius: Radius.md, borderWidth: 1, paddingHorizontal: Spacing.md, paddingVertical: 12, fontSize: 15, fontFamily: 'Inter_400Regular' },
 });

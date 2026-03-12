@@ -7,24 +7,22 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { format } from 'date-fns';
 import * as Haptics from 'expo-haptics';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
-import { Colors, Spacing, Typography, Radius, Shadow, GRADIENT_PRIMARY } from '../../src/theme';
+import { Colors, Spacing, Typography, Radius, Shadow } from '../../src/theme';
 import { t, getGreeting } from '../../src/utils/i18n';
 import { getTodayString, getWeekDays, getDayLabel, formatDateKey, formatTime, isOverdue } from '../../src/utils/date';
-import { AddButton } from '../../src/components/ui/AddButton';
-import { Card } from '../../src/components/ui/Card';
-import { GradientCard } from '../../src/components/ui/GradientCard';
-import { ProgressBar } from '../../src/components/ui/ProgressBar';
-import { HabitCard } from '../../src/components/ui/HabitCard';
 import { HabitForm } from '../../src/features/habits/HabitForm';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
-import { SectionHeader } from '../../src/components/ui/SectionHeader';
-import { Task } from '../../src/types';
+import { Task, Habit } from '../../src/types';
+import { ProgressBar } from '../../src/components/ui/ProgressBar';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function HomeScreen() {
   const scheme = useColorScheme() ?? 'light';
@@ -32,77 +30,82 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
-  const { tasks, toggleComplete, deleteTask, postponeTask, updateTask } = useTasksStore();
+  const { tasks, toggleComplete, deleteTask, postponeTask } = useTasksStore();
   const { goals } = useGoalsStore();
-  const { habits, completeHabit, deleteHabit, updateHabit, addHabit } = useHabitsStore();
+  const { habits, completeHabit, deleteHabit, updateHabit } = useHabitsStore();
   const { profile } = useSettingsStore();
   const { categories } = useCategoriesStore();
   const lang = profile.language;
 
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showHabitForm, setShowHabitForm] = useState(false);
-  const [editHabit, setEditHabit] = useState<any>(null);
+  const [editHabit, setEditHabit] = useState<Habit | null>(null);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [selectedDay, setSelectedDay] = useState(getTodayString());
 
   const weekDays = useMemo(() => getWeekDays(profile.start_of_week), [profile.start_of_week]);
   const today = getTodayString();
+  const tFunc = (key: string) => t(key, lang);
 
-  const todayTasks = useMemo(() =>
-    tasks.filter(t => t.due_date === today), [tasks, today]);
+  const todayTasks = useMemo(() => tasks.filter(t => t.due_date === today), [tasks, today]);
   const completedToday = todayTasks.filter(t => t.status === 'completed').length;
   const overdueCount = tasks.filter(t => t.status === 'overdue' || (t.due_date && isOverdue(t.due_date) && t.status === 'pending')).length;
   const thisWeek = tasks.filter(t => {
     if (!t.due_date) return false;
     const d = new Date(t.due_date);
-    const start = weekDays[0];
-    const end = weekDays[6];
-    return d >= start && d <= end;
+    return d >= weekDays[0] && d <= weekDays[6];
   }).length;
   const maxStreak = habits.reduce((max, h) => Math.max(max, h.streak_days), 0);
-
   const dayTasks = tasks.filter(t => t.due_date === selectedDay);
   const allDone = todayTasks.length > 0 && todayTasks.every(t => t.status === 'completed');
-
-  const topGoals = goals.slice(0, 3);
-
-  const handleEditHabit = (habit: any) => {
-    setEditHabit(habit);
-    setShowHabitForm(true);
-  };
-
-  const handleEditTask = (task: Task) => {
-    setEditTask(task);
-    setShowTaskForm(true);
-  };
-
-  const tFunc = (key: string) => t(key, lang);
-
+  const topGoals = goals.slice(0, 2);
   const topPad = isWeb ? 67 : insets.top;
-  const bottomPad = isWeb ? 34 : 0;
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingTop: topPad + Spacing.md, paddingBottom: bottomPad + 100 }}
+        contentContainerStyle={{ paddingBottom: (isWeb ? 34 : 0) + 100 }}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text style={[styles.greeting, { color: C.textSecondary }]}>{getGreeting(lang)}</Text>
-            <Text style={[styles.appName, { color: C.text }]}>My.Uoomi</Text>
+        {/* Hero Header */}
+        <LinearGradient
+          colors={['#7C5CFC', '#A855F7', '#FF6B9D']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.hero, { paddingTop: topPad + Spacing.md }]}
+        >
+          {/* Decorative circles */}
+          <View style={[styles.deco1]} />
+          <View style={[styles.deco2]} />
+
+          <View style={styles.heroContent}>
+            <View style={styles.heroLeft}>
+              <Text style={styles.greeting}>{getGreeting(lang)}</Text>
+              <Text style={styles.heroTitle}>My.Uoomi</Text>
+              <Text style={styles.heroSub}>يومي</Text>
+            </View>
+            <AddBtn onPress={() => setShowTaskForm(true)} />
           </View>
-          <AddButton onPress={() => setShowTaskForm(true)} size={44} />
-        </View>
+
+          {/* Stats bar inside hero */}
+          <View style={styles.statsRow}>
+            <HeroStat icon="checkmark-circle" value={completedToday} label={tFunc('completed')} color="#00E5A0" />
+            <View style={styles.statDivider} />
+            <HeroStat icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color="#FF6B9D" />
+            <View style={styles.statDivider} />
+            <HeroStat icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color="#FFF" />
+            <View style={styles.statDivider} />
+            <HeroStat icon="flame" value={maxStreak} label={tFunc('streak')} color="#FFB800" />
+          </View>
+        </LinearGradient>
 
         {/* Week Strip */}
-        <View style={styles.weekStrip}>
+        <View style={[styles.weekCard, { backgroundColor: C.card, ...Shadow.md }]}>
           {weekDays.map((day) => {
             const key = formatDateKey(day);
             const isSelected = key === selectedDay;
             const isToday = key === today;
-            const dayTasks = tasks.filter(t => t.due_date === key);
+            const hasDots = tasks.some(t => t.due_date === key);
 
             return (
               <Pressable
@@ -111,23 +114,27 @@ export default function HomeScreen() {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   setSelectedDay(key);
                 }}
-                style={[styles.dayPill, isSelected && styles.dayPillSelected, { overflow: 'hidden' }]}
+                style={[styles.dayPill, { overflow: 'hidden' }]}
               >
                 {isSelected && (
                   <LinearGradient
-                    colors={['#6C8EF5', '#F0A4C8']}
+                    colors={['#7C5CFC', '#FF6B9D']}
                     start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={StyleSheet.absoluteFill}
+                    end={{ x: 0, y: 1 }}
+                    style={[StyleSheet.absoluteFill, { borderRadius: Radius.lg }]}
                   />
                 )}
-                <Text style={[styles.dayLabel, { color: isSelected ? '#fff' : C.textMuted }]}>
+                <Text style={[styles.dayLbl, { color: isSelected ? 'rgba(255,255,255,0.8)' : C.textMuted }]}>
                   {getDayLabel(day, lang)}
                 </Text>
-                <Text style={[styles.dayNum, { color: isSelected ? '#fff' : isToday ? C.tint : C.text }]}>
+                <Text style={[
+                  styles.dayNum,
+                  { color: isSelected ? '#fff' : isToday ? C.tint : C.text },
+                  isToday && !isSelected && { fontFamily: 'Inter_700Bold' },
+                ]}>
                   {format(day, 'd')}
                 </Text>
-                {dayTasks.length > 0 && !isSelected && (
+                {hasDots && !isSelected && (
                   <View style={[styles.dot, { backgroundColor: C.tint }]} />
                 )}
               </Pressable>
@@ -135,38 +142,37 @@ export default function HomeScreen() {
           })}
         </View>
 
-        {/* Stats Cards */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statsRow}>
-          <StatCard icon="checkmark-circle" value={completedToday} label={tFunc('completed')} color={C.success} bg={C.success + '15'} />
-          <StatCard icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color={C.error} bg={C.error + '15'} />
-          <StatCard icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color={C.tint} bg={C.tint + '15'} />
-          <StatCard icon="flame" value={maxStreak} label={tFunc('streak')} color={C.streak} bg={C.streak + '15'} />
-        </ScrollView>
-
-        {/* All done state */}
-        {allDone ? (
+        {/* All done banner */}
+        {allDone && (
           <View style={{ paddingHorizontal: Spacing.lg, marginBottom: Spacing.md }}>
-            <GradientCard colors={['#6C8EF5', '#B08EF5', '#F0A4C8']} style={{ padding: Spacing.xl }}>
-              <View style={styles.allDoneRow}>
-                <Ionicons name="checkmark-done-circle" size={32} color="#fff" />
-                <View style={{ marginLeft: Spacing.md }}>
-                  <Text style={styles.allDoneTitle}>{tFunc('allDoneToday')}</Text>
-                  <Text style={styles.allDoneSubtitle}>{tFunc('allDoneSubtitle')}</Text>
-                </View>
+            <LinearGradient
+              colors={['#00C48C', '#00E5A0']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.allDoneBanner}
+            >
+              <Text style={styles.allDoneEmoji}>🎉</Text>
+              <View>
+                <Text style={styles.allDoneTitle}>{tFunc('allDoneToday')}</Text>
+                <Text style={styles.allDoneSub}>{tFunc('allDoneSubtitle')}</Text>
               </View>
-            </GradientCard>
+            </LinearGradient>
           </View>
-        ) : null}
+        )}
 
-        {/* Today Tasks Preview */}
-        {!allDone && dayTasks.length > 0 ? (
-          <>
-            <SectionHeader title={selectedDay === today ? tFunc('today2') : format(new Date(selectedDay), 'MMM d')} />
-            <View style={{ paddingHorizontal: Spacing.lg, gap: Spacing.sm }}>
-              {dayTasks.slice(0, 3).map((task) => {
+        {/* Today Tasks */}
+        {dayTasks.length > 0 && (
+          <Section
+            title={selectedDay === today ? tFunc('today2') : format(new Date(selectedDay + 'T00:00:00'), 'MMM d')}
+            C={C}
+            action={tFunc('addNew')}
+            onAction={() => setShowTaskForm(true)}
+          >
+            <View style={{ gap: Spacing.sm }}>
+              {dayTasks.slice(0, 4).map(task => {
                 const cat = categories.find(c => c.id === task.category_id);
                 return (
-                  <MiniTaskRow
+                  <FunTaskRow
                     key={task.id}
                     task={task}
                     catName={cat?.name}
@@ -178,219 +184,395 @@ export default function HomeScreen() {
                 );
               })}
             </View>
-          </>
-        ) : null}
+          </Section>
+        )}
 
         {/* Habits */}
-        <SectionHeader
+        <Section
           title={tFunc('habits')}
-          actionLabel={tFunc('addNew')}
+          C={C}
+          action={tFunc('addNew')}
           onAction={() => { setEditHabit(null); setShowHabitForm(true); }}
-        />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.habitsRow}>
-          {habits.map(h => (
-            <HabitCard
-              key={h.id}
-              habit={h}
-              onComplete={completeHabit}
-              onEdit={handleEditHabit}
-              onDelete={deleteHabit}
-              compact
-              t={tFunc}
-            />
-          ))}
-        </ScrollView>
+        >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -Spacing.lg }} contentContainerStyle={{ paddingHorizontal: Spacing.lg, gap: Spacing.md }}>
+            {habits.map(h => (
+              <FunHabitCard key={h.id} habit={h} onComplete={completeHabit} C={C} />
+            ))}
+          </ScrollView>
+        </Section>
 
-        {/* Goals Preview */}
-        <SectionHeader title={tFunc('goalsSection')} />
-        <View style={{ paddingHorizontal: Spacing.lg, gap: Spacing.sm }}>
-          {topGoals.map(g => {
-            const pct = g.target_value > 0 ? g.current_value / g.target_value : 0;
-            return (
-              <Card key={g.id} style={{ padding: Spacing.md }}>
-                <View style={styles.goalRow}>
-                  <View style={[styles.goalIcon, { backgroundColor: g.color + '20' }]}>
-                    <Ionicons name="star-outline" size={16} color={g.color} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[styles.goalTitle, { color: C.text }]}>{g.title}</Text>
-                    <ProgressBar progress={pct} color={g.color} height={5} />
-                  </View>
-                  <Text style={[styles.goalPct, { color: g.color }]}>{Math.round(pct * 100)}%</Text>
-                </View>
-              </Card>
-            );
-          })}
-        </View>
+        {/* Goals */}
+        {topGoals.length > 0 && (
+          <Section title={tFunc('goalsSection')} C={C}>
+            <View style={{ gap: Spacing.md }}>
+              {topGoals.map((g, i) => {
+                const pct = g.target_value > 0 ? g.current_value / g.target_value : 0;
+                const goalGradients: [string, string][] = [
+                  ['#7C5CFC', '#FF6B9D'],
+                  ['#FF6B35', '#FFB347'],
+                  ['#00C48C', '#00B8A9'],
+                  ['#FF4D6A', '#FF8E53'],
+                ];
+                const grad = goalGradients[i % goalGradients.length];
+                return (
+                  <FunGoalCard key={g.id} goal={g} progress={pct} gradient={grad} C={C} />
+                );
+              })}
+            </View>
+          </Section>
+        )}
 
-        {/* Weekly Chart */}
-        <SectionHeader title={tFunc('weeklyOverview')} />
-        <View style={{ paddingHorizontal: Spacing.lg }}>
-          <WeeklyChart weekDays={weekDays} tasks={tasks} C={C} />
-        </View>
+        {/* Weekly vibe chart */}
+        <Section title={tFunc('weeklyOverview')} C={C}>
+          <FunWeekChart weekDays={weekDays} tasks={tasks} C={C} />
+        </Section>
       </ScrollView>
 
-      <TaskForm
-        visible={showTaskForm}
-        onClose={() => { setShowTaskForm(false); setEditTask(null); }}
-        editTask={editTask}
-      />
-      <HabitForm
-        visible={showHabitForm}
-        onClose={() => { setShowHabitForm(false); setEditHabit(null); }}
-        editHabit={editHabit}
-      />
+      <TaskForm visible={showTaskForm} onClose={() => { setShowTaskForm(false); setEditTask(null); }} editTask={editTask} />
+      <HabitForm visible={showHabitForm} onClose={() => { setShowHabitForm(false); setEditHabit(null); }} editHabit={editHabit} />
     </View>
   );
 }
 
-function StatCard({ icon, value, label, color, bg }: { icon: any; value: number; label: string; color: string; bg: string }) {
-  const scheme = useColorScheme() ?? 'light';
-  const C = Colors[scheme];
+function AddBtn({ onPress }: { onPress: () => void }) {
+  const scale = useSharedValue(1);
+  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
   return (
-    <View style={[statStyles.card, { backgroundColor: C.card, borderColor: C.border }]}>
-      <View style={[statStyles.iconBox, { backgroundColor: bg }]}>
-        <Ionicons name={icon} size={20} color={color} />
+    <AnimatedPressable
+      style={animStyle}
+      onPressIn={() => { scale.value = withSpring(0.88); }}
+      onPressOut={() => { scale.value = withSpring(1); }}
+      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onPress(); }}
+    >
+      <View style={styles.addBtn}>
+        <Ionicons name="add" size={28} color="#7C5CFC" />
       </View>
-      <Text style={[statStyles.value, { color: C.text }]}>{value}</Text>
-      <Text style={[statStyles.label, { color: C.textSecondary }]}>{label}</Text>
+    </AnimatedPressable>
+  );
+}
+
+function HeroStat({ icon, value, label, color }: { icon: any; value: number; label: string; color: string }) {
+  return (
+    <View style={styles.heroStat}>
+      <Ionicons name={icon} size={18} color={color} />
+      <Text style={styles.heroStatNum}>{value}</Text>
+      <Text style={styles.heroStatLabel}>{label}</Text>
     </View>
   );
 }
 
-const statStyles = StyleSheet.create({
-  card: {
-    width: 100,
-    borderRadius: Radius.xl,
-    borderWidth: 1,
-    padding: Spacing.md,
-    alignItems: 'center',
-    gap: 4,
-    ...Shadow.sm,
-  },
-  iconBox: { width: 40, height: 40, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
-  value: { ...Typography.heading2, fontSize: 24 },
-  label: { ...Typography.label, textAlign: 'center' },
-});
-
-function MiniTaskRow({ task, catName, catColor, timeStr, onToggle, C }: any) {
-  const isCompleted = task.status === 'completed';
-  const accentColor = task.priority === 'high' ? C.priorityHigh : task.priority === 'medium' ? C.priorityMedium : C.priorityLow;
+function Section({ title, children, C, action, onAction }: any) {
   return (
-    <View style={[miniStyles.row, { backgroundColor: C.card, borderColor: C.border }]}>
-      <View style={[miniStyles.accent, { backgroundColor: accentColor }]} />
-      <Pressable onPress={onToggle} style={miniStyles.check}>
-        <View style={[miniStyles.circle, { borderColor: isCompleted ? C.success : C.border, backgroundColor: isCompleted ? C.success : 'transparent' }]}>
-          {isCompleted && <Ionicons name="checkmark" size={10} color="#fff" />}
+    <View style={styles.section}>
+      <View style={styles.sectionHeader}>
+        <Text style={[styles.sectionTitle, { color: C.text }]}>{title}</Text>
+        {action && (
+          <Pressable onPress={onAction} style={[styles.sectionAction, { backgroundColor: C.tint + '15' }]}>
+            <Ionicons name="add" size={14} color={C.tint} />
+            <Text style={[styles.sectionActionText, { color: C.tint }]}>{action}</Text>
+          </Pressable>
+        )}
+      </View>
+      {children}
+    </View>
+  );
+}
+
+function FunTaskRow({ task, catName, catColor, timeStr, onToggle, C }: any) {
+  const isCompleted = task.status === 'completed';
+  const scale = useSharedValue(1);
+  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+
+  const priorityGrad: Record<string, [string, string]> = {
+    high: ['#FF4D6A', '#FF8E53'],
+    medium: ['#FFB800', '#FFD700'],
+    low: ['#00C48C', '#00E5A0'],
+  };
+  const grad = priorityGrad[task.priority];
+
+  return (
+    <AnimatedPressable
+      style={[animStyle, styles.taskRow, { backgroundColor: C.card, borderColor: C.border }]}
+      onPressIn={() => { scale.value = withSpring(0.98); }}
+      onPressOut={() => { scale.value = withSpring(1); }}
+    >
+      <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.taskAccent} />
+      <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onToggle(); }} style={styles.taskCheck}>
+        <View style={[styles.checkCircle, { borderColor: isCompleted ? C.success : C.border, backgroundColor: isCompleted ? C.success : 'transparent' }]}>
+          {isCompleted && <Ionicons name="checkmark" size={11} color="#fff" />}
         </View>
       </Pressable>
-      <Text style={[miniStyles.title, { color: isCompleted ? C.textMuted : C.text }, isCompleted && { textDecorationLine: 'line-through' as const }]} numberOfLines={1}>
-        {task.title}
-      </Text>
-      {timeStr ? <Text style={[miniStyles.time, { color: C.textMuted }]}>{timeStr}</Text> : null}
-      {catName ? (
-        <View style={[miniStyles.catBadge, { backgroundColor: (catColor ?? C.tint) + '20' }]}>
-          <Text style={[miniStyles.catText, { color: catColor ?? C.tint }]}>{catName}</Text>
+      <View style={styles.taskInfo}>
+        <Text style={[styles.taskTitle, { color: isCompleted ? C.textMuted : C.text }, isCompleted && { textDecorationLine: 'line-through' as const }]} numberOfLines={1}>
+          {task.title}
+        </Text>
+        <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center', marginTop: 2 }}>
+          {catName && (
+            <View style={[styles.catPill, { backgroundColor: (catColor ?? C.tint) + '20' }]}>
+              <Text style={[styles.catPillText, { color: catColor ?? C.tint }]}>{catName}</Text>
+            </View>
+          )}
+          {timeStr && <Text style={[styles.taskTime, { color: C.textMuted }]}>{timeStr}</Text>}
         </View>
-      ) : null}
+      </View>
+    </AnimatedPressable>
+  );
+}
+
+function FunHabitCard({ habit, onComplete, C }: { habit: any; onComplete: (id: string) => void; C: any }) {
+  const { format: fmtDate } = require('date-fns');
+  const today = fmtDate(new Date(), 'yyyy-MM-dd');
+  const lastDate = habit.last_completed_at ? fmtDate(new Date(habit.last_completed_at), 'yyyy-MM-dd') : null;
+  const isDone = lastDate === today;
+
+  const ICONS: Record<string, any> = {
+    leaf: 'leaf', water: 'water', journal: 'journal', 'phone-portrait': 'phone-portrait',
+    fitness: 'fitness', moon: 'moon', book: 'book', nutrition: 'nutrition', walk: 'walk', bed: 'bed',
+  };
+
+  return (
+    <Pressable
+      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onComplete(habit.id); }}
+      style={[styles.habitCard, isDone && { opacity: 0.85 }]}
+    >
+      <LinearGradient
+        colors={isDone ? [habit.color, habit.color + 'CC'] : [C.card, C.card]}
+        style={styles.habitCardInner}
+      >
+        <View style={[styles.habitIconBox, { backgroundColor: isDone ? 'rgba(255,255,255,0.25)' : habit.color + '20' }]}>
+          <Ionicons name={(ICONS[habit.icon] ?? 'star') + '-outline'} size={20} color={isDone ? '#fff' : habit.color} />
+        </View>
+        <Text style={[styles.habitName, { color: isDone ? '#fff' : C.text }]} numberOfLines={2}>{habit.name}</Text>
+        <View style={styles.streakRow}>
+          <Ionicons name="flame" size={13} color={isDone ? '#FFD700' : C.streak} />
+          <Text style={[styles.streakNum, { color: isDone ? '#FFD700' : C.streak }]}>{habit.streak_days}</Text>
+        </View>
+        {isDone && (
+          <View style={styles.doneCheck}>
+            <Ionicons name="checkmark-circle" size={18} color="#FFD700" />
+          </View>
+        )}
+      </LinearGradient>
+    </Pressable>
+  );
+}
+
+function FunGoalCard({ goal, progress, gradient, C }: any) {
+  const pct = Math.round(progress * 100);
+  const ICONS: Record<string, any> = {
+    book: 'book', fitness: 'fitness', card: 'card', language: 'language',
+    star: 'star', heart: 'heart', trophy: 'trophy', rocket: 'rocket', leaf: 'leaf', water: 'water',
+  };
+
+  return (
+    <View style={[styles.goalCard, { backgroundColor: C.card, borderColor: C.border }]}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md }}>
+        <LinearGradient colors={gradient} style={styles.goalIcon}>
+          <Ionicons name={(ICONS[goal.icon] ?? 'star') + '-outline'} size={18} color="#fff" />
+        </LinearGradient>
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.goalTitle, { color: C.text }]} numberOfLines={1}>{goal.title}</Text>
+          <Text style={[styles.goalSub, { color: C.textSecondary }]}>
+            {goal.current_value} / {goal.target_value}
+          </Text>
+        </View>
+        <Text style={[styles.goalPct, { color: gradient[0] }]}>{pct}%</Text>
+      </View>
+      <View style={[styles.goalTrack, { backgroundColor: C.borderLight }]}>
+        <LinearGradient
+          colors={gradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[styles.goalFill, { width: `${Math.min(pct, 100)}%` }]}
+        />
+      </View>
     </View>
   );
 }
 
-const miniStyles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    overflow: 'hidden',
-    gap: Spacing.sm,
-    paddingRight: Spacing.sm,
-    ...Shadow.sm,
-  },
-  accent: { width: 3, alignSelf: 'stretch' },
-  check: { padding: 10 },
-  circle: { width: 18, height: 18, borderRadius: 9, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
-  title: { ...Typography.bodyMedium, flex: 1, fontFamily: 'Inter_500Medium' },
-  time: { ...Typography.label },
-  catBadge: { borderRadius: Radius.full, paddingHorizontal: 6, paddingVertical: 2 },
-  catText: { ...Typography.label, fontFamily: 'Inter_600SemiBold', fontSize: 10 },
-});
-
-function WeeklyChart({ weekDays, tasks, C }: any) {
-  const maxTasks = 8;
+function FunWeekChart({ weekDays, tasks, C }: any) {
+  const maxVal = 8;
   const data = weekDays.map((d: Date) => {
     const key = formatDateKey(d);
     const count = tasks.filter((t: any) => t.due_date === key).length;
     const done = tasks.filter((t: any) => t.due_date === key && t.status === 'completed').length;
-    return { day: getDayLabel(d, 'en'), count, done };
+    return { day: getDayLabel(d, 'en').slice(0, 1), count, done };
   });
 
+  const barColors: [string, string][] = [
+    ['#7C5CFC', '#A855F7'],
+    ['#FF6B9D', '#FF9DB3'],
+    ['#00C48C', '#00E5A0'],
+    ['#FFB800', '#FFD700'],
+    ['#FF6B35', '#FFB347'],
+    ['#7C5CFC', '#A855F7'],
+    ['#FF6B9D', '#FF9DB3'],
+  ];
+
   return (
-    <Card style={{ padding: Spacing.lg }}>
-      <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: Spacing.sm, height: 70 }}>
+    <View style={[styles.chartCard, { backgroundColor: C.card, borderColor: C.border }]}>
+      <View style={styles.chartBars}>
         {data.map((d: any, i: number) => {
-          const h = d.count > 0 ? Math.max((d.count / maxTasks) * 60, 6) : 4;
-          const doneH = d.done > 0 ? Math.max((d.done / maxTasks) * 60, 4) : 0;
+          const h = d.count > 0 ? Math.max((d.count / maxVal) * 64, 8) : 6;
+          const doneH = d.done > 0 ? Math.max((d.done / maxVal) * 64, 6) : 0;
           return (
-            <View key={i} style={{ flex: 1, alignItems: 'center', gap: 4 }}>
-              <View style={{ width: '100%', height: 60, justifyContent: 'flex-end', borderRadius: 4, overflow: 'hidden' }}>
-                <View style={{ height: h, backgroundColor: C.tint + '30', borderRadius: 4 }}>
+            <View key={i} style={styles.chartCol}>
+              <View style={styles.chartBar}>
+                <View style={[styles.chartBarBg, { height: h, backgroundColor: C.borderLight, borderRadius: 8 }]}>
                   {doneH > 0 && (
-                    <LinearGradient colors={['#6C8EF5', '#F0A4C8']} style={{ height: doneH, borderRadius: 4 }} />
+                    <LinearGradient
+                      colors={barColors[i]}
+                      style={[styles.chartBarFill, { height: doneH }]}
+                    />
                   )}
                 </View>
               </View>
-              <Text style={{ ...Typography.label, color: C.textMuted }}>{d.day.slice(0, 1)}</Text>
+              <Text style={[styles.chartDay, { color: C.textMuted }]}>{d.day}</Text>
             </View>
           );
         })}
       </View>
-    </Card>
+      <View style={styles.chartLegend}>
+        <View style={styles.legendItem}>
+          <LinearGradient colors={['#7C5CFC', '#A855F7']} style={styles.legendDot} />
+          <Text style={[styles.legendText, { color: C.textSecondary }]}>Done</Text>
+        </View>
+        <View style={styles.legendItem}>
+          <View style={[styles.legendDot, { backgroundColor: C.borderLight }]} />
+          <Text style={[styles.legendText, { color: C.textSecondary }]}>Total</Text>
+        </View>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: {
+
+  // Hero
+  hero: {
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.xxxl,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  deco1: {
+    position: 'absolute', right: -40, top: -40,
+    width: 180, height: 180, borderRadius: 90,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  deco2: {
+    position: 'absolute', right: 40, top: 60,
+    width: 100, height: 100, borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+  },
+  heroContent: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: Spacing.xl },
+  heroLeft: { gap: 2 },
+  greeting: { fontSize: 14, color: 'rgba(255,255,255,0.75)', fontFamily: 'Inter_500Medium' },
+  heroTitle: { fontSize: 32, color: '#fff', fontFamily: 'Inter_700Bold', lineHeight: 36 },
+  heroSub: { fontSize: 16, color: 'rgba(255,255,255,0.65)', fontFamily: 'Inter_500Medium' },
+  addBtn: {
+    width: 48, height: 48, borderRadius: 24,
+    backgroundColor: '#fff',
+    alignItems: 'center', justifyContent: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 6,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderRadius: Radius.xl,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+  },
+  heroStat: { flex: 1, alignItems: 'center', gap: 2 },
+  statDivider: { width: 1, backgroundColor: 'rgba(255,255,255,0.2)', marginVertical: 4 },
+  heroStatNum: { fontSize: 20, fontFamily: 'Inter_700Bold', color: '#fff' },
+  heroStatLabel: { fontSize: 10, fontFamily: 'Inter_500Medium', color: 'rgba(255,255,255,0.7)', textAlign: 'center' },
+
+  // Week strip
+  weekCard: {
+    flexDirection: 'row',
+    marginHorizontal: Spacing.lg,
+    borderRadius: Radius.xl,
+    padding: Spacing.sm,
+    marginTop: -Spacing.xl,
+    marginBottom: Spacing.lg,
+  },
+  dayPill: { flex: 1, borderRadius: Radius.lg, alignItems: 'center', paddingVertical: 8, gap: 2 },
+  dayLbl: { fontSize: 10, fontFamily: 'Inter_600SemiBold' },
+  dayNum: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
+  dot: { width: 4, height: 4, borderRadius: 2, marginTop: 1 },
+
+  // All done
+  allDoneBanner: {
+    borderRadius: Radius.xl,
+    padding: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
+    gap: Spacing.md,
     marginBottom: Spacing.md,
   },
-  headerLeft: { gap: 2 },
-  greeting: { ...Typography.caption, fontFamily: 'Inter_500Medium' },
-  appName: { ...Typography.heading2 },
-  weekStrip: {
-    flexDirection: 'row',
-    paddingHorizontal: Spacing.lg,
-    gap: Spacing.sm,
-    marginBottom: Spacing.lg,
+  allDoneEmoji: { fontSize: 28 },
+  allDoneTitle: { fontSize: 15, fontFamily: 'Inter_700Bold', color: '#fff' },
+  allDoneSub: { fontSize: 12, color: 'rgba(255,255,255,0.85)', fontFamily: 'Inter_400Regular', marginTop: 2 },
+
+  // Section
+  section: { paddingHorizontal: Spacing.lg, marginBottom: Spacing.xl },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.md },
+  sectionTitle: { fontSize: 20, fontFamily: 'Inter_700Bold' },
+  sectionAction: { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 5 },
+  sectionActionText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+
+  // Task row
+  taskRow: {
+    flexDirection: 'row', alignItems: 'center',
+    borderRadius: Radius.lg, borderWidth: 1,
+    overflow: 'hidden',
+    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2,
   },
-  dayPill: {
-    flex: 1,
-    borderRadius: Radius.lg,
-    alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    gap: 2,
+  taskAccent: { width: 4, alignSelf: 'stretch' },
+  taskCheck: { padding: Spacing.md, paddingRight: Spacing.sm },
+  checkCircle: { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
+  taskInfo: { flex: 1, paddingVertical: Spacing.md, paddingRight: Spacing.sm },
+  taskTitle: { fontSize: 15, fontFamily: 'Inter_500Medium' },
+  taskTime: { fontSize: 12, fontFamily: 'Inter_400Regular' },
+  catPill: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
+  catPillText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
+
+  // Habit card
+  habitCard: { width: 130, borderRadius: Radius.xl, overflow: 'hidden', shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 10, elevation: 4 },
+  habitCardInner: { padding: Spacing.md, gap: Spacing.sm, minHeight: 110, position: 'relative' },
+  habitIconBox: { width: 36, height: 36, borderRadius: Radius.sm, alignItems: 'center', justifyContent: 'center' },
+  habitName: { fontSize: 13, fontFamily: 'Inter_600SemiBold', lineHeight: 17 },
+  streakRow: { flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 'auto' as any },
+  streakNum: { fontSize: 13, fontFamily: 'Inter_700Bold' },
+  doneCheck: { position: 'absolute', top: 8, right: 8 },
+
+  // Goal card
+  goalCard: {
+    borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg,
+    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 10, elevation: 3,
   },
-  dayPillSelected: { ...Shadow.sm },
-  dayLabel: { ...Typography.label },
-  dayNum: { ...Typography.caption, fontFamily: 'Inter_600SemiBold' },
-  dot: { width: 4, height: 4, borderRadius: 2 },
-  statsRow: {
-    paddingHorizontal: Spacing.lg,
-    gap: Spacing.sm,
-    marginBottom: Spacing.lg,
-    flexDirection: 'row',
+  goalIcon: { width: 40, height: 40, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
+  goalTitle: { fontSize: 15, fontFamily: 'Inter_700Bold' },
+  goalSub: { fontSize: 12, fontFamily: 'Inter_400Regular', marginTop: 1 },
+  goalPct: { fontSize: 18, fontFamily: 'Inter_700Bold' },
+  goalTrack: { height: 8, borderRadius: 4, overflow: 'hidden' },
+  goalFill: { height: '100%', borderRadius: 4 },
+
+  // Chart
+  chartCard: {
+    borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg,
+    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 10, elevation: 2,
   },
-  allDoneRow: { flexDirection: 'row', alignItems: 'center' },
-  allDoneTitle: { ...Typography.subtitle, color: '#fff' },
-  allDoneSubtitle: { ...Typography.caption, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
-  habitsRow: { paddingHorizontal: Spacing.lg, gap: Spacing.sm, marginBottom: Spacing.md, flexDirection: 'row' },
-  goalRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
-  goalIcon: { width: 32, height: 32, borderRadius: Radius.sm, alignItems: 'center', justifyContent: 'center' },
-  goalTitle: { ...Typography.captionMedium, marginBottom: 4, fontFamily: 'Inter_500Medium' },
-  goalPct: { ...Typography.captionMedium, fontFamily: 'Inter_700Bold', minWidth: 36, textAlign: 'right' },
+  chartBars: { flexDirection: 'row', alignItems: 'flex-end', height: 80, gap: 6, marginBottom: Spacing.sm },
+  chartCol: { flex: 1, alignItems: 'center', gap: 4 },
+  chartBar: { width: '100%', height: 70, justifyContent: 'flex-end' },
+  chartBarBg: { width: '100%', justifyContent: 'flex-end', overflow: 'hidden' },
+  chartBarFill: { width: '100%', borderRadius: 8 },
+  chartDay: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
+  chartLegend: { flexDirection: 'row', gap: Spacing.md, marginTop: 4 },
+  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  legendDot: { width: 10, height: 10, borderRadius: 5 },
+  legendText: { fontSize: 11, fontFamily: 'Inter_500Medium' },
 });
