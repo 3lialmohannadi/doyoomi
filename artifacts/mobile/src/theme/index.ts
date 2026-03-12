@@ -1,0 +1,126 @@
+export const Colors = {
+  light: {
+    background: '#F7F7FB',
+    surface: '#FFFFFF',
+    surfaceElevated: '#FFFFFF',
+    border: '#E8E8F0',
+    borderLight: '#F0F0F8',
+    text: '#1A1A2E',
+    textSecondary: '#6B6B8A',
+    textMuted: '#A0A0B8',
+    tint: '#6C8EF5',
+    tintSecondary: '#F0A4C8',
+    tabBar: 'rgba(255,255,255,0.92)',
+    card: '#FFFFFF',
+    shadow: 'rgba(100, 100, 180, 0.08)',
+    shadowMedium: 'rgba(100, 100, 180, 0.14)',
+    success: '#4CAF82',
+    warning: '#F5A623',
+    error: '#E05E5E',
+    overdue: '#E05E5E',
+    priorityHigh: '#E05E5E',
+    priorityMedium: '#F5A623',
+    priorityLow: '#4CAF82',
+    streak: '#FF8A50',
+    habit: '#9B6EF5',
+    goal: '#6C8EF5',
+    gradientStart: '#6C8EF5',
+    gradientEnd: '#F0A4C8',
+    gradientMid: '#8B7FF5',
+    pillActive: '#6C8EF5',
+    pillInactive: '#F0F0F8',
+    segmentBg: '#ECECF4',
+  },
+  dark: {
+    background: '#0E0E1A',
+    surface: '#1A1A2E',
+    surfaceElevated: '#22223A',
+    border: '#2E2E4A',
+    borderLight: '#252540',
+    text: '#F0F0FF',
+    textSecondary: '#9898BB',
+    textMuted: '#5A5A80',
+    tint: '#7B9FFF',
+    tintSecondary: '#F0A4C8',
+    tabBar: 'rgba(14,14,26,0.92)',
+    card: '#1A1A2E',
+    shadow: 'rgba(0,0,0,0.3)',
+    shadowMedium: 'rgba(0,0,0,0.5)',
+    success: '#5CC292',
+    warning: '#F5A623',
+    error: '#E57373',
+    overdue: '#E57373',
+    priorityHigh: '#E57373',
+    priorityMedium: '#F5A623',
+    priorityLow: '#5CC292',
+    streak: '#FF9A60',
+    habit: '#A87EFF',
+    goal: '#7B9FFF',
+    gradientStart: '#7B9FFF',
+    gradientEnd: '#F0A4C8',
+    gradientMid: '#9B8FFF',
+    pillActive: '#7B9FFF',
+    pillInactive: '#252540',
+    segmentBg: '#1E1E38',
+  },
+};
+
+export const Spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  xxl: 24,
+  xxxl: 32,
+};
+
+export const Radius = {
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  xxl: 24,
+  full: 999,
+};
+
+export const Shadow = {
+  sm: {
+    shadowColor: '#6464B4',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  md: {
+    shadowColor: '#6464B4',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  lg: {
+    shadowColor: '#6464B4',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.14,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+};
+
+export const Typography = {
+  heading1: { fontSize: 28, fontFamily: 'Inter_700Bold', lineHeight: 36 },
+  heading2: { fontSize: 22, fontFamily: 'Inter_700Bold', lineHeight: 28 },
+  heading3: { fontSize: 18, fontFamily: 'Inter_600SemiBold', lineHeight: 24 },
+  subtitle: { fontSize: 16, fontFamily: 'Inter_600SemiBold', lineHeight: 22 },
+  body: { fontSize: 15, fontFamily: 'Inter_400Regular', lineHeight: 22 },
+  bodyMedium: { fontSize: 15, fontFamily: 'Inter_500Medium', lineHeight: 22 },
+  caption: { fontSize: 13, fontFamily: 'Inter_400Regular', lineHeight: 18 },
+  captionMedium: { fontSize: 13, fontFamily: 'Inter_500Medium', lineHeight: 18 },
+  label: { fontSize: 11, fontFamily: 'Inter_600SemiBold', lineHeight: 14 },
+};
+
+export const GRADIENT_PRIMARY: [string, string] = ['#6C8EF5', '#F0A4C8'];
+export const GRADIENT_PURPLE: [string, string] = ['#9B6EF5', '#6C8EF5'];
+export const GRADIENT_WARM: [string, string] = ['#F0A4C8', '#FFD4A8'];
+export const GRADIENT_GREEN: [string, string] = ['#4CAF82', '#88D4A8'];

@@ -1,0 +1,353 @@
+Build a production-ready mobile app using React Native with Expo and TypeScript.
+
+App name:
+My.Uoomi — يومي
+
+Goal:
+Create a clean, premium, modern calendar + to-do + goals + habits app inspired by the attached reference screens. The app must feel smooth, minimal, elegant, and mobile-first, with soft shadows, rounded cards, a light luxury pastel style, and gradient-highlighted active states similar to the provided UI.
+
+Tech stack requirements:
+- Expo
+- React Native
+- TypeScript
+- Expo Router for navigation
+- Zustand for state management
+- Supabase for backend/auth/database
+- React Hook Form for forms
+- Zod for validation
+- date-fns for date handling
+- Expo Notifications for reminders
+- react-native-calendars for calendar UI where needed
+- react-native-safe-area-context
+- react-native-reanimated
+- react-native-gesture-handler
+
+Core app sections:
+- Home
+- Calendar
+- Tasks
+- Goals
+- Settings
+
+Main navigation:
+Use a bottom tab bar with 5 tabs:
+1. Home
+2. Calendar
+3. Tasks
+4. Goals
+5. Settings
+
+Design requirements:
+- Match the attached reference screens closely in layout, spacing, hierarchy, softness, and interaction style
+- Use rounded cards, soft shadows, light background, and subtle borders
+- Active tab and active segmented controls should use a soft blue-pink gradient pill
+- App should support Light mode and Dark mode
+- App should support English and Arabic
+- The layout must remain elegant in both LTR and RTL
+- Use a reusable design system with tokens for colors, spacing, radius, typography, and shadows
+- Use a modern premium mobile UI, not generic template styling
+
+Branding:
+- App name displayed as: My.Uoomi — يومي
+- Tagline: Your Day, Your Way.
+
+Pages and features:
+
+1) Home Screen
+Build a dashboard screen similar to the reference:
+- Greeting header such as “Good morning”
+- Compact date strip / mini week calendar near top
+- Floating add button at top area
+- Stats cards:
+  - Completed
+  - Overdue
+  - This Week
+  - Streak
+- “All done for today” state card
+- Habits section with compact habit cards
+- Goals preview section with progress bars
+- Weekly overview card/chart
+- Bottom tab bar floating style
+
+2) Calendar Screen
+Build a Calendar screen with:
+- Header title “Calendar”
+- Add button in top-right
+- Segmented control for:
+  - Month
+  - Week
+  - Day
+- Month view similar to reference UI
+- Dates should show indicators/dots for tasks
+- Selected date should be highlighted in gradient style
+- Below the calendar, show tasks for selected day
+- Empty state when no tasks exist for selected day
+- Respect user settings for:
+  - start of week (Monday/Sunday)
+  - time format (12h/24h)
+
+3) Tasks Screen
+Build a task management screen with:
+- Header title “Tasks”
+- Add button top-right
+- Search bar
+- Horizontal filter chips:
+  - All
+  - Today
+  - Done
+  - Overdue
+  - High
+  - Postponed
+- Tasks grouped by date
+- Section headers for date groups
+- Task cards must support:
+  - title
+  - description
+  - priority tag (low / medium / high)
+  - status tag (pending / completed / overdue / postponed)
+  - category tag
+  - optional time
+  - left colored accent border
+  - checkbox/toggle complete
+  - overflow menu
+- Completed tasks should appear visually muted with strikethrough if appropriate
+- Support “No date” group for tasks without assigned dates
+
+4) Goals Screen
+Build a goals list screen similar to reference:
+- Header title “Goals”
+- Add button top-right
+- Show active goals count
+- Goal cards containing:
+  - icon
+  - title
+  - frequency/type tag (monthly / yearly)
+  - description
+  - progress label
+  - progress percentage
+  - progress bar
+  - overflow menu
+  - themed accent color per goal
+- Allow creating and editing goals
+- Track progress using current value and target value
+
+5) Settings Screen
+Build a settings screen similar to the reference:
+- Header title “Settings”
+- Profile card at top
+  - if no user name, show “No name set”
+  - subtitle “Tap to edit profile”
+- App settings section:
+  - Language toggle (EN / عربي)
+  - Theme toggle (Light / Dark)
+  - Time format toggle (12-hour / 24-hour)
+  - Start of week toggle (Monday / Sunday)
+- Organization section:
+  - Categories row
+- About section:
+  - app logo placeholder
+  - app name
+  - tagline
+  - version number
+- Use clean grouped cards and segmented toggles matching reference style
+
+Data models:
+Implement proper TypeScript types and Supabase-ready models for:
+
+UserProfile
+- id
+- name
+- email
+- phone_number (optional)
+- gender (optional)
+- language
+- theme
+- time_format
+- start_of_week
+- created_at
+- updated_at
+
+Category
+- id
+- user_id
+- name
+- color
+- icon
+- created_at
+
+Task
+- id
+- user_id
+- title
+- description
+- due_date
+- due_time
+- priority (low, medium, high)
+- status (pending, completed, overdue, postponed, cancelled)
+- category_id
+- reminder_at
+- is_all_day
+- completed_at
+- created_at
+- updated_at
+
+Goal
+- id
+- user_id
+- title
+- description
+- type (monthly, yearly)
+- target_value
+- current_value
+- icon
+- color
+- created_at
+- updated_at
+
+Habit
+- id
+- user_id
+- name
+- icon
+- color
+- streak_days
+- last_completed_at
+- created_at
+- updated_at
+
+Functional requirements:
+- Add, edit, delete tasks
+- Mark task complete/incomplete
+- Postpone tasks
+- Filter and search tasks
+- Group tasks by date
+- Show overdue tasks clearly
+- Add, edit, delete goals
+- Update goal progress
+- Add, edit, delete habits
+- Update habit streaks
+- Persist user settings
+- Schedule local notifications for task reminders
+- Prepare architecture for Supabase auth and sync
+- Include realistic seed/mock data so the UI looks complete immediately
+- App must work well before backend is fully connected
+
+Architecture requirements:
+- Use scalable folder structure
+- Reusable components only, avoid duplicated UI
+- Create design system in a dedicated theme folder
+- Create Zustand stores for:
+  - auth
+  - settings
+  - tasks
+  - goals
+  - habits
+  - categories
+- Separate UI components, hooks, services, types, constants, and utilities
+- Keep code clean, typed, modular, and maintainable
+
+Recommended folder structure:
+src/
+  components/
+  features/
+    home/
+    calendar/
+    tasks/
+    goals/
+    settings/
+    habits/
+  store/
+  services/
+  hooks/
+  utils/
+  types/
+  theme/
+  constants/
+app/
+  (tabs)/
+    index.tsx
+    calendar.tsx
+    tasks.tsx
+    goals.tsx
+    settings.tsx
+
+Implementation details:
+- Build with Expo Router tabs
+- Floating bottom tab bar matching reference look
+- Add button should be reusable and visible on major pages
+- Use Pressable and animated transitions where appropriate
+- Use safe areas correctly
+- Support iPhone layouts properly
+- Use mock data and local state first, but structure the app so Supabase integration can be connected cleanly after
+- Do not overcomplicate the first version
+- Focus on high-quality UI and correct architecture
+
+Forms to implement:
+- Add/Edit Task form
+- Add/Edit Goal form
+- Add/Edit Habit form
+- Edit Profile form
+Use React Hook Form + Zod.
+
+Validation examples:
+Task:
+- title required
+- priority required
+- status required
+- date optional
+- time optional
+
+Goal:
+- title required
+- type required
+- target_value must be positive
+
+Habit:
+- name required
+
+Settings behavior:
+- Theme switch updates app immediately
+- Language switch updates labels and layout direction where applicable
+- Time format affects displayed task times
+- Start of week affects calendar rendering
+
+Deliverables:
+1. Full Expo React Native codebase
+2. Clean folder structure
+3. Reusable components
+4. Mock data and stores
+5. Theme system
+6. Working bottom tab navigation
+7. Screens implemented to closely match the attached UI
+8. Ready for future Supabase integration
+9. Clear README with setup steps
+10. Comments only where genuinely useful
+
+Important quality bar:
+- Do not generate a rough prototype
+- Do not generate a generic admin-style interface
+- Do not use poor spacing or inconsistent styling
+- Do not leave screens half-finished
+- Make the app feel polished and close to App Store quality
+- Prioritize visual accuracy to the provided screens
+- Ensure code is organized as if this app will grow into a real product
+
+Execution plan:
+Step 1: Set up project structure and theme system
+Step 2: Build shared UI components
+Step 3: Implement bottom tabs and screen layouts
+Step 4: Add Zustand stores and mock data
+Step 5: Implement forms and interactions
+Step 6: Add local notifications scaffolding
+Step 7: Prepare Supabase service layer
+Step 8: Final polish and cleanup
+
+After generating the code:
+- Review the whole codebase for consistency
+- Fix broken imports
+- Fix type errors
+- Fix navigation issues
+- Remove dead code
+- Ensure the app runs successfully in Expo
+
+If something is unclear, make the best product-minded decision based on the attached reference screens and continue building without asking unnecessary questions.
