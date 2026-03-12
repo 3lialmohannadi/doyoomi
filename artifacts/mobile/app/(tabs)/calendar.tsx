@@ -10,10 +10,10 @@ import * as Haptics from 'expo-haptics';
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Colors, Spacing, Typography, Radius, Shadow } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
-import { formatTime, formatDateKey, getTodayString, isOverdue as checkOverdue } from '../../src/utils/date';
+import { formatTime, formatDateKey, getTodayString } from '../../src/utils/date';
 import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
 import { AddButton } from '../../src/components/ui/AddButton';
 import { TaskCard } from '../../src/components/ui/TaskCard';
@@ -29,7 +29,7 @@ export default function CalendarScreen() {
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
-  const { tasks, toggleComplete, deleteTask, postponeTask, updateTask } = useTasksStore();
+  const { tasks, toggleComplete, deleteTask, postponeTask } = useTasksStore();
   const { categories } = useCategoriesStore();
   const { profile } = useSettingsStore();
   const lang = profile.language;

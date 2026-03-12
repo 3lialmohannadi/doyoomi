@@ -14,14 +14,13 @@ import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
-import { Colors, Spacing, Typography, Radius, Shadow } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, getGreeting } from '../../src/utils/i18n';
 import { getTodayString, getWeekDays, getDayLabel, formatDateKey, formatTime, isOverdue } from '../../src/utils/date';
 import { HabitForm } from '../../src/features/habits/HabitForm';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
 import { Task, Habit } from '../../src/types';
-import { ProgressBar } from '../../src/components/ui/ProgressBar';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -32,7 +31,7 @@ export default function HomeScreen() {
 
   const { tasks, toggleComplete, deleteTask, postponeTask } = useTasksStore();
   const { goals } = useGoalsStore();
-  const { habits, completeHabit, deleteHabit, updateHabit } = useHabitsStore();
+  const { habits, completeHabit } = useHabitsStore();
   const { profile } = useSettingsStore();
   const { categories } = useCategoriesStore();
   const lang = profile.language;

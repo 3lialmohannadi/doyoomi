@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
-import { Colors, Spacing, Typography, Radius, Shadow } from '../../src/theme';
+import { Spacing, Radius } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { ToggleRow } from '../../src/components/ui/ToggleRow';

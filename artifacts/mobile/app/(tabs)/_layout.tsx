@@ -7,7 +7,6 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { useSettingsStore } from "../../src/store/settingsStore";
-import { Colors } from "../../src/theme";
 import { useAppTheme } from "../../src/hooks/useAppTheme";
 import { t } from "../../src/utils/i18n";
 

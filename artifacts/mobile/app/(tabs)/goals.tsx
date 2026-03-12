@@ -9,7 +9,7 @@ import * as Haptics from 'expo-haptics';
 
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Colors, Spacing, Radius, Shadow } from '../../src/theme';
+import { Spacing, Radius } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -35,7 +35,7 @@ export default function GoalsScreen() {
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
-  const { goals, deleteGoal, incrementProgress, updateGoal } = useGoalsStore();
+  const { goals, deleteGoal, incrementProgress } = useGoalsStore();
   const { profile } = useSettingsStore();
   const lang = profile.language;
 
