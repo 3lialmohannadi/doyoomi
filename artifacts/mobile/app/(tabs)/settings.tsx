@@ -109,13 +109,21 @@ export default function SettingsScreen() {
         <View style={{ paddingHorizontal: Spacing.lg, gap: Spacing.xl, marginTop: Spacing.xl }}>
           {/* App settings */}
           <SettingSection title={tFunc('appSettings')} icon="settings-outline" color="#7C5CFC" C={C}>
-            <ToggleRow label={tFunc('language')} options={[{ key: 'en', label: 'EN' }, { key: 'ar', label: 'عربي' }]} value={profile.language} onChange={(v) => setLanguage(v as Language)} />
+            <SettingItemRow icon="language-outline" iconColor="#7C5CFC" C={C}>
+              <ToggleRow label={tFunc('language')} options={[{ key: 'en', label: 'EN' }, { key: 'ar', label: 'عربي' }]} value={profile.language} onChange={(v) => setLanguage(v as Language)} />
+            </SettingItemRow>
             <Divider C={C} />
-            <ToggleRow label={tFunc('theme')} options={[{ key: 'light', label: tFunc('light') }, { key: 'dark', label: tFunc('dark') }]} value={profile.theme} onChange={(v) => setTheme(v as Theme)} />
+            <SettingItemRow icon="moon-outline" iconColor="#A855F7" C={C}>
+              <ToggleRow label={tFunc('theme')} options={[{ key: 'light', label: tFunc('light') }, { key: 'dark', label: tFunc('dark') }]} value={profile.theme} onChange={(v) => setTheme(v as Theme)} />
+            </SettingItemRow>
             <Divider C={C} />
-            <ToggleRow label={tFunc('timeFormat')} options={[{ key: '12h', label: '12h' }, { key: '24h', label: '24h' }]} value={profile.time_format} onChange={(v) => setTimeFormat(v as TimeFormat)} />
+            <SettingItemRow icon="time-outline" iconColor="#FF6B9D" C={C}>
+              <ToggleRow label={tFunc('timeFormat')} options={[{ key: '12h', label: '12h' }, { key: '24h', label: '24h' }]} value={profile.time_format} onChange={(v) => setTimeFormat(v as TimeFormat)} />
+            </SettingItemRow>
             <Divider C={C} />
-            <ToggleRow label={tFunc('startOfWeek')} options={[{ key: 'monday', label: 'Mon' }, { key: 'sunday', label: 'Sun' }]} value={profile.start_of_week} onChange={(v) => setStartOfWeek(v as StartOfWeek)} />
+            <SettingItemRow icon="calendar-outline" iconColor="#00C48C" C={C}>
+              <ToggleRow label={tFunc('startOfWeek')} options={[{ key: 'monday', label: 'Mon' }, { key: 'sunday', label: 'Sun' }]} value={profile.start_of_week} onChange={(v) => setStartOfWeek(v as StartOfWeek)} />
+            </SettingItemRow>
           </SettingSection>
 
           {/* Organization */}
@@ -310,6 +318,19 @@ function ProfileField({ label, icon, C, children }: any) {
   );
 }
 
+function SettingItemRow({ icon, iconColor, C, children }: any) {
+  return (
+    <View style={styles.settingItemRow}>
+      <View style={[styles.settingItemIcon, { backgroundColor: iconColor + '15' }]}>
+        <Ionicons name={icon} size={18} color={iconColor} />
+      </View>
+      <View style={styles.settingItemContent}>
+        {children}
+      </View>
+    </View>
+  );
+}
+
 function SettingSection({ title, icon, color, C, children }: any) {
   return (
     <View>
@@ -476,14 +497,23 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(124,92,252,0.15)',
     alignItems: 'center', justifyContent: 'center',
   },
-  sectionLabel: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: Spacing.sm, marginLeft: 4 },
-  sectionIcon: { width: 24, height: 24, borderRadius: 7, alignItems: 'center', justifyContent: 'center' },
+  sectionLabel: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: Spacing.sm, marginLeft: 4 },
+  sectionIcon: { width: 26, height: 26, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   sectionTitle: { fontSize: 13, fontFamily: 'Inter_700Bold', textTransform: 'uppercase', letterSpacing: 0.8 },
   card: {
     borderRadius: Radius.xl, borderWidth: 1,
-    paddingHorizontal: Spacing.lg, overflow: 'hidden',
+    paddingHorizontal: Spacing.md, overflow: 'hidden',
     ...Shadow.sm,
   },
+  settingItemRow: {
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
+    paddingVertical: 2,
+  },
+  settingItemIcon: {
+    width: 36, height: 36, borderRadius: Radius.sm,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  settingItemContent: { flex: 1 },
   settingRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: Spacing.md, gap: Spacing.md },
   settingIcon: { width: 36, height: 36, borderRadius: Radius.sm, alignItems: 'center', justifyContent: 'center' },
   settingLabel: { flex: 1, fontSize: 16, fontFamily: 'Inter_500Medium' },
