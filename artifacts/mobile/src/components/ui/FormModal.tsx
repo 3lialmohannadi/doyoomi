@@ -31,11 +31,11 @@ export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save',
       >
         <View style={[styles.container, { backgroundColor: C.background }]}>
           <View style={[styles.header, { borderBottomColor: C.border }]}>
-            <Pressable onPress={onClose} style={styles.headerBtn}>
+            <Pressable onPress={onClose} style={styles.headerBtn} accessibilityRole="button" accessibilityLabel={cancelLabel}>
               <Text style={[styles.headerBtnText, { color: C.textSecondary }]}>{cancelLabel}</Text>
             </Pressable>
-            <Text style={[styles.headerTitle, { color: C.text }]}>{title}</Text>
-            <Pressable onPress={onSave} style={styles.headerBtn}>
+            <Text style={[styles.headerTitle, { color: C.text }]} accessibilityRole="header">{title}</Text>
+            <Pressable onPress={onSave} style={styles.headerBtn} accessibilityRole="button" accessibilityLabel={saveLabel}>
               <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.saveGradient}>
                 <Text style={styles.saveText}>{saveLabel}</Text>
               </LinearGradient>
@@ -77,9 +77,10 @@ interface InputProps {
   placeholder?: string;
   multiline?: boolean;
   keyboardType?: any;
+  error?: boolean;
 }
 
-export function FormInput({ value, onChangeText, placeholder, multiline, keyboardType }: InputProps) {
+export function FormInput({ value, onChangeText, placeholder, multiline, keyboardType, error }: InputProps) {
   const { C } = useAppTheme();
 
   return (
@@ -90,11 +91,12 @@ export function FormInput({ value, onChangeText, placeholder, multiline, keyboar
       placeholderTextColor={C.textMuted}
       multiline={multiline}
       keyboardType={keyboardType}
+      accessibilityLabel={placeholder}
       style={[
         styles.input,
         {
           backgroundColor: C.inputBg,
-          borderColor: C.border,
+          borderColor: error ? C.error : C.border,
           color: C.text,
           minHeight: multiline ? 80 : 44,
           textAlignVertical: multiline ? 'top' : 'center',

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Habit } from '../types';
-import { format } from 'date-fns';
+import { format, differenceInCalendarDays, parseISO } from 'date-fns';
 
 const MOCK_HABITS: Habit[] = [
   {
@@ -84,16 +84,29 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
   },
 
   completeHabit: (id) => {
-    const today = format(new Date(), 'yyyy-MM-dd');
+    const now = new Date();
+    const todayStr = format(now, 'yyyy-MM-dd');
     const habit = get().habits.find(h => h.id === id);
     if (!habit) return;
     const lastDate = habit.last_completed_at
       ? format(new Date(habit.last_completed_at), 'yyyy-MM-dd')
       : null;
-    if (lastDate === today) return;
+    if (lastDate === todayStr) return; // Already completed today
+
+    // Reset streak if more than 1 day has passed since last completion
+    let newStreak = 1;
+    if (lastDate) {
+      const daysSinceLast = differenceInCalendarDays(now, parseISO(lastDate));
+      if (daysSinceLast === 1) {
+        // Consecutive day — increment streak
+        newStreak = habit.streak_days + 1;
+      }
+      // else: gap > 1 day — streak resets to 1
+    }
+
     get().updateHabit(id, {
-      streak_days: habit.streak_days + 1,
-      last_completed_at: new Date().toISOString(),
+      streak_days: newStreak,
+      last_completed_at: now.toISOString(),
     });
   },
 

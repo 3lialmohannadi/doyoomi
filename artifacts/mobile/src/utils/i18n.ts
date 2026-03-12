@@ -116,6 +116,18 @@ const translations: Record<Language, Record<string, string>> = {
     taskCount: 'tasks',
     noTasksThisDay: 'No tasks this day',
 
+    // Form elements
+    icon: 'Icon',
+    color: 'Color',
+    none: 'None',
+    taskTitlePlaceholder: 'Task title',
+    descriptionPlaceholder: 'Add a description...',
+    datePlaceholder: 'YYYY-MM-DD',
+    timePlaceholder: 'HH:MM',
+    goalTitlePlaceholder: 'Goal title',
+    goalDescPlaceholder: 'Description...',
+    habitNamePlaceholder: 'Habit name',
+
     // Form
     save: 'Save',
     cancel: 'Cancel',
@@ -246,6 +258,18 @@ const translations: Record<Language, Record<string, string>> = {
     // متفرقات
     taskCount: 'مهام',
     noTasksThisDay: 'لا توجد مهام لهذا اليوم',
+
+    // عناصر النماذج
+    icon: 'الأيقونة',
+    color: 'اللون',
+    none: 'بدون',
+    taskTitlePlaceholder: 'عنوان المهمة',
+    descriptionPlaceholder: 'أضف وصفاً...',
+    datePlaceholder: 'YYYY-MM-DD',
+    timePlaceholder: 'HH:MM',
+    goalTitlePlaceholder: 'عنوان الهدف',
+    goalDescPlaceholder: 'الوصف...',
+    habitNamePlaceholder: 'اسم العادة',
 
     // النماذج
     save: 'حفظ',

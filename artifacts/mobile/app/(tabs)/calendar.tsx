@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { format, getDaysInMonth, startOfMonth, getDay, addMonths, subMonths, addWeeks, subWeeks, startOfWeek, eachDayOfInterval, endOfWeek } from 'date-fns';
+import { format, parseISO, getDaysInMonth, startOfMonth, getDay, addMonths, subMonths, addWeeks, subWeeks, startOfWeek, eachDayOfInterval, endOfWeek } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 
 import { useTasksStore } from '../../src/store/tasksStore';
@@ -144,7 +144,7 @@ export default function CalendarScreen() {
         {(view === 'month' || view === 'week') && (
           <View style={styles.tasksSection}>
             <Text style={[styles.selectedDateLabel, { color: C.textSecondary }]}>
-              {selectedDate === getTodayString() ? tFunc('today2') : format(new Date(selectedDate), 'MMMM d, yyyy')}
+              {selectedDate === getTodayString() ? tFunc('today2') : format(parseISO(selectedDate), 'MMMM d, yyyy')}
             </Text>
             {selectedTasks.length === 0 ? (
               <EmptyState icon="calendar-outline" title={tFunc('noTasksToday')} />
@@ -216,7 +216,7 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
           const isToday = dayKey === today;
           const isSelected = dayKey === selectedDate;
           const hasTasks = taskDates.has(dayKey);
-          const day = new Date(dayKey).getDate();
+          const day = parseISO(dayKey).getDate();
 
           return (
             <Pressable key={dayKey} onPress={() => onSelectDate(dayKey)} style={[styles.calCell, { overflow: 'hidden' }]}>

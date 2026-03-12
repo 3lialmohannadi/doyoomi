@@ -26,8 +26,10 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
   const [priority, setPriority] = useState<Priority>('medium');
   const [status, setStatus] = useState<TaskStatus>('pending');
   const [categoryId, setCategoryId] = useState('');
+  const [titleError, setTitleError] = useState(false);
 
   useEffect(() => {
+    setTitleError(false);
     if (editTask) {
       setTitle(editTask.title);
       setDescription(editTask.description ?? '');
@@ -48,7 +50,10 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
   }, [editTask, visible]);
 
   const handleSave = () => {
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      setTitleError(true);
+      return;
+    }
     const taskData = {
       title: title.trim(),
       description: description.trim() || undefined,
@@ -74,14 +79,8 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
     { key: 'high', label: t('high', lang) },
   ];
 
-  const statusOptions = [
-    { key: 'pending', label: t('pending', lang) },
-    { key: 'completed', label: t('done', lang) },
-    { key: 'postponed', label: t('postponed', lang) },
-  ];
-
   const catOptions = [
-    { key: '', label: 'None' },
+    { key: '', label: t('none', lang) },
     ...categories.map(c => ({ key: c.id, label: c.name })),
   ];
 
@@ -97,8 +96,9 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
       <FormField label={t('title', lang)}>
         <FormInput
           value={title}
-          onChangeText={setTitle}
-          placeholder="Task title"
+          onChangeText={(v) => { setTitle(v); if (v.trim()) setTitleError(false); }}
+          placeholder={t('taskTitlePlaceholder', lang)}
+          error={titleError}
         />
       </FormField>
 
@@ -106,7 +106,7 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
         <FormInput
           value={description}
           onChangeText={setDescription}
-          placeholder="Add a description..."
+          placeholder={t('descriptionPlaceholder', lang)}
           multiline
         />
       </FormField>
@@ -115,7 +115,7 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
         <FormInput
           value={dueDate}
           onChangeText={setDueDate}
-          placeholder="YYYY-MM-DD"
+          placeholder={t('datePlaceholder', lang)}
         />
       </FormField>
 
@@ -123,7 +123,7 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
         <FormInput
           value={dueTime}
           onChangeText={setDueTime}
-          placeholder="HH:MM"
+          placeholder={t('timePlaceholder', lang)}
         />
       </FormField>
 

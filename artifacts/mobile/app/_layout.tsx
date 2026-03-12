@@ -15,6 +15,10 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useSettingsStore } from "@/src/store/settingsStore";
+import { useTasksStore } from "@/src/store/tasksStore";
+import { useHabitsStore } from "@/src/store/habitsStore";
+import { useGoalsStore } from "@/src/store/goalsStore";
+import { useCategoriesStore } from "@/src/store/categoriesStore";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,9 +26,17 @@ const queryClient = new QueryClient();
 
 function RootLayoutNav() {
   const { loadSettings } = useSettingsStore();
+  const { loadTasks } = useTasksStore();
+  const { loadHabits } = useHabitsStore();
+  const { loadGoals } = useGoalsStore();
+  const { loadCategories } = useCategoriesStore();
 
   useEffect(() => {
     loadSettings();
+    loadTasks();
+    loadHabits();
+    loadGoals();
+    loadCategories();
   }, []);
 
   return (

@@ -59,14 +59,14 @@ export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
       cancelLabel={t('cancel', lang)}
     >
       <FormField label={t('habitName', lang)}>
-        <FormInput value={name} onChangeText={setName} placeholder="Habit name" />
+        <FormInput value={name} onChangeText={setName} placeholder={t('habitNamePlaceholder', lang)} />
       </FormField>
 
-      <FormField label="Icon">
+      <FormField label={t('icon', lang)}>
         <FormSelect options={iconOptions} value={icon} onChange={setIcon} />
       </FormField>
 
-      <FormField label="Color">
+      <FormField label={t('color', lang)}>
         <FormSelect options={colorOptions} value={color} onChange={setColor} />
       </FormField>
     </FormModal>

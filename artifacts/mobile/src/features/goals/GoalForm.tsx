@@ -84,11 +84,11 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
       cancelLabel={t('cancel', lang)}
     >
       <FormField label={t('title', lang)}>
-        <FormInput value={title} onChangeText={setTitle} placeholder="Goal title" />
+        <FormInput value={title} onChangeText={setTitle} placeholder={t('goalTitlePlaceholder', lang)} />
       </FormField>
 
       <FormField label={t('description', lang)}>
-        <FormInput value={description} onChangeText={setDescription} placeholder="Description..." multiline />
+        <FormInput value={description} onChangeText={setDescription} placeholder={t('goalDescPlaceholder', lang)} multiline />
       </FormField>
 
       <FormField label={t('goalType', lang)}>
@@ -103,11 +103,11 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
         <FormInput value={currentValue} onChangeText={setCurrentValue} keyboardType="numeric" />
       </FormField>
 
-      <FormField label="Icon">
+      <FormField label={t('icon', lang)}>
         <FormSelect options={iconOptions} value={icon} onChange={setIcon} />
       </FormField>
 
-      <FormField label="Color">
+      <FormField label={t('color', lang)}>
         <FormSelect options={colorOptions} value={color} onChange={setColor} />
       </FormField>
     </FormModal>
