@@ -1,21 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   ScrollView, StyleSheet, Text, View, Pressable, Modal, TextInput,
-  Platform,
+  Platform, KeyboardAvoidingView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
+import {
+  format, parseISO, startOfMonth, getDaysInMonth, getDay,
+  addMonths, subMonths,
+} from 'date-fns';
 
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
-import { Spacing, Radius } from '../../src/theme';
+import { Spacing, Radius, Shadow, Typography } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { ToggleRow } from '../../src/components/ui/ToggleRow';
 import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
 import { Language, Theme, TimeFormat, StartOfWeek } from '../../src/types';
+import { getTodayString, formatDateKey } from '../../src/utils/date';
 
 export default function SettingsScreen() {
   const { C } = useAppTheme();
@@ -30,15 +35,38 @@ export default function SettingsScreen() {
   const [showCategories, setShowCategories] = useState(false);
   const [profileName, setProfileName] = useState(profile.name);
   const [profileEmail, setProfileEmail] = useState(profile.email);
+  const [profilePhone, setProfilePhone] = useState(profile.phone_number ?? '');
+  const [profileDob, setProfileDob] = useState(profile.date_of_birth ?? '');
+  const [showDobPicker, setShowDobPicker] = useState(false);
 
   const tFunc = (key: string) => t(key, lang);
   const topPad = isWeb ? 67 : insets.top;
   const bottomPad = isWeb ? 34 : 0;
 
+  const openProfileModal = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setProfileName(profile.name);
+    setProfileEmail(profile.email);
+    setProfilePhone(profile.phone_number ?? '');
+    setProfileDob(profile.date_of_birth ?? '');
+    setShowDobPicker(false);
+    setShowProfileModal(true);
+  };
+
   const saveProfile = () => {
-    setProfile({ name: profileName, email: profileEmail });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setProfile({
+      name: profileName,
+      email: profileEmail,
+      phone_number: profilePhone || undefined,
+      date_of_birth: profileDob || undefined,
+    });
     setShowProfileModal(false);
   };
+
+  const displayDob = profileDob
+    ? format(parseISO(profileDob), 'MMM d, yyyy')
+    : '';
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
@@ -58,15 +86,7 @@ export default function SettingsScreen() {
           <Text style={styles.heroTitle}>{tFunc('settings')}</Text>
 
           {/* Profile card inside hero */}
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              setProfileName(profile.name);
-              setProfileEmail(profile.email);
-              setShowProfileModal(true);
-            }}
-            style={styles.profileCard}
-          >
+          <Pressable onPress={openProfileModal} style={styles.profileCard}>
             <View style={styles.avatarBox}>
               <Text style={styles.avatarText}>
                 {profile.name ? profile.name.charAt(0).toUpperCase() : '?'}
@@ -74,7 +94,11 @@ export default function SettingsScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.profileName}>{profile.name || tFunc('noNameSet')}</Text>
-              <Text style={styles.profileSub}>{tFunc('tapToEditProfile')}</Text>
+              {profile.email ? (
+                <Text style={styles.profileEmail}>{profile.email}</Text>
+              ) : (
+                <Text style={styles.profileSub}>{tFunc('tapToEditProfile')}</Text>
+              )}
             </View>
             <View style={styles.editBadge}>
               <Ionicons name="pencil" size={14} color="#7C5CFC" />
@@ -134,30 +158,154 @@ export default function SettingsScreen() {
 
       {/* Profile modal */}
       <Modal visible={showProfileModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowProfileModal(false)}>
-        <View style={[styles.modal, { backgroundColor: C.background }]}>
-          <View style={[styles.modalHeader, { borderBottomColor: C.border }]}>
-            <Pressable onPress={() => setShowProfileModal(false)}>
-              <Text style={[styles.modalCancel, { color: C.textSecondary }]}>{tFunc('cancel')}</Text>
-            </Pressable>
-            <Text style={[styles.modalTitle, { color: C.text }]}>{tFunc('profile')}</Text>
-            <Pressable onPress={saveProfile}>
-              <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.saveGrad}>
-                <Text style={styles.saveText}>{tFunc('save')}</Text>
-              </LinearGradient>
-            </Pressable>
-          </View>
-          <View style={{ padding: Spacing.lg, gap: Spacing.lg }}>
-            <View style={styles.formField}>
-              <Text style={[styles.formLabel, { color: C.textSecondary }]}>{tFunc('name')}</Text>
-              <TextInput value={profileName} onChangeText={setProfileName} placeholder="Your name" placeholderTextColor={C.textMuted} style={[styles.formInput, { backgroundColor: C.surface, borderColor: C.border, color: C.text }]} />
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <View style={[styles.modal, { backgroundColor: C.background }]}>
+            {/* Modal header */}
+            <View style={[styles.modalHeader, { borderBottomColor: C.border }]}>
+              <Pressable onPress={() => setShowProfileModal(false)} style={styles.modalCloseBtn}>
+                <Ionicons name="close" size={22} color={C.textSecondary} />
+              </Pressable>
+              <Text style={[styles.modalTitle, { color: C.text }]}>{tFunc('profile')}</Text>
+              <View style={{ width: 36 }} />
             </View>
-            <View style={styles.formField}>
-              <Text style={[styles.formLabel, { color: C.textSecondary }]}>{tFunc('email')}</Text>
-              <TextInput value={profileEmail} onChangeText={setProfileEmail} placeholder="your@email.com" placeholderTextColor={C.textMuted} keyboardType="email-address" autoCapitalize="none" style={[styles.formInput, { backgroundColor: C.surface, borderColor: C.border, color: C.text }]} />
+
+            <ScrollView
+              style={{ flex: 1 }}
+              contentContainerStyle={styles.modalContent}
+              keyboardShouldPersistTaps="handled"
+            >
+              {/* Avatar section */}
+              <View style={styles.modalAvatarSection}>
+                <LinearGradient
+                  colors={['#7C5CFC', '#FF6B9D']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.modalAvatar}
+                >
+                  <Text style={styles.modalAvatarText}>
+                    {profileName ? profileName.charAt(0).toUpperCase() : '?'}
+                  </Text>
+                </LinearGradient>
+              </View>
+
+              {/* Personal info section */}
+              <View style={styles.formSection}>
+                <View style={styles.formSectionHeader}>
+                  <View style={[styles.formSectionIcon, { backgroundColor: '#7C5CFC20' }]}>
+                    <Ionicons name="person-outline" size={14} color="#7C5CFC" />
+                  </View>
+                  <Text style={[styles.formSectionTitle, { color: C.textSecondary }]}>{tFunc('personalInfo')}</Text>
+                </View>
+                <View style={[styles.formCard, { backgroundColor: C.card, borderColor: C.border }]}>
+                  <ProfileField label={tFunc('name')} icon="person-outline" C={C}>
+                    <TextInput
+                      value={profileName}
+                      onChangeText={setProfileName}
+                      placeholder={tFunc('namePlaceholder')}
+                      placeholderTextColor={C.textMuted}
+                      style={[styles.formInputInline, { color: C.text }]}
+                    />
+                  </ProfileField>
+
+                  <View style={{ height: 1, backgroundColor: C.borderLight }} />
+
+                  <ProfileField label={tFunc('dateOfBirth')} icon="calendar-outline" C={C}>
+                    <Pressable
+                      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowDobPicker(!showDobPicker); }}
+                      style={styles.dobPressable}
+                    >
+                      <Text style={[styles.formInputInline, { color: displayDob ? C.text : C.textMuted }]}>
+                        {displayDob || tFunc('dobPlaceholder')}
+                      </Text>
+                      <Ionicons name="chevron-down" size={16} color={C.textMuted} />
+                    </Pressable>
+                  </ProfileField>
+
+                  {showDobPicker && (
+                    <View style={{ paddingHorizontal: Spacing.lg, paddingBottom: Spacing.md }}>
+                      <DobCalendar
+                        selected={profileDob}
+                        onSelect={(d: string) => { setProfileDob(d); setShowDobPicker(false); }}
+                        C={C}
+                      />
+                    </View>
+                  )}
+                </View>
+              </View>
+
+              {/* Contact info section */}
+              <View style={styles.formSection}>
+                <View style={styles.formSectionHeader}>
+                  <View style={[styles.formSectionIcon, { backgroundColor: '#FF6B9D20' }]}>
+                    <Ionicons name="mail-outline" size={14} color="#FF6B9D" />
+                  </View>
+                  <Text style={[styles.formSectionTitle, { color: C.textSecondary }]}>{tFunc('contactInfo')}</Text>
+                </View>
+                <View style={[styles.formCard, { backgroundColor: C.card, borderColor: C.border }]}>
+                  <ProfileField label={tFunc('email')} icon="mail-outline" C={C}>
+                    <TextInput
+                      value={profileEmail}
+                      onChangeText={setProfileEmail}
+                      placeholder={tFunc('emailPlaceholder')}
+                      placeholderTextColor={C.textMuted}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      style={[styles.formInputInline, { color: C.text }]}
+                    />
+                  </ProfileField>
+
+                  <View style={{ height: 1, backgroundColor: C.borderLight }} />
+
+                  <ProfileField label={tFunc('phone')} icon="call-outline" C={C}>
+                    <TextInput
+                      value={profilePhone}
+                      onChangeText={setProfilePhone}
+                      placeholder={tFunc('phonePlaceholder')}
+                      placeholderTextColor={C.textMuted}
+                      keyboardType="phone-pad"
+                      style={[styles.formInputInline, { color: C.text }]}
+                    />
+                  </ProfileField>
+                </View>
+              </View>
+            </ScrollView>
+
+            {/* Bottom save button */}
+            <View style={[styles.modalBottomBar, { paddingBottom: insets.bottom + Spacing.md, borderTopColor: C.border }]}>
+              <Pressable
+                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowProfileModal(false); }}
+                style={[styles.modalCancelBtn, { backgroundColor: C.surface, borderColor: C.border }]}
+              >
+                <Text style={[styles.modalCancelText, { color: C.textSecondary }]}>{tFunc('cancel')}</Text>
+              </Pressable>
+              <Pressable onPress={saveProfile} style={styles.modalSaveBtn}>
+                <LinearGradient
+                  colors={['#7C5CFC', '#FF6B9D']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
+                />
+                <Ionicons name="checkmark" size={20} color="#fff" />
+                <Text style={styles.modalSaveText}>{tFunc('save')}</Text>
+              </Pressable>
             </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
+    </View>
+  );
+}
+
+function ProfileField({ label, icon, C, children }: any) {
+  return (
+    <View style={styles.profileField}>
+      <View style={styles.profileFieldLeft}>
+        <Ionicons name={icon} size={18} color={C.tint} />
+        <Text style={[styles.profileFieldLabel, { color: C.textSecondary }]}>{label}</Text>
+      </View>
+      <View style={styles.profileFieldValue}>
+        {children}
+      </View>
     </View>
   );
 }
@@ -182,6 +330,121 @@ function Divider({ C }: { C: any }) {
   return <View style={{ height: 1, backgroundColor: C.borderLight }} />;
 }
 
+// Mini calendar for date of birth
+function DobCalendar({ selected, onSelect, C }: any) {
+  const [viewDate, setViewDate] = useState(() => {
+    if (selected) return parseISO(selected);
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 20);
+    return d;
+  });
+
+  const dayHeaders = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const daysInMonth = getDaysInMonth(viewDate);
+  const firstDay = getDay(startOfMonth(viewDate));
+  const today = getTodayString();
+
+  const cells: (string | null)[] = useMemo(() => {
+    const c: (string | null)[] = [
+      ...Array(firstDay).fill(null),
+      ...Array.from({ length: daysInMonth }, (_, i) => {
+        const d = new Date(viewDate.getFullYear(), viewDate.getMonth(), i + 1);
+        return formatDateKey(d);
+      }),
+    ];
+    while (c.length % 7 !== 0) c.push(null);
+    return c;
+  }, [viewDate, firstDay, daysInMonth]);
+
+  return (
+    <View style={[dobStyles.container, { backgroundColor: C.surface, borderColor: C.border }]}>
+      <View style={dobStyles.nav}>
+        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); }}>
+          <Ionicons name="chevron-back" size={18} color={C.tint} />
+        </Pressable>
+        <Text style={[dobStyles.navLabel, { color: C.text }]}>{format(viewDate, 'MMMM yyyy')}</Text>
+        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); }}>
+          <Ionicons name="chevron-forward" size={18} color={C.tint} />
+        </Pressable>
+      </View>
+      <View style={dobStyles.headerRow}>
+        {dayHeaders.map(d => (
+          <Text key={d} style={[dobStyles.headerDay, { color: C.textMuted }]}>{d}</Text>
+        ))}
+      </View>
+      <View style={dobStyles.grid}>
+        {cells.map((dayKey, i) => {
+          if (!dayKey) return <View key={i} style={dobStyles.cell} />;
+          const isSelected = dayKey === selected;
+          const isFuture = dayKey > today;
+          const day = parseISO(dayKey).getDate();
+
+          return (
+            <Pressable
+              key={dayKey}
+              onPress={() => { if (!isFuture) { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onSelect(dayKey); } }}
+              style={dobStyles.cell}
+              disabled={isFuture}
+            >
+              <View style={[
+                dobStyles.dayCircle,
+                isSelected && { overflow: 'hidden' as const },
+              ]}>
+                {isSelected && (
+                  <LinearGradient
+                    colors={['#7C5CFC', '#FF6B9D']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[StyleSheet.absoluteFill, { borderRadius: 999 }]}
+                  />
+                )}
+                <Text style={[
+                  dobStyles.dayText,
+                  { color: isSelected ? '#fff' : isFuture ? C.textMuted + '50' : C.text },
+                ]}>
+                  {day}
+                </Text>
+              </View>
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+const dobStyles = StyleSheet.create({
+  container: {
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    padding: Spacing.md,
+  },
+  nav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Spacing.sm,
+  },
+  navLabel: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
+  headerRow: { flexDirection: 'row', marginBottom: Spacing.xs },
+  headerDay: { flex: 1, textAlign: 'center', fontSize: 11, fontFamily: 'Inter_600SemiBold' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap' },
+  cell: {
+    width: `${100 / 7}%`,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 2,
+  },
+  dayCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dayText: { fontSize: 13, fontFamily: 'Inter_500Medium' },
+});
+
 const styles = StyleSheet.create({
   container: { flex: 1 },
   hero: {
@@ -192,61 +455,161 @@ const styles = StyleSheet.create({
   },
   heroDecor1: { position: 'absolute', left: -40, top: -40, width: 160, height: 160, borderRadius: 80, backgroundColor: 'rgba(255,255,255,0.1)' },
   heroDecor2: { position: 'absolute', right: -20, bottom: 10, width: 120, height: 120, borderRadius: 60, backgroundColor: 'rgba(255,255,255,0.07)' },
-  heroTitle: { fontSize: 28, fontFamily: 'Inter_700Bold', color: '#fff', marginBottom: Spacing.lg },
+  heroTitle: { fontSize: 30, fontFamily: 'Inter_700Bold', color: '#fff', marginBottom: Spacing.lg },
   profileCard: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
     backgroundColor: 'rgba(255,255,255,0.92)',
-    borderRadius: Radius.xl, padding: Spacing.md,
+    borderRadius: Radius.xl, padding: Spacing.lg,
     shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 10, elevation: 6,
   },
   avatarBox: {
-    width: 50, height: 50, borderRadius: 25,
+    width: 54, height: 54, borderRadius: 27,
     alignItems: 'center', justifyContent: 'center',
     backgroundColor: 'rgba(124,92,252,0.2)',
   },
-  avatarText: { fontSize: 22, fontFamily: 'Inter_700Bold', color: '#7C5CFC' },
-  profileName: { fontSize: 16, fontFamily: 'Inter_700Bold', color: '#1A0A4A' },
-  profileSub: { fontSize: 12, fontFamily: 'Inter_400Regular', color: 'rgba(0,0,0,0.5)', marginTop: 2 },
+  avatarText: { fontSize: 24, fontFamily: 'Inter_700Bold', color: '#7C5CFC' },
+  profileName: { fontSize: 18, fontFamily: 'Inter_700Bold', color: '#1A0A4A' },
+  profileEmail: { fontSize: 13, fontFamily: 'Inter_400Regular', color: 'rgba(0,0,0,0.45)', marginTop: 2 },
+  profileSub: { fontSize: 13, fontFamily: 'Inter_400Regular', color: 'rgba(0,0,0,0.45)', marginTop: 2 },
   editBadge: {
-    width: 30, height: 30, borderRadius: 15,
+    width: 34, height: 34, borderRadius: 17,
     backgroundColor: 'rgba(124,92,252,0.15)',
     alignItems: 'center', justifyContent: 'center',
   },
   sectionLabel: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: Spacing.sm, marginLeft: 4 },
-  sectionIcon: { width: 22, height: 22, borderRadius: 6, alignItems: 'center', justifyContent: 'center' },
-  sectionTitle: { fontSize: 12, fontFamily: 'Inter_700Bold', textTransform: 'uppercase', letterSpacing: 0.8 },
+  sectionIcon: { width: 24, height: 24, borderRadius: 7, alignItems: 'center', justifyContent: 'center' },
+  sectionTitle: { fontSize: 13, fontFamily: 'Inter_700Bold', textTransform: 'uppercase', letterSpacing: 0.8 },
   card: {
     borderRadius: Radius.xl, borderWidth: 1,
     paddingHorizontal: Spacing.lg, overflow: 'hidden',
-    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2,
+    ...Shadow.sm,
   },
   settingRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: Spacing.md, gap: Spacing.md },
   settingIcon: { width: 36, height: 36, borderRadius: Radius.sm, alignItems: 'center', justifyContent: 'center' },
-  settingLabel: { flex: 1, fontSize: 15, fontFamily: 'Inter_500Medium' },
+  settingLabel: { flex: 1, fontSize: 16, fontFamily: 'Inter_500Medium' },
   settingRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   countBadge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
-  countText: { fontSize: 12, fontFamily: 'Inter_700Bold' },
+  countText: { fontSize: 13, fontFamily: 'Inter_700Bold' },
   aboutCard: {
     borderRadius: Radius.xl, borderWidth: 1,
     padding: Spacing.xl, alignItems: 'center', gap: Spacing.sm,
-    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.06, shadowRadius: 10, elevation: 2,
+    ...Shadow.sm,
   },
   aboutLogo: { width: 76, height: 76, borderRadius: Radius.xl, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
-  aboutName: { fontSize: 22, fontFamily: 'Inter_700Bold' },
-  aboutAr: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
-  aboutTagline: { fontSize: 13, fontFamily: 'Inter_400Regular' },
+  aboutName: { fontSize: 24, fontFamily: 'Inter_700Bold' },
+  aboutAr: { fontSize: 17, fontFamily: 'Inter_600SemiBold' },
+  aboutTagline: { fontSize: 14, fontFamily: 'Inter_400Regular' },
   versionPill: { borderRadius: Radius.full, paddingHorizontal: 14, paddingVertical: 5, marginTop: 4 },
-  versionText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  versionText: { fontSize: 13, fontFamily: 'Inter_600SemiBold' },
+
+  // Profile modal
   modal: { flex: 1 },
   modalHeader: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg, paddingTop: Spacing.xl, paddingBottom: Spacing.md, borderBottomWidth: 1,
+    paddingHorizontal: Spacing.lg, paddingTop: Spacing.lg, paddingBottom: Spacing.md, borderBottomWidth: 1,
   },
-  modalCancel: { fontSize: 15, fontFamily: 'Inter_400Regular' },
-  modalTitle: { fontSize: 17, fontFamily: 'Inter_700Bold' },
-  saveGrad: { borderRadius: Radius.full, paddingHorizontal: 16, paddingVertical: 6 },
-  saveText: { fontSize: 13, fontFamily: 'Inter_600SemiBold', color: '#fff' },
-  formField: { gap: Spacing.xs },
-  formLabel: { fontSize: 11, fontFamily: 'Inter_600SemiBold', textTransform: 'uppercase', letterSpacing: 0.5 },
-  formInput: { borderRadius: Radius.md, borderWidth: 1, paddingHorizontal: Spacing.md, paddingVertical: 12, fontSize: 15, fontFamily: 'Inter_400Regular' },
+  modalCloseBtn: {
+    width: 36, height: 36, borderRadius: 18,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  modalTitle: { fontSize: 19, fontFamily: 'Inter_700Bold' },
+  modalContent: {
+    padding: Spacing.xl,
+    gap: Spacing.xxl,
+    paddingBottom: 120,
+  },
+  modalAvatarSection: {
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+  },
+  modalAvatar: {
+    width: 80, height: 80, borderRadius: 40,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  modalAvatarText: {
+    fontSize: 34, fontFamily: 'Inter_700Bold', color: '#fff',
+  },
+
+  // Form sections
+  formSection: { gap: Spacing.sm },
+  formSectionHeader: {
+    flexDirection: 'row', alignItems: 'center', gap: 6, marginLeft: 4,
+  },
+  formSectionIcon: {
+    width: 22, height: 22, borderRadius: 6,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  formSectionTitle: {
+    fontSize: 13, fontFamily: 'Inter_700Bold',
+    textTransform: 'uppercase', letterSpacing: 0.8,
+  },
+  formCard: {
+    borderRadius: Radius.xl, borderWidth: 1,
+    overflow: 'hidden',
+    ...Shadow.sm,
+  },
+
+  // Profile field row
+  profileField: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    gap: Spacing.md,
+    minHeight: 56,
+  },
+  profileFieldLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    width: 120,
+  },
+  profileFieldLabel: {
+    fontSize: 14, fontFamily: 'Inter_500Medium',
+  },
+  profileFieldValue: {
+    flex: 1,
+  },
+  formInputInline: {
+    fontSize: 16, fontFamily: 'Inter_400Regular',
+    paddingVertical: 0,
+  },
+  dobPressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  // Bottom bar
+  modalBottomBar: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.lg,
+    borderTopWidth: 1,
+  },
+  modalCancelBtn: {
+    flex: 1,
+    borderRadius: Radius.xl,
+    height: 54,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  modalCancelText: {
+    fontSize: 17, fontFamily: 'Inter_600SemiBold',
+  },
+  modalSaveBtn: {
+    flex: 2,
+    flexDirection: 'row',
+    borderRadius: Radius.xl,
+    height: 54,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    overflow: 'hidden',
+  },
+  modalSaveText: {
+    fontSize: 17, fontFamily: 'Inter_700Bold', color: '#fff',
+  },
 });

@@ -11,6 +11,7 @@ export interface UserProfile {
   name: string;
   email: string;
   phone_number?: string;
+  date_of_birth?: string;
   gender?: 'male' | 'female' | 'other';
   language: Language;
   theme: Theme;
