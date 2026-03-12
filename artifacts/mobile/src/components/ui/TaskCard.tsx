@@ -42,13 +42,12 @@ export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorit
     : task.priority === 'medium' ? C.priorityMedium
     : C.priorityLow;
 
-  const handleMenu = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const handleLongPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Alert.alert(
       task.title,
       undefined,
       [
-        { text: t('editTask'), onPress: () => onEdit(task) },
         { text: t('postpone'), onPress: () => onPostpone(task.id) },
         { text: t('deleteTask'), style: 'destructive', onPress: () => onDelete(task.id) },
         { text: t('cancel'), style: 'cancel' },
@@ -61,6 +60,7 @@ export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorit
       style={animStyle}
       onPressIn={() => { scale.value = withSpring(0.98); }}
       onPressOut={() => { scale.value = withSpring(1); }}
+      onLongPress={handleLongPress}
     >
       <View style={[styles.card, { backgroundColor: C.card, borderColor: C.border }]}>
         <View style={[styles.accent, { backgroundColor: accentColor }]} />
@@ -134,9 +134,32 @@ export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorit
           </View>
         </View>
 
-        <Pressable onPress={handleMenu} style={styles.menu} hitSlop={8} accessibilityRole="button" accessibilityLabel="Task options">
-          <Ionicons name="ellipsis-horizontal" size={18} color={C.textMuted} />
-        </Pressable>
+        <View style={styles.actionBtns}>
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onEdit(task); }}
+            style={[styles.editBtn, { backgroundColor: C.tint + '15' }]}
+            hitSlop={4}
+            accessibilityRole="button"
+            accessibilityLabel={t('editTask')}
+          >
+            <Ionicons name="pencil-outline" size={15} color={C.tint} />
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              Alert.alert(t('deleteTask'), task.title, [
+                { text: t('cancel'), style: 'cancel' },
+                { text: t('delete'), style: 'destructive', onPress: () => onDelete(task.id) },
+              ]);
+            }}
+            style={[styles.editBtn, { backgroundColor: C.error + '12' }]}
+            hitSlop={4}
+            accessibilityRole="button"
+            accessibilityLabel={t('deleteTask')}
+          >
+            <Ionicons name="trash-outline" size={15} color={C.error} />
+          </Pressable>
+        </View>
       </View>
     </AnimatedPressable>
   );
@@ -207,7 +230,17 @@ const styles = StyleSheet.create({
   timeText: {
     ...Typography.label,
   },
-  menu: {
-    padding: Spacing.md,
+  actionBtns: {
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.sm,
+  },
+  editBtn: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

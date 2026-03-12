@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { View, Pressable, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { FormModal, FormField, FormInput, FormSelect } from '../../components/ui/FormModal';
 import { Goal, GoalType } from '../../types';
 import { useGoalsStore } from '../../store/goalsStore';
 import { useSettingsStore } from '../../store/settingsStore';
+import { useAppTheme } from '../../hooks/useAppTheme';
 import { t } from '../../utils/i18n';
+import { Radius, Spacing } from '../../theme';
 
 interface GoalFormProps {
   visible: boolean;
@@ -11,12 +16,13 @@ interface GoalFormProps {
   editGoal?: Goal | null;
 }
 
-const ICONS = ['book', 'fitness', 'card', 'language', 'star', 'heart', 'trophy', 'rocket', 'leaf', 'water'];
-const COLORS = ['#6C8EF5', '#F0A4C8', '#4CAF82', '#9B6EF5', '#F5A623', '#E05E5E', '#FF8A50', '#5CC2C2'];
+const ICONS = ['book', 'fitness', 'card', 'language', 'star', 'heart', 'trophy', 'rocket', 'leaf', 'water', 'code-slash', 'musical-notes'];
+const COLORS = ['#6C8EF5', '#F0A4C8', '#4CAF82', '#9B6EF5', '#F5A623', '#E05E5E', '#FF8A50', '#5CC2C2', '#7C5CFC', '#FF6B9D'];
 
 export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
   const { addGoal, updateGoal } = useGoalsStore();
   const { profile } = useSettingsStore();
+  const { C } = useAppTheme();
   const lang = profile.language;
 
   const [title, setTitle] = useState('');
@@ -71,9 +77,6 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
     { key: 'yearly', label: t('yearly', lang) },
   ];
 
-  const iconOptions = ICONS.map(i => ({ key: i, label: i }));
-  const colorOptions = COLORS.map(c => ({ key: c, label: c }));
-
   return (
     <FormModal
       visible={visible}
@@ -104,12 +107,56 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
       </FormField>
 
       <FormField label={t('icon', lang)}>
-        <FormSelect options={iconOptions} value={icon} onChange={setIcon} />
+        <View style={styles.iconGrid}>
+          {ICONS.map(ic => {
+            const isActive = ic === icon;
+            return (
+              <Pressable
+                key={ic}
+                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setIcon(ic); }}
+                style={[styles.iconBtn, {
+                  backgroundColor: isActive ? color + '25' : C.surface,
+                  borderColor: isActive ? color : C.border,
+                  borderWidth: isActive ? 2 : 1,
+                }]}
+              >
+                <Ionicons name={(ic + '-outline') as any} size={22} color={isActive ? color : C.textMuted} />
+              </Pressable>
+            );
+          })}
+        </View>
       </FormField>
 
       <FormField label={t('color', lang)}>
-        <FormSelect options={colorOptions} value={color} onChange={setColor} />
+        <View style={styles.colorGrid}>
+          {COLORS.map(cl => {
+            const isActive = cl === color;
+            return (
+              <Pressable
+                key={cl}
+                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setColor(cl); }}
+                style={[styles.colorBtn, { backgroundColor: cl, borderWidth: isActive ? 3 : 0, borderColor: '#fff' }]}
+              >
+                {isActive && <Ionicons name="checkmark" size={18} color="#fff" />}
+              </Pressable>
+            );
+          })}
+        </View>
       </FormField>
     </FormModal>
   );
 }
+
+const styles = StyleSheet.create({
+  iconGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
+  iconBtn: {
+    width: 46, height: 46, borderRadius: Radius.md,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  colorGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm + 2 },
+  colorBtn: {
+    width: 40, height: 40, borderRadius: 20,
+    alignItems: 'center', justifyContent: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 3,
+  },
+});
