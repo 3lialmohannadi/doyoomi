@@ -16,19 +16,21 @@ import { formatDate, formatTime, getTodayString, isOverdue } from '../../src/uti
 import { TaskCard } from '../../src/components/ui/TaskCard';
 import { EmptyState } from '../../src/components/ui/EmptyState';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
+import { Toast } from '../../src/components/ui/Toast';
+import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 import { Task } from '../../src/types';
 import * as Haptics from 'expo-haptics';
 
 type FilterKey = 'all' | 'today' | 'done' | 'overdue' | 'high' | 'postponed' | 'nodate';
 
 const FILTER_GRADIENTS: Record<FilterKey, [string, string]> = {
-  all: ['#7C5CFC', '#A855F7'],
-  today: ['#FF6B9D', '#FF9DB3'],
-  done: ['#00C48C', '#00E5A0'],
-  overdue: ['#FF4D6A', '#FF8E53'],
-  high: ['#FF6B35', '#FFB347'],
+  all:       ['#7C5CFC', '#A855F7'],
+  today:     ['#FF6B9D', '#FF9DB3'],
+  done:      ['#00C48C', '#00E5A0'],
+  overdue:   ['#FF4D6A', '#FF8E53'],
+  high:      ['#FF6B35', '#FFB347'],
   postponed: ['#6B7280', '#9CA3AF'],
-  nodate: ['#5CC2C2', '#00B8A9'],
+  nodate:    ['#5CC2C2', '#00B8A9'],
 };
 
 export default function TasksScreen() {
@@ -40,23 +42,30 @@ export default function TasksScreen() {
   const { categories } = useCategoriesStore();
   const { profile } = useSettingsStore();
   const lang = profile.language;
+  const isRTL = lang === 'ar';
 
   const [filter, setFilter] = useState<FilterKey>('all');
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
+  const [confirmTask, setConfirmTask] = useState<Task | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const tFunc = (key: string) => t(key, lang);
   const today = getTodayString();
 
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type });
+  };
+
   const filterChips: { key: FilterKey; label: string; icon: string }[] = [
-    { key: 'all', label: tFunc('all'), icon: 'apps' },
-    { key: 'today', label: tFunc('today'), icon: 'today' },
-    { key: 'done', label: tFunc('done'), icon: 'checkmark-circle' },
-    { key: 'overdue', label: tFunc('overdue'), icon: 'alert-circle' },
-    { key: 'high', label: tFunc('high'), icon: 'arrow-up-circle' },
+    { key: 'all',       label: tFunc('all'),       icon: 'apps' },
+    { key: 'today',     label: tFunc('today'),     icon: 'today' },
+    { key: 'done',      label: tFunc('done'),      icon: 'checkmark-circle' },
+    { key: 'overdue',   label: tFunc('overdue'),   icon: 'alert-circle' },
+    { key: 'high',      label: tFunc('high'),      icon: 'arrow-up-circle' },
     { key: 'postponed', label: tFunc('postponed'), icon: 'time' },
-    { key: 'nodate', label: tFunc('noDate'), icon: 'remove-circle' },
+    { key: 'nodate',    label: tFunc('noDate'),    icon: 'remove-circle' },
   ];
 
   const filteredTasks = useMemo(() => {
@@ -66,12 +75,12 @@ export default function TasksScreen() {
       result = result.filter(t => t.title.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q));
     }
     switch (filter) {
-      case 'today': result = result.filter(t => t.due_date === today); break;
-      case 'done': result = result.filter(t => t.status === 'completed'); break;
-      case 'overdue': result = result.filter(t => t.status === 'overdue' || (t.status === 'pending' && t.due_date && isOverdue(t.due_date))); break;
-      case 'high': result = result.filter(t => t.priority === 'high'); break;
+      case 'today':     result = result.filter(t => t.due_date === today); break;
+      case 'done':      result = result.filter(t => t.status === 'completed'); break;
+      case 'overdue':   result = result.filter(t => t.status === 'overdue' || (t.status === 'pending' && t.due_date && isOverdue(t.due_date))); break;
+      case 'high':      result = result.filter(t => t.priority === 'high'); break;
       case 'postponed': result = result.filter(t => t.status === 'postponed'); break;
-      case 'nodate': result = result.filter(t => !t.due_date); break;
+      case 'nodate':    result = result.filter(t => !t.due_date); break;
     }
     return result;
   }, [tasks, filter, search, today]);
@@ -95,10 +104,10 @@ export default function TasksScreen() {
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: topPad + Spacing.sm }]}>
-        <View>
-          <Text style={[styles.headerTitle, { color: C.text }]}>{tFunc('tasks')}</Text>
-          <Text style={[styles.headerSub, { color: C.textSecondary }]}>{filteredTasks.length} {tFunc('taskCount')}</Text>
+      <View style={[styles.header, { paddingTop: topPad + Spacing.sm, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <View style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
+          <Text style={[styles.headerTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('tasks')}</Text>
+          <Text style={[styles.headerSub, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{filteredTasks.length} {tFunc('taskCount')}</Text>
         </View>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditTask(null); setShowForm(true); }}
@@ -111,13 +120,14 @@ export default function TasksScreen() {
       </View>
 
       {/* Search */}
-      <View style={[styles.searchBar, { backgroundColor: C.surface, borderColor: C.border }]}>
+      <View style={[styles.searchBar, { backgroundColor: C.surface, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <Ionicons name="search" size={16} color={C.textMuted} />
         <TextInput
           value={search}
           onChangeText={setSearch}
           placeholder={tFunc('search')}
           placeholderTextColor={C.textMuted}
+          textAlign={isRTL ? 'right' : 'left'}
           style={[styles.searchInput, { color: C.text }]}
         />
         {search.length > 0 && (
@@ -131,7 +141,7 @@ export default function TasksScreen() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[styles.filtersRow, { flexDirection: lang === 'ar' ? 'row-reverse' : 'row' }]}
+        contentContainerStyle={[styles.filtersRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
         style={{ marginBottom: Spacing.md }}
       >
         {filterChips.map(chip => {
@@ -141,7 +151,7 @@ export default function TasksScreen() {
             <Pressable
               key={chip.key}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setFilter(chip.key); }}
-              style={[styles.chip, { overflow: 'hidden', borderColor: isActive ? 'transparent' : C.border, backgroundColor: isActive ? 'transparent' : C.surface }]}
+              style={[styles.chip, { overflow: 'hidden', borderColor: isActive ? 'transparent' : C.border, backgroundColor: isActive ? 'transparent' : C.surface, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
             >
               {isActive && <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />}
               <Ionicons name={chip.icon as any} size={13} color={isActive ? '#fff' : C.textMuted} />
@@ -152,14 +162,18 @@ export default function TasksScreen() {
       </ScrollView>
 
       <SectionList
-        ListHeaderComponent={null}
         sections={sections}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: Spacing.lg, paddingBottom: bottomPad + 100 }}
         renderSectionHeader={({ section }) => (
-          <View style={[styles.sectionHeaderRow, { borderLeftColor: activeGrad[0] }]}>
-            <Text style={[styles.sectionHeaderText, { color: C.text }]}>{section.title}</Text>
+          <View style={[
+            styles.sectionHeaderRow,
+            isRTL
+              ? { borderRightColor: activeGrad[0], borderRightWidth: 3, paddingRight: Spacing.sm, flexDirection: 'row-reverse' }
+              : { borderLeftColor: activeGrad[0], borderLeftWidth: 3, paddingLeft: Spacing.sm },
+          ]}>
+            <Text style={[styles.sectionHeaderText, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{section.title}</Text>
             <View style={[styles.sectionCount, { backgroundColor: activeGrad[0] + '20' }]}>
               <Text style={[styles.sectionCountText, { color: activeGrad[0] }]}>{section.data.length}</Text>
             </View>
@@ -171,8 +185,15 @@ export default function TasksScreen() {
             <View style={{ marginBottom: Spacing.sm }}>
               <TaskCard
                 task={item}
-                onToggle={toggleComplete}
+                onToggle={(id) => {
+                  toggleComplete(id);
+                  const task = tasks.find(t => t.id === id);
+                  if (task && task.status !== 'completed') {
+                    showToast(tFunc('taskCompleted'), 'success');
+                  }
+                }}
                 onDelete={deleteTask}
+                onDeleteRequest={(task) => setConfirmTask(task)}
                 onPostpone={postponeTask}
                 onEdit={(task) => { setEditTask(task); setShowForm(true); }}
                 priorityLabel={tFunc(item.priority)}
@@ -195,6 +216,31 @@ export default function TasksScreen() {
       />
 
       <TaskForm visible={showForm} onClose={() => { setShowForm(false); setEditTask(null); }} editTask={editTask} />
+
+      <ConfirmDialog
+        visible={!!confirmTask}
+        title={tFunc('deleteTask')}
+        message={confirmTask?.title}
+        confirmLabel={tFunc('delete')}
+        cancelLabel={tFunc('cancel')}
+        type="danger"
+        onConfirm={() => {
+          if (confirmTask) {
+            deleteTask(confirmTask.id);
+            showToast(tFunc('taskDeleted'), 'error');
+          }
+          setConfirmTask(null);
+        }}
+        onCancel={() => setConfirmTask(null)}
+      />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onHide={() => setToast(null)}
+        />
+      )}
     </View>
   );
 }
@@ -202,7 +248,7 @@ export default function TasksScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg, paddingBottom: Spacing.md,
   },
   headerTitle: { fontSize: 28, fontFamily: 'Inter_700Bold' },
@@ -210,7 +256,7 @@ const styles = StyleSheet.create({
   addBtn: { borderRadius: 24, overflow: 'hidden' },
   addGrad: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' },
   searchBar: {
-    flexDirection: 'row', alignItems: 'center',
+    alignItems: 'center',
     borderRadius: Radius.lg, borderWidth: 1,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
     marginHorizontal: Spacing.lg, marginBottom: Spacing.md,
@@ -218,18 +264,17 @@ const styles = StyleSheet.create({
   },
   searchInput: { flex: 1, fontSize: 15, fontFamily: 'Inter_400Regular', padding: 0 },
   filtersRow: {
-    flexDirection: 'row', gap: Spacing.sm,
+    gap: Spacing.sm,
     paddingHorizontal: Spacing.lg, paddingVertical: 2,
   },
   chip: {
-    flexDirection: 'row', alignItems: 'center', gap: 5,
+    alignItems: 'center', gap: 5,
     borderRadius: Radius.full, borderWidth: 1,
     paddingHorizontal: Spacing.md, paddingVertical: 7,
   },
   chipText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
   sectionHeaderRow: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
-    borderLeftWidth: 3, paddingLeft: Spacing.sm,
     marginTop: Spacing.lg, marginBottom: Spacing.sm,
   },
   sectionHeaderText: { fontSize: 15, fontFamily: 'Inter_700Bold', flex: 1 },

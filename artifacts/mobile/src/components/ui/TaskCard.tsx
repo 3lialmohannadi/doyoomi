@@ -2,35 +2,39 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { Task } from '../../types';
 import { Radius, Shadow, Spacing, Typography } from '../../theme';
 import { PriorityBadge } from './PriorityBadge';
 import { useAppTheme } from '../../hooks/useAppTheme';
+import { useSettingsStore } from '../../store/settingsStore';
 
 interface TaskCardProps {
   task: Task;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
+  onDeleteRequest?: (task: Task) => void;
   onPostpone: (id: string) => void;
   onEdit: (task: Task) => void;
   priorityLabel: string;
   timeStr?: string;
   categoryName?: string;
   categoryColor?: string;
-  lang?: string;
   t: (key: string) => string;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorityLabel, timeStr, categoryName, categoryColor, t }: TaskCardProps) {
+export function TaskCard({
+  task, onToggle, onDelete, onDeleteRequest, onPostpone, onEdit,
+  priorityLabel, timeStr, categoryName, categoryColor, t,
+}: TaskCardProps) {
   const { C } = useAppTheme();
+  const { profile } = useSettingsStore();
+  const isRTL = profile.language === 'ar';
   const scale = useSharedValue(1);
 
-  const animStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
   const isCompleted = task.status === 'completed';
   const isOverdue = task.status === 'overdue';
@@ -49,10 +53,22 @@ export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorit
       undefined,
       [
         { text: t('postpone'), onPress: () => onPostpone(task.id) },
-        { text: t('deleteTask'), style: 'destructive', onPress: () => onDelete(task.id) },
+        {
+          text: t('deleteTask'), style: 'destructive',
+          onPress: () => onDeleteRequest ? onDeleteRequest(task) : onDelete(task.id),
+        },
         { text: t('cancel'), style: 'cancel' },
       ]
     );
+  };
+
+  const handleDelete = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (onDeleteRequest) {
+      onDeleteRequest(task);
+    } else {
+      onDelete(task.id);
+    }
   };
 
   return (
@@ -62,15 +78,15 @@ export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorit
       onPressOut={() => { scale.value = withSpring(1); }}
       onLongPress={handleLongPress}
     >
-      <View style={[styles.card, { backgroundColor: C.card, borderColor: C.border }]}>
+      <View style={[
+        styles.card,
+        { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' },
+      ]}>
         <View style={[styles.accent, { backgroundColor: accentColor }]} />
 
         <Pressable
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            onToggle(task.id);
-          }}
-          style={styles.checkbox}
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onToggle(task.id); }}
+          style={[styles.checkbox, isRTL ? styles.checkboxRTL : null]}
           accessibilityRole="checkbox"
           accessibilityState={{ checked: isCompleted }}
           accessibilityLabel={task.title}
@@ -86,12 +102,12 @@ export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorit
           </View>
         </Pressable>
 
-        <View style={styles.content}>
+        <View style={[styles.content, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
           <Text
             numberOfLines={1}
             style={[
               styles.title,
-              { color: isCompleted ? C.textMuted : C.text },
+              { color: isCompleted ? C.textMuted : C.text, textAlign: isRTL ? 'right' : 'left' },
               isCompleted && styles.strikethrough,
             ]}
           >
@@ -99,12 +115,12 @@ export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorit
           </Text>
 
           {task.description ? (
-            <Text numberOfLines={1} style={[styles.desc, { color: C.textSecondary }]}>
+            <Text numberOfLines={1} style={[styles.desc, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
               {task.description}
             </Text>
           ) : null}
 
-          <View style={styles.meta}>
+          <View style={[styles.meta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <PriorityBadge priority={task.priority} label={priorityLabel} />
 
             {categoryName ? (
@@ -114,7 +130,7 @@ export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorit
             ) : null}
 
             {timeStr ? (
-              <View style={styles.timeRow}>
+              <View style={[styles.timeRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                 <Ionicons name="time-outline" size={11} color={C.textMuted} />
                 <Text style={[styles.timeText, { color: C.textMuted }]}>{timeStr}</Text>
               </View>
@@ -145,13 +161,7 @@ export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorit
             <Ionicons name="pencil-outline" size={15} color={C.tint} />
           </Pressable>
           <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              Alert.alert(t('deleteTask'), task.title, [
-                { text: t('cancel'), style: 'cancel' },
-                { text: t('delete'), style: 'destructive', onPress: () => onDelete(task.id) },
-              ]);
-            }}
+            onPress={handleDelete}
             style={[styles.editBtn, { backgroundColor: C.error + '12' }]}
             hitSlop={4}
             accessibilityRole="button"
@@ -167,7 +177,6 @@ export function TaskCard({ task, onToggle, onDelete, onPostpone, onEdit, priorit
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: 'row',
     alignItems: 'flex-start',
     borderRadius: Radius.lg,
     borderWidth: 1,
@@ -181,6 +190,10 @@ const styles = StyleSheet.create({
   checkbox: {
     padding: Spacing.md,
     paddingRight: Spacing.sm,
+  },
+  checkboxRTL: {
+    paddingRight: Spacing.md,
+    paddingLeft: Spacing.sm,
   },
   checkCircle: {
     width: 22,
@@ -207,7 +220,6 @@ const styles = StyleSheet.create({
     ...Typography.caption,
   },
   meta: {
-    flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 4,
     alignItems: 'center',
@@ -223,7 +235,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_600SemiBold',
   },
   timeRow: {
-    flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
   },

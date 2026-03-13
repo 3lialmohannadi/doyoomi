@@ -6,47 +6,45 @@ import { Radius, Spacing } from '../../theme';
 export type ToastType = 'success' | 'error' | 'info';
 
 interface ToastProps {
-  visible: boolean;
   message: string;
   type?: ToastType;
   duration?: number;
   onHide: () => void;
 }
 
-const CONFIG: Record<ToastType, { color: string; icon: string; bg: string }> = {
-  success: { color: '#00C48C', icon: 'checkmark-circle', bg: '#00C48C18' },
-  error:   { color: '#FF4D6A', icon: 'alert-circle',     bg: '#FF4D6A18' },
-  info:    { color: '#7C5CFC', icon: 'information-circle', bg: '#7C5CFC18' },
+const CONFIG: Record<ToastType, { color: string; icon: string; bg: string; border: string }> = {
+  success: { color: '#00C48C', icon: 'checkmark-circle',   bg: '#fff', border: '#00C48C30' },
+  error:   { color: '#FF4D6A', icon: 'alert-circle',       bg: '#fff', border: '#FF4D6A30' },
+  info:    { color: '#7C5CFC', icon: 'information-circle', bg: '#fff', border: '#7C5CFC30' },
 };
 
-export function Toast({ visible, message, type = 'success', duration = 2500, onHide }: ToastProps) {
+export function Toast({ message, type = 'success', duration = 2500, onHide }: ToastProps) {
   const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(-20)).current;
+  const translateY = useRef(new Animated.Value(-16)).current;
 
   useEffect(() => {
-    if (visible) {
-      Animated.parallel([
-        Animated.spring(opacity, { toValue: 1, useNativeDriver: true }),
-        Animated.spring(translateY, { toValue: 0, useNativeDriver: true }),
-      ]).start();
-      const timer = setTimeout(() => {
-        Animated.parallel([
-          Animated.timing(opacity, { toValue: 0, duration: 300, useNativeDriver: true }),
-          Animated.timing(translateY, { toValue: -20, duration: 300, useNativeDriver: true }),
-        ]).start(() => onHide());
-      }, duration);
-      return () => clearTimeout(timer);
-    } else {
-      opacity.setValue(0);
-      translateY.setValue(-20);
-    }
-  }, [visible]);
+    Animated.parallel([
+      Animated.spring(opacity, { toValue: 1, useNativeDriver: true, tension: 80, friction: 10 }),
+      Animated.spring(translateY, { toValue: 0, useNativeDriver: true, tension: 80, friction: 10 }),
+    ]).start();
 
-  if (!visible) return null;
+    const timer = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(opacity, { toValue: 0, duration: 280, useNativeDriver: true }),
+        Animated.timing(translateY, { toValue: -16, duration: 280, useNativeDriver: true }),
+      ]).start(() => onHide());
+    }, duration);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const cfg = CONFIG[type];
 
   return (
-    <Animated.View style={[styles.toast, { backgroundColor: cfg.bg, opacity, transform: [{ translateY }] }]}>
+    <Animated.View style={[
+      styles.toast,
+      { backgroundColor: cfg.bg, borderColor: cfg.border, opacity, transform: [{ translateY }] },
+    ]}>
       <Ionicons name={cfg.icon as any} size={20} color={cfg.color} />
       <Text style={[styles.text, { color: cfg.color }]} numberOfLines={2}>{message}</Text>
     </Animated.View>
@@ -63,14 +61,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.md + 2,
     borderRadius: Radius.xl,
+    borderWidth: 1,
     zIndex: 9999,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 10,
   },
   text: {
     flex: 1,
