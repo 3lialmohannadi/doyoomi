@@ -15,13 +15,15 @@ import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
+import { useJournalStore } from '../../src/store/journalStore';
 import { Spacing, Typography, Radius, Shadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, getGreeting } from '../../src/utils/i18n';
 import { getTodayString, getWeekDays, getDayLabel, formatDateKey, formatTime, isOverdue } from '../../src/utils/date';
 import { HabitForm } from '../../src/features/habits/HabitForm';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
-import { Task, Habit } from '../../src/types';
+import { JournalForm } from '../../src/features/journal/JournalForm';
+import { Task, Habit, Mood, JournalEntry } from '../../src/types';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -35,10 +37,12 @@ export default function HomeScreen() {
   const { habits, completeHabit } = useHabitsStore();
   const { profile } = useSettingsStore();
   const { categories } = useCategoriesStore();
+  const { entries: journalEntries } = useJournalStore();
   const lang = profile.language;
 
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showHabitForm, setShowHabitForm] = useState(false);
+  const [showJournalForm, setShowJournalForm] = useState(false);
   const [editHabit, setEditHabit] = useState<Habit | null>(null);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [selectedDay, setSelectedDay] = useState(getTodayString());
@@ -59,6 +63,7 @@ export default function HomeScreen() {
   const dayTasks = tasks.filter(t => t.due_date === selectedDay);
   const allDone = todayTasks.length > 0 && todayTasks.every(t => t.status === 'completed');
   const topGoals = goals.slice(0, 2);
+  const todayJournal = journalEntries.find(e => e.date === today);
   const topPad = isWeb ? 67 : insets.top;
 
   return (
@@ -223,6 +228,21 @@ export default function HomeScreen() {
           </Section>
         )}
 
+        {/* Journal Card */}
+        <Section
+          title={tFunc('journal')}
+          C={C}
+          onTitlePress={() => router.push('/journal')}
+        >
+          <JournalHomeCard
+            entry={todayJournal}
+            onWrite={() => setShowJournalForm(true)}
+            onOpen={() => router.push('/journal')}
+            C={C}
+            tFunc={tFunc}
+          />
+        </Section>
+
         {/* Weekly vibe chart */}
         <Section title={tFunc('weeklyOverview')} C={C}>
           <FunWeekChart weekDays={weekDays} tasks={tasks} C={C} tFunc={tFunc} lang={lang} />
@@ -231,6 +251,7 @@ export default function HomeScreen() {
 
       <TaskForm visible={showTaskForm} onClose={() => { setShowTaskForm(false); setEditTask(null); }} editTask={editTask} />
       <HabitForm visible={showHabitForm} onClose={() => { setShowHabitForm(false); setEditHabit(null); }} editHabit={editHabit} />
+      <JournalForm visible={showJournalForm} onClose={() => setShowJournalForm(false)} />
     </View>
   );
 }
@@ -385,6 +406,69 @@ function FunGoalCard({ goal, progress, gradient, C }: any) {
         />
       </View>
     </View>
+  );
+}
+
+const MOOD_ICONS: Record<Mood, { icon: string; color: string }> = {
+  excellent: { icon: 'happy', color: '#00C48C' },
+  good: { icon: 'happy-outline', color: '#4CAF82' },
+  neutral: { icon: 'remove-circle-outline', color: '#FFB800' },
+  tired: { icon: 'bed-outline', color: '#FF8A50' },
+  bad: { icon: 'sad-outline', color: '#FF4D6A' },
+};
+
+function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc }: { entry?: JournalEntry; onWrite: () => void; onOpen: () => void; C: any; tFunc: (k: string) => string }) {
+  if (entry) {
+    const moodCfg = entry.mood ? MOOD_ICONS[entry.mood] : null;
+    return (
+      <Pressable onPress={onOpen}>
+        <View style={[styles.journalCard, { backgroundColor: C.card, borderColor: C.border }]}>
+          <View style={styles.journalCardHeader}>
+            <View style={[styles.journalIconBox, { backgroundColor: '#9B6EF5' + '18' }]}>
+              <Ionicons name="book-outline" size={20} color="#9B6EF5" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.journalCardTitle, { color: C.text }]}>
+                {entry.title || tFunc('todayEntry')}
+              </Text>
+              {moodCfg && (
+                <View style={[styles.journalMoodBadge, { backgroundColor: moodCfg.color + '18' }]}>
+                  <Ionicons name={moodCfg.icon as any} size={12} color={moodCfg.color} />
+                  <Text style={[styles.journalMoodText, { color: moodCfg.color }]}>
+                    {tFunc(`mood${entry.mood!.charAt(0).toUpperCase() + entry.mood!.slice(1)}`)}
+                  </Text>
+                </View>
+              )}
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={C.textMuted} />
+          </View>
+          <Text style={[styles.journalPreview, { color: C.textSecondary }]} numberOfLines={2}>
+            {entry.content}
+          </Text>
+        </View>
+      </Pressable>
+    );
+  }
+
+  return (
+    <Pressable onPress={onWrite}>
+      <View style={[styles.journalCard, { backgroundColor: C.card, borderColor: C.border }]}>
+        <View style={styles.journalCardHeader}>
+          <View style={[styles.journalIconBox, { backgroundColor: '#9B6EF5' + '18' }]}>
+            <Ionicons name="book-outline" size={20} color="#9B6EF5" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.journalCardTitle, { color: C.textMuted }]}>
+              {tFunc('noEntryToday')}
+            </Text>
+          </View>
+        </View>
+        <Pressable onPress={onWrite} style={[styles.journalWriteBtn, { backgroundColor: '#9B6EF5' + '15' }]}>
+          <Ionicons name="create-outline" size={16} color="#9B6EF5" />
+          <Text style={[styles.journalWriteText, { color: '#9B6EF5' }]}>{tFunc('startWriting')}</Text>
+        </Pressable>
+      </View>
+    </Pressable>
   );
 }
 
@@ -585,4 +669,26 @@ const styles = StyleSheet.create({
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   legendDot: { width: 10, height: 10, borderRadius: 5 },
   legendText: { fontSize: 11, fontFamily: 'Inter_500Medium' },
+
+  // Journal card
+  journalCard: {
+    borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg,
+    gap: Spacing.sm,
+    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 10, elevation: 3,
+  },
+  journalCardHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
+  journalIconBox: { width: 40, height: 40, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
+  journalCardTitle: { fontSize: 15, fontFamily: 'Inter_700Bold' },
+  journalMoodBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2,
+    alignSelf: 'flex-start', marginTop: 4,
+  },
+  journalMoodText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
+  journalPreview: { fontSize: 13, fontFamily: 'Inter_400Regular', lineHeight: 18 },
+  journalWriteBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+    borderRadius: Radius.lg, paddingVertical: Spacing.sm + 2, marginTop: Spacing.xs,
+  },
+  journalWriteText: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
 });

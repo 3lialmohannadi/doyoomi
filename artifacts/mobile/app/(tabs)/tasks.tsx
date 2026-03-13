@@ -19,7 +19,7 @@ import { TaskForm } from '../../src/features/tasks/TaskForm';
 import { Task } from '../../src/types';
 import * as Haptics from 'expo-haptics';
 
-type FilterKey = 'all' | 'today' | 'done' | 'overdue' | 'high' | 'postponed';
+type FilterKey = 'all' | 'today' | 'done' | 'overdue' | 'high' | 'postponed' | 'nodate';
 
 const FILTER_GRADIENTS: Record<FilterKey, [string, string]> = {
   all: ['#7C5CFC', '#A855F7'],
@@ -28,6 +28,7 @@ const FILTER_GRADIENTS: Record<FilterKey, [string, string]> = {
   overdue: ['#FF4D6A', '#FF8E53'],
   high: ['#FF6B35', '#FFB347'],
   postponed: ['#6B7280', '#9CA3AF'],
+  nodate: ['#5CC2C2', '#00B8A9'],
 };
 
 export default function TasksScreen() {
@@ -55,6 +56,7 @@ export default function TasksScreen() {
     { key: 'overdue', label: tFunc('overdue'), icon: 'alert-circle' },
     { key: 'high', label: tFunc('high'), icon: 'arrow-up-circle' },
     { key: 'postponed', label: tFunc('postponed'), icon: 'time' },
+    { key: 'nodate', label: tFunc('noDate'), icon: 'remove-circle' },
   ];
 
   const filteredTasks = useMemo(() => {
@@ -69,6 +71,7 @@ export default function TasksScreen() {
       case 'overdue': result = result.filter(t => t.status === 'overdue' || (t.status === 'pending' && t.due_date && isOverdue(t.due_date))); break;
       case 'high': result = result.filter(t => t.priority === 'high'); break;
       case 'postponed': result = result.filter(t => t.status === 'postponed'); break;
+      case 'nodate': result = result.filter(t => !t.due_date); break;
     }
     return result;
   }, [tasks, filter, search, today]);
