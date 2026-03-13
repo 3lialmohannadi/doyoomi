@@ -14,9 +14,14 @@
       "backgroundColor": "#7C5CFC"
     },
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "buildNumber": "2",
+      "bundleIdentifier": "com.doyoomi.app"
     },
-    "android": {},
+    "android": {
+      "package": "com.doyoomi.app",
+      "versionCode": 2
+    },
     "web": {
       "favicon": "./assets/images/icon.png"
     },
