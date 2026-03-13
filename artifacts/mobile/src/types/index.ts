@@ -1,6 +1,7 @@
 export type Priority = 'low' | 'medium' | 'high';
 export type TaskStatus = 'pending' | 'completed' | 'overdue' | 'postponed' | 'cancelled';
 export type GoalType = 'monthly' | 'yearly';
+export type Mood = 'excellent' | 'good' | 'neutral' | 'tired' | 'bad';
 export type Language = 'en' | 'ar';
 export type Theme = 'light' | 'dark';
 export type TimeFormat = '12h' | '24h';
@@ -69,6 +70,18 @@ export interface Habit {
   color: string;
   streak_days: number;
   last_completed_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface JournalEntry {
+  id: string;
+  user_id: string;
+  date: string;
+  title?: string;
+  content: string;
+  mood?: Mood;
+  tags?: string[];
   created_at: string;
   updated_at: string;
 }

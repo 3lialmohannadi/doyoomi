@@ -19,6 +19,7 @@ import { useTasksStore } from "@/src/store/tasksStore";
 import { useHabitsStore } from "@/src/store/habitsStore";
 import { useGoalsStore } from "@/src/store/goalsStore";
 import { useCategoriesStore } from "@/src/store/categoriesStore";
+import { useJournalStore } from "@/src/store/journalStore";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -30,6 +31,7 @@ function RootLayoutNav() {
   const { loadHabits } = useHabitsStore();
   const { loadGoals } = useGoalsStore();
   const { loadCategories } = useCategoriesStore();
+  const { loadEntries } = useJournalStore();
 
   useEffect(() => {
     loadSettings();
@@ -37,11 +39,13 @@ function RootLayoutNav() {
     loadHabits();
     loadGoals();
     loadCategories();
+    loadEntries();
   }, []);
 
   return (
     <Stack screenOptions={{ headerBackTitle: "Back" }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="journal" options={{ headerShown: false, presentation: 'modal' }} />
     </Stack>
   );
 }
