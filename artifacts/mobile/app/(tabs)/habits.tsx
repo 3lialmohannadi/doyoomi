@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  FlatList, StyleSheet, Text, View, Platform, Pressable, Alert,
+  FlatList, StyleSheet, Text, View, Platform, Pressable,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -15,6 +15,8 @@ import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
 import { HabitForm } from '../../src/features/habits/HabitForm';
+import { Toast } from '../../src/components/ui/Toast';
+import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 import { Habit } from '../../src/types';
 
 export default function HabitsScreen() {
@@ -25,9 +27,12 @@ export default function HabitsScreen() {
   const { habits, completeHabit, uncompleteHabit, deleteHabit } = useHabitsStore();
   const { profile } = useSettingsStore();
   const lang = profile.language;
+  const isRTL = lang === 'ar';
 
   const [showForm, setShowForm] = useState(false);
   const [editHabit, setEditHabit] = useState<Habit | null>(null);
+  const [confirmHabit, setConfirmHabit] = useState<Habit | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const tFunc = (key: string) => t(key, lang);
   const topPad = isWeb ? 67 : insets.top;
@@ -39,16 +44,8 @@ export default function HabitsScreen() {
     return lastDate === today;
   }).length;
 
-  const handleDelete = (habit: Habit) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert(
-      tFunc('deleteHabit'),
-      habit.name,
-      [
-        { text: tFunc('cancel'), style: 'cancel' },
-        { text: tFunc('delete'), style: 'destructive', onPress: () => deleteHabit(habit.id) },
-      ]
-    );
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type });
   };
 
   return (
@@ -62,10 +59,10 @@ export default function HabitsScreen() {
         <View style={styles.headerDecor1} />
         <View style={styles.headerDecor2} />
 
-        <View style={styles.headerRow}>
+        <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View>
-            <Text style={styles.headerTitle}>{tFunc('habits')}</Text>
-            <Text style={styles.headerSub}>
+            <Text style={[styles.headerTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('habits')}</Text>
+            <Text style={[styles.headerSub, { textAlign: isRTL ? 'right' : 'left' }]}>
               {doneToday}/{habits.length} {tFunc('doneToday')}
             </Text>
           </View>
@@ -83,9 +80,8 @@ export default function HabitsScreen() {
           </Pressable>
         </View>
 
-        {/* Progress bar */}
         {habits.length > 0 && (
-          <View style={styles.progressWrap}>
+          <View style={[styles.progressWrap, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={[styles.progressTrack, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
               <View
                 style={[
@@ -93,6 +89,7 @@ export default function HabitsScreen() {
                   {
                     backgroundColor: '#fff',
                     width: `${Math.round((doneToday / habits.length) * 100)}%`,
+                    alignSelf: isRTL ? 'flex-end' : 'flex-start',
                   },
                 ]}
               />
@@ -119,7 +116,7 @@ export default function HabitsScreen() {
             <View
               style={[
                 styles.habitCard,
-                { backgroundColor: C.card, borderColor: isDoneToday ? item.color + '60' : C.border },
+                { backgroundColor: C.card, borderColor: isDoneToday ? item.color + '60' : C.border, flexDirection: isRTL ? 'row-reverse' : 'row' },
                 Shadow.sm,
               ]}
             >
@@ -129,17 +126,17 @@ export default function HabitsScreen() {
                 <Ionicons name={(item.icon + '-outline') as any} size={22} color={item.color} />
               </View>
 
-              <View style={styles.habitInfo}>
-                <Text style={[styles.habitName, { color: C.text }]} numberOfLines={1}>
+              <View style={[styles.habitInfo, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+                <Text style={[styles.habitName, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
                   {item.name}
                 </Text>
-                <View style={styles.streakRow}>
+                <View style={[styles.streakRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Ionicons name="flame" size={13} color="#FF6B35" />
                   <Text style={[styles.streakText, { color: '#FF6B35' }]}>
                     {item.streak_days} {tFunc('days')}
                   </Text>
                   {isDoneToday && (
-                    <View style={[styles.doneBadge, { backgroundColor: item.color + '18' }]}>
+                    <View style={[styles.doneBadge, { backgroundColor: item.color + '18', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                       <Ionicons name="checkmark-circle" size={11} color={item.color} />
                       <Text style={[styles.doneBadgeText, { color: item.color }]}>
                         {tFunc('doneToday')}
@@ -149,14 +146,16 @@ export default function HabitsScreen() {
                 </View>
               </View>
 
-              <View style={styles.habitActions}>
+              <View style={[styles.habitActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                 <Pressable
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                     if (isDoneToday) {
                       uncompleteHabit(item.id);
+                      showToast(tFunc('habitUncompleted'), 'info');
                     } else {
                       completeHabit(item.id);
+                      showToast(tFunc('habitCompleted'), 'success');
                     }
                   }}
                   style={[
@@ -186,7 +185,7 @@ export default function HabitsScreen() {
                 </Pressable>
 
                 <Pressable
-                  onPress={() => handleDelete(item)}
+                  onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setConfirmHabit(item); }}
                   style={[styles.actionBtn, { backgroundColor: C.error + '12', borderColor: C.error + '30' }]}
                 >
                   <Ionicons name="trash-outline" size={15} color={C.error} />
@@ -209,6 +208,31 @@ export default function HabitsScreen() {
         onClose={() => { setShowForm(false); setEditHabit(null); }}
         editHabit={editHabit}
       />
+
+      <ConfirmDialog
+        visible={!!confirmHabit}
+        title={tFunc('deleteHabit')}
+        message={confirmHabit?.name}
+        confirmLabel={tFunc('delete')}
+        cancelLabel={tFunc('cancel')}
+        type="danger"
+        onConfirm={() => {
+          if (confirmHabit) {
+            deleteHabit(confirmHabit.id);
+            showToast(tFunc('habitDeleted'), 'error');
+          }
+          setConfirmHabit(null);
+        }}
+        onCancel={() => setConfirmHabit(null)}
+      />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onHide={() => setToast(null)}
+        />
+      )}
     </View>
   );
 }
@@ -233,7 +257,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.07)',
   },
   headerRow: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    alignItems: 'center', justifyContent: 'space-between',
   },
   headerTitle: { fontSize: 28, fontFamily: 'Inter_700Bold', color: '#fff' },
   headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: 'Inter_500Medium', marginTop: 2 },
@@ -245,18 +269,18 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.15, shadowRadius: 6, elevation: 5,
   },
   progressWrap: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginTop: Spacing.lg,
+    alignItems: 'center', gap: Spacing.sm, marginTop: Spacing.lg,
   },
   progressTrack: {
     flex: 1, height: 6, borderRadius: 3, overflow: 'hidden',
   },
   progressFill: { height: '100%', borderRadius: 3 },
   progressLabel: {
-    fontSize: 13, fontFamily: 'Inter_700Bold', color: '#fff', minWidth: 36, textAlign: 'right',
+    fontSize: 13, fontFamily: 'Inter_700Bold', color: '#fff', minWidth: 36, textAlign: 'center',
   },
 
   habitCard: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
+    alignItems: 'center', gap: Spacing.md,
     borderRadius: Radius.xl, borderWidth: 1, overflow: 'hidden',
     paddingVertical: Spacing.md, paddingRight: Spacing.md,
   },
@@ -267,16 +291,16 @@ const styles = StyleSheet.create({
   },
   habitInfo: { flex: 1, gap: 3 },
   habitName: { fontSize: 15, fontFamily: 'Inter_600SemiBold' },
-  streakRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  streakRow: { alignItems: 'center', gap: 4 },
   streakText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
   doneBadge: {
-    flexDirection: 'row', alignItems: 'center', gap: 3,
+    alignItems: 'center', gap: 3,
     borderRadius: Radius.full, paddingHorizontal: 7, paddingVertical: 2,
     marginLeft: 4,
   },
   doneBadgeText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
 
-  habitActions: { flexDirection: 'row', gap: 6 },
+  habitActions: { gap: 6 },
   actionBtn: {
     width: 32, height: 32, borderRadius: 10, borderWidth: 1,
     alignItems: 'center', justifyContent: 'center',

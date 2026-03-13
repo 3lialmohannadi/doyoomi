@@ -46,6 +46,7 @@ export default function HomeScreen() {
   const [editHabit, setEditHabit] = useState<Habit | null>(null);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [selectedDay, setSelectedDay] = useState(getTodayString());
+  const isRTL = lang === 'ar';
 
   const weekDays = useMemo(() => getWeekDays(profile.start_of_week), [profile.start_of_week]);
   const today = getTodayString();
@@ -83,11 +84,11 @@ export default function HomeScreen() {
           <View style={[styles.deco1]} />
           <View style={[styles.deco2]} />
 
-          <View style={styles.heroContent}>
-            <View style={styles.heroLeft}>
-              <Text style={styles.greeting}>{getGreeting(lang)}</Text>
-              <Text style={styles.heroTitle}>Do.Yoomi</Text>
-              <Text style={styles.heroSub}>يومي</Text>
+          <View style={[styles.heroContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={[styles.heroLeft, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+              <Text style={[styles.greeting, { textAlign: isRTL ? 'right' : 'left' }]}>{getGreeting(lang)}</Text>
+              <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left' }]}>Do.Yoomi</Text>
+              <Text style={[styles.heroSub, { textAlign: isRTL ? 'right' : 'left' }]}>يومي</Text>
             </View>
             <AddBtn onPress={() => setShowTaskForm(true)} />
           </View>
@@ -152,12 +153,12 @@ export default function HomeScreen() {
               colors={['#00C48C', '#00E5A0']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
-              style={styles.allDoneBanner}
+              style={[styles.allDoneBanner, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
             >
               <Text style={styles.allDoneEmoji}>🎉</Text>
-              <View>
-                <Text style={styles.allDoneTitle}>{tFunc('allDoneToday')}</Text>
-                <Text style={styles.allDoneSub}>{tFunc('allDoneSubtitle')}</Text>
+              <View style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
+                <Text style={[styles.allDoneTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('allDoneToday')}</Text>
+                <Text style={[styles.allDoneSub, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('allDoneSubtitle')}</Text>
               </View>
             </LinearGradient>
           </View>
@@ -167,7 +168,7 @@ export default function HomeScreen() {
         {dayTasks.length > 0 && (
           <Section
             title={selectedDay === today ? tFunc('today2') : format(parseISO(selectedDay), 'MMM d')}
-            C={C}
+            C={C} isRTL={isRTL}
             action={tFunc('addNew')}
             onAction={() => setShowTaskForm(true)}
             onTitlePress={() => router.push('/tasks')}
@@ -183,7 +184,7 @@ export default function HomeScreen() {
                     catColor={cat?.color}
                     timeStr={task.due_time ? formatTime(task.due_time, profile.time_format === '12h') : undefined}
                     onToggle={() => toggleComplete(task.id)}
-                    C={C}
+                    C={C} isRTL={isRTL}
                   />
                 );
               })}
@@ -194,7 +195,7 @@ export default function HomeScreen() {
         {/* Habits */}
         <Section
           title={tFunc('habits')}
-          C={C}
+          C={C} isRTL={isRTL}
           action={tFunc('addNew')}
           onAction={() => { setEditHabit(null); setShowHabitForm(true); }}
         >
@@ -207,7 +208,7 @@ export default function HomeScreen() {
 
         {/* Goals */}
         {topGoals.length > 0 && (
-          <Section title={tFunc('goalsSection')} C={C} onTitlePress={() => router.push('/goals')}>
+          <Section title={tFunc('goalsSection')} C={C} isRTL={isRTL} onTitlePress={() => router.push('/goals')}>
             <View style={{ gap: Spacing.md }}>
               {topGoals.map((g, i) => {
                 const pct = g.target_value > 0 ? g.current_value / g.target_value : 0;
@@ -220,7 +221,7 @@ export default function HomeScreen() {
                 const grad = goalGradients[i % goalGradients.length];
                 return (
                   <Pressable key={g.id} onPress={() => router.push('/goals')}>
-                    <FunGoalCard goal={g} progress={pct} gradient={grad} C={C} />
+                    <FunGoalCard goal={g} progress={pct} gradient={grad} C={C} isRTL={isRTL} />
                   </Pressable>
                 );
               })}
@@ -231,20 +232,20 @@ export default function HomeScreen() {
         {/* Journal Card */}
         <Section
           title={tFunc('journal')}
-          C={C}
+          C={C} isRTL={isRTL}
           onTitlePress={() => router.push('/journal')}
         >
           <JournalHomeCard
             entry={todayJournal}
             onWrite={() => setShowJournalForm(true)}
             onOpen={() => router.push('/journal')}
-            C={C}
+            C={C} isRTL={isRTL}
             tFunc={tFunc}
           />
         </Section>
 
         {/* Weekly vibe chart */}
-        <Section title={tFunc('weeklyAchievement')} C={C}>
+        <Section title={tFunc('weeklyAchievement')} C={C} isRTL={isRTL}>
           <FunWeekChart weekDays={weekDays} tasks={tasks} C={C} tFunc={tFunc} lang={lang} />
         </Section>
       </ScrollView>
@@ -285,16 +286,16 @@ function HeroStat({ icon, value, label, color, C }: { icon: any; value: number; 
   );
 }
 
-function Section({ title, children, C, action, onAction, onTitlePress }: any) {
+function Section({ title, children, C, action, onAction, onTitlePress, isRTL }: any) {
   return (
     <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Pressable onPress={onTitlePress} style={styles.sectionTitleRow} disabled={!onTitlePress}>
+      <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <Pressable onPress={onTitlePress} style={[styles.sectionTitleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]} disabled={!onTitlePress}>
           <Text style={[styles.sectionTitle, { color: C.text }]}>{title}</Text>
-          {onTitlePress && <Ionicons name="chevron-forward" size={16} color={C.textMuted} />}
+          {onTitlePress && <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textMuted} />}
         </Pressable>
         {action && (
-          <Pressable onPress={onAction} style={[styles.sectionAction, { backgroundColor: C.tint + '15' }]}>
+          <Pressable onPress={onAction} style={[styles.sectionAction, { backgroundColor: C.tint + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Ionicons name="add" size={14} color={C.tint} />
             <Text style={[styles.sectionActionText, { color: C.tint }]}>{action}</Text>
           </Pressable>
@@ -305,7 +306,7 @@ function Section({ title, children, C, action, onAction, onTitlePress }: any) {
   );
 }
 
-function FunTaskRow({ task, catName, catColor, timeStr, onToggle, C }: any) {
+function FunTaskRow({ task, catName, catColor, timeStr, onToggle, C, isRTL }: any) {
   const isCompleted = task.status === 'completed';
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
@@ -319,7 +320,7 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, C }: any) {
 
   return (
     <AnimatedPressable
-      style={[animStyle, styles.taskRow, { backgroundColor: C.card, borderColor: C.border }]}
+      style={[animStyle, styles.taskRow, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
       onPressIn={() => { scale.value = withSpring(0.98); }}
       onPressOut={() => { scale.value = withSpring(1); }}
     >
@@ -329,11 +330,11 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, C }: any) {
           {isCompleted && <Ionicons name="checkmark" size={11} color="#fff" />}
         </View>
       </Pressable>
-      <View style={styles.taskInfo}>
-        <Text style={[styles.taskTitle, { color: isCompleted ? C.textMuted : C.text }, isCompleted && { textDecorationLine: 'line-through' as const }]} numberOfLines={1}>
+      <View style={[styles.taskInfo, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+        <Text style={[styles.taskTitle, { color: isCompleted ? C.textMuted : C.text, textAlign: isRTL ? 'right' : 'left' }, isCompleted && { textDecorationLine: 'line-through' as const }]} numberOfLines={1}>
           {task.title}
         </Text>
-        <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center', marginTop: 2 }}>
+        <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', gap: 6, alignItems: 'center', marginTop: 2 }}>
           {catName && (
             <View style={[styles.catPill, { backgroundColor: (catColor ?? C.tint) + '20' }]}>
               <Text style={[styles.catPillText, { color: catColor ?? C.tint }]}>{catName}</Text>
@@ -376,22 +377,18 @@ function FunHabitCard({ habit, onComplete, C }: { habit: any; onComplete: (id: s
   );
 }
 
-function FunGoalCard({ goal, progress, gradient, C }: any) {
+function FunGoalCard({ goal, progress, gradient, C, isRTL }: any) {
   const pct = Math.round(progress * 100);
-  const ICONS: Record<string, any> = {
-    book: 'book', fitness: 'fitness', card: 'card', language: 'language',
-    star: 'star', heart: 'heart', trophy: 'trophy', rocket: 'rocket', leaf: 'leaf', water: 'water',
-  };
 
   return (
     <View style={[styles.goalCard, { backgroundColor: C.card, borderColor: C.border }]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md }}>
+      <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md }}>
         <LinearGradient colors={gradient} style={styles.goalIcon}>
-          <Ionicons name={(ICONS[goal.icon] ?? 'star') + '-outline'} size={18} color="#fff" />
+          <Ionicons name={((goal.icon ?? 'star') + '-outline') as any} size={18} color="#fff" />
         </LinearGradient>
         <View style={{ flex: 1 }}>
-          <Text style={[styles.goalTitle, { color: C.text }]} numberOfLines={1}>{goal.title}</Text>
-          <Text style={[styles.goalSub, { color: C.textSecondary }]}>
+          <Text style={[styles.goalTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{goal.title}</Text>
+          <Text style={[styles.goalSub, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
             {goal.current_value} / {goal.target_value}
           </Text>
         </View>
@@ -410,29 +407,32 @@ function FunGoalCard({ goal, progress, gradient, C }: any) {
 }
 
 const MOOD_ICONS: Record<Mood, { icon: string; color: string }> = {
-  excellent: { icon: 'happy', color: '#00C48C' },
-  good: { icon: 'happy-outline', color: '#4CAF82' },
-  neutral: { icon: 'remove-circle-outline', color: '#FFB800' },
-  tired: { icon: 'bed-outline', color: '#FF8A50' },
-  bad: { icon: 'sad-outline', color: '#FF4D6A' },
+  excellent:  { icon: 'happy',                  color: '#00C48C' },
+  veryGood:   { icon: 'happy-outline',          color: '#4CAF82' },
+  good:       { icon: 'thumbs-up-outline',      color: '#7C5CFC' },
+  neutral:    { icon: 'remove-circle-outline',  color: '#FFB800' },
+  tired:      { icon: 'bed-outline',            color: '#FF8A50' },
+  stressed:   { icon: 'flash-outline',          color: '#FF6B35' },
+  sad:        { icon: 'rainy-outline',          color: '#A855F7' },
+  bad:        { icon: 'sad-outline',            color: '#FF4D6A' },
 };
 
-function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc }: { entry?: JournalEntry; onWrite: () => void; onOpen: () => void; C: any; tFunc: (k: string) => string }) {
+function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: JournalEntry; onWrite: () => void; onOpen: () => void; C: any; tFunc: (k: string) => string; isRTL?: boolean }) {
   if (entry) {
     const moodCfg = entry.mood ? MOOD_ICONS[entry.mood] : null;
     return (
       <Pressable onPress={onOpen}>
         <View style={[styles.journalCard, { backgroundColor: C.card, borderColor: C.border }]}>
-          <View style={styles.journalCardHeader}>
+          <View style={[styles.journalCardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={[styles.journalIconBox, { backgroundColor: '#9B6EF5' + '18' }]}>
               <Ionicons name="book-outline" size={20} color="#9B6EF5" />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.journalCardTitle, { color: C.text }]}>
+              <Text style={[styles.journalCardTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>
                 {entry.title || tFunc('todayEntry')}
               </Text>
               {moodCfg && (
-                <View style={[styles.journalMoodBadge, { backgroundColor: moodCfg.color + '18' }]}>
+                <View style={[styles.journalMoodBadge, { backgroundColor: moodCfg.color + '18', flexDirection: isRTL ? 'row-reverse' : 'row', alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}>
                   <Ionicons name={moodCfg.icon as any} size={12} color={moodCfg.color} />
                   <Text style={[styles.journalMoodText, { color: moodCfg.color }]}>
                     {tFunc(`mood${entry.mood!.charAt(0).toUpperCase() + entry.mood!.slice(1)}`)}
@@ -440,9 +440,9 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc }: { entry?: Journal
                 </View>
               )}
             </View>
-            <Ionicons name="chevron-forward" size={16} color={C.textMuted} />
+            <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textMuted} />
           </View>
-          <Text style={[styles.journalPreview, { color: C.textSecondary }]} numberOfLines={2}>
+          <Text style={[styles.journalPreview, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
             {entry.content}
           </Text>
         </View>
@@ -453,17 +453,17 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc }: { entry?: Journal
   return (
     <Pressable onPress={onWrite}>
       <View style={[styles.journalCard, { backgroundColor: C.card, borderColor: C.border }]}>
-        <View style={styles.journalCardHeader}>
+        <View style={[styles.journalCardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={[styles.journalIconBox, { backgroundColor: '#9B6EF5' + '18' }]}>
             <Ionicons name="book-outline" size={20} color="#9B6EF5" />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={[styles.journalCardTitle, { color: C.textMuted }]}>
+            <Text style={[styles.journalCardTitle, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>
               {tFunc('noEntryToday')}
             </Text>
           </View>
         </View>
-        <Pressable onPress={onWrite} style={[styles.journalWriteBtn, { backgroundColor: '#9B6EF5' + '15' }]}>
+        <Pressable onPress={onWrite} style={[styles.journalWriteBtn, { backgroundColor: '#9B6EF5' + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <Ionicons name="create-outline" size={16} color="#9B6EF5" />
           <Text style={[styles.journalWriteText, { color: '#9B6EF5' }]}>{tFunc('startWriting')}</Text>
         </Pressable>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  FlatList, StyleSheet, Text, View, Platform, Pressable, Alert,
+  FlatList, StyleSheet, Text, View, Platform, Pressable,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,6 +14,8 @@ import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
 import { GoalForm } from '../../src/features/goals/GoalForm';
+import { Toast } from '../../src/components/ui/Toast';
+import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 import { Goal } from '../../src/types';
 
 const GOAL_GRADIENTS: [string, string][] = [
@@ -25,11 +27,6 @@ const GOAL_GRADIENTS: [string, string][] = [
   ['#FFB800', '#FF6B35'],
 ];
 
-const GOAL_ICONS: Record<string, string> = {
-  book: 'book', fitness: 'fitness', card: 'card', language: 'language',
-  star: 'star', heart: 'heart', trophy: 'trophy', rocket: 'rocket', leaf: 'leaf', water: 'water',
-};
-
 export default function GoalsScreen() {
   const { C } = useAppTheme();
   const insets = useSafeAreaInsets();
@@ -38,17 +35,23 @@ export default function GoalsScreen() {
   const { goals, deleteGoal, incrementProgress } = useGoalsStore();
   const { profile } = useSettingsStore();
   const lang = profile.language;
+  const isRTL = lang === 'ar';
 
   const [showForm, setShowForm] = useState(false);
   const [editGoal, setEditGoal] = useState<Goal | null>(null);
+  const [confirmGoal, setConfirmGoal] = useState<Goal | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const tFunc = (key: string) => t(key, lang);
   const topPad = isWeb ? 67 : insets.top;
   const bottomPad = isWeb ? 34 : 0;
 
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type });
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
-      {/* Header */}
       <LinearGradient
         colors={['#7C5CFC', '#A855F7']}
         start={{ x: 0, y: 0 }}
@@ -57,10 +60,10 @@ export default function GoalsScreen() {
       >
         <View style={styles.headerDecor1} />
         <View style={styles.headerDecor2} />
-        <View style={styles.headerRow}>
+        <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View>
-            <Text style={styles.headerTitle}>{tFunc('goals')}</Text>
-            <Text style={styles.headerSub}>{goals.length} {tFunc('activeGoals')}</Text>
+            <Text style={[styles.headerTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('goals')}</Text>
+            <Text style={[styles.headerSub, { textAlign: isRTL ? 'right' : 'left' }]}>{goals.length} {tFunc('activeGoals')}</Text>
           </View>
           <Pressable
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditGoal(null); setShowForm(true); }}
@@ -81,11 +84,10 @@ export default function GoalsScreen() {
         renderItem={({ item, index }) => {
           const grad = GOAL_GRADIENTS[index % GOAL_GRADIENTS.length];
           const pct = item.target_value > 0 ? item.current_value / item.target_value : 0;
-          const iconName = ((GOAL_ICONS[item.icon] ?? 'star') + '-outline') as any;
+          const iconName = (item.icon + '-outline') as any;
 
           return (
             <View style={[styles.goalCard, { backgroundColor: C.card, borderColor: C.border }]}>
-              {/* Top accent line */}
               <LinearGradient
                 colors={grad}
                 start={{ x: 0, y: 0 }}
@@ -94,13 +96,13 @@ export default function GoalsScreen() {
               />
 
               <View style={styles.goalContent}>
-                <View style={styles.goalHeader}>
+                <View style={[styles.goalHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <LinearGradient colors={grad} style={styles.goalIconBox}>
                     <Ionicons name={iconName} size={20} color="#fff" />
                   </LinearGradient>
                   <View style={{ flex: 1 }}>
-                    <Text style={[styles.goalTitle, { color: C.text }]} numberOfLines={1}>{item.title}</Text>
-                    <View style={[styles.typeBadge, { backgroundColor: grad[0] + '18' }]}>
+                    <Text style={[styles.goalTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{item.title}</Text>
+                    <View style={[styles.typeBadge, { backgroundColor: grad[0] + '18', alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}>
                       <Text style={[styles.typeText, { color: grad[0] }]}>{tFunc(item.type)}</Text>
                     </View>
                   </View>
@@ -113,11 +115,10 @@ export default function GoalsScreen() {
                 </View>
 
                 {item.description ? (
-                  <Text style={[styles.goalDesc, { color: C.textSecondary }]} numberOfLines={2}>{item.description}</Text>
+                  <Text style={[styles.goalDesc, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>{item.description}</Text>
                 ) : null}
 
-                {/* Progress */}
-                <View style={styles.progressRow}>
+                <View style={[styles.progressRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Text style={[styles.progressLabel, { color: C.textSecondary }]}>
                     {item.current_value} / {item.target_value}
                   </Text>
@@ -128,33 +129,22 @@ export default function GoalsScreen() {
                 <View style={[styles.track, { backgroundColor: C.borderLight }]}>
                   <LinearGradient
                     colors={grad}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={[styles.trackFill, { width: `${Math.min(pct * 100, 100)}%` }]}
+                    start={{ x: isRTL ? 1 : 0, y: 0 }}
+                    end={{ x: isRTL ? 0 : 1, y: 0 }}
+                    style={[styles.trackFill, { width: `${Math.min(pct * 100, 100)}%`, alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}
                   />
                 </View>
 
-                {/* Action buttons */}
-                <View style={styles.actions}>
+                <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Pressable
                     onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); incrementProgress(item.id); }}
-                    style={[styles.actionBtn, { borderColor: grad[0] + '40', backgroundColor: grad[0] + '10' }]}
+                    style={[styles.actionBtn, { borderColor: grad[0] + '40', backgroundColor: grad[0] + '10', flexDirection: isRTL ? 'row-reverse' : 'row' }]}
                   >
                     <Ionicons name="add-circle-outline" size={16} color={grad[0]} />
                     <Text style={[styles.actionText, { color: grad[0] }]}>+1 {t('progress', lang)}</Text>
                   </Pressable>
                   <Pressable
-                    onPress={() => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      Alert.alert(
-                        tFunc('deleteGoal'),
-                        item.title,
-                        [
-                          { text: tFunc('cancel'), style: 'cancel' },
-                          { text: tFunc('delete'), style: 'destructive', onPress: () => deleteGoal(item.id) },
-                        ]
-                      );
-                    }}
+                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setConfirmGoal(item); }}
                     style={[styles.actionBtnIcon, { borderColor: C.error + '30', backgroundColor: C.error + '10' }]}
                   >
                     <Ionicons name="trash-outline" size={16} color={C.error} />
@@ -174,6 +164,31 @@ export default function GoalsScreen() {
       />
 
       <GoalForm visible={showForm} onClose={() => { setShowForm(false); setEditGoal(null); }} editGoal={editGoal} />
+
+      <ConfirmDialog
+        visible={!!confirmGoal}
+        title={tFunc('deleteGoal')}
+        message={confirmGoal?.title}
+        confirmLabel={tFunc('delete')}
+        cancelLabel={tFunc('cancel')}
+        type="danger"
+        onConfirm={() => {
+          if (confirmGoal) {
+            deleteGoal(confirmGoal.id);
+            showToast(tFunc('goalDeleted'), 'error');
+          }
+          setConfirmGoal(null);
+        }}
+        onCancel={() => setConfirmGoal(null)}
+      />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onHide={() => setToast(null)}
+        />
+      )}
     </View>
   );
 }
@@ -196,7 +211,7 @@ const styles = StyleSheet.create({
     width: 80, height: 80, borderRadius: 40,
     backgroundColor: 'rgba(255,255,255,0.07)',
   },
-  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  headerRow: { alignItems: 'center', justifyContent: 'space-between' },
   headerTitle: { fontSize: 28, fontFamily: 'Inter_700Bold', color: '#fff' },
   headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: 'Inter_500Medium', marginTop: 2 },
   addBtn: {},
@@ -218,23 +233,23 @@ const styles = StyleSheet.create({
   },
   goalTopLine: { height: 4, width: '100%' },
   goalContent: { padding: Spacing.lg, gap: Spacing.md },
-  goalHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
+  goalHeader: { alignItems: 'center', gap: Spacing.md },
   goalIconBox: {
     width: 44, height: 44, borderRadius: Radius.md,
     alignItems: 'center', justifyContent: 'center',
   },
   goalTitle: { fontSize: 16, fontFamily: 'Inter_700Bold', marginBottom: 4 },
-  typeBadge: { alignSelf: 'flex-start', borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
+  typeBadge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
   typeText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
   goalDesc: { fontSize: 13, fontFamily: 'Inter_400Regular', lineHeight: 18 },
-  progressRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  progressRow: { justifyContent: 'space-between', alignItems: 'center' },
   progressLabel: { fontSize: 12, fontFamily: 'Inter_500Medium' },
   progressPct: { fontSize: 20, fontFamily: 'Inter_700Bold' },
   track: { height: 8, borderRadius: 4, overflow: 'hidden' },
   trackFill: { height: '100%', borderRadius: 4 },
-  actions: { flexDirection: 'row', gap: Spacing.sm },
+  actions: { gap: Spacing.sm },
   actionBtn: {
-    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    flex: 1, alignItems: 'center', justifyContent: 'center',
     borderRadius: Radius.md, borderWidth: 1,
     paddingVertical: 8, gap: 5,
   },
