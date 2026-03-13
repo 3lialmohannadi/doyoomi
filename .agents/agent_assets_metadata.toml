@@ -1,0 +1,20 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "rfY5RzATbpLRRiBivVT_b"
+uri = "file://attached_assets/generated_images/doyoomi_icon_v1.png"
+type = "image"
+title = "أيقونة النسخة الأولى — تدرج بنفسجي وردي مع رمز"
+
+[[outputs]]
+id = "cXpTyhAeNgTPajxrVgPOP"
+uri = "file://attached_assets/generated_images/doyoomi_icon_v2.png"
+type = "image"
+title = "أيقونة النسخة الثانية — خلفية بنفسجي داكن مع رمز مضيء"
+
+[[outputs]]
+id = "SVs7VLo1-wpVtagqI_Wdl"
+uri = "file://attached_assets/generated_images/doyoomi_logo_wordmark.png"
+type = "image"
+title = "الشعار الكامل — أيقونة + اسم التطبيق بالعربي والإنجليزي"
