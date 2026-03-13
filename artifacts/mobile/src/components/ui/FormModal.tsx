@@ -40,7 +40,12 @@ export function FormModal({
       >
         <View style={[styles.container, { backgroundColor: C.background }]}>
           <View style={[styles.header, { borderBottomColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Pressable onPress={onClose} style={styles.cancelBtn} accessibilityRole="button" accessibilityLabel={cancelLabel}>
+            <Pressable
+              onPress={onClose}
+              style={({ pressed }) => [styles.cancelBtn, { opacity: pressed ? 0.6 : 1 }]}
+              accessibilityRole="button"
+              accessibilityLabel={cancelLabel}
+            >
               <Ionicons name="close" size={22} color={C.textSecondary} />
             </Pressable>
             <Text style={[styles.headerTitle, { color: C.text }]} accessibilityRole="header">{title}</Text>
@@ -67,13 +72,20 @@ export function FormModal({
           ]}>
             <Pressable
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onClose(); }}
-              style={[styles.bottomBtn, { backgroundColor: C.surface, borderColor: C.border, borderWidth: 1 }]}
+              style={({ pressed }) => [
+                styles.bottomBtn,
+                { backgroundColor: C.surface, borderColor: C.border, borderWidth: 1, opacity: pressed ? 0.7 : 1 },
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel={cancelLabel}
             >
               <Text style={[styles.bottomBtnText, { color: C.textSecondary }]}>{cancelLabel}</Text>
             </Pressable>
             <Pressable
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onSave(); }}
-              style={styles.bottomBtnSave}
+              style={({ pressed }) => [styles.bottomBtnSave, { opacity: pressed ? 0.85 : 1 }]}
+              accessibilityRole="button"
+              accessibilityLabel={saveLabel}
             >
               <LinearGradient
                 colors={['#7C5CFC', '#FF6B9D']}
@@ -143,6 +155,7 @@ export function FormInput({ value, onChangeText, placeholder, multiline, keyboar
           color: C.text,
           minHeight: multiline ? 90 : 48,
           textAlignVertical: multiline ? 'top' : 'center',
+          borderWidth: error ? 1.5 : 1,
         },
       ]}
     />
@@ -166,13 +179,16 @@ export function FormSelect({ options, value, onChange }: SelectProps) {
           <Pressable
             key={opt.key}
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onChange(opt.key); }}
-            style={[
+            style={({ pressed }) => [
               styles.selectOption,
               {
                 backgroundColor: isActive ? C.tint + '20' : C.surface,
                 borderColor: isActive ? C.tint : C.border,
+                opacity: pressed ? 0.75 : 1,
               },
             ]}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isActive }}
           >
             <Text style={[styles.selectText, { color: isActive ? C.tint : C.textSecondary }]}>
               {opt.label}
@@ -200,10 +216,17 @@ export function FormPressableInput({ value, placeholder, icon, onPress, error }:
   return (
     <Pressable
       onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onPress(); }}
-      style={[
+      style={({ pressed }) => [
         styles.pressableInput,
-        { backgroundColor: C.inputBg, borderColor: error ? C.error : C.border, flexDirection: isRTL ? 'row-reverse' : 'row' },
+        {
+          backgroundColor: C.inputBg,
+          borderColor: error ? C.error : C.border,
+          flexDirection: isRTL ? 'row-reverse' : 'row',
+          opacity: pressed ? 0.75 : 1,
+        },
       ]}
+      accessibilityRole="button"
+      accessibilityLabel={placeholder}
     >
       <Ionicons name={icon} size={18} color={C.tint} />
       <Text style={[styles.pressableInputText, { color: value ? C.text : C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>
@@ -237,14 +260,18 @@ export function PrioritySelector({ value, onChange, options }: PrioritySelectorP
           <Pressable
             key={opt.key}
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onChange(opt.key); }}
-            style={[
+            style={({ pressed }) => [
               styles.priorityOption,
               {
                 backgroundColor: isActive ? color + '20' : C.surface,
                 borderColor: isActive ? color : C.border,
                 borderWidth: isActive ? 2 : 1,
+                opacity: pressed ? 0.75 : 1,
               },
             ]}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isActive }}
+            accessibilityLabel={opt.label}
           >
             <View style={[styles.priorityDot, { backgroundColor: color }]} />
             <Text style={[
@@ -285,14 +312,18 @@ export function CategorySelector({ value, onChange, options }: CategorySelectorP
           <Pressable
             key={opt.key}
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onChange(opt.key); }}
-            style={[
+            style={({ pressed }) => [
               styles.categoryChip,
               {
                 backgroundColor: isActive ? color + '20' : C.surface,
                 borderColor: isActive ? color : C.border,
                 borderWidth: isActive ? 2 : 1,
+                opacity: pressed ? 0.75 : 1,
               },
             ]}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isActive }}
+            accessibilityLabel={opt.label}
           >
             {opt.icon ? (
               <Ionicons name={(opt.icon + '-outline') as any} size={16} color={isActive ? color : C.textMuted} />
