@@ -18,3 +18,39 @@ id = "SVs7VLo1-wpVtagqI_Wdl"
 uri = "file://attached_assets/generated_images/doyoomi_logo_wordmark.png"
 type = "image"
 title = "الشعار الكامل — أيقونة + اسم التطبيق بالعربي والإنجليزي"
+
+[[outputs]]
+id = "TGdbXv03NKIQCUdzMHO-s"
+uri = "file://attached_assets/generated_images/icon_option_1.png"
+type = "image"
+title = "1️⃣ حلقة تقدم + علامة صح — يمثل إنجاز العادات اليومية"
+
+[[outputs]]
+id = "cfgNU1XRfasHQHY-2ph9j"
+uri = "file://attached_assets/generated_images/icon_option_2.png"
+type = "image"
+title = "2️⃣ كتاب + نجمة — يمثل اليومية والأهداف"
+
+[[outputs]]
+id = "N6M8T62ZQMhS5uZn33Lbn"
+uri = "file://attached_assets/generated_images/icon_option_3.png"
+type = "image"
+title = "3️⃣ شمس + قائمة مهام — يمثل الإنتاجية اليومية"
+
+[[outputs]]
+id = "jLz208LJc2pjN3-QnaCz8"
+uri = "file://attached_assets/generated_images/icon_option_4.png"
+type = "image"
+title = "4️⃣ سهم نمو + نبتة (خلفية داكنة) — يمثل التطور والعادات"
+
+[[outputs]]
+id = "6EDOYo35sE767GWTGW11o"
+uri = "file://attached_assets/generated_images/icon_option_5.png"
+type = "image"
+title = "5️⃣ تقويم + نجمة — يمثل التخطيط اليومي"
+
+[[outputs]]
+id = "YnPZT3Kuj9onGxwXVtx16"
+uri = "file://attached_assets/generated_images/icon_option_6.png"
+type = "image"
+title = "6️⃣ حرف D مع مدار — يمثل براند Do.Yoomi"
