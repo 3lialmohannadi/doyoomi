@@ -84,6 +84,8 @@ const translations: Record<Language, Record<string, string>> = {
     noHabitsSubtitle: 'Build a habit to track your streak',
     habitName: 'Habit name',
     completeHabit: 'Mark done',
+    activeHabits: 'active habits',
+    doneToday: 'Done today',
 
     // Settings
     profile: 'Profile',
@@ -260,6 +262,8 @@ const translations: Record<Language, Record<string, string>> = {
     noHabitsSubtitle: 'أنشئ عادة لتتبع تسلسلك',
     habitName: 'اسم العادة',
     completeHabit: 'تعيين منجز',
+    activeHabits: 'عادات نشطة',
+    doneToday: 'أُنجز اليوم',
 
     // الإعدادات
     profile: 'الملف الشخصي',

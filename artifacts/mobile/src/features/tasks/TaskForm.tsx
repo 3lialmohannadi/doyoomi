@@ -168,9 +168,10 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
         {showTimePicker && (
           <InlineTimePicker
             value={dueTime}
-            onChange={(t) => setDueTime(t)}
+            onChange={(v) => setDueTime(v)}
             is12h={is12h}
             C={C}
+            lang={lang}
             onDone={() => setShowTimePicker(false)}
           />
         )}
@@ -306,18 +307,18 @@ const calStyles = StyleSheet.create({
 });
 
 // ── Pure JS Time Picker ──
-function InlineTimePicker({ value, onChange, is12h, C, onDone }: any) {
+function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
   const currentHour = value ? parseInt(value.split(':')[0]) : new Date().getHours();
   const currentMin = value ? parseInt(value.split(':')[1]) : 0;
 
   const [hour, setHour] = useState(currentHour);
   const [minute, setMinute] = useState(currentMin);
 
-  useEffect(() => {
-    const hh = hour.toString().padStart(2, '0');
-    const mm = minute.toString().padStart(2, '0');
+  const commit = (h: number, m: number) => {
+    const hh = h.toString().padStart(2, '0');
+    const mm = m.toString().padStart(2, '0');
     onChange(`${hh}:${mm}`);
-  }, [hour, minute]);
+  };
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
@@ -334,14 +335,16 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone }: any) {
       <View style={timeStyles.row}>
         {/* Hour picker */}
         <View style={timeStyles.col}>
-          <Text style={[timeStyles.label, { color: C.textMuted }]}>
-            {is12h ? 'Hour' : 'Hour'}
-          </Text>
+          <Text style={[timeStyles.label, { color: C.textMuted }]}>Hour</Text>
           <ScrollView style={timeStyles.scroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
             {hours.map(h => (
               <Pressable
                 key={h}
-                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setHour(h); }}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setHour(h);
+                  commit(h, minute);
+                }}
                 style={[timeStyles.option, hour === h && { backgroundColor: C.tint + '20' }]}
               >
                 <Text style={[timeStyles.optionText, { color: hour === h ? C.tint : C.text, fontFamily: hour === h ? 'Inter_700Bold' : 'Inter_400Regular' }]}>
@@ -356,14 +359,16 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone }: any) {
 
         {/* Minute picker */}
         <View style={timeStyles.col}>
-          <Text style={[timeStyles.label, { color: C.textMuted }]}>
-            Min
-          </Text>
+          <Text style={[timeStyles.label, { color: C.textMuted }]}>Min</Text>
           <ScrollView style={timeStyles.scroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
             {minutes.map(m => (
               <Pressable
                 key={m}
-                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setMinute(m); }}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setMinute(m);
+                  commit(hour, m);
+                }}
                 style={[timeStyles.option, minute === m && { backgroundColor: C.tint + '20' }]}
               >
                 <Text style={[timeStyles.optionText, { color: minute === m ? C.tint : C.text, fontFamily: minute === m ? 'Inter_700Bold' : 'Inter_400Regular' }]}>
@@ -383,7 +388,7 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone }: any) {
           style={[StyleSheet.absoluteFill, { borderRadius: Radius.md }]}
         />
         <Ionicons name="checkmark" size={16} color="#fff" />
-        <Text style={timeStyles.doneBtnText}>{t('save', 'en')}</Text>
+        <Text style={timeStyles.doneBtnText}>{t('save', lang)}</Text>
       </Pressable>
     </View>
   );

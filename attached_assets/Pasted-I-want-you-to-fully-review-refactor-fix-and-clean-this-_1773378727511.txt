@@ -1,0 +1,518 @@
+I want you to fully review, refactor, fix, and clean this app professionally.
+
+Do not make partial changes.
+Do not do quick patchwork.
+Do not leave inconsistent logic behind.
+
+Your job is to inspect the entire app first, then make sure all the required features, sections, flows, and cleanup are correctly implemented.
+
+Important rule:
+If something listed below already exists, verify that it is properly built, connected, clean, and working correctly.
+If it exists but is broken, incomplete, messy, duplicated, or inconsistent, fix it and clean it.
+If it does not exist, create it properly.
+If old logic conflicts with the new app structure, remove or refactor it safely.
+
+I want a full clean implementation and cleanup, not surface-level edits.
+
+==================================================
+PRIMARY GOAL
+==================================================
+
+Refine the app so it becomes a clean, stable, easy-to-maintain daily productivity app focused on:
+
+1. Home
+2. Calendar
+3. Tasks
+4. Habits
+5. Goals
+6. Journal
+7. Settings
+8. Categories
+
+The app should feel simple, clean, practical, and consistent.
+
+Core meaning of each section:
+- Task = something the user needs to do
+- Habit = something repeated regularly
+- Goal = a bigger outcome tracked over time
+- Journal = daily notes, writing, reflections, or personal thoughts
+- Calendar = date-based view of items
+- Home = daily dashboard
+- Settings = app preferences and customization
+- Categories = classification system for tasks, habits, and goals
+
+==================================================
+FIRST: FULL APP AUDIT BEFORE CHANGING ANYTHING
+==================================================
+
+Before editing code, inspect the app structure and verify all of the following:
+
+- screens
+- components
+- navigation
+- routes
+- forms
+- state management
+- models / types / interfaces
+- storage / database logic
+- translations
+- filters
+- statistics
+- empty states
+- reusable UI blocks
+- old feature leftovers
+- broken or duplicated logic
+
+Then proceed with implementation.
+
+While working, follow this rule:
+- If a feature or section already exists, verify and repair it if needed
+- If something is missing, build it
+- If something is outdated, inconsistent, duplicated, or broken, clean and refactor it
+
+==================================================
+MANDATORY GLOBAL CHANGES
+==================================================
+
+Apply and verify these changes across the full app:
+
+1. Remove task duration completely
+2. Remove task images completely
+3. Remove task files completely
+4. Remove task attachments completely
+5. Keep only notes / description inside tasks
+6. Remove Focus Mode completely
+7. Remove End-of-Day / Daily Closing Review completely
+8. Add or properly complete the Journal feature
+9. Clean all old logic related to removed features
+10. Make sure no broken references remain anywhere
+
+This means:
+If any screen, modal, button, icon, route, component, state, type, schema, validation, service, helper, translation key, or storage logic is related to removed features, it must be removed or safely refactored.
+
+==================================================
+SECTION-BY-SECTION REQUIREMENTS
+==================================================
+
+--------------------------------------------------
+1) HOME
+--------------------------------------------------
+
+Purpose:
+A smart daily dashboard that gives the user a quick and useful overview.
+
+Make sure Home includes, or create/fix these if missing:
+- daily greeting
+- daily summary
+- tasks for today
+- completed tasks count
+- overdue tasks count
+- habits summary
+- goals summary with progress
+- Journal card
+- weekly mini overview
+- quick add actions if suitable in the current UI
+
+Requirements:
+- keep the current visual identity
+- do not redesign unnecessarily
+- improve clarity and consistency
+- make sure data shown on Home comes from correct sources
+- make sure cards open the correct screens
+
+Journal card on Home must support:
+- no entry today
+- entry exists today
+- quick action to write
+- latest mood or preview if available
+
+If any of these already exist but are inconsistent or broken, fix them.
+If missing, implement them properly.
+
+--------------------------------------------------
+2) CALENDAR
+--------------------------------------------------
+
+Purpose:
+A clear time-based view of the user’s items.
+
+Requirements:
+- verify or implement proper day/week/month support depending on current app structure
+- make sure tasks with dates appear correctly
+- allow opening a day to view that day’s items
+- keep the UI simple and clean
+- ensure calendar navigation works properly
+
+If habits are currently shown there and it makes sense, keep/fix them.
+If old logic from removed features affects Calendar, remove it.
+
+Check and clean:
+- date mapping
+- day selection
+- item rendering
+- month/week switching
+- overdue behavior if relevant
+
+--------------------------------------------------
+3) TASKS
+--------------------------------------------------
+
+Purpose:
+Simple, fast daily task management.
+
+The task model must only include:
+- title
+- notes / description
+- category
+- priority
+- date
+- time
+- status
+- reminder
+
+Remove completely:
+- duration
+- images
+- files
+- attachments
+- upload handling
+- preview handling
+- media permissions
+- attachment validation
+- attachment-related UI
+- attachment-related storage
+- attachment-related types/interfaces
+
+Task statuses:
+- incomplete
+- completed
+- postponed
+- overdue
+- cancelled only if already useful and implemented cleanly
+
+Task flows that must exist and work correctly:
+- create
+- edit
+- delete
+- mark complete
+- postpone
+- filter
+- show on Home
+- show in Calendar if dated
+
+Required filters:
+- all
+- today
+- completed
+- overdue
+- postponed
+- high priority
+- no date
+
+If task screens already exist, inspect and simplify them.
+If the task model or UI is inconsistent, refactor it cleanly.
+
+Very important:
+The only extra content field in tasks should be notes/description.
+No files. No images. No attachments. No duration.
+
+--------------------------------------------------
+4) HABITS
+--------------------------------------------------
+
+Purpose:
+Track recurring behaviors clearly and simply.
+
+Verify or implement these correctly:
+- habit creation
+- habit editing
+- daily/recurring tracking
+- progress updates
+- completion logic
+- streak logic if supported
+- display on Home
+
+Habit types may include if already supported cleanly:
+- yes/no
+- count-based
+- numeric measurement
+- duration-based only for habits if already part of the system
+
+Important:
+Do not let task duration return indirectly through habit logic.
+Keep habits clean and focused.
+
+If habits are already there but messy or buggy, fix them.
+
+--------------------------------------------------
+5) GOALS
+--------------------------------------------------
+
+Purpose:
+Track larger outcomes over time with visible progress.
+
+Verify or implement:
+- create goal
+- edit goal
+- delete goal
+- current value
+- target value
+- progress percentage
+- summary on Home
+
+Check:
+- percentage calculations
+- progress updates
+- optional relationship with habits/tasks if already supported
+- card consistency in UI
+
+Do not overcomplicate goals.
+Just make them stable, clean, and correct.
+
+--------------------------------------------------
+6) JOURNAL
+--------------------------------------------------
+
+Purpose:
+A dedicated place for daily writing, reflections, notes, mood tracking, and personal entries.
+
+This feature is required.
+If it does not exist, create it properly.
+If it exists but is incomplete, messy, or broken, fix and finish it.
+
+Version 1 requirements:
+- create journal entry
+- edit entry
+- delete entry
+- view previous entries
+- search entries
+- mood selection
+- optional lightweight tags
+- Journal card on Home
+
+Suggested journal entry structure:
+- id
+- date
+- title (optional)
+- content
+- mood (optional)
+- tags (optional)
+- createdAt
+- updatedAt
+
+Journal main screen should support:
+- add new entry
+- entries list
+- date display
+- mood display
+- search
+- simple filtering if useful
+
+Journal editor should support:
+- date
+- title
+- content
+- mood
+- tags
+- save
+
+Suggested moods:
+- excellent
+- good
+- neutral
+- tired
+- bad
+
+Navigation rule:
+If adding Journal to the bottom tab harms the app structure, do not force it.
+It can be a separate screen reachable from Home or another appropriate place.
+Preserve good UX.
+
+--------------------------------------------------
+7) SETTINGS
+--------------------------------------------------
+
+Purpose:
+General app preferences and customization.
+
+Verify/fix/implement:
+- language
+- appearance / theme
+- time format
+- start of week
+- categories management access
+- profile if already supported
+
+Remove any old settings tied to:
+- Focus Mode
+- End-of-Day Review
+- task duration
+- task attachments
+- task media
+
+Clean old labels, options, and dead settings logic.
+
+--------------------------------------------------
+8) CATEGORIES
+--------------------------------------------------
+
+Purpose:
+Provide clean classification for tasks, habits, and goals.
+
+Verify/fix:
+- create/edit/delete categories if already supported
+- category linking works properly
+- category names and colors display correctly
+- categories are usable across tasks, habits, and goals where intended
+
+If old category logic is broken or messy, clean it.
+
+==================================================
+FULL REMOVAL REQUIREMENTS
+==================================================
+
+Completely remove these features from the app and codebase:
+
+1. Task duration
+2. Task images
+3. Task files
+4. Task attachments
+5. Focus Mode
+6. End-of-Day / Daily Closing Review
+
+This removal must include:
+- UI
+- routes
+- components
+- buttons
+- icons
+- forms
+- validations
+- types
+- interfaces
+- schemas
+- helpers
+- services
+- state/store references
+- translations
+- storage fields
+- old conditional rendering
+- any broken references
+
+Do not just hide them visually.
+Remove or refactor them properly.
+
+==================================================
+TECHNICAL CLEANUP REQUIREMENTS
+==================================================
+
+I want a full cleanup pass while doing this work.
+
+You must:
+- inspect the current code structure first
+- identify affected files
+- refactor safely
+- remove dead code
+- remove unused imports
+- remove unused states
+- remove outdated utilities
+- remove duplicated logic
+- update types/interfaces
+- fix inconsistent naming if necessary
+- make the app easier to maintain
+
+If the project uses TypeScript:
+- make sure types are valid everywhere
+
+If the project uses Zustand / Redux / Context:
+- review and clean the state structure
+
+If the project uses React Navigation / Expo Router:
+- verify routes and screen registration
+
+If the project uses AsyncStorage / local storage / database:
+- verify reads and writes
+- make sure removed fields do not break old saved data
+- ignore removed fields safely or add lightweight migration if necessary
+
+==================================================
+QUALITY CONTROL RULES
+==================================================
+
+While working, do not assume anything is correct.
+Check it.
+
+For every section:
+- if it exists, verify it
+- if it is broken, fix it
+- if it is incomplete, complete it
+- if it is duplicated, unify it
+- if it is outdated, clean it
+- if it is missing, create it
+- if it conflicts with the new structure, refactor it
+
+Do not leave behind:
+- broken references
+- dead code
+- inconsistent labels
+- half-removed features
+- hidden but still wired old logic
+- unreachable routes
+- unused components
+- dirty state structure
+
+==================================================
+UI / UX RULES
+==================================================
+
+- preserve the current app identity
+- preserve the current color palette
+- preserve the current design style as much as possible
+- simplify where needed
+- avoid clutter
+- improve forms where needed
+- keep Arabic and English working correctly
+- keep RTL and LTR working correctly
+- check spacing, alignment, empty states, and button behavior
+
+==================================================
+FINAL VERIFICATION REQUIRED
+==================================================
+
+After implementation, do a full final verification and make sure:
+
+1. All required sections exist and work correctly
+2. Home is correct and connected properly
+3. Calendar works correctly
+4. Tasks are simplified and clean
+5. Habits work correctly
+6. Goals work correctly
+7. Journal exists and is integrated properly
+8. Settings are clean and valid
+9. Categories work correctly
+10. Removed features are fully gone from both UI and code
+11. Navigation works
+12. Forms work
+13. Filters work
+14. No obvious runtime issues remain
+15. No console/build/type errors remain
+16. Code is cleaned and stable
+
+==================================================
+FINAL RESPONSE FORMAT I WANT FROM YOU
+==================================================
+
+After finishing, provide a clear implementation summary with:
+
+- what already existed and was verified
+- what was broken and fixed
+- what was missing and added
+- what was removed
+- what was cleaned/refactored
+- what files/areas were affected
+- whether final validation was completed
+- any remaining issues if they exist
+
+Do not stop at a partial implementation.
+Do not leave the app in a messy in-between state.
+Complete the audit, implementation, cleanup, and validation professionally.

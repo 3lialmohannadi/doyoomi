@@ -28,6 +28,10 @@ function NativeTabLayout() {
         <Icon sf={{ default: "checklist", selected: "checklist" }} />
         <Label>{tFunc('tasks')}</Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="habits">
+        <Icon sf={{ default: "leaf", selected: "leaf.fill" }} />
+        <Label>{tFunc('habits')}</Label>
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="goals">
         <Icon sf={{ default: "target", selected: "target" }} />
         <Label>{tFunc('goals')}</Label>
@@ -94,6 +98,14 @@ function ClassicTabLayout() {
           title: tFunc('tasks'),
           tabBarIcon: ({ color }) =>
             isIOS ? <SymbolView name="checklist" tintColor={color} size={24} /> : <Ionicons name="checkmark-circle-outline" size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="habits"
+        options={{
+          title: tFunc('habits'),
+          tabBarIcon: ({ color }) =>
+            isIOS ? <SymbolView name="leaf" tintColor={color} size={24} /> : <Ionicons name="leaf-outline" size={22} color={color} />,
         }}
       />
       <Tabs.Screen

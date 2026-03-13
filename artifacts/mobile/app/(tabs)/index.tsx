@@ -51,17 +51,17 @@ export default function HomeScreen() {
   const today = getTodayString();
   const tFunc = (key: string) => t(key, lang);
 
-  const todayTasks = useMemo(() => tasks.filter(t => t.due_date === today), [tasks, today]);
-  const completedToday = todayTasks.filter(t => t.status === 'completed').length;
-  const overdueCount = tasks.filter(t => t.status === 'overdue' || (t.due_date && isOverdue(t.due_date) && t.status === 'pending')).length;
-  const thisWeek = tasks.filter(t => {
-    if (!t.due_date) return false;
-    const d = new Date(t.due_date);
+  const todayTasks = useMemo(() => tasks.filter(task => task.due_date === today), [tasks, today]);
+  const completedToday = todayTasks.filter(task => task.status === 'completed').length;
+  const overdueCount = tasks.filter(task => task.status === 'overdue' || (task.due_date && isOverdue(task.due_date) && task.status === 'pending')).length;
+  const thisWeek = tasks.filter(task => {
+    if (!task.due_date) return false;
+    const d = new Date(task.due_date);
     return d >= weekDays[0] && d <= weekDays[6];
   }).length;
   const maxStreak = habits.reduce((max, h) => Math.max(max, h.streak_days), 0);
-  const dayTasks = tasks.filter(t => t.due_date === selectedDay);
-  const allDone = todayTasks.length > 0 && todayTasks.every(t => t.status === 'completed');
+  const dayTasks = tasks.filter(task => task.due_date === selectedDay);
+  const allDone = todayTasks.length > 0 && todayTasks.every(task => task.status === 'completed');
   const topGoals = goals.slice(0, 2);
   const todayJournal = journalEntries.find(e => e.date === today);
   const topPad = isWeb ? 67 : insets.top;
@@ -108,7 +108,7 @@ export default function HomeScreen() {
             const key = formatDateKey(day);
             const isSelected = key === selectedDay;
             const isToday = key === today;
-            const hasDots = tasks.some(t => t.due_date === key);
+            const hasDots = tasks.some(task => task.due_date === key);
 
             return (
               <Pressable
@@ -476,8 +476,8 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: any) {
   const maxVal = 8;
   const data = weekDays.map((d: Date) => {
     const key = formatDateKey(d);
-    const count = tasks.filter((t: any) => t.due_date === key).length;
-    const done = tasks.filter((t: any) => t.due_date === key && t.status === 'completed').length;
+    const count = tasks.filter((task: any) => task.due_date === key).length;
+    const done = tasks.filter((task: any) => task.due_date === key && task.status === 'completed').length;
     return { day: getDayLabel(d, lang).slice(0, 1), count, done };
   });
 
