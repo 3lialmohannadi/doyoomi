@@ -1,0 +1,296 @@
+Apply the following additional updates, fixes, and refinements to the app carefully and cleanly.
+
+Important:
+Do not implement these as quick patches.
+Review the existing related code first, then fix or add each item properly.
+If any part already exists but is broken, incomplete, inconsistent, or messy, fix and clean it.
+If any part is missing, create it properly.
+Preserve the current app identity and design style.
+
+================================
+ADDITIONAL REQUIRED UPDATES
+================================
+
+1) Add the app icon
+2) Fix keyboard covering action buttons
+3) Unify colors and icons across all forms
+4) Add a Support / Contact page
+5) Fix RTL and LTR behavior
+6) Rename “Weekly Overview” to “Weekly Achievement”
+
+================================
+1) APP ICON
+================================
+
+Add the attached provided icon as the app icon.
+
+Requirements:
+- Use the provided asset as the official app icon
+- Make sure it is configured correctly for the app
+- Apply it properly in the project configuration
+- Ensure the icon appears correctly in the app build configuration
+- If multiple icon sizes or platform-specific handling are needed, configure them properly
+- If the current icon setup is incorrect or incomplete, fix it cleanly
+
+Check:
+- app config
+- expo config / native config if applicable
+- asset path correctness
+- any broken or duplicate icon references
+
+================================
+2) FIX KEYBOARD OVERLAY ISSUE
+================================
+
+There is currently a problem where the keyboard covers buttons such as:
+- Done
+- Cancel
+- other action buttons in forms / modals / sheets if affected
+
+This must be fixed properly across the app.
+
+Requirements:
+- Review all screens, forms, modals, bottom sheets, and input areas where the keyboard appears
+- Ensure the keyboard does not cover action buttons or important fields
+- Ensure the user can always reach:
+  - Done
+  - Cancel
+  - Save
+  - Submit
+  - Confirm
+  - other important actions
+- Use a proper and consistent keyboard-safe layout strategy
+- Do not create ugly spacing or broken layouts
+- Make sure the fix works on the current app structure and does not break existing UI
+
+Check and fix where needed:
+- create/edit forms
+- task forms
+- goal forms
+- habit forms
+- journal forms
+- support form
+- modals
+- bottom sheets
+- any screen with text inputs near the bottom
+
+Also verify:
+- scrolling works properly when keyboard is open
+- focused inputs remain visible
+- buttons are accessible on smaller screens
+- RTL and LTR layouts still behave correctly after the fix
+
+================================
+3) UNIFY COLORS AND ICONS ACROSS ALL FORMS
+================================
+
+Currently, colors and icons in forms need to be more consistent.
+
+Requirements:
+- Review all forms in the app
+- Standardize the visual behavior of:
+  - labels
+  - icons
+  - field colors
+  - selected states
+  - placeholders
+  - category colors where intended
+  - input borders
+  - action buttons
+- Make form icons and colors feel consistent across:
+  - Tasks
+  - Habits
+  - Goals
+  - Journal
+  - Settings
+  - Support page
+  - any other forms
+
+Important:
+- Preserve the current app identity and color palette
+- Do not redesign the app from scratch
+- Improve consistency only
+- If there are duplicate or conflicting form styles, unify them cleanly
+- If there are repeated UI patterns, refactor them into reusable form components if appropriate
+
+Check:
+- inconsistent icon sizes
+- inconsistent icon colors
+- inconsistent spacing
+- mismatched field styles
+- inconsistent selected states
+- mismatched button styles
+- light/dark theme compatibility if supported
+
+================================
+4) ADD SUPPORT / CONTACT PAGE
+================================
+
+Add a dedicated Support / Contact page inside the app.
+
+Purpose:
+Allow the user to contact support for:
+- Suggestion
+- Technical Issue
+- Other
+
+The message must be sent to:
+admin@doyoomi.com
+
+Requirements:
+Create a support page with a clean and simple form.
+
+Support form should include:
+- subject type / category:
+  - Suggestion
+  - Technical Issue
+  - Other
+- title or subject
+- message content
+
+Optional fields if suitable:
+- email
+- app version
+- device info
+But only if it fits cleanly and does not overcomplicate the form
+
+Behavior:
+- User opens Support page
+- Selects one of:
+  - Suggestion
+  - Technical Issue
+  - Other
+- Enters the subject/title
+- Enters the message
+- Submits the form
+
+Implementation note:
+Route the support message to:
+admin@doyoomi.com
+
+If email sending is not yet fully wired in the project, then:
+- build the page and form properly
+- wire the cleanest available sending method supported by the app structure
+- if a backend/email service already exists, integrate with it
+- if not, implement the cleanest suitable approach available in this project
+
+Also include:
+- loading state
+- success state
+- failure/error state
+- basic validation
+- proper empty states
+- clean form reset after successful submission if appropriate
+
+Placement:
+- Add access to the Support page in a logical place, most likely inside Settings or another suitable area
+- Do not disrupt the current navigation structure
+
+================================
+5) FIX RTL AND LTR BEHAVIOR
+================================
+
+RTL and LTR need fixes.
+
+Requirements:
+Review the app and fix direction-related issues in both Arabic and English modes.
+
+Check and fix:
+- text alignment
+- layout direction
+- icon direction where necessary
+- back buttons / arrows
+- paddings and margins
+- row ordering
+- input alignment
+- modal layout
+- bottom sheet layout
+- tabs if affected
+- cards and summary blocks
+- mixed Arabic/English text rendering
+- button alignment
+- form label alignment
+
+Make sure:
+- Arabic mode behaves correctly in RTL
+- English mode behaves correctly in LTR
+- switching language updates layout properly where intended
+- no broken alignment remains
+- no mirrored UI appears incorrectly
+
+Important:
+Do not do superficial fixes only on one screen.
+Review all major sections and make RTL/LTR behavior consistent app-wide.
+
+================================
+6) RENAME “WEEKLY OVERVIEW” TO “WEEKLY ACHIEVEMENT”
+================================
+
+Change the label/name:
+- from: Weekly Overview
+- to: Weekly Achievement
+
+Requirements:
+- Update the visible UI text everywhere it appears
+- Update translations if the app supports multiple languages
+- Update related labels or keys if needed cleanly
+- Ensure the Arabic equivalent is also updated properly where relevant
+- Do not leave mixed old/new naming in the app
+
+================================
+CLEAN IMPLEMENTATION RULES
+================================
+
+While applying these additions/fixes:
+- inspect first
+- fix properly
+- clean old or conflicting code
+- remove duplication
+- preserve current design identity
+- do not break navigation
+- do not break forms
+- do not break translations
+- do not break theme support
+- do not leave half-finished logic
+
+If any related code already exists but is messy or inconsistent:
+- refactor it cleanly
+
+If reusable components are needed for consistency:
+- create them properly
+
+================================
+FINAL VERIFICATION REQUIRED
+================================
+
+After finishing, verify all of the following:
+
+1. App icon is correctly configured
+2. Keyboard no longer hides action buttons
+3. Forms are visually consistent in colors and icons
+4. Support page exists and works correctly
+5. Support categories are:
+   - Suggestion
+   - Technical Issue
+   - Other
+6. Support flow sends to admin@doyoomi.com or is wired cleanly according to the project structure
+7. RTL works correctly
+8. LTR works correctly
+9. Weekly Overview has been renamed to Weekly Achievement everywhere
+10. No UI regressions were introduced
+11. No broken alignment remains
+12. No obvious build/runtime/type errors remain
+
+================================
+FINAL RESPONSE FORMAT
+================================
+
+After implementation, provide a summary including:
+- what was added
+- what was fixed
+- what was cleaned/refactored
+- which screens/components were affected
+- whether RTL/LTR was checked app-wide
+- whether keyboard handling was checked app-wide
+- whether final validation was completed
+- any remaining issue if one still exists

@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
+import { I18nManager } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -32,6 +33,7 @@ function RootLayoutNav() {
   const { loadGoals } = useGoalsStore();
   const { loadCategories } = useCategoriesStore();
   const { loadEntries } = useJournalStore();
+  const { profile } = useSettingsStore();
 
   useEffect(() => {
     loadSettings();
@@ -42,10 +44,19 @@ function RootLayoutNav() {
     loadEntries();
   }, []);
 
+  useEffect(() => {
+    const isRTL = profile.language === 'ar';
+    I18nManager.allowRTL(true);
+    if (I18nManager.isRTL !== isRTL) {
+      I18nManager.forceRTL(isRTL);
+    }
+  }, [profile.language]);
+
   return (
     <Stack screenOptions={{ headerBackTitle: "Back" }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="journal" options={{ headerShown: false, presentation: 'modal' }} />
+      <Stack.Screen name="support" options={{ headerShown: false }} />
     </Stack>
   );
 }

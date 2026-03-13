@@ -244,7 +244,7 @@ export default function HomeScreen() {
         </Section>
 
         {/* Weekly vibe chart */}
-        <Section title={tFunc('weeklyOverview')} C={C}>
+        <Section title={tFunc('weeklyAchievement')} C={C}>
           <FunWeekChart weekDays={weekDays} tasks={tasks} C={C} tFunc={tFunc} lang={lang} />
         </Section>
       </ScrollView>

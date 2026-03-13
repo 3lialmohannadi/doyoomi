@@ -91,6 +91,27 @@ Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used b
 
 Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
 
+### `artifacts/mobile` (`@workspace/mobile`)
+
+Expo/React Native productivity app — Do.Yoomi (يومي). Offline-first with Zustand + AsyncStorage.
+
+**Features:** Home, Calendar, Tasks, Habits, Goals, Journal, Settings, Support/Contact
+
+**Architecture:**
+- `app/(tabs)/` — Tab screens (index, calendar, tasks, habits, goals, settings)
+- `app/support.tsx` — Support/Contact stack screen (accessible from Settings)
+- `app/journal.tsx` — Journal modal screen
+- `src/features/` — Form components (TaskForm, HabitForm, GoalForm, JournalForm)
+- `src/components/ui/FormModal.tsx` — Shared form modal with RTL support + KeyboardAvoidingView
+- `src/store/` — Zustand stores (tasks, habits, goals, journal, categories, settings)
+- `src/utils/i18n.ts` — EN/AR translations
+- `src/theme/index.ts` — Design tokens (colors, spacing, radius, shadow, typography)
+- `assets/images/icon.png` — App icon (يومي branded)
+
+**RTL:** I18nManager configured in root layout; FormModal inputs are RTL-aware; settings rows adapt to language direction.
+
+**Keyboard:** FormModal uses `KeyboardAvoidingView` + `KeyboardAwareScrollView` to keep action buttons visible above keyboard.
+
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.

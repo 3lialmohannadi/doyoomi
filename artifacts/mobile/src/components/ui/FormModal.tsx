@@ -1,15 +1,16 @@
 import React from 'react';
 import {
   Modal, View, Text, Pressable, StyleSheet,
-  TextInput,
+  TextInput, Platform, KeyboardAvoidingView,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Radius, Spacing, Typography } from '../../theme';
+import { Radius, Spacing } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
+import { useSettingsStore } from '../../store/settingsStore';
 
 interface FormModalProps {
   visible: boolean;
@@ -21,15 +22,24 @@ interface FormModalProps {
   children: React.ReactNode;
 }
 
-export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save', cancelLabel = 'Cancel', children }: FormModalProps) {
+export function FormModal({
+  visible, title, onClose, onSave,
+  saveLabel = 'Save', cancelLabel = 'Cancel', children,
+}: FormModalProps) {
   const { C } = useAppTheme();
   const insets = useSafeAreaInsets();
+  const { profile } = useSettingsStore();
+  const isRTL = profile.language === 'ar';
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <View style={[styles.container, { backgroundColor: C.background }]}>
-          {/* Header */}
-          <View style={[styles.header, { borderBottomColor: C.border }]}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'android' ? 24 : 0}
+      >
+        <View style={[styles.container, { backgroundColor: C.background }]}>
+          <View style={[styles.header, { borderBottomColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Pressable onPress={onClose} style={styles.cancelBtn} accessibilityRole="button" accessibilityLabel={cancelLabel}>
               <Ionicons name="close" size={22} color={C.textSecondary} />
             </Pressable>
@@ -46,8 +56,15 @@ export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save',
             {children}
           </KeyboardAwareScrollView>
 
-          {/* Bottom action bar */}
-          <View style={[styles.bottomBar, { paddingBottom: insets.bottom + Spacing.md, backgroundColor: C.background, borderTopColor: C.border }]}>
+          <View style={[
+            styles.bottomBar,
+            {
+              paddingBottom: insets.bottom + Spacing.md,
+              backgroundColor: C.background,
+              borderTopColor: C.border,
+              flexDirection: isRTL ? 'row-reverse' : 'row',
+            },
+          ]}>
             <Pressable
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onClose(); }}
               style={[styles.bottomBtn, { backgroundColor: C.surface, borderColor: C.border, borderWidth: 1 }]}
@@ -69,6 +86,7 @@ export function FormModal({ visible, title, onClose, onSave, saveLabel = 'Save',
             </Pressable>
           </View>
         </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
@@ -80,10 +98,14 @@ interface FieldProps {
 
 export function FormField({ label, children }: FieldProps) {
   const { C } = useAppTheme();
+  const { profile } = useSettingsStore();
+  const isRTL = profile.language === 'ar';
 
   return (
     <View style={styles.field}>
-      <Text style={[styles.fieldLabel, { color: C.textSecondary }]}>{label}</Text>
+      <Text style={[styles.fieldLabel, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
+        {label}
+      </Text>
       {children}
     </View>
   );
@@ -100,6 +122,8 @@ interface InputProps {
 
 export function FormInput({ value, onChangeText, placeholder, multiline, keyboardType, error }: InputProps) {
   const { C } = useAppTheme();
+  const { profile } = useSettingsStore();
+  const isRTL = profile.language === 'ar';
 
   return (
     <TextInput
@@ -110,6 +134,7 @@ export function FormInput({ value, onChangeText, placeholder, multiline, keyboar
       multiline={multiline}
       keyboardType={keyboardType}
       accessibilityLabel={placeholder}
+      textAlign={isRTL ? 'right' : 'left'}
       style={[
         styles.input,
         {
@@ -159,7 +184,6 @@ export function FormSelect({ options, value, onChange }: SelectProps) {
   );
 }
 
-// Pressable row that looks like an input field (for date/time pickers)
 interface FormPressableInputProps {
   value: string;
   placeholder: string;
@@ -170,13 +194,19 @@ interface FormPressableInputProps {
 
 export function FormPressableInput({ value, placeholder, icon, onPress, error }: FormPressableInputProps) {
   const { C } = useAppTheme();
+  const { profile } = useSettingsStore();
+  const isRTL = profile.language === 'ar';
+
   return (
     <Pressable
       onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onPress(); }}
-      style={[styles.pressableInput, { backgroundColor: C.inputBg, borderColor: error ? C.error : C.border }]}
+      style={[
+        styles.pressableInput,
+        { backgroundColor: C.inputBg, borderColor: error ? C.error : C.border, flexDirection: isRTL ? 'row-reverse' : 'row' },
+      ]}
     >
       <Ionicons name={icon} size={18} color={C.tint} />
-      <Text style={[styles.pressableInputText, { color: value ? C.text : C.textMuted }]}>
+      <Text style={[styles.pressableInputText, { color: value ? C.text : C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>
         {value || placeholder}
       </Text>
       <Ionicons name="chevron-down" size={16} color={C.textMuted} />
@@ -184,7 +214,6 @@ export function FormPressableInput({ value, placeholder, icon, onPress, error }:
   );
 }
 
-// Colored priority selector
 interface PrioritySelectorProps {
   value: string;
   onChange: (key: string) => void;
@@ -218,7 +247,10 @@ export function PrioritySelector({ value, onChange, options }: PrioritySelectorP
             ]}
           >
             <View style={[styles.priorityDot, { backgroundColor: color }]} />
-            <Text style={[styles.priorityText, { color: isActive ? color : C.textSecondary, fontFamily: isActive ? 'Inter_600SemiBold' : 'Inter_400Regular' }]}>
+            <Text style={[
+              styles.priorityText,
+              { color: isActive ? color : C.textSecondary, fontFamily: isActive ? 'Inter_600SemiBold' : 'Inter_400Regular' },
+            ]}>
               {opt.label}
             </Text>
           </Pressable>
@@ -228,7 +260,6 @@ export function PrioritySelector({ value, onChange, options }: PrioritySelectorP
   );
 }
 
-// Category selector with icons and colors
 interface CategoryOption {
   key: string;
   label: string;
@@ -279,7 +310,6 @@ export function CategorySelector({ value, onChange, options }: CategorySelectorP
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
@@ -304,7 +334,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   fieldLabel: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: 'Inter_600SemiBold',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -332,10 +362,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'Inter_500Medium',
   },
-
-  // Pressable input (for date/time)
   pressableInput: {
-    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
     borderRadius: Radius.lg,
@@ -349,8 +376,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontFamily: 'Inter_400Regular',
   },
-
-  // Priority selector
   priorityRow: {
     flexDirection: 'row',
     gap: Spacing.sm,
@@ -373,8 +398,6 @@ const styles = StyleSheet.create({
   priorityText: {
     fontSize: 15,
   },
-
-  // Category selector
   categoryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -392,10 +415,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'Inter_500Medium',
   },
-
-  // Bottom bar
   bottomBar: {
-    flexDirection: 'row',
     gap: Spacing.md,
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.lg,

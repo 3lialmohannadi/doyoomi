@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
 import {
   format, parseISO, startOfMonth, getDaysInMonth, getDay,
   addMonths, subMonths,
@@ -14,7 +15,7 @@ import {
 
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
-import { Spacing, Radius, Shadow, Typography } from '../../src/theme';
+import { Spacing, Radius, Shadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { ToggleRow } from '../../src/components/ui/ToggleRow';
@@ -30,6 +31,7 @@ export default function SettingsScreen() {
   const { profile, setLanguage, setTheme, setTimeFormat, setStartOfWeek, setProfile } = useSettingsStore();
   const { categories } = useCategoriesStore();
   const lang = profile.language;
+  const isRTL = lang === 'ar';
 
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
@@ -83,21 +85,21 @@ export default function SettingsScreen() {
         >
           <View style={styles.heroDecor1} />
           <View style={styles.heroDecor2} />
-          <Text style={styles.heroTitle}>{tFunc('settings')}</Text>
+          <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('settings')}</Text>
 
           {/* Profile card inside hero */}
-          <Pressable onPress={openProfileModal} style={styles.profileCard}>
+          <Pressable onPress={openProfileModal} style={[styles.profileCard, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={styles.avatarBox}>
               <Text style={styles.avatarText}>
                 {profile.name ? profile.name.charAt(0).toUpperCase() : '?'}
               </Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.profileName}>{profile.name || tFunc('noNameSet')}</Text>
+              <Text style={[styles.profileName, { textAlign: isRTL ? 'right' : 'left' }]}>{profile.name || tFunc('noNameSet')}</Text>
               {profile.email ? (
-                <Text style={styles.profileEmail}>{profile.email}</Text>
+                <Text style={[styles.profileEmail, { textAlign: isRTL ? 'right' : 'left' }]}>{profile.email}</Text>
               ) : (
-                <Text style={styles.profileSub}>{tFunc('tapToEditProfile')}</Text>
+                <Text style={[styles.profileSub, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('tapToEditProfile')}</Text>
               )}
             </View>
             <View style={styles.editBadge}>
@@ -108,37 +110,54 @@ export default function SettingsScreen() {
 
         <View style={{ paddingHorizontal: Spacing.lg, gap: Spacing.xl, marginTop: Spacing.xl }}>
           {/* App settings */}
-          <SettingSection title={tFunc('appSettings')} icon="settings-outline" color="#7C5CFC" C={C}>
-            <SettingItemRow icon="language-outline" iconColor="#7C5CFC" C={C}>
+          <SettingSection title={tFunc('appSettings')} icon="settings-outline" color="#7C5CFC" C={C} isRTL={isRTL}>
+            <SettingItemRow icon="language-outline" iconColor="#7C5CFC" C={C} isRTL={isRTL}>
               <ToggleRow label={tFunc('language')} options={[{ key: 'en', label: 'EN' }, { key: 'ar', label: 'عربي' }]} value={profile.language} onChange={(v) => setLanguage(v as Language)} />
             </SettingItemRow>
             <Divider C={C} />
-            <SettingItemRow icon="moon-outline" iconColor="#A855F7" C={C}>
+            <SettingItemRow icon="moon-outline" iconColor="#A855F7" C={C} isRTL={isRTL}>
               <ToggleRow label={tFunc('theme')} options={[{ key: 'light', label: tFunc('light') }, { key: 'dark', label: tFunc('dark') }]} value={profile.theme} onChange={(v) => setTheme(v as Theme)} />
             </SettingItemRow>
             <Divider C={C} />
-            <SettingItemRow icon="time-outline" iconColor="#FF6B9D" C={C}>
+            <SettingItemRow icon="time-outline" iconColor="#FF6B9D" C={C} isRTL={isRTL}>
               <ToggleRow label={tFunc('timeFormat')} options={[{ key: '12h', label: '12h' }, { key: '24h', label: '24h' }]} value={profile.time_format} onChange={(v) => setTimeFormat(v as TimeFormat)} />
             </SettingItemRow>
             <Divider C={C} />
-            <SettingItemRow icon="calendar-outline" iconColor="#00C48C" C={C}>
+            <SettingItemRow icon="calendar-outline" iconColor="#00C48C" C={C} isRTL={isRTL}>
               <ToggleRow label={tFunc('startOfWeek')} options={[{ key: 'monday', label: 'Mon' }, { key: 'sunday', label: 'Sun' }]} value={profile.start_of_week} onChange={(v) => setStartOfWeek(v as StartOfWeek)} />
             </SettingItemRow>
           </SettingSection>
 
           {/* Organization */}
-          <SettingSection title={tFunc('organization')} icon="folder-outline" color="#FF6B9D" C={C}>
-            <Pressable style={styles.settingRow} onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowCategories(true); }}>
+          <SettingSection title={tFunc('organization')} icon="folder-outline" color="#FF6B9D" C={C} isRTL={isRTL}>
+            <Pressable
+              style={[styles.settingRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowCategories(true); }}
+            >
               <View style={[styles.settingIcon, { backgroundColor: '#FF6B9D' + '20' }]}>
                 <Ionicons name="folder-outline" size={18} color="#FF6B9D" />
               </View>
-              <Text style={[styles.settingLabel, { color: C.text }]}>{tFunc('categories')}</Text>
-              <View style={styles.settingRight}>
+              <Text style={[styles.settingLabel, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('categories')}</Text>
+              <View style={[styles.settingRight, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                 <View style={[styles.countBadge, { backgroundColor: C.tint + '18' }]}>
                   <Text style={[styles.countText, { color: C.tint }]}>{categories.length}</Text>
                 </View>
-                <Ionicons name="chevron-forward" size={16} color={C.textMuted} />
+                <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textMuted} />
               </View>
+            </Pressable>
+          </SettingSection>
+
+          {/* Support */}
+          <SettingSection title={tFunc('support')} icon="headset-outline" color="#7C5CFC" C={C} isRTL={isRTL}>
+            <Pressable
+              style={[styles.settingRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/support'); }}
+            >
+              <View style={[styles.settingIcon, { backgroundColor: '#7C5CFC20' }]}>
+                <Ionicons name="mail-outline" size={18} color="#7C5CFC" />
+              </View>
+              <Text style={[styles.settingLabel, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('supportAndContact')}</Text>
+              <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textMuted} />
             </Pressable>
           </SettingSection>
 
@@ -169,7 +188,7 @@ export default function SettingsScreen() {
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
           <View style={[styles.modal, { backgroundColor: C.background }]}>
             {/* Modal header */}
-            <View style={[styles.modalHeader, { borderBottomColor: C.border }]}>
+            <View style={[styles.modalHeader, { borderBottomColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <Pressable onPress={() => setShowProfileModal(false)} style={styles.modalCloseBtn}>
                 <Ionicons name="close" size={22} color={C.textSecondary} />
               </Pressable>
@@ -198,31 +217,32 @@ export default function SettingsScreen() {
 
               {/* Personal info section */}
               <View style={styles.formSection}>
-                <View style={styles.formSectionHeader}>
+                <View style={[styles.formSectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <View style={[styles.formSectionIcon, { backgroundColor: '#7C5CFC20' }]}>
                     <Ionicons name="person-outline" size={14} color="#7C5CFC" />
                   </View>
                   <Text style={[styles.formSectionTitle, { color: C.textSecondary }]}>{tFunc('personalInfo')}</Text>
                 </View>
                 <View style={[styles.formCard, { backgroundColor: C.card, borderColor: C.border }]}>
-                  <ProfileField label={tFunc('name')} icon="person-outline" C={C}>
+                  <ProfileField label={tFunc('name')} icon="person-outline" C={C} isRTL={isRTL}>
                     <TextInput
                       value={profileName}
                       onChangeText={setProfileName}
                       placeholder={tFunc('namePlaceholder')}
                       placeholderTextColor={C.textMuted}
+                      textAlign={isRTL ? 'right' : 'left'}
                       style={[styles.formInputInline, { color: C.text }]}
                     />
                   </ProfileField>
 
                   <View style={{ height: 1, backgroundColor: C.borderLight }} />
 
-                  <ProfileField label={tFunc('dateOfBirth')} icon="calendar-outline" C={C}>
+                  <ProfileField label={tFunc('dateOfBirth')} icon="calendar-outline" C={C} isRTL={isRTL}>
                     <Pressable
                       onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowDobPicker(!showDobPicker); }}
-                      style={styles.dobPressable}
+                      style={[styles.dobPressable, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
                     >
-                      <Text style={[styles.formInputInline, { color: displayDob ? C.text : C.textMuted }]}>
+                      <Text style={[styles.formInputInline, { color: displayDob ? C.text : C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>
                         {displayDob || tFunc('dobPlaceholder')}
                       </Text>
                       <Ionicons name="chevron-down" size={16} color={C.textMuted} />
@@ -243,14 +263,14 @@ export default function SettingsScreen() {
 
               {/* Contact info section */}
               <View style={styles.formSection}>
-                <View style={styles.formSectionHeader}>
+                <View style={[styles.formSectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <View style={[styles.formSectionIcon, { backgroundColor: '#FF6B9D20' }]}>
                     <Ionicons name="mail-outline" size={14} color="#FF6B9D" />
                   </View>
                   <Text style={[styles.formSectionTitle, { color: C.textSecondary }]}>{tFunc('contactInfo')}</Text>
                 </View>
                 <View style={[styles.formCard, { backgroundColor: C.card, borderColor: C.border }]}>
-                  <ProfileField label={tFunc('email')} icon="mail-outline" C={C}>
+                  <ProfileField label={tFunc('email')} icon="mail-outline" C={C} isRTL={isRTL}>
                     <TextInput
                       value={profileEmail}
                       onChangeText={setProfileEmail}
@@ -258,19 +278,21 @@ export default function SettingsScreen() {
                       placeholderTextColor={C.textMuted}
                       keyboardType="email-address"
                       autoCapitalize="none"
+                      textAlign={isRTL ? 'right' : 'left'}
                       style={[styles.formInputInline, { color: C.text }]}
                     />
                   </ProfileField>
 
                   <View style={{ height: 1, backgroundColor: C.borderLight }} />
 
-                  <ProfileField label={tFunc('phone')} icon="call-outline" C={C}>
+                  <ProfileField label={tFunc('phone')} icon="call-outline" C={C} isRTL={isRTL}>
                     <TextInput
                       value={profilePhone}
                       onChangeText={setProfilePhone}
                       placeholder={tFunc('phonePlaceholder')}
                       placeholderTextColor={C.textMuted}
                       keyboardType="phone-pad"
+                      textAlign={isRTL ? 'right' : 'left'}
                       style={[styles.formInputInline, { color: C.text }]}
                     />
                   </ProfileField>
@@ -279,7 +301,14 @@ export default function SettingsScreen() {
             </ScrollView>
 
             {/* Bottom save button */}
-            <View style={[styles.modalBottomBar, { paddingBottom: insets.bottom + Spacing.md, borderTopColor: C.border }]}>
+            <View style={[
+              styles.modalBottomBar,
+              {
+                paddingBottom: insets.bottom + Spacing.md,
+                borderTopColor: C.border,
+                flexDirection: isRTL ? 'row-reverse' : 'row',
+              },
+            ]}>
               <Pressable
                 onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowProfileModal(false); }}
                 style={[styles.modalCancelBtn, { backgroundColor: C.surface, borderColor: C.border }]}
@@ -304,10 +333,10 @@ export default function SettingsScreen() {
   );
 }
 
-function ProfileField({ label, icon, C, children }: any) {
+function ProfileField({ label, icon, C, isRTL, children }: any) {
   return (
-    <View style={styles.profileField}>
-      <View style={styles.profileFieldLeft}>
+    <View style={[styles.profileField, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View style={[styles.profileFieldLeft, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <Ionicons name={icon} size={18} color={C.tint} />
         <Text style={[styles.profileFieldLabel, { color: C.textSecondary }]}>{label}</Text>
       </View>
@@ -318,9 +347,9 @@ function ProfileField({ label, icon, C, children }: any) {
   );
 }
 
-function SettingItemRow({ icon, iconColor, C, children }: any) {
+function SettingItemRow({ icon, iconColor, C, isRTL, children }: any) {
   return (
-    <View style={styles.settingItemRow}>
+    <View style={[styles.settingItemRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       <View style={[styles.settingItemIcon, { backgroundColor: iconColor + '15' }]}>
         <Ionicons name={icon} size={18} color={iconColor} />
       </View>
@@ -331,10 +360,10 @@ function SettingItemRow({ icon, iconColor, C, children }: any) {
   );
 }
 
-function SettingSection({ title, icon, color, C, children }: any) {
+function SettingSection({ title, icon, color, C, isRTL, children }: any) {
   return (
     <View>
-      <View style={styles.sectionLabel}>
+      <View style={[styles.sectionLabel, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <View style={[styles.sectionIcon, { backgroundColor: color + '18' }]}>
           <Ionicons name={icon} size={14} color={color} />
         </View>
@@ -478,7 +507,7 @@ const styles = StyleSheet.create({
   heroDecor2: { position: 'absolute', right: -20, bottom: 10, width: 120, height: 120, borderRadius: 60, backgroundColor: 'rgba(255,255,255,0.07)' },
   heroTitle: { fontSize: 30, fontFamily: 'Inter_700Bold', color: '#fff', marginBottom: Spacing.lg },
   profileCard: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
+    alignItems: 'center', gap: Spacing.md,
     backgroundColor: 'rgba(255,255,255,0.92)',
     borderRadius: Radius.xl, padding: Spacing.lg,
     shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 10, elevation: 6,
@@ -497,7 +526,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(124,92,252,0.15)',
     alignItems: 'center', justifyContent: 'center',
   },
-  sectionLabel: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: Spacing.sm, marginLeft: 4 },
+  sectionLabel: { alignItems: 'center', gap: 8, marginBottom: Spacing.sm, marginLeft: 4 },
   sectionIcon: { width: 26, height: 26, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   sectionTitle: { fontSize: 13, fontFamily: 'Inter_700Bold', textTransform: 'uppercase', letterSpacing: 0.8 },
   card: {
@@ -506,7 +535,7 @@ const styles = StyleSheet.create({
     ...Shadow.sm,
   },
   settingItemRow: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
+    alignItems: 'center', gap: Spacing.md,
     paddingVertical: 2,
   },
   settingItemIcon: {
@@ -514,10 +543,10 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   settingItemContent: { flex: 1 },
-  settingRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: Spacing.md, gap: Spacing.md },
+  settingRow: { alignItems: 'center', paddingVertical: Spacing.md, gap: Spacing.md },
   settingIcon: { width: 36, height: 36, borderRadius: Radius.sm, alignItems: 'center', justifyContent: 'center' },
   settingLabel: { flex: 1, fontSize: 16, fontFamily: 'Inter_500Medium' },
-  settingRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  settingRight: { alignItems: 'center', gap: 6 },
   countBadge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
   countText: { fontSize: 13, fontFamily: 'Inter_700Bold' },
   aboutCard: {
@@ -529,59 +558,36 @@ const styles = StyleSheet.create({
   aboutName: { fontSize: 24, fontFamily: 'Inter_700Bold' },
   aboutAr: { fontSize: 17, fontFamily: 'Inter_600SemiBold' },
   aboutTagline: { fontSize: 14, fontFamily: 'Inter_400Regular' },
-  versionPill: { borderRadius: Radius.full, paddingHorizontal: 14, paddingVertical: 5, marginTop: 4 },
+  versionPill: { borderRadius: Radius.full, paddingHorizontal: 14, paddingVertical: 4, marginTop: 4 },
   versionText: { fontSize: 13, fontFamily: 'Inter_600SemiBold' },
 
   // Profile modal
   modal: { flex: 1 },
   modalHeader: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg, paddingTop: Spacing.lg, paddingBottom: Spacing.md, borderBottomWidth: 1,
+    alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg + Spacing.sm,
+    paddingBottom: Spacing.md,
+    borderBottomWidth: 1,
   },
   modalCloseBtn: {
     width: 36, height: 36, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center',
   },
-  modalTitle: { fontSize: 19, fontFamily: 'Inter_700Bold' },
-  modalContent: {
-    padding: Spacing.xl,
-    gap: Spacing.xxl,
-    paddingBottom: 120,
-  },
-  modalAvatarSection: {
-    alignItems: 'center',
-    paddingVertical: Spacing.md,
-  },
+  modalTitle: { fontSize: 18, fontFamily: 'Inter_700Bold' },
+  modalContent: { padding: Spacing.lg, gap: Spacing.xl, paddingBottom: 40 },
+  modalAvatarSection: { alignItems: 'center', paddingTop: Spacing.md, paddingBottom: Spacing.sm },
   modalAvatar: {
     width: 80, height: 80, borderRadius: 40,
     alignItems: 'center', justifyContent: 'center',
   },
-  modalAvatarText: {
-    fontSize: 34, fontFamily: 'Inter_700Bold', color: '#fff',
-  },
-
-  // Form sections
+  modalAvatarText: { fontSize: 32, fontFamily: 'Inter_700Bold', color: '#fff' },
   formSection: { gap: Spacing.sm },
-  formSectionHeader: {
-    flexDirection: 'row', alignItems: 'center', gap: 6, marginLeft: 4,
-  },
-  formSectionIcon: {
-    width: 22, height: 22, borderRadius: 6,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  formSectionTitle: {
-    fontSize: 13, fontFamily: 'Inter_700Bold',
-    textTransform: 'uppercase', letterSpacing: 0.8,
-  },
-  formCard: {
-    borderRadius: Radius.xl, borderWidth: 1,
-    overflow: 'hidden',
-    ...Shadow.sm,
-  },
-
-  // Profile field row
+  formSectionHeader: { alignItems: 'center', gap: 8, marginLeft: 2 },
+  formSectionIcon: { width: 24, height: 24, borderRadius: 7, alignItems: 'center', justifyContent: 'center' },
+  formSectionTitle: { fontSize: 12, fontFamily: 'Inter_700Bold', textTransform: 'uppercase', letterSpacing: 0.8 },
+  formCard: { borderRadius: Radius.xl, borderWidth: 1, overflow: 'hidden', ...Shadow.sm },
   profileField: {
-    flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
@@ -589,57 +595,36 @@ const styles = StyleSheet.create({
     minHeight: 56,
   },
   profileFieldLeft: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    gap: 8,
     width: 120,
   },
-  profileFieldLabel: {
-    fontSize: 14, fontFamily: 'Inter_500Medium',
-  },
-  profileFieldValue: {
-    flex: 1,
-  },
+  profileFieldLabel: { fontSize: 14, fontFamily: 'Inter_500Medium' },
+  profileFieldValue: { flex: 1 },
   formInputInline: {
     fontSize: 16, fontFamily: 'Inter_400Regular',
-    paddingVertical: 0,
+    flex: 1,
   },
   dobPressable: {
-    flexDirection: 'row',
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 6,
   },
-
-  // Bottom bar
   modalBottomBar: {
-    flexDirection: 'row',
     gap: Spacing.md,
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.lg,
     borderTopWidth: 1,
   },
   modalCancelBtn: {
-    flex: 1,
-    borderRadius: Radius.xl,
-    height: 54,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
+    flex: 1, height: 54, borderRadius: Radius.xl, borderWidth: 1,
+    alignItems: 'center', justifyContent: 'center',
   },
-  modalCancelText: {
-    fontSize: 17, fontFamily: 'Inter_600SemiBold',
-  },
+  modalCancelText: { fontSize: 17, fontFamily: 'Inter_600SemiBold' },
   modalSaveBtn: {
-    flex: 2,
-    flexDirection: 'row',
-    borderRadius: Radius.xl,
-    height: 54,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    overflow: 'hidden',
+    flex: 2, height: 54, borderRadius: Radius.xl,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 8, overflow: 'hidden',
   },
-  modalSaveText: {
-    fontSize: 17, fontFamily: 'Inter_700Bold', color: '#fff',
-  },
+  modalSaveText: { fontSize: 17, fontFamily: 'Inter_700Bold', color: '#fff' },
 });

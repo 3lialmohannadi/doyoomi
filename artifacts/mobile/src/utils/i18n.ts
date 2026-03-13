@@ -8,6 +8,7 @@ const translations: Record<Language, Record<string, string>> = {
     tasks: 'Tasks',
     goals: 'Goals',
     settings: 'Settings',
+    habits: 'Habits',
 
     // Greetings
     goodMorning: 'Good morning',
@@ -26,9 +27,8 @@ const translations: Record<Language, Record<string, string>> = {
     allDoneSubtitle: "You've crushed all your tasks. Amazing! 🎉",
 
     // Sections
-    habits: 'Habits',
     goalsSection: 'Goals',
-    weeklyOverview: 'Weekly overview',
+    weeklyAchievement: 'Weekly Achievement',
     today2: 'Today',
     yesterday: 'Yesterday',
     tomorrow: 'Tomorrow',
@@ -110,6 +110,27 @@ const translations: Record<Language, Record<string, string>> = {
     english: 'English',
     arabic: 'عربي',
 
+    // Support / Contact
+    support: 'Support',
+    supportAndContact: 'Support & Contact',
+    supportSubtitle: 'We\'d love to hear from you',
+    supportCategory: 'Category',
+    suggestion: 'Suggestion',
+    technicalIssue: 'Technical Issue',
+    other: 'Other',
+    supportSubjectField: 'Subject',
+    supportSubjectPlaceholder: 'Enter your subject...',
+    supportMessage: 'Message',
+    supportMessagePlaceholder: 'Describe your issue or suggestion...',
+    sendMessage: 'Send Message',
+    messagePrepared: 'Message Prepared!',
+    messagePreparedDesc: 'Your mail app will open to complete sending the message.',
+    mailFailed: 'Could Not Open Mail',
+    mailFailedDesc: 'Please send your message directly to:',
+    sendAnother: 'Send Another',
+    tryAgain: 'Try Again',
+    fieldRequired: 'This field is required',
+
     // Chart
     chartDone: 'Done',
     chartTotal: 'Total',
@@ -152,6 +173,7 @@ const translations: Record<Language, Record<string, string>> = {
     priority: 'Priority',
     category: 'Category',
     noDate: 'No Date',
+    message: 'Message',
 
     // Journal
     journal: 'Journal',
@@ -186,6 +208,7 @@ const translations: Record<Language, Record<string, string>> = {
     tasks: 'المهام',
     goals: 'الأهداف',
     settings: 'الإعدادات',
+    habits: 'العادات',
 
     // التحيات
     goodMorning: 'صباح الخير',
@@ -204,9 +227,8 @@ const translations: Record<Language, Record<string, string>> = {
     allDoneSubtitle: 'رائع! أتممت جميع مهام اليوم 🎉',
 
     // الأقسام
-    habits: 'العادات',
     goalsSection: 'الأهداف',
-    weeklyOverview: 'النظرة الأسبوعية',
+    weeklyAchievement: 'الإنجاز الأسبوعي',
     today2: 'اليوم',
     yesterday: 'أمس',
     tomorrow: 'غداً',
@@ -288,6 +310,27 @@ const translations: Record<Language, Record<string, string>> = {
     english: 'English',
     arabic: 'عربي',
 
+    // الدعم والتواصل
+    support: 'الدعم',
+    supportAndContact: 'الدعم والتواصل',
+    supportSubtitle: 'يسعدنا سماع رأيك',
+    supportCategory: 'الفئة',
+    suggestion: 'اقتراح',
+    technicalIssue: 'مشكلة تقنية',
+    other: 'أخرى',
+    supportSubjectField: 'الموضوع',
+    supportSubjectPlaceholder: 'أدخل موضوع رسالتك...',
+    supportMessage: 'الرسالة',
+    supportMessagePlaceholder: 'اشرح مشكلتك أو اقتراحك...',
+    sendMessage: 'إرسال الرسالة',
+    messagePrepared: 'تم تحضير الرسالة!',
+    messagePreparedDesc: 'سيفتح تطبيق البريد الإلكتروني لإكمال الإرسال.',
+    mailFailed: 'تعذّر فتح البريد',
+    mailFailedDesc: 'يرجى إرسال رسالتك مباشرةً إلى:',
+    sendAnother: 'إرسال رسالة أخرى',
+    tryAgain: 'حاول مجدداً',
+    fieldRequired: 'هذا الحقل مطلوب',
+
     // الرسم البياني
     chartDone: 'منجز',
     chartTotal: 'الإجمالي',
@@ -330,6 +373,7 @@ const translations: Record<Language, Record<string, string>> = {
     priority: 'الأولوية',
     category: 'الفئة',
     noDate: 'بدون تاريخ',
+    message: 'الرسالة',
 
     // اليومية
     journal: 'اليومية',
