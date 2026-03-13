@@ -5,7 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { router } from 'expo-router';
@@ -19,7 +19,7 @@ import { useJournalStore } from '../../src/store/journalStore';
 import { Spacing, Typography, Radius, Shadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, getGreeting } from '../../src/utils/i18n';
-import { getTodayString, getWeekDays, getDayLabel, formatDateKey, formatTime, isOverdue } from '../../src/utils/date';
+import { getTodayString, getWeekDays, getDayLabel, formatDateKey, formatTime, isOverdue, formatShortDate } from '../../src/utils/date';
 import { HabitForm } from '../../src/features/habits/HabitForm';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
 import { JournalForm } from '../../src/features/journal/JournalForm';
@@ -34,7 +34,7 @@ export default function HomeScreen() {
 
   const { tasks, toggleComplete, deleteTask, postponeTask } = useTasksStore();
   const { goals } = useGoalsStore();
-  const { habits, completeHabit } = useHabitsStore();
+  const { habits, completeHabit, uncompleteHabit } = useHabitsStore();
   const { profile } = useSettingsStore();
   const { categories } = useCategoriesStore();
   const { entries: journalEntries } = useJournalStore();
@@ -170,7 +170,7 @@ export default function HomeScreen() {
         {/* Today Tasks */}
         {dayTasks.length > 0 && (
           <Section
-            title={selectedDay === today ? tFunc('today2') : format(parseISO(selectedDay), 'MMM d')}
+            title={selectedDay === today ? tFunc('today2') : formatShortDate(selectedDay, lang)}
             C={C} isRTL={isRTL}
             action={tFunc('addNew')}
             onAction={() => setShowTaskForm(true)}
@@ -204,7 +204,7 @@ export default function HomeScreen() {
         >
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -Spacing.lg }} contentContainerStyle={{ paddingHorizontal: Spacing.lg, gap: Spacing.md }}>
             {habits.map(h => (
-              <FunHabitCard key={h.id} habit={h} onComplete={completeHabit} C={C} />
+              <FunHabitCard key={h.id} habit={h} onComplete={completeHabit} onUncomplete={uncompleteHabit} C={C} />
             ))}
           </ScrollView>
         </Section>
@@ -366,14 +366,30 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, C, isRTL }: an
   );
 }
 
-function FunHabitCard({ habit, onComplete, C }: { habit: any; onComplete: (id: string) => void; C: any }) {
+function FunHabitCard({
+  habit, onComplete, onUncomplete, C,
+}: {
+  habit: any;
+  onComplete: (id: string) => void;
+  onUncomplete: (id: string) => void;
+  C: any;
+}) {
   const today = format(new Date(), 'yyyy-MM-dd');
   const lastDate = habit.last_completed_at ? format(new Date(habit.last_completed_at), 'yyyy-MM-dd') : null;
   const isDone = lastDate === today;
 
+  const handlePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (isDone) {
+      onUncomplete(habit.id);
+    } else {
+      onComplete(habit.id);
+    }
+  };
+
   return (
     <Pressable
-      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onComplete(habit.id); }}
+      onPress={handlePress}
       style={({ pressed }) => [styles.habitCard, { borderWidth: 1, borderColor: isDone ? habit.color : C.border, opacity: pressed ? 0.8 : 1 }]}
       accessibilityRole="button"
       accessibilityState={{ checked: isDone }}
@@ -385,7 +401,7 @@ function FunHabitCard({ habit, onComplete, C }: { habit: any; onComplete: (id: s
       >
         <View style={styles.habitTopRow}>
           <View style={[styles.habitIconBox, { backgroundColor: isDone ? 'rgba(255,255,255,0.25)' : habit.color + '20' }]}>
-            <Ionicons name={(habit.icon + '-outline') as any} size={22} color={isDone ? '#fff' : habit.color} />
+            <Ionicons name={(habit.icon + (isDone ? '' : '-outline')) as any} size={22} color={isDone ? '#fff' : habit.color} />
           </View>
           {isDone && <Ionicons name="checkmark-circle" size={20} color="#FFD700" />}
         </View>

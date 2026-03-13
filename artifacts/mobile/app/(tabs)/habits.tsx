@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import * as Haptics from 'expo-haptics';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
@@ -18,6 +19,8 @@ import { HabitForm } from '../../src/features/habits/HabitForm';
 import { Toast } from '../../src/components/ui/Toast';
 import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 import { Habit } from '../../src/types';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function HabitsScreen() {
   const { C } = useAppTheme();
@@ -50,6 +53,7 @@ export default function HabitsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
+      {/* Header */}
       <LinearGradient
         colors={['#A855F7', '#7C5CFC']}
         start={{ x: 0, y: 0 }}
@@ -60,7 +64,7 @@ export default function HabitsScreen() {
         <View style={styles.headerDecor2} />
 
         <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View>
+          <View style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
             <Text style={[styles.headerTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('habits')}</Text>
             <Text style={[styles.headerSub, { textAlign: isRTL ? 'right' : 'left' }]}>
               {doneToday}/{habits.length} {tFunc('doneToday')}
@@ -84,13 +88,13 @@ export default function HabitsScreen() {
 
         {habits.length > 0 && (
           <View style={[styles.progressWrap, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <View style={[styles.progressTrack, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+            <View style={[styles.progressTrack, { backgroundColor: 'rgba(255,255,255,0.25)' }]}>
               <View
                 style={[
                   styles.progressFill,
                   {
                     backgroundColor: '#fff',
-                    width: `${Math.round((doneToday / habits.length) * 100)}%`,
+                    width: `${Math.round((doneToday / habits.length) * 100)}%` as any,
                     alignSelf: isRTL ? 'flex-end' : 'flex-start',
                   },
                 ]}
@@ -115,99 +119,32 @@ export default function HabitsScreen() {
           const isDoneToday = lastDate === today;
 
           return (
-            <View
-              style={[
-                styles.habitCard,
-                { backgroundColor: C.card, borderColor: isDoneToday ? item.color + '60' : C.border, flexDirection: isRTL ? 'row-reverse' : 'row' },
-                Shadow.sm,
-              ]}
-            >
-              <View style={[styles.habitAccent, { backgroundColor: item.color }]} />
-
-              <View style={[styles.iconBox, { backgroundColor: item.color + '18' }]}>
-                <Ionicons name={(item.icon + '-outline') as any} size={22} color={item.color} />
-              </View>
-
-              <View style={[styles.habitInfo, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
-                <Text style={[styles.habitName, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
-                  {item.name}
-                </Text>
-                <View style={[styles.streakRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  <Ionicons name="flame" size={13} color="#FF6B35" />
-                  <Text style={[styles.streakText, { color: '#FF6B35' }]}>
-                    {item.streak_days} {tFunc('days')}
-                  </Text>
-                  {isDoneToday && (
-                    <View style={[styles.doneBadge, { backgroundColor: item.color + '18', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                      <Ionicons name="checkmark-circle" size={11} color={item.color} />
-                      <Text style={[styles.doneBadgeText, { color: item.color }]}>
-                        {tFunc('doneToday')}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-              </View>
-
-              <View style={[styles.habitActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <Pressable
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                    if (isDoneToday) {
-                      uncompleteHabit(item.id);
-                      showToast(tFunc('habitUncompleted'), 'info');
-                    } else {
-                      completeHabit(item.id);
-                      showToast(tFunc('habitCompleted'), 'success');
-                    }
-                  }}
-                  style={({ pressed }) => [
-                    styles.actionBtn,
-                    {
-                      backgroundColor: isDoneToday ? item.color + '20' : C.surface,
-                      borderColor: isDoneToday ? item.color : C.border,
-                      opacity: pressed ? 0.7 : 1,
-                    },
-                  ]}
-                  accessibilityRole="button"
-                  accessibilityLabel={isDoneToday ? tFunc('habitUncompleted') : tFunc('habitCompleted')}
-                  accessibilityState={{ checked: isDoneToday }}
-                >
-                  <Ionicons
-                    name={isDoneToday ? 'checkmark-circle' : 'checkmark-circle-outline'}
-                    size={18}
-                    color={isDoneToday ? item.color : C.textMuted}
-                  />
-                </Pressable>
-
-                <Pressable
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    setEditHabit(item);
-                    setShowForm(true);
-                  }}
-                  style={({ pressed }) => [
-                    styles.actionBtn,
-                    { backgroundColor: C.tint + '12', borderColor: C.tint + '30', opacity: pressed ? 0.7 : 1 },
-                  ]}
-                  accessibilityRole="button"
-                  accessibilityLabel={tFunc('editHabit')}
-                >
-                  <Ionicons name="pencil-outline" size={15} color={C.tint} />
-                </Pressable>
-
-                <Pressable
-                  onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setConfirmHabit(item); }}
-                  style={({ pressed }) => [
-                    styles.actionBtn,
-                    { backgroundColor: C.error + '12', borderColor: C.error + '30', opacity: pressed ? 0.7 : 1 },
-                  ]}
-                  accessibilityRole="button"
-                  accessibilityLabel={tFunc('deleteHabit')}
-                >
-                  <Ionicons name="trash-outline" size={15} color={C.error} />
-                </Pressable>
-              </View>
-            </View>
+            <HabitCard
+              item={item}
+              isDoneToday={isDoneToday}
+              isRTL={isRTL}
+              C={C}
+              tFunc={tFunc}
+              onToggle={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                if (isDoneToday) {
+                  uncompleteHabit(item.id);
+                  showToast(tFunc('habitUncompleted'), 'info');
+                } else {
+                  completeHabit(item.id);
+                  showToast(tFunc('habitCompleted'), 'success');
+                }
+              }}
+              onEdit={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setEditHabit(item);
+                setShowForm(true);
+              }}
+              onDelete={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                setConfirmHabit(item);
+              }}
+            />
           );
         }}
         ListEmptyComponent={() => (
@@ -253,6 +190,145 @@ export default function HabitsScreen() {
   );
 }
 
+function HabitCard({
+  item, isDoneToday, isRTL, C, tFunc, onToggle, onEdit, onDelete,
+}: {
+  item: Habit;
+  isDoneToday: boolean;
+  isRTL: boolean;
+  C: any;
+  tFunc: (k: string) => string;
+  onToggle: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const scale = useSharedValue(1);
+  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+
+  return (
+    <AnimatedPressable
+      style={[
+        animStyle,
+        styles.habitCard,
+        {
+          backgroundColor: isDoneToday ? item.color + '0D' : C.card,
+          borderColor: isDoneToday ? item.color + '50' : C.border,
+        },
+        Shadow.sm,
+      ]}
+      onPressIn={() => { scale.value = withSpring(0.98, { damping: 15 }); }}
+      onPressOut={() => { scale.value = withSpring(1, { damping: 15 }); }}
+      onPress={onToggle}
+      accessibilityRole="button"
+      accessibilityState={{ checked: isDoneToday }}
+      accessibilityLabel={item.name}
+    >
+      {/* Colored left accent */}
+      <View style={[styles.habitAccent, { backgroundColor: item.color }]} />
+
+      {/* Card content */}
+      <View style={[styles.habitBody, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        {/* Icon */}
+        <View style={[
+          styles.habitIconWrap,
+          {
+            backgroundColor: isDoneToday ? item.color + '25' : item.color + '15',
+            borderColor: isDoneToday ? item.color + '40' : 'transparent',
+            borderWidth: 1,
+          },
+        ]}>
+          <Ionicons
+            name={(item.icon + (isDoneToday ? '' : '-outline')) as any}
+            size={24}
+            color={item.color}
+          />
+        </View>
+
+        {/* Info */}
+        <View style={[styles.habitInfo, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+          <Text
+            style={[
+              styles.habitName,
+              {
+                color: isDoneToday ? item.color : C.text,
+                textAlign: isRTL ? 'right' : 'left',
+                textDecorationLine: isDoneToday ? 'line-through' : 'none',
+              },
+            ]}
+            numberOfLines={1}
+          >
+            {item.name}
+          </Text>
+
+          <View style={[styles.habitMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={[styles.streakBadge, { backgroundColor: '#FF6B35' + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <Ionicons name="flame" size={12} color="#FF6B35" />
+              <Text style={styles.streakText}>{item.streak_days} {tFunc('days')}</Text>
+            </View>
+
+            {isDoneToday && (
+              <View style={[styles.doneBadge, { backgroundColor: item.color + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <Ionicons name="checkmark-circle" size={12} color={item.color} />
+                <Text style={[styles.doneBadgeText, { color: item.color }]}>{tFunc('doneToday')}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* Actions */}
+        <View style={[styles.habitActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          {/* Complete / Uncomplete toggle */}
+          <Pressable
+            onPress={(e) => { e.stopPropagation?.(); onToggle(); }}
+            style={({ pressed }) => [
+              styles.completeBtn,
+              {
+                backgroundColor: isDoneToday ? item.color : C.surface,
+                borderColor: isDoneToday ? item.color : C.border,
+                opacity: pressed ? 0.75 : 1,
+              },
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={isDoneToday ? tFunc('habitUncompleted') : tFunc('completeHabit')}
+          >
+            <Ionicons
+              name={isDoneToday ? 'checkmark' : 'checkmark-outline'}
+              size={18}
+              color={isDoneToday ? '#fff' : C.textMuted}
+            />
+          </Pressable>
+
+          {/* Edit */}
+          <Pressable
+            onPress={(e) => { e.stopPropagation?.(); onEdit(); }}
+            style={({ pressed }) => [
+              styles.smallActionBtn,
+              { backgroundColor: C.tint + '12', borderColor: C.tint + '30', opacity: pressed ? 0.7 : 1 },
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={tFunc('editHabit')}
+          >
+            <Ionicons name="pencil-outline" size={13} color={C.tint} />
+          </Pressable>
+
+          {/* Delete */}
+          <Pressable
+            onPress={(e) => { e.stopPropagation?.(); onDelete(); }}
+            style={({ pressed }) => [
+              styles.smallActionBtn,
+              { backgroundColor: C.error + '12', borderColor: C.error + '30', opacity: pressed ? 0.7 : 1 },
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={tFunc('deleteHabit')}
+          >
+            <Ionicons name="trash-outline" size={13} color={C.error} />
+          </Pressable>
+        </View>
+      </View>
+    </AnimatedPressable>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1 },
 
@@ -264,12 +340,12 @@ const styles = StyleSheet.create({
   },
   headerDecor1: {
     position: 'absolute', right: -30, top: -30,
-    width: 140, height: 140, borderRadius: 70,
+    width: 160, height: 160, borderRadius: 80,
     backgroundColor: 'rgba(255,255,255,0.1)',
   },
   headerDecor2: {
-    position: 'absolute', right: 50, top: 40,
-    width: 80, height: 80, borderRadius: 40,
+    position: 'absolute', left: 20, bottom: -10,
+    width: 90, height: 90, borderRadius: 45,
     backgroundColor: 'rgba(255,255,255,0.07)',
   },
   headerRow: {
@@ -292,33 +368,50 @@ const styles = StyleSheet.create({
   },
   progressFill: { height: '100%', borderRadius: 3 },
   progressLabel: {
-    fontSize: 13, fontFamily: 'Inter_700Bold', color: '#fff', minWidth: 36, textAlign: 'center',
+    fontSize: 13, fontFamily: 'Inter_700Bold', color: '#fff', minWidth: 40, textAlign: 'center',
   },
 
   habitCard: {
-    alignItems: 'center', gap: Spacing.md,
-    borderRadius: Radius.xl, borderWidth: 1, overflow: 'hidden',
-    paddingVertical: Spacing.md, paddingRight: Spacing.md,
+    borderRadius: Radius.xl, borderWidth: 1,
+    overflow: 'hidden',
+    flexDirection: 'row',
   },
-  habitAccent: { width: 4, alignSelf: 'stretch' },
-  iconBox: {
-    width: 44, height: 44, borderRadius: Radius.md,
+  habitAccent: { width: 4 },
+  habitBody: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    gap: Spacing.md,
+  },
+  habitIconWrap: {
+    width: 50, height: 50, borderRadius: Radius.md,
     alignItems: 'center', justifyContent: 'center',
   },
-  habitInfo: { flex: 1, gap: 3 },
-  habitName: { fontSize: 15, fontFamily: 'Inter_600SemiBold' },
-  streakRow: { alignItems: 'center', gap: 4 },
-  streakText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  habitInfo: {
+    flex: 1,
+    gap: 5,
+  },
+  habitName: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
+  habitMeta: { alignItems: 'center', gap: 6, flexWrap: 'wrap' },
+  streakBadge: {
+    alignItems: 'center', gap: 3,
+    borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,
+  },
+  streakText: { fontSize: 11, fontFamily: 'Inter_600SemiBold', color: '#FF6B35' },
   doneBadge: {
     alignItems: 'center', gap: 3,
-    borderRadius: Radius.full, paddingHorizontal: 7, paddingVertical: 2,
-    marginLeft: 4,
+    borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,
   },
   doneBadgeText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
 
-  habitActions: { gap: 6 },
-  actionBtn: {
-    width: 32, height: 32, borderRadius: 10, borderWidth: 1,
+  habitActions: { alignItems: 'center', gap: 6 },
+  completeBtn: {
+    width: 40, height: 40, borderRadius: 12, borderWidth: 1.5,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  smallActionBtn: {
+    width: 28, height: 28, borderRadius: 8, borderWidth: 1,
     alignItems: 'center', justifyContent: 'center',
   },
 });

@@ -95,22 +95,30 @@ Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHea
 
 Expo/React Native productivity app — Do.Yoomi (يومي). Offline-first with Zustand + AsyncStorage.
 
-**Features:** Home, Calendar, Tasks, Habits, Goals, Journal, Settings, Support/Contact
+**Features:** Home, Calendar, Tasks, Habits, Goals, Journal, More (Profile/Goals/Categories/App Settings/Support)
 
 **Architecture:**
-- `app/(tabs)/` — Tab screens (index, calendar, tasks, habits, goals, settings)
-- `app/support.tsx` — Support/Contact stack screen (accessible from Settings)
+- `app/(tabs)/` — Tab screens (index, calendar, tasks, habits, goals, settings/More)
+- `app/support.tsx` — Support/Contact stack screen (accessible from More page)
 - `app/journal.tsx` — Journal modal screen
 - `src/features/` — Form components (TaskForm, HabitForm, GoalForm, JournalForm)
 - `src/components/ui/FormModal.tsx` — Shared form modal with RTL support + KeyboardAvoidingView
 - `src/store/` — Zustand stores (tasks, habits, goals, journal, categories, settings)
-- `src/utils/i18n.ts` — EN/AR translations
+- `src/utils/i18n.ts` — EN/AR translations; phone placeholder uses +974
+- `src/utils/date.ts` — Date formatting with Arabic locale support (formatDate/formatShortDate)
 - `src/theme/index.ts` — Design tokens (colors, spacing, radius, shadow, typography)
 - `assets/images/icon.png` — App icon (يومي branded)
 
-**RTL:** I18nManager configured in root layout; FormModal inputs are RTL-aware; settings rows adapt to language direction.
+**Tabs:** Home, Calendar, Tasks, Habits, Goals, More (was Settings)
+- "More" tab (settings.tsx) is a hub page: Profile edit modal, Goals nav, Categories, App Settings modal, Support
 
-**Keyboard:** FormModal uses `KeyboardAvoidingView` + `KeyboardAwareScrollView` to keep action buttons visible above keyboard.
+**Tasks Filters:** Single "Filters" button in header → bottom sheet modal with 7 filter options (All, Today, Done, Overdue, High, Postponed, No Date). Active filter shown as a clearable pill.
+
+**Habit cards:** Redesigned with AnimatedPressable, larger icon (50×50), prominent completion toggle (40×40), streak badge, "Done Today" badge. Dashboard FunHabitCard supports both select and unselect.
+
+**Date localization:** formatDate/formatShortDate in date.ts return Arabic month names when lang='ar'. Dashboard section header uses formatShortDate(selectedDay, lang).
+
+**RTL:** I18nManager configured in root layout; all screens use isRTL for flexDirection/textAlign/padding/chevron direction.
 
 ### `scripts` (`@workspace/scripts`)
 

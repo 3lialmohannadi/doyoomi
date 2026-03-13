@@ -1,0 +1,373 @@
+Apply the following additional fixes and redesign tasks carefully and professionally.
+
+Important:
+Do not make quick patches.
+Inspect the current related code first, then implement the required changes properly.
+If something already exists but is still wrong, incomplete, badly designed, inconsistent, or broken, fix it completely.
+Preserve the app identity, but improve the affected areas so they feel polished, consistent, and fully integrated with the app.
+
+==================================================
+NEW REQUIRED FIXES AND REDESIGN TASKS
+==================================================
+
+1) Fix Tasks page filters behavior
+2) Fix the design of Habit cards
+3) Allow selecting and unselecting habits from the Dashboard
+4) Fully redesign the More page from scratch to match the app identity
+5) Fix the default profile phone country code from 966 to 974
+6) Improve the Settings page design and layout
+7) Fix Dashboard task-card date localization in Arabic
+8) Continue fixing RTL and LTR issues app-wide
+9) Update the More page structure and content
+
+==================================================
+1) TASKS PAGE - FILTERS
+==================================================
+
+Current issue:
+The filters behavior in the Tasks page is not correct.
+
+Required behavior:
+- Do not show all filters directly in the page header or in a cluttered way
+- Add a single clear Filters button
+- When the user taps the Filters button, they should be able to choose the filters from a clean UI
+
+Implementation requirements:
+- Add one Filters button in the Tasks page
+- Tapping it should open a clean filter selection UI
+- The filter UI can be:
+  - modal
+  - bottom sheet
+  - dropdown panel
+whichever fits the current app structure best
+
+The user should be able to choose filters such as:
+- All
+- Today
+- Completed
+- Overdue
+- Postponed
+- High Priority
+- No Date
+
+Requirements:
+- The interaction must be clean and simple
+- The design must match the app identity
+- Selected filters must be visually clear
+- The filter logic must remain correct and stable
+- Do not clutter the page
+- Keep the task page clean
+
+==================================================
+2) HABITS PAGE - CARDS DESIGN
+==================================================
+
+Current issue:
+The design of the Habit cards is not good enough and does not feel properly aligned with the app identity.
+
+Requirements:
+- Review the full Habit cards design
+- Redesign/refine the cards so they match the app’s visual identity
+- Improve:
+  - spacing
+  - typography
+  - icon placement
+  - color balance
+  - hierarchy of information
+  - completion state
+  - progress presentation if applicable
+  - tap targets
+  - selected / completed visual states
+
+Goal:
+Habit cards should feel polished, readable, and visually consistent with the rest of the app.
+
+Important:
+- Do not redesign the whole app
+- Redesign the habit cards specifically so they feel premium and integrated
+- Preserve the app style, but improve quality significantly
+
+==================================================
+3) DASHBOARD - HABIT SELECT / UNSELECT
+==================================================
+
+Required:
+The user must be able to both select and unselect habits directly from the Dashboard.
+
+Requirements:
+- If a habit is marked from the Dashboard, the user must also be able to undo it from the Dashboard
+- This must work reliably and intuitively
+- The state must update correctly in:
+  - Dashboard
+  - Habits page
+  - summary counts
+  - statistics
+  - streak/progress logic if applicable
+  - linked goals if applicable
+
+Important:
+- Do not create inconsistent logic between Dashboard and Habits page
+- Both must stay synchronized
+
+==================================================
+4) MORE PAGE - FULL REDESIGN
+==================================================
+
+Current issue:
+The More page still has no proper design, no clear identity, and does not match the app at all.
+
+This page must be redesigned completely.
+
+Important:
+I want a full redesign of the More page from all aspects so it properly matches the app identity.
+
+Requirements:
+- Redesign the More page completely
+- It must look like a real part of the app
+- It must match the app identity in:
+  - layout
+  - typography
+  - colors
+  - icon usage
+  - spacing
+  - section grouping
+  - visual hierarchy
+  - cards/list items
+  - headers
+  - interaction states
+
+It should not look plain, empty, generic, or unfinished.
+It should feel polished and intentionally designed.
+
+==================================================
+5) PROFILE - PHONE COUNTRY CODE
+==================================================
+
+Current issue:
+In the Profile page, the phone number starts with 966.
+It should be 974 instead.
+
+Requirements:
+- Change the default country code from 966 to 974
+- Make sure the profile phone field reflects the correct default
+- Check if this is hardcoded anywhere in:
+  - UI
+  - form defaults
+  - validation
+  - storage/model defaults
+- Update all related logic safely
+
+==================================================
+6) SETTINGS PAGE - DESIGN AND LAYOUT
+==================================================
+
+Required:
+Improve the Settings page from a design and layout perspective.
+
+Requirements:
+- Refine the Settings page visually
+- Make it feel more aligned with the app identity
+- Improve:
+  - spacing
+  - alignment
+  - typography
+  - grouping of settings
+  - list item layout
+  - switches/selectors if present
+  - icons
+  - section headers
+  - margins/paddings
+- Keep the current app style, but make the page more polished and properly structured
+
+Goal:
+The Settings page should feel clean, premium, organized, and consistent with the rest of the app.
+
+==================================================
+7) DASHBOARD - TASK CARD DATE LOCALIZATION
+==================================================
+
+Current issue:
+In the Dashboard, when changing the selected date, the task cards above it still show the date in English.
+When the app language is Arabic, the date should appear in Arabic.
+
+Requirements:
+- Fix date localization in Dashboard task cards
+- When app language is Arabic:
+  - date text must appear in Arabic
+  - date formatting must follow Arabic locale
+- When app language is English:
+  - date text must appear in English
+  - date formatting must follow English locale
+
+Check:
+- selected date display
+- task card date labels
+- any related helper/formatter
+- locale source should follow app language, not a hardcoded default
+
+==================================================
+8) RTL / LTR FIXES
+==================================================
+
+There are still RTL and LTR issues.
+
+Requirements:
+Continue auditing and fixing RTL/LTR behavior across the app, especially in:
+- More page
+- Settings page
+- Tasks page
+- Habit cards
+- Dashboard
+- profile fields
+- dates
+- row ordering
+- text alignment
+- icon placement
+- spacing that should flip
+- navigation items if affected
+
+Rules:
+- Arabic mode = right-aligned text and proper RTL layout
+- English mode = left-aligned text and proper LTR layout
+
+Do not do partial fixes only.
+Review the affected screens properly.
+
+==================================================
+9) MORE PAGE - REQUIRED CONTENT STRUCTURE
+==================================================
+
+The More page should contain these items:
+
+- Profile
+- Goals
+- Categories
+- App Settings
+- Support
+
+Requirements:
+- Organize these items properly in the More page
+- Use a strong layout that matches the app identity
+- Make each item visually clear and easy to tap
+- Ensure navigation from each item works correctly
+
+Suggested structure:
+- clean grouped menu/list/cards
+- consistent icon styling
+- proper spacing
+- proper section hierarchy if needed
+
+Important:
+The More page should not be a plain placeholder.
+It must be fully designed and fully functional.
+
+==================================================
+IMPLEMENTATION RULES
+==================================================
+
+While applying these updates:
+- inspect the current implementation first
+- fix the root problem, not just the visible symptom
+- preserve the app identity
+- clean conflicting or outdated code
+- remove duplication if needed
+- do not break navigation
+- do not break translations
+- do not break theme behavior
+- do not break existing working flows
+
+If any component involved is messy or inconsistent:
+- refactor it cleanly
+
+==================================================
+FINAL REQUIRED REVIEW
+==================================================
+
+After implementing all of the above, perform a full, comprehensive, complete, and precise review of all affected app areas.
+
+This final review must include:
+- Tasks page
+- Tasks filters flow
+- Habits page
+- Habit cards
+- Dashboard habit select/unselect logic
+- Dashboard dates localization
+- More page
+- Profile page
+- Settings page
+- RTL/LTR behavior in all affected areas
+- navigation to Profile / Goals / Categories / App Settings / Support
+- visual consistency
+- design consistency
+- translation consistency
+- interaction consistency
+
+Also do all of the following after implementation:
+- full code cleanup
+- fix remaining errors
+- remove dead code
+- remove unused imports
+- remove duplicate logic
+- fix build/runtime/type issues
+- improve maintainability where needed
+
+==================================================
+FINAL VERIFICATION CHECKLIST
+==================================================
+
+Before finishing, verify all of the following:
+
+1. Tasks page now uses a single Filters button
+2. Tapping Filters opens a clean filter selection UI
+3. Task filters work correctly
+4. Habit cards design has been improved properly
+5. Habit cards match the app identity
+6. Habits can be selected from Dashboard
+7. Habits can be unselected from Dashboard
+8. Dashboard and Habits page remain synchronized
+9. More page has been fully redesigned
+10. More page now matches the app identity
+11. More page includes:
+   - Profile
+   - Goals
+   - Categories
+   - App Settings
+   - Support
+12. Navigation from More page works correctly
+13. Profile phone code default is 974
+14. Settings page design/layout has been improved
+15. Dashboard task card dates are localized correctly in Arabic
+16. Arabic mode shows Arabic dates correctly
+17. English mode shows English dates correctly
+18. RTL issues in affected screens were fixed
+19. LTR issues in affected screens were fixed
+20. No obvious UI inconsistencies remain
+21. No obvious runtime/build/type issues remain
+22. Code cleanup was completed
+23. Remaining errors were fixed
+
+==================================================
+FINAL RESPONSE FORMAT
+==================================================
+
+After finishing, provide a clear summary including:
+- what was fixed
+- what was redesigned
+- what was improved
+- what was refactored
+- what was cleaned
+- which files/screens/components were affected
+- whether the More page was fully redesigned
+- whether the Tasks filters flow was changed successfully
+- whether Dashboard habit select/unselect now works correctly
+- whether Arabic date localization in Dashboard was fixed
+- whether the profile country code was corrected to 974
+- whether RTL/LTR issues were reviewed again
+- whether the final comprehensive review was completed
+- whether full code cleanup was completed
+- whether remaining errors were fixed
+- any remaining issue if one still exists
+
+Do not stop at a partial implementation.
+Do not leave the app in a messy in-between state.
+Complete the implementation, redesign, cleanup, error fixing, and final full review professionally.

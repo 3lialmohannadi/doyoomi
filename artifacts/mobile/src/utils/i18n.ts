@@ -9,6 +9,17 @@ const translations: Record<Language, Record<string, string>> = {
     goals: 'Goals',
     settings: 'Settings',
     habits: 'Habits',
+    more: 'More',
+
+    // Filters
+    filters: 'Filters',
+    filterBy: 'Filter by',
+
+    // More page sections
+    account: 'Account',
+    preferences: 'Preferences',
+    helpSection: 'Help',
+    content: 'Content',
 
     // Greetings
     goodMorning: 'Good morning',
@@ -164,7 +175,7 @@ const translations: Record<Language, Record<string, string>> = {
     contactInfo: 'Contact Info',
     namePlaceholder: 'Your name',
     emailPlaceholder: 'your@email.com',
-    phonePlaceholder: '+966 5XX XXX XXXX',
+    phonePlaceholder: '+974 5XXX XXXX',
     dobPlaceholder: 'Select date of birth',
     title: 'Title',
     description: 'Description (optional)',
@@ -224,6 +235,17 @@ const translations: Record<Language, Record<string, string>> = {
     goals: 'الأهداف',
     settings: 'الإعدادات',
     habits: 'العادات',
+    more: 'المزيد',
+
+    // الفلاتر
+    filters: 'الفلاتر',
+    filterBy: 'تصفية حسب',
+
+    // قسم المزيد
+    account: 'الحساب',
+    preferences: 'التفضيلات',
+    helpSection: 'المساعدة',
+    content: 'المحتوى',
 
     // التحيات
     goodMorning: 'صباح الخير',
@@ -379,7 +401,7 @@ const translations: Record<Language, Record<string, string>> = {
     contactInfo: 'معلومات التواصل',
     namePlaceholder: 'اسمك',
     emailPlaceholder: 'بريدك@الإلكتروني.com',
-    phonePlaceholder: '+966 5XX XXX XXXX',
+    phonePlaceholder: '+974 5XXX XXXX',
     dobPlaceholder: 'اختر تاريخ الميلاد',
     title: 'العنوان',
     description: 'الوصف (اختياري)',

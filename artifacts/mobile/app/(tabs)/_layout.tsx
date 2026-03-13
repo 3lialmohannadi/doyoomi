@@ -37,8 +37,8 @@ function NativeTabLayout() {
         <Label>{tFunc('goals')}</Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
-        <Icon sf={{ default: "gear", selected: "gear.fill" }} />
-        <Label>{tFunc('settings')}</Label>
+        <Icon sf={{ default: "ellipsis.circle", selected: "ellipsis.circle.fill" }} />
+        <Label>{tFunc('more')}</Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -119,9 +119,9 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: tFunc('settings'),
+          title: tFunc('more'),
           tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="gear" tintColor={color} size={24} /> : <Ionicons name="settings-outline" size={22} color={color} />,
+            isIOS ? <SymbolView name="ellipsis.circle" tintColor={color} size={24} /> : <Ionicons name="grid-outline" size={22} color={color} />,
         }}
       />
     </Tabs>

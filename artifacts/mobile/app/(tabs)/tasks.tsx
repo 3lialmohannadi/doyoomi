@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
-  SectionList, StyleSheet, Text, View, TextInput, Pressable, Platform, ScrollView,
+  SectionList, StyleSheet, Text, View, TextInput, Pressable, Platform, Modal,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -47,6 +47,7 @@ export default function TasksScreen() {
   const [filter, setFilter] = useState<FilterKey>('all');
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [confirmTask, setConfirmTask] = useState<Task | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
@@ -58,15 +59,18 @@ export default function TasksScreen() {
     setToast({ message, type });
   };
 
-  const filterChips: { key: FilterKey; label: string; icon: string }[] = [
-    { key: 'all',       label: tFunc('all'),       icon: 'apps' },
-    { key: 'today',     label: tFunc('today'),     icon: 'today' },
-    { key: 'done',      label: tFunc('done'),      icon: 'checkmark-circle' },
-    { key: 'overdue',   label: tFunc('overdue'),   icon: 'alert-circle' },
-    { key: 'high',      label: tFunc('high'),      icon: 'arrow-up-circle' },
-    { key: 'postponed', label: tFunc('postponed'), icon: 'time' },
-    { key: 'nodate',    label: tFunc('noDate'),    icon: 'remove-circle' },
+  const filterOptions: { key: FilterKey; label: string; icon: string }[] = [
+    { key: 'all',       label: tFunc('all'),       icon: 'apps-outline' },
+    { key: 'today',     label: tFunc('today'),     icon: 'today-outline' },
+    { key: 'done',      label: tFunc('done'),      icon: 'checkmark-circle-outline' },
+    { key: 'overdue',   label: tFunc('overdue'),   icon: 'alert-circle-outline' },
+    { key: 'high',      label: tFunc('high'),      icon: 'arrow-up-circle-outline' },
+    { key: 'postponed', label: tFunc('postponed'), icon: 'time-outline' },
+    { key: 'nodate',    label: tFunc('noDate'),    icon: 'remove-circle-outline' },
   ];
+
+  const activeOption = filterOptions.find(f => f.key === filter)!;
+  const activeGrad = FILTER_GRADIENTS[filter];
 
   const filteredTasks = useMemo(() => {
     let result = [...tasks];
@@ -99,7 +103,7 @@ export default function TasksScreen() {
 
   const topPad = isWeb ? 67 : insets.top;
   const bottomPad = isWeb ? 34 : 0;
-  const activeGrad = FILTER_GRADIENTS[filter];
+  const hasActiveFilter = filter !== 'all';
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
@@ -107,16 +111,47 @@ export default function TasksScreen() {
       <View style={[styles.header, { paddingTop: topPad + Spacing.sm, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <View style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
           <Text style={[styles.headerTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('tasks')}</Text>
-          <Text style={[styles.headerSub, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{filteredTasks.length} {tFunc('taskCount')}</Text>
+          <Text style={[styles.headerSub, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
+            {filteredTasks.length} {tFunc('taskCount')}
+          </Text>
         </View>
-        <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditTask(null); setShowForm(true); }}
-          style={styles.addBtn}
-        >
-          <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.addGrad}>
-            <Ionicons name="add" size={24} color="#fff" />
-          </LinearGradient>
-        </Pressable>
+
+        <View style={[styles.headerActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          {/* Filters button */}
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowFilters(true); }}
+            style={({ pressed }) => [
+              styles.filterBtn,
+              {
+                backgroundColor: hasActiveFilter ? activeGrad[0] + '18' : C.surface,
+                borderColor: hasActiveFilter ? activeGrad[0] + '60' : C.border,
+                flexDirection: isRTL ? 'row-reverse' : 'row',
+                opacity: pressed ? 0.75 : 1,
+              },
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={tFunc('filters')}
+          >
+            <Ionicons name="options-outline" size={16} color={hasActiveFilter ? activeGrad[0] : C.textMuted} />
+            {hasActiveFilter ? (
+              <Text style={[styles.filterBtnLabel, { color: activeGrad[0] }]}>{activeOption.label}</Text>
+            ) : (
+              <Text style={[styles.filterBtnLabel, { color: C.textSecondary }]}>{tFunc('filters')}</Text>
+            )}
+          </Pressable>
+
+          {/* Add button */}
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditTask(null); setShowForm(true); }}
+            style={styles.addBtn}
+            accessibilityRole="button"
+            accessibilityLabel={tFunc('addTask')}
+          >
+            <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.addGrad}>
+              <Ionicons name="add" size={24} color="#fff" />
+            </LinearGradient>
+          </Pressable>
+        </View>
       </View>
 
       {/* Search */}
@@ -131,35 +166,29 @@ export default function TasksScreen() {
           style={[styles.searchInput, { color: C.text }]}
         />
         {search.length > 0 && (
-          <Pressable onPress={() => setSearch('')}>
+          <Pressable onPress={() => setSearch('')} accessibilityRole="button" accessibilityLabel="Clear search">
             <Ionicons name="close-circle" size={16} color={C.textMuted} />
           </Pressable>
         )}
       </View>
 
-      {/* Filter chips */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[styles.filtersRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
-        style={{ marginBottom: Spacing.md }}
-      >
-        {filterChips.map(chip => {
-          const isActive = chip.key === filter;
-          const grad = FILTER_GRADIENTS[chip.key];
-          return (
-            <Pressable
-              key={chip.key}
-              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setFilter(chip.key); }}
-              style={[styles.chip, { overflow: 'hidden', borderColor: isActive ? 'transparent' : C.border, backgroundColor: isActive ? 'transparent' : C.surface, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
-            >
-              {isActive && <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />}
-              <Ionicons name={chip.icon as any} size={13} color={isActive ? '#fff' : C.textMuted} />
-              <Text style={[styles.chipText, { color: isActive ? '#fff' : C.textSecondary }]}>{chip.label}</Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+      {/* Active filter indicator */}
+      {hasActiveFilter && (
+        <View style={[styles.activeFilterRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View style={[styles.activeFilterPill, { backgroundColor: activeGrad[0] + '15', borderColor: activeGrad[0] + '40', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <Ionicons name={activeOption.icon as any} size={13} color={activeGrad[0]} />
+            <Text style={[styles.activeFilterText, { color: activeGrad[0] }]}>{activeOption.label}</Text>
+          </View>
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setFilter('all'); }}
+            style={[styles.clearFilterBtn, { backgroundColor: C.surface, borderColor: C.border }]}
+            accessibilityRole="button"
+            accessibilityLabel="Clear filter"
+          >
+            <Ionicons name="close" size={13} color={C.textMuted} />
+          </Pressable>
+        </View>
+      )}
 
       <SectionList
         sections={sections}
@@ -215,6 +244,70 @@ export default function TasksScreen() {
         stickySectionHeadersEnabled={false}
       />
 
+      {/* Filter Modal */}
+      <Modal
+        visible={showFilters}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowFilters(false)}
+        statusBarTranslucent
+      >
+        <Pressable style={styles.overlay} onPress={() => setShowFilters(false)}>
+          <Pressable style={[styles.filterSheet, { backgroundColor: C.card }]} onPress={() => {}}>
+            {/* Sheet handle */}
+            <View style={[styles.sheetHandle, { backgroundColor: C.border }]} />
+
+            {/* Header */}
+            <View style={[styles.sheetHeader, { flexDirection: isRTL ? 'row-reverse' : 'row', borderBottomColor: C.border }]}>
+              <Text style={[styles.sheetTitle, { color: C.text }]}>{tFunc('filterBy')}</Text>
+              <Pressable onPress={() => setShowFilters(false)} style={[styles.sheetClose, { backgroundColor: C.surface }]}>
+                <Ionicons name="close" size={18} color={C.textSecondary} />
+              </Pressable>
+            </View>
+
+            {/* Filter options */}
+            <View style={styles.filterGrid}>
+              {filterOptions.map(opt => {
+                const isActive = opt.key === filter;
+                const grad = FILTER_GRADIENTS[opt.key];
+                return (
+                  <Pressable
+                    key={opt.key}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setFilter(opt.key);
+                      setShowFilters(false);
+                    }}
+                    style={({ pressed }) => [
+                      styles.filterOption,
+                      {
+                        backgroundColor: isActive ? grad[0] + '18' : C.surface,
+                        borderColor: isActive ? grad[0] : C.border,
+                        opacity: pressed ? 0.75 : 1,
+                        flexDirection: isRTL ? 'row-reverse' : 'row',
+                      },
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: isActive }}
+                    accessibilityLabel={opt.label}
+                  >
+                    <View style={[styles.filterOptionIcon, { backgroundColor: isActive ? grad[0] + '25' : C.background }]}>
+                      <Ionicons name={opt.icon as any} size={18} color={isActive ? grad[0] : C.textMuted} />
+                    </View>
+                    <Text style={[styles.filterOptionText, { color: isActive ? grad[0] : C.text }]}>{opt.label}</Text>
+                    {isActive && (
+                      <View style={[styles.filterCheck, { backgroundColor: grad[0] }]}>
+                        <Ionicons name="checkmark" size={10} color="#fff" />
+                      </View>
+                    )}
+                  </Pressable>
+                );
+              })}
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
       <TaskForm visible={showForm} onClose={() => { setShowForm(false); setEditTask(null); }} editTask={editTask} />
 
       <ConfirmDialog
@@ -247,32 +340,49 @@ export default function TasksScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+
   header: {
     alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg, paddingBottom: Spacing.md,
   },
   headerTitle: { fontSize: 28, fontFamily: 'Inter_700Bold' },
   headerSub: { fontSize: 13, fontFamily: 'Inter_500Medium', marginTop: 1 },
+  headerActions: { alignItems: 'center', gap: Spacing.sm },
+
+  filterBtn: {
+    alignItems: 'center', gap: 6,
+    borderRadius: Radius.full, borderWidth: 1,
+    paddingHorizontal: Spacing.md, paddingVertical: 9,
+  },
+  filterBtnLabel: { fontSize: 13, fontFamily: 'Inter_600SemiBold' },
+
   addBtn: { borderRadius: 24, overflow: 'hidden' },
   addGrad: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' },
+
   searchBar: {
     alignItems: 'center',
     borderRadius: Radius.lg, borderWidth: 1,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    marginHorizontal: Spacing.lg, marginBottom: Spacing.md,
+    marginHorizontal: Spacing.lg, marginBottom: Spacing.sm,
     gap: Spacing.sm,
   },
   searchInput: { flex: 1, fontSize: 15, fontFamily: 'Inter_400Regular', padding: 0 },
-  filtersRow: {
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.lg, paddingVertical: 2,
+
+  activeFilterRow: {
+    alignItems: 'center', gap: Spacing.sm,
+    paddingHorizontal: Spacing.lg, marginBottom: Spacing.md,
   },
-  chip: {
+  activeFilterPill: {
     alignItems: 'center', gap: 5,
     borderRadius: Radius.full, borderWidth: 1,
-    paddingHorizontal: Spacing.md, paddingVertical: 7,
+    paddingHorizontal: 12, paddingVertical: 5,
   },
-  chipText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  activeFilterText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  clearFilterBtn: {
+    width: 26, height: 26, borderRadius: 13, borderWidth: 1,
+    alignItems: 'center', justifyContent: 'center',
+  },
+
   sectionHeaderRow: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     marginTop: Spacing.lg, marginBottom: Spacing.sm,
@@ -280,4 +390,47 @@ const styles = StyleSheet.create({
   sectionHeaderText: { fontSize: 15, fontFamily: 'Inter_700Bold', flex: 1 },
   sectionCount: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
   sectionCountText: { fontSize: 11, fontFamily: 'Inter_700Bold' },
+
+  // Modal / Sheet
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'flex-end',
+  },
+  filterSheet: {
+    borderTopLeftRadius: 24, borderTopRightRadius: 24,
+    paddingBottom: 36,
+    shadowColor: '#000', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.12, shadowRadius: 20, elevation: 20,
+  },
+  sheetHandle: {
+    width: 40, height: 4, borderRadius: 2,
+    alignSelf: 'center', marginTop: 12, marginBottom: 4,
+  },
+  sheetHeader: {
+    alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+  },
+  sheetTitle: { fontSize: 17, fontFamily: 'Inter_700Bold' },
+  sheetClose: {
+    width: 32, height: 32, borderRadius: 16,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  filterGrid: {
+    paddingHorizontal: Spacing.lg, paddingTop: Spacing.md, gap: Spacing.sm,
+  },
+  filterOption: {
+    alignItems: 'center', gap: Spacing.md,
+    borderRadius: Radius.lg, borderWidth: 1,
+    paddingHorizontal: Spacing.md, paddingVertical: 13,
+  },
+  filterOptionIcon: {
+    width: 36, height: 36, borderRadius: 10,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  filterOptionText: { flex: 1, fontSize: 15, fontFamily: 'Inter_500Medium' },
+  filterCheck: {
+    width: 20, height: 20, borderRadius: 10,
+    alignItems: 'center', justifyContent: 'center',
+  },
 });

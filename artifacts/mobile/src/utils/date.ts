@@ -1,5 +1,10 @@
-import { format, isToday, isYesterday, isTomorrow, parseISO, differenceInDays, startOfWeek, endOfWeek, eachDayOfInterval, addDays } from 'date-fns';
+import { format, isToday, isYesterday, isTomorrow, parseISO, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
 import { Language, StartOfWeek } from '../types';
+
+const AR_MONTHS = [
+  'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+  'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+];
 
 export function formatDate(dateStr: string, lang: Language): string {
   try {
@@ -7,7 +12,25 @@ export function formatDate(dateStr: string, lang: Language): string {
     if (isToday(date)) return lang === 'ar' ? 'اليوم' : 'Today';
     if (isYesterday(date)) return lang === 'ar' ? 'أمس' : 'Yesterday';
     if (isTomorrow(date)) return lang === 'ar' ? 'غداً' : 'Tomorrow';
+    if (lang === 'ar') {
+      return `${date.getDate()} ${AR_MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+    }
     return format(date, 'MMM d, yyyy');
+  } catch {
+    return dateStr;
+  }
+}
+
+export function formatShortDate(dateStr: string, lang: Language): string {
+  try {
+    const date = parseISO(dateStr);
+    if (isToday(date)) return lang === 'ar' ? 'اليوم' : 'Today';
+    if (isYesterday(date)) return lang === 'ar' ? 'أمس' : 'Yesterday';
+    if (isTomorrow(date)) return lang === 'ar' ? 'غداً' : 'Tomorrow';
+    if (lang === 'ar') {
+      return `${date.getDate()} ${AR_MONTHS[date.getMonth()]}`;
+    }
+    return format(date, 'MMM d');
   } catch {
     return dateStr;
   }
