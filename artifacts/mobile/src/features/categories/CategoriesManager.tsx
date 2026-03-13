@@ -15,24 +15,7 @@ import { Spacing, Radius, Shadow } from '../../theme';
 import { t } from '../../utils/i18n';
 import { Category } from '../../types';
 
-const CATEGORY_ICONS = [
-  'briefcase', 'person', 'fitness', 'book', 'card',
-  'home', 'heart', 'star', 'rocket', 'leaf',
-  'musical-notes', 'camera', 'globe', 'school', 'cart',
-  'airplane', 'cafe', 'game-controller', 'brush', 'code-slash',
-  'bicycle', 'bed', 'pizza', 'paw', 'medkit',
-  'football', 'tennisball', 'shirt', 'wallet', 'gift',
-  'bulb', 'flask', 'desktop', 'headset', 'mic',
-  'film', 'color-palette', 'construct', 'hammer', 'key',
-];
-
-const CATEGORY_COLORS = [
-  '#7C5CFC', '#A855F7', '#6C8EF5', '#3B82F6', '#0EA5E9',
-  '#5CC2C2', '#00C48C', '#4CAF82', '#84CC16', '#22C55E',
-  '#F5A623', '#FFB800', '#FF8A50', '#F97316', '#EF4444',
-  '#FF4D6A', '#FF6B9D', '#F0A4C8', '#EC4899', '#E05E5E',
-  '#8B5CF6', '#6366F1', '#14B8A6', '#64748B', '#78716C',
-];
+import { SHARED_ICONS as CATEGORY_ICONS, SHARED_COLORS as CATEGORY_COLORS } from '../../constants/pickerOptions';
 
 interface CategoriesManagerProps {
   visible: boolean;

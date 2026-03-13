@@ -5,6 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { format, parseISO, getDaysInMonth, startOfMonth, getDay, addMonths, subMonths, addWeeks, subWeeks, startOfWeek, eachDayOfInterval, endOfWeek } from 'date-fns';
+
 import * as Haptics from 'expo-haptics';
 
 import { useTasksStore } from '../../src/store/tasksStore';
@@ -21,6 +22,21 @@ import { EmptyState } from '../../src/components/ui/EmptyState';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
 import { Task } from '../../src/types';
 import { LinearGradient } from 'expo-linear-gradient';
+
+const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const AR_DAYS_SHORT = ['أح','إث','ثل','أر','خم','جم','سب'];
+const AR_DAYS_FULL = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+
+function formatHeaderAr(date: Date, view: string, startDay: string) {
+  if (view === 'month') return `${AR_MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+  if (view === 'week') {
+    const ws = startDay === 'sunday' ? 0 : 1;
+    const s = startOfWeek(date, { weekStartsOn: ws as 0 | 1 });
+    const e = endOfWeek(date, { weekStartsOn: ws as 0 | 1 });
+    return `${s.getDate()} ${AR_MONTHS[s.getMonth()]} – ${e.getDate()} ${AR_MONTHS[e.getMonth()]}`;
+  }
+  return `${AR_DAYS_FULL[date.getDay()]}، ${date.getDate()} ${AR_MONTHS[date.getMonth()]}`;
+}
 
 type CalView = 'month' | 'week' | 'day';
 
@@ -69,7 +85,10 @@ export default function CalendarScreen() {
     else setCurrentDate(new Date(currentDate.getTime() + dir * 86400000));
   };
 
+  const isRTL = lang === 'ar';
+
   const headerLabel = useMemo(() => {
+    if (isRTL) return formatHeaderAr(currentDate, view, profile.start_of_week);
     if (view === 'month') return format(currentDate, 'MMMM yyyy');
     if (view === 'week') {
       const start = startOfWeek(currentDate, { weekStartsOn: profile.start_of_week === 'sunday' ? 0 : 1 });
@@ -77,7 +96,7 @@ export default function CalendarScreen() {
       return `${format(start, 'MMM d')} – ${format(end, 'MMM d')}`;
     }
     return format(currentDate, 'EEEE, MMMM d');
-  }, [currentDate, view, profile.start_of_week]);
+  }, [currentDate, view, profile.start_of_week, isRTL]);
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
@@ -97,13 +116,13 @@ export default function CalendarScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad + 100 }}>
         {/* Nav row */}
-        <View style={styles.navRow}>
-          <Pressable onPress={() => navigate(-1)} style={styles.navBtn}>
-            <Ionicons name="chevron-back" size={20} color={C.tint} />
+        <View style={[styles.navRow, isRTL && { flexDirection: 'row-reverse' }]}>
+          <Pressable onPress={() => navigate(isRTL ? 1 : -1)} style={styles.navBtn}>
+            <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={20} color={C.tint} />
           </Pressable>
           <Text style={[styles.navLabel, { color: C.text }]}>{headerLabel}</Text>
-          <Pressable onPress={() => navigate(1)} style={styles.navBtn}>
-            <Ionicons name="chevron-forward" size={20} color={C.tint} />
+          <Pressable onPress={() => navigate(isRTL ? -1 : 1)} style={styles.navBtn}>
+            <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={C.tint} />
           </Pressable>
         </View>
 
@@ -118,6 +137,7 @@ export default function CalendarScreen() {
             }}
             taskDates={taskDates}
             startOfWeek={profile.start_of_week}
+            lang={lang}
             C={C}
           />
         )}
@@ -132,6 +152,7 @@ export default function CalendarScreen() {
             }}
             taskDates={taskDates}
             startOfWeek={profile.start_of_week}
+            lang={lang}
             C={C}
           />
         )}
@@ -188,11 +209,17 @@ export default function CalendarScreen() {
   );
 }
 
-function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, C }: any) {
+function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, lang, C }: any) {
+  const isRTL = lang === 'ar';
   const weekStart = startDay === 'sunday' ? 0 : 1;
-  const dayHeaders = startDay === 'sunday'
+
+  const dayHeadersEn = startDay === 'sunday'
     ? ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
     : ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+  const dayHeadersAr = startDay === 'sunday'
+    ? [AR_DAYS_SHORT[0], AR_DAYS_SHORT[1], AR_DAYS_SHORT[2], AR_DAYS_SHORT[3], AR_DAYS_SHORT[4], AR_DAYS_SHORT[5], AR_DAYS_SHORT[6]]
+    : [AR_DAYS_SHORT[1], AR_DAYS_SHORT[2], AR_DAYS_SHORT[3], AR_DAYS_SHORT[4], AR_DAYS_SHORT[5], AR_DAYS_SHORT[6], AR_DAYS_SHORT[0]];
+  const dayHeaders = isRTL ? dayHeadersAr : dayHeadersEn;
 
   const daysInMonth = getDaysInMonth(date);
   const firstDay = getDay(startOfMonth(date));
@@ -257,7 +284,8 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
   );
 }
 
-function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, C }: any) {
+function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, lang, C }: any) {
+  const isRTL = lang === 'ar';
   const weekStart = startDay === 'sunday' ? 0 : 1;
   const start = startOfWeek(date, { weekStartsOn: weekStart });
   const end = endOfWeek(date, { weekStartsOn: weekStart });
@@ -292,7 +320,7 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
                 />
               )}
               <Text style={[styles.weekDayLabel, { color: isSelected ? 'rgba(255,255,255,0.8)' : C.textMuted }]}>
-                {format(day, 'EEE').slice(0, 2)}
+                {isRTL ? AR_DAYS_SHORT[day.getDay()] : format(day, 'EEE').slice(0, 2)}
               </Text>
               <Text style={[styles.weekDayNum, { color: isSelected ? '#fff' : isToday ? C.tint : C.text }]}>
                 {format(day, 'd')}

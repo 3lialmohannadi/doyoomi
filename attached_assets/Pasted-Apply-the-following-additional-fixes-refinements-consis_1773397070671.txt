@@ -1,0 +1,662 @@
+Apply the following additional fixes, refinements, consistency improvements, and quality upgrades across the app.
+
+Important:
+Do not treat these as quick patches.
+Inspect the related code first, then fix, improve, refactor, and clean everything properly.
+If something already exists, verify it fully.
+If it is broken, incomplete, inconsistent, duplicated, or poorly implemented, fix and clean it.
+If it is missing, create it properly.
+Preserve the current app identity, but improve consistency, polish, and reliability across the entire app.
+
+==================================================
+ADDITIONAL REQUIRED FIXES AND IMPROVEMENTS
+==================================================
+
+1) Fix the More, Settings, and Goals pages so they match the app identity
+2) Add unselect ability for habits
+3) Add more mood options
+4) Add more colors and icons across the app
+5) Fix dashboard calendar behavior in Arabic
+6) Fix Calendar page localization in Arabic
+7) Fix text alignment by language
+8) Unify fonts, identity, sizing, spacing, and measurements
+9) Improve task filters layout and interaction
+10) Unify icon and color selection everywhere
+11) Fix Support page submission error
+12) Add professional empty states
+13) Add unified loading states
+14) Add a unified toast / feedback system
+15) Add unified confirmation dialogs
+16) Create reusable shared icon picker and color picker
+17) Unify form validation behavior
+18) Unify active / selected / disabled / pressed states
+19) Improve accessibility basics
+20) Audit language switching behavior
+21) Perform a full UI consistency pass across the app
+
+==================================================
+1) MORE, SETTINGS, AND GOALS PAGES
+==================================================
+
+The More page, Settings page, and Goals page currently have design / UI consistency issues.
+
+Requirements:
+- Review these pages fully
+- Redesign or refine them only as needed so they match the existing app identity
+- Make sure they feel like part of the same app
+- Unify:
+  - typography
+  - colors
+  - spacing
+  - paddings
+  - card style
+  - button style
+  - icon style
+  - section layout
+  - header style
+  - visual hierarchy
+
+Important:
+- Do not redesign the entire app from scratch
+- Keep the current app style
+- Improve consistency and polish only
+- Remove any UI that feels visually disconnected from the rest of the app
+
+==================================================
+2) HABITS: ADD UNSELECT ABILITY
+==================================================
+
+Add the ability to unselect / undo a habit completion.
+
+Requirements:
+- If a user marks a habit as completed by mistake, they must be able to undo it cleanly
+- The behavior should be clear and intuitive
+- Completion should work like a proper toggle where appropriate
+- Update all related logic safely
+
+Make sure this does not break:
+- streaks
+- counts
+- daily progress
+- home summary
+- statistics
+- linked goal progress if habits are connected to goals
+
+If this already partially exists but behaves incorrectly, fix it cleanly.
+
+==================================================
+3) ADD MORE MOOD OPTIONS
+==================================================
+
+Expand the mood options in the Journal / mood picker.
+
+Add more mood choices in a clean and consistent way.
+
+Suggested set:
+- Excellent
+- Very Good
+- Good
+- Neutral
+- Tired
+- Stressed
+- Sad
+- Bad
+
+Requirements:
+- Display them clearly in the UI
+- Make sure selection states are visually consistent
+- Ensure they work correctly in create/edit journal flows
+- Keep the design aligned with the app identity
+
+==================================================
+4) ADD MORE COLORS AND ICONS
+==================================================
+
+Add more color and icon options across the app.
+
+Requirements:
+- Expand the available color options
+- Expand the available icon options
+- Use a single centralized shared set across the app
+
+Target:
+- 30 icons
+- 30 colors
+
+Important:
+Any place in the app where the user can choose icons or colors must use the same shared library and the same quantity.
+
+This applies to:
+- categories
+- tasks if relevant
+- habits
+- goals
+- any settings or forms where icon/color selection exists
+- any future picker using colors or icons
+
+Do not allow one screen to have a different set from another.
+
+==================================================
+5) DASHBOARD CALENDAR IN ARABIC
+==================================================
+
+Fix the dashboard calendar behavior when the app language is Arabic.
+
+Requirements:
+- The mini calendar / dashboard calendar must start from the right side in Arabic
+- The week should start from Sunday in Arabic mode
+- The layout must feel natural for Arabic RTL usage
+
+When language is English:
+- keep proper LTR behavior
+- preserve the correct layout for English
+
+Make sure the dashboard calendar is not visually mirrored incorrectly.
+It must be intentionally localized, not just flipped.
+
+==================================================
+6) CALENDAR PAGE LOCALIZATION IN ARABIC
+==================================================
+
+The main Calendar page still shows English content when the app language is Arabic.
+
+Requirements:
+- Fully localize the Calendar page when Arabic is selected
+- Translate:
+  - day names
+  - month names
+  - labels
+  - buttons
+  - headings
+  - date-related UI text
+- Make sure the calendar locale follows the app language, not a hardcoded default
+
+Also review:
+- date formatting
+- weekday ordering
+- month/year header
+- navigation labels if any
+
+==================================================
+7) TEXT ALIGNMENT BY LANGUAGE
+==================================================
+
+Apply correct text alignment rules app-wide:
+
+- In Arabic: text should align right
+- In English: text should align left
+
+This should be reviewed and fixed across:
+- headers
+- labels
+- cards
+- inputs
+- placeholders
+- journal text
+- support page
+- settings
+- goals
+- habits
+- tasks
+- calendar labels
+- empty states
+- buttons where appropriate
+- modals and bottom sheets
+
+Do not apply this only partially.
+Audit the whole app.
+
+==================================================
+8) UNIFY FONTS, IDENTITY, SIZING, SPACING, AND MEASUREMENTS
+==================================================
+
+The app needs a stronger unified design system.
+
+Requirements:
+Create or clean a shared design system / constants structure for:
+- font family
+- font sizes
+- font weights
+- line heights
+- spacing scale
+- padding scale
+- margin scale
+- border radius values
+- icon sizes
+- button heights
+- input heights
+- card paddings
+- section spacing
+
+Then apply this consistently across the app.
+
+Goal:
+- consistent typography
+- consistent spacing
+- consistent component sizing
+- consistent visual hierarchy
+- consistent feel between screens
+
+==================================================
+9) IMPROVE TASK FILTERS LAYOUT AND INTERACTION
+==================================================
+
+The filters in the Tasks page need improvement.
+
+Requirements:
+- Review the current filter UI
+- Make it cleaner, more intuitive, and more visually consistent
+- Avoid clutter
+- Improve interaction and readability
+
+Preferred direction:
+- clean horizontal chips, segmented controls, or another tidy filter pattern
+- selected and unselected states must be obvious
+- filter behavior must remain stable and easy to use
+
+Important:
+- Preserve the current app identity
+- Improve usability and consistency
+- Do not overcomplicate the page
+
+==================================================
+10) UNIFY ICON AND COLOR SELECTION EVERYWHERE
+==================================================
+
+Wherever the app allows the user to choose icons or colors, it must behave the same way.
+
+Requirements:
+- Use the same shared icon picker everywhere
+- Use the same shared color picker everywhere
+- Same icon count everywhere: 30
+- Same color count everywhere: 30
+- Same layout, sizing, spacing, and selected state everywhere
+- Same visual behavior in all forms
+
+If multiple different pickers already exist:
+- refactor and unify them
+- remove duplicates
+- create reusable shared components if needed
+
+==================================================
+11) FIX SUPPORT PAGE SUBMISSION ERROR
+==================================================
+
+The Support page currently shows an error when submitting.
+
+Requirements:
+- Fully inspect the support submission flow
+- Identify the real issue
+- Fix it properly
+
+Check:
+- validation
+- network request
+- API or email sending logic
+- missing configuration
+- incorrect payload handling
+- form state issues
+- error handling
+- loading state
+- success state
+- retry behavior if needed
+
+After the fix:
+- submission should work properly
+- user should see clear feedback
+- failure messages should be understandable
+- loading state should be clean
+- success state should be clean
+
+Do not leave the support page in a broken or fake-complete state.
+
+==================================================
+12) ADD PROFESSIONAL EMPTY STATES
+==================================================
+
+Review all main sections and add or improve empty states.
+
+This includes areas like:
+- no tasks
+- no habits
+- no goals
+- no journal entries
+- no support history if applicable
+- empty filtered results
+- empty categories if relevant
+
+Requirements:
+- empty states should match the app identity
+- they should feel helpful, not blank
+- include clear action prompts where appropriate
+- examples:
+  - Add Task
+  - Create Habit
+  - Add Goal
+  - Start Writing
+
+Keep them clean and not overly verbose.
+
+==================================================
+13) ADD UNIFIED LOADING STATES
+==================================================
+
+Loading behavior must be more consistent across the app.
+
+Requirements:
+- Review screens and flows with loading states
+- Unify the loading experience
+
+This applies especially to:
+- saving forms
+- support submit
+- journal save
+- goal updates
+- task save/edit
+- habit save/edit
+- screens loading stored data or remote data if applicable
+
+Requirements:
+- use consistent loading indicators
+- avoid random inconsistent loading UI
+- loading buttons should feel consistent
+- loading states should not break layouts
+
+==================================================
+14) ADD A UNIFIED TOAST / FEEDBACK SYSTEM
+==================================================
+
+Add or improve a consistent feedback system for app actions.
+
+Examples:
+- Task saved
+- Task deleted
+- Habit updated
+- Goal removed
+- Journal entry added
+- Support message sent
+- Something went wrong
+
+Requirements:
+- use one consistent style across the app
+- success, warning, and error states should feel unified
+- avoid random different alert styles on different screens
+- integrate it cleanly into the current app architecture
+
+==================================================
+15) ADD UNIFIED CONFIRMATION DIALOGS
+==================================================
+
+Confirmation dialogs should be consistent across the app.
+
+This includes actions like:
+- delete task
+- delete habit
+- delete goal
+- delete category
+- delete journal entry
+- other destructive actions
+
+Requirements:
+- same visual style
+- same button structure
+- same text hierarchy
+- consistent spacing and typography
+- correct RTL/LTR behavior
+- consistent destructive action styling
+
+==================================================
+16) CREATE REUSABLE SHARED ICON PICKER AND COLOR PICKER
+==================================================
+
+If needed, build proper shared reusable picker components.
+
+Requirements:
+- shared icon picker
+- shared color picker
+- reusable form section / modal structure if needed
+- remove duplicate implementations
+- keep them flexible enough to be reused across the app
+
+Goal:
+- reduce duplication
+- improve consistency
+- simplify future maintenance
+
+==================================================
+17) UNIFY FORM VALIDATION BEHAVIOR
+==================================================
+
+All forms should follow the same validation behavior and UI rules.
+
+Requirements:
+- required field handling should be consistent
+- validation message style should be consistent
+- spacing around errors should be consistent
+- disabled submit state should be consistent
+- validation timing should feel predictable
+- invalid field states should look consistent
+
+Apply this across:
+- tasks
+- habits
+- goals
+- journal
+- support
+- settings forms if applicable
+- categories
+
+==================================================
+18) UNIFY ACTIVE / SELECTED / DISABLED / PRESSED STATES
+==================================================
+
+Review and unify interaction states across the app.
+
+Requirements:
+- selected state
+- unselected state
+- disabled state
+- pressed state
+- active state
+
+Apply this especially to:
+- filters
+- habit completion
+- mood picker
+- icon picker
+- color picker
+- categories
+- tabs if custom
+- segmented controls
+- buttons
+- selection chips
+
+Make sure all states are visually clear and consistent.
+
+==================================================
+19) IMPROVE ACCESSIBILITY BASICS
+==================================================
+
+Apply basic accessibility improvements across the app.
+
+Requirements:
+- touch targets should be large enough
+- text should remain readable
+- contrast should be acceptable
+- buttons should be clear
+- important actions should not be visually ambiguous
+- form controls should be easy to interact with
+
+Do not over-engineer this, but improve obvious usability issues.
+
+==================================================
+20) LANGUAGE SWITCHING AUDIT
+==================================================
+
+Review the app behavior when switching language.
+
+Requirements:
+- verify that text updates correctly
+- verify that alignment updates correctly
+- verify that RTL/LTR updates correctly
+- verify that calendar localization updates correctly
+- verify that labels do not remain in the old language
+- verify that forms, cards, and headings update correctly
+- verify that no screen remains partially untranslated or misaligned after switching
+
+If anything requires cleanup or refactor to make language switching reliable, do it properly.
+
+==================================================
+21) FULL UI CONSISTENCY PASS
+==================================================
+
+After all the above changes, perform a full UI consistency pass across the entire app.
+
+This means:
+- inspect all major screens
+- inspect reusable components
+- inspect cards
+- inspect buttons
+- inspect forms
+- inspect empty states
+- inspect lists
+- inspect modals
+- inspect sheets
+- inspect pickers
+- inspect headers
+- inspect summary widgets
+- inspect alignment, spacing, and typography
+
+Goal:
+Remove the feeling that different pages were built separately.
+The app should feel unified, polished, and intentionally designed as one product.
+
+==================================================
+IMPLEMENTATION RULES
+==================================================
+
+While applying all of the above:
+- inspect first
+- fix properly
+- refactor when needed
+- clean old conflicting code
+- remove duplication
+- preserve current design identity
+- do not break navigation
+- do not break theme behavior
+- do not break translations
+- do not break existing stable logic
+
+If multiple old implementations exist for the same thing:
+- consolidate them cleanly
+
+If reusable components are needed:
+- build them properly
+
+==================================================
+FINAL REQUIRED WORK AFTER IMPLEMENTATION
+==================================================
+
+After finishing all changes, do a full, comprehensive, complete, and detailed review of the entire app.
+
+This review must include:
+- all screens
+- all main sections
+- all forms
+- all modals
+- all bottom sheets
+- all pickers
+- all filters
+- all translation behavior
+- all RTL/LTR behavior
+- all empty states
+- all loading states
+- all confirmation dialogs
+- all toast/feedback behavior
+- all support flows
+- all journal flows
+- all habit flows
+- all goal flows
+- all task flows
+- all settings flows
+- all category flows
+- home/dashboard behavior
+- dashboard calendar behavior
+- main calendar behavior
+
+Also perform:
+- full code cleanup
+- fix remaining errors
+- remove dead code
+- remove unused imports
+- remove duplicate logic
+- fix inconsistent component behavior
+- fix build/runtime/type issues
+- clean naming if needed
+- improve maintainability where needed
+
+==================================================
+FINAL VERIFICATION CHECKLIST
+==================================================
+
+Before finishing, verify all of the following:
+
+1. More page matches the app identity
+2. Settings page matches the app identity
+3. Goals page matches the app identity
+4. Habits can be unselected properly
+5. Expanded mood options were added correctly
+6. Color options were expanded correctly
+7. Icon options were expanded correctly
+8. Shared color/icon system is unified everywhere
+9. Dashboard calendar works correctly in Arabic
+10. Dashboard calendar starts from the right in Arabic
+11. Dashboard calendar starts from Sunday in Arabic
+12. Main Calendar page is localized correctly in Arabic
+13. Arabic text is right-aligned
+14. English text is left-aligned
+15. Fonts are unified
+16. Sizing is unified
+17. Spacing is unified
+18. Task filters UI is improved and stable
+19. Support page submission error is fixed
+20. Empty states are clean and helpful
+21. Loading states are unified
+22. Toast / feedback system is unified
+23. Confirmation dialogs are unified
+24. Shared pickers are reusable and clean
+25. Form validation is consistent
+26. Active/selected/disabled states are consistent
+27. Accessibility basics were improved
+28. Language switching works correctly
+29. Full UI consistency pass was completed
+30. No obvious runtime issues remain
+31. No obvious UI inconsistencies remain
+32. No console/build/type errors remain
+33. Code cleanup was completed
+34. Remaining errors were fixed
+
+==================================================
+FINAL RESPONSE FORMAT
+==================================================
+
+After finishing, provide a clear summary including:
+- what was added
+- what was fixed
+- what was improved
+- what was refactored
+- what was cleaned
+- which files / screens / components were affected
+- whether the support submission issue was fixed
+- whether Arabic/English alignment was audited app-wide
+- whether the calendar localization was fixed
+- whether the shared icon/color system was unified
+- whether the full UI consistency pass was completed
+- whether the final comprehensive review was completed
+- whether full code cleanup was completed
+- whether remaining errors were fixed
+- any remaining issue if one still exists
+
+Do not stop at a partial implementation.
+Do not leave the app in a messy in-between state.
+Complete the implementation, refactor, cleanup, error fixing, and final full review professionally.

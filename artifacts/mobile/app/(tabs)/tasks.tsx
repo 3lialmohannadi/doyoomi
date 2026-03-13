@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
-  SectionList, StyleSheet, Text, View, TextInput, Pressable, Platform,
+  SectionList, StyleSheet, Text, View, TextInput, Pressable, Platform, ScrollView,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -128,26 +128,31 @@ export default function TasksScreen() {
       </View>
 
       {/* Filter chips */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={[styles.filtersRow, { flexDirection: lang === 'ar' ? 'row-reverse' : 'row' }]}
+        style={{ marginBottom: Spacing.md }}
+      >
+        {filterChips.map(chip => {
+          const isActive = chip.key === filter;
+          const grad = FILTER_GRADIENTS[chip.key];
+          return (
+            <Pressable
+              key={chip.key}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setFilter(chip.key); }}
+              style={[styles.chip, { overflow: 'hidden', borderColor: isActive ? 'transparent' : C.border, backgroundColor: isActive ? 'transparent' : C.surface }]}
+            >
+              {isActive && <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />}
+              <Ionicons name={chip.icon as any} size={13} color={isActive ? '#fff' : C.textMuted} />
+              <Text style={[styles.chipText, { color: isActive ? '#fff' : C.textSecondary }]}>{chip.label}</Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
       <SectionList
-        ListHeaderComponent={() => (
-          <View style={styles.filtersRow}>
-            {filterChips.map(chip => {
-              const isActive = chip.key === filter;
-              const grad = FILTER_GRADIENTS[chip.key];
-              return (
-                <Pressable
-                  key={chip.key}
-                  onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setFilter(chip.key); }}
-                  style={[styles.chip, { overflow: 'hidden', borderColor: isActive ? 'transparent' : C.border, backgroundColor: isActive ? 'transparent' : C.surface }]}
-                >
-                  {isActive && <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={StyleSheet.absoluteFill} />}
-                  <Ionicons name={chip.icon as any} size={13} color={isActive ? '#fff' : C.textMuted} />
-                  <Text style={[styles.chipText, { color: isActive ? '#fff' : C.textSecondary }]}>{chip.label}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        )}
+        ListHeaderComponent={null}
         sections={sections}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
@@ -213,8 +218,8 @@ const styles = StyleSheet.create({
   },
   searchInput: { flex: 1, fontSize: 15, fontFamily: 'Inter_400Regular', padding: 0 },
   filtersRow: {
-    flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm,
-    marginBottom: Spacing.lg,
+    flexDirection: 'row', gap: Spacing.sm,
+    paddingHorizontal: Spacing.lg, paddingVertical: 2,
   },
   chip: {
     flexDirection: 'row', alignItems: 'center', gap: 5,

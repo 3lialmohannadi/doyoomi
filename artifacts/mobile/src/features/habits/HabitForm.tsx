@@ -9,15 +9,13 @@ import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { t } from '../../utils/i18n';
 import { Radius, Spacing } from '../../theme';
+import { SHARED_ICONS, SHARED_COLORS } from '../../constants/pickerOptions';
 
 interface HabitFormProps {
   visible: boolean;
   onClose: () => void;
   editHabit?: Habit | null;
 }
-
-const ICONS = ['leaf', 'water', 'journal', 'phone-portrait', 'fitness', 'moon', 'book', 'nutrition', 'walk', 'bed', 'heart', 'star', 'rocket', 'musical-notes', 'code-slash'];
-const COLORS = ['#4CAF82', '#6C8EF5', '#9B6EF5', '#F0A4C8', '#F5A623', '#E05E5E', '#FF8A50', '#5CC2C2', '#7C5CFC', '#FF6B9D'];
 
 export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
   const { addHabit, updateHabit } = useHabitsStore();
@@ -26,8 +24,8 @@ export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
   const lang = profile.language;
 
   const [name, setName] = useState('');
-  const [icon, setIcon] = useState('leaf');
-  const [color, setColor] = useState('#4CAF82');
+  const [icon, setIcon] = useState(SHARED_ICONS[0]);
+  const [color, setColor] = useState(SHARED_COLORS[0]);
 
   useEffect(() => {
     if (editHabit) {
@@ -36,8 +34,8 @@ export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
       setColor(editHabit.color);
     } else {
       setName('');
-      setIcon('leaf');
-      setColor('#4CAF82');
+      setIcon(SHARED_ICONS[0]);
+      setColor(SHARED_COLORS[0]);
     }
   }, [editHabit, visible]);
 
@@ -67,7 +65,7 @@ export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
 
       <FormField label={t('icon', lang)}>
         <View style={styles.iconGrid}>
-          {ICONS.map(ic => {
+          {SHARED_ICONS.map(ic => {
             const isActive = ic === icon;
             return (
               <Pressable
@@ -88,7 +86,7 @@ export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
 
       <FormField label={t('color', lang)}>
         <View style={styles.colorGrid}>
-          {COLORS.map(cl => {
+          {SHARED_COLORS.map(cl => {
             const isActive = cl === color;
             return (
               <Pressable

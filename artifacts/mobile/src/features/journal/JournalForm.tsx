@@ -18,11 +18,14 @@ interface JournalFormProps {
 }
 
 const MOODS: { key: Mood; icon: string; color: string; labelKey: string }[] = [
-  { key: 'excellent', icon: 'happy', color: '#00C48C', labelKey: 'moodExcellent' },
-  { key: 'good', icon: 'happy-outline', color: '#4CAF82', labelKey: 'moodGood' },
-  { key: 'neutral', icon: 'remove-circle-outline', color: '#FFB800', labelKey: 'moodNeutral' },
-  { key: 'tired', icon: 'bed-outline', color: '#FF8A50', labelKey: 'moodTired' },
-  { key: 'bad', icon: 'sad-outline', color: '#FF4D6A', labelKey: 'moodBad' },
+  { key: 'excellent', icon: 'happy',                  color: '#00C48C', labelKey: 'moodExcellent' },
+  { key: 'veryGood',  icon: 'happy-outline',           color: '#4CAF82', labelKey: 'moodVeryGood' },
+  { key: 'good',      icon: 'thumbs-up-outline',       color: '#6C8EF5', labelKey: 'moodGood' },
+  { key: 'neutral',   icon: 'remove-circle-outline',   color: '#FFB800', labelKey: 'moodNeutral' },
+  { key: 'tired',     icon: 'bed-outline',             color: '#FF8A50', labelKey: 'moodTired' },
+  { key: 'stressed',  icon: 'flash-outline',           color: '#F97316', labelKey: 'moodStressed' },
+  { key: 'sad',       icon: 'cloudy-outline',          color: '#8B5CF6', labelKey: 'moodSad' },
+  { key: 'bad',       icon: 'sad-outline',             color: '#FF4D6A', labelKey: 'moodBad' },
 ];
 
 export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
@@ -106,7 +109,7 @@ export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
       </FormField>
 
       <FormField label={t('mood', lang)}>
-        <View style={styles.moodRow}>
+        <View style={styles.moodGrid}>
           {MOODS.map(m => {
             const isActive = mood === m.key;
             return (
@@ -125,7 +128,7 @@ export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
                   },
                 ]}
               >
-                <Ionicons name={m.icon as any} size={20} color={isActive ? m.color : C.textMuted} />
+                <Ionicons name={m.icon as any} size={22} color={isActive ? m.color : C.textMuted} />
                 <Text style={[styles.moodLabel, { color: isActive ? m.color : C.textSecondary }]} numberOfLines={1}>
                   {t(m.labelKey, lang)}
                 </Text>
@@ -147,7 +150,7 @@ export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
 }
 
 const styles = StyleSheet.create({
-  moodRow: {
+  moodGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.sm,
@@ -159,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     paddingVertical: Spacing.sm + 2,
     paddingHorizontal: Spacing.md,
-    minWidth: 60,
+    minWidth: 72,
   },
   moodLabel: {
     fontSize: 11,

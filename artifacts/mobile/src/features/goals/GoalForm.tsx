@@ -9,15 +9,13 @@ import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { t } from '../../utils/i18n';
 import { Radius, Spacing } from '../../theme';
+import { SHARED_ICONS, SHARED_COLORS } from '../../constants/pickerOptions';
 
 interface GoalFormProps {
   visible: boolean;
   onClose: () => void;
   editGoal?: Goal | null;
 }
-
-const ICONS = ['book', 'fitness', 'card', 'language', 'star', 'heart', 'trophy', 'rocket', 'leaf', 'water', 'code-slash', 'musical-notes'];
-const COLORS = ['#6C8EF5', '#F0A4C8', '#4CAF82', '#9B6EF5', '#F5A623', '#E05E5E', '#FF8A50', '#5CC2C2', '#7C5CFC', '#FF6B9D'];
 
 export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
   const { addGoal, updateGoal } = useGoalsStore();
@@ -31,7 +29,7 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
   const [targetValue, setTargetValue] = useState('10');
   const [currentValue, setCurrentValue] = useState('0');
   const [icon, setIcon] = useState('star');
-  const [color, setColor] = useState('#6C8EF5');
+  const [color, setColor] = useState(SHARED_COLORS[0]);
 
   useEffect(() => {
     if (editGoal) {
@@ -49,7 +47,7 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
       setTargetValue('10');
       setCurrentValue('0');
       setIcon('star');
-      setColor('#6C8EF5');
+      setColor(SHARED_COLORS[0]);
     }
   }, [editGoal, visible]);
 
@@ -108,7 +106,7 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
 
       <FormField label={t('icon', lang)}>
         <View style={styles.iconGrid}>
-          {ICONS.map(ic => {
+          {SHARED_ICONS.map(ic => {
             const isActive = ic === icon;
             return (
               <Pressable
@@ -129,7 +127,7 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
 
       <FormField label={t('color', lang)}>
         <View style={styles.colorGrid}>
-          {COLORS.map(cl => {
+          {SHARED_COLORS.map(cl => {
             const isActive = cl === color;
             return (
               <Pressable

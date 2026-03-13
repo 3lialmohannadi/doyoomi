@@ -22,7 +22,7 @@ export default function HabitsScreen() {
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
-  const { habits, completeHabit, deleteHabit } = useHabitsStore();
+  const { habits, completeHabit, uncompleteHabit, deleteHabit } = useHabitsStore();
   const { profile } = useSettingsStore();
   const lang = profile.language;
 
@@ -152,8 +152,10 @@ export default function HabitsScreen() {
               <View style={styles.habitActions}>
                 <Pressable
                   onPress={() => {
-                    if (!isDoneToday) {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    if (isDoneToday) {
+                      uncompleteHabit(item.id);
+                    } else {
                       completeHabit(item.id);
                     }
                   }}

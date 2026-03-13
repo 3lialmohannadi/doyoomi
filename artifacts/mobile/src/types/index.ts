@@ -1,7 +1,7 @@
 export type Priority = 'low' | 'medium' | 'high';
 export type TaskStatus = 'pending' | 'completed' | 'overdue' | 'postponed' | 'cancelled';
 export type GoalType = 'monthly' | 'yearly';
-export type Mood = 'excellent' | 'good' | 'neutral' | 'tired' | 'bad';
+export type Mood = 'excellent' | 'veryGood' | 'good' | 'neutral' | 'tired' | 'stressed' | 'sad' | 'bad';
 export type Language = 'en' | 'ar';
 export type Theme = 'light' | 'dark';
 export type TimeFormat = '12h' | '24h';

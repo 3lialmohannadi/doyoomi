@@ -59,13 +59,8 @@ export default function SupportScreen() {
     const mailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
 
     try {
-      const supported = await Linking.canOpenURL(mailto);
-      if (supported) {
-        await Linking.openURL(mailto);
-        setSent(true);
-      } else {
-        setMailError(true);
-      }
+      await Linking.openURL(mailto);
+      setSent(true);
     } catch {
       setMailError(true);
     } finally {

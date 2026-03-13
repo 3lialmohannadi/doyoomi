@@ -47,6 +47,7 @@ interface HabitsState {
   updateHabit: (id: string, updates: Partial<Habit>) => void;
   deleteHabit: (id: string) => void;
   completeHabit: (id: string) => void;
+  uncompleteHabit: (id: string) => void;
   loadHabits: () => Promise<void>;
 }
 
@@ -93,20 +94,31 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
       : null;
     if (lastDate === todayStr) return; // Already completed today
 
-    // Reset streak if more than 1 day has passed since last completion
     let newStreak = 1;
     if (lastDate) {
       const daysSinceLast = differenceInCalendarDays(now, parseISO(lastDate));
       if (daysSinceLast === 1) {
-        // Consecutive day — increment streak
         newStreak = habit.streak_days + 1;
       }
-      // else: gap > 1 day — streak resets to 1
     }
 
     get().updateHabit(id, {
       streak_days: newStreak,
       last_completed_at: now.toISOString(),
+    });
+  },
+
+  uncompleteHabit: (id) => {
+    const habit = get().habits.find(h => h.id === id);
+    if (!habit) return;
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
+    const lastDate = habit.last_completed_at
+      ? format(new Date(habit.last_completed_at), 'yyyy-MM-dd')
+      : null;
+    if (lastDate !== todayStr) return; // Can only undo today's completion
+    get().updateHabit(id, {
+      streak_days: Math.max(0, habit.streak_days - 1),
+      last_completed_at: undefined,
     });
   },
 
