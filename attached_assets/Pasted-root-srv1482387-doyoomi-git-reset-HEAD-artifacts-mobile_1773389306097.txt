@@ -1,0 +1,38 @@
+root@srv1482387:~/doyoomi# git reset HEAD artifacts/mobile/eas.json
+rm -f artifacts/mobile/eas.json
+git pull origin main
+From https://github.com/3lialmohannadi/doyoomi
+ * branch            main       -> FETCH_HEAD
+Updating 531ba2c..dfd49f4
+Fast-forward
+ .replit                                                                                 |  39 ++++
+ artifacts/mobile/app.json                                                               |  11 +-
+ artifacts/mobile/app/(tabs)/_layout.tsx                                                 |  12 +
+ artifacts/mobile/app/(tabs)/habits.tsx                                                  | 282 +++++++++++++++++++++++
+ artifacts/mobile/app/(tabs)/index.tsx                                                   |  24 +-
+ artifacts/mobile/app/(tabs)/settings.tsx                                                | 203 ++++++++---------
+ artifacts/mobile/app/_layout.tsx                                                        |  11 +
+ artifacts/mobile/app/support.tsx                                                        | 330 +++++++++++++++++++++++++++
+ artifacts/mobile/assets/images/icon.png                                                 | Bin 393493 -> 1283836 bytes
+ artifacts/mobile/assets/images/splash-icon.png                                          | Bin 17547 -> 1283836 bytes
+ artifacts/mobile/eas.json                                                               |  23 ++
+ artifacts/mobile/src/components/ui/FormModal.tsx                                        |  74 +++---
+ artifacts/mobile/src/features/tasks/TaskForm.tsx                                        |  35 +--
+ artifacts/mobile/src/utils/i18n.ts                                                      |  56 ++++-
+ attached_assets/IMG_4758_1773381559254.png                                              | Bin 0 -> 174156 bytes
+ .../Pasted-Apply-the-following-additional-updates-fixes-and-refine_1773380203339.txt    | 296 ++++++++++++++++++++++++
+ .../Pasted-Apply-the-following-additional-updates-fixes-and-refine_1773380319540.txt    | 296 ++++++++++++++++++++++++
+ .../Pasted-I-want-you-to-fully-review-refactor-fix-and-clean-this-_1773378727511.txt    | 518 ++++++++++++++++++++++++++++++++++++++++++
+ "attached_assets/\331\212\331\210\331\205\331\212_1773380315005.PNG"                    | Bin 0 -> 1283836 bytes
+ package.json                                                                            |   7 +-
+ pnpm-lock.yaml                                                                          |  31 +--
+ replit.md                                                                               |  21 ++
+ 22 files changed, 2075 insertions(+), 194 deletions(-)
+ create mode 100644 artifacts/mobile/app/(tabs)/habits.tsx
+ create mode 100644 artifacts/mobile/app/support.tsx
+ create mode 100644 artifacts/mobile/eas.json
+ create mode 100644 attached_assets/IMG_4758_1773381559254.png
+ create mode 100644 attached_assets/Pasted-Apply-the-following-additional-updates-fixes-and-refine_1773380203339.txt
+ create mode 100644 attached_assets/Pasted-Apply-the-following-additional-updates-fixes-and-refine_1773380319540.txt
+ create mode 100644 attached_assets/Pasted-I-want-you-to-fully-review-refactor-fix-and-clean-this-_1773378727511.txt
+ create mode 100644 "attached_assets/\331\212\331\210\331\205\331\212_1773380315005.PNG"
