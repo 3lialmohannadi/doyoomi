@@ -1,0 +1,48 @@
+root@srv1482387:~/doyoomi# cd doyoomi
+git init
+git remote add origin https://github.com/3lialmohannadi/doyoomi.git
+git pull origin main
+-bash: cd: doyoomi: No such file or directory
+Reinitialized existing Git repository in /root/doyoomi/.git/
+error: remote origin already exists.
+remote: Enumerating objects: 132, done.
+remote: Counting objects: 100% (132/132), done.
+remote: Compressing objects: 100% (41/41), done.
+remote: Total 97 (delta 57), reused 78 (delta 44), pack-reused 0 (from 0)
+Unpacking objects: 100% (97/97), 34.89 KiB | 384.00 KiB/s, done.
+From https://github.com/3lialmohannadi/doyoomi
+ * branch            main       -> FETCH_HEAD
+   dfd49f4..fc4bf34  main       -> origin/main
+Updating dfd49f4..fc4bf34
+Fast-forward
+ artifacts/mobile/app/(tabs)/calendar.tsx                                                |  73 ++++-
+ artifacts/mobile/app/(tabs)/goals.tsx                                                   | 116 +++++---
+ artifacts/mobile/app/(tabs)/habits.tsx                                                  | 116 +++++---
+ artifacts/mobile/app/(tabs)/index.tsx                                                   | 147 ++++++----
+ artifacts/mobile/app/(tabs)/tasks.tsx                                                   | 152 ++++++----
+ artifacts/mobile/app/_layout.tsx                                                        |  66 ++++-
+ artifacts/mobile/app/journal.tsx                                                        | 129 ++++----
+ artifacts/mobile/app/support.tsx                                                        |   9 +-
+ artifacts/mobile/src/components/ui/ConfirmDialog.tsx                                    | 141 +++++++++
+ artifacts/mobile/src/components/ui/EmptyState.tsx                                       |  71 ++++-
+ artifacts/mobile/src/components/ui/FormModal.tsx                                        |  47 ++-
+ artifacts/mobile/src/components/ui/IconColorPicker.tsx                                  | 134 +++++++++
+ artifacts/mobile/src/components/ui/TaskCard.tsx                                         |  67 +++--
+ artifacts/mobile/src/components/ui/Toast.tsx                                            |  79 +++++
+ artifacts/mobile/src/constants/pickerOptions.ts                                         |  17 ++
+ artifacts/mobile/src/features/categories/CategoriesManager.tsx                          |  19 +-
+ artifacts/mobile/src/features/goals/GoalForm.tsx                                        | 101 +++----
+ artifacts/mobile/src/features/habits/HabitForm.tsx                                      | 106 +++----
+ artifacts/mobile/src/features/journal/JournalForm.tsx                                   |  21 +-
+ artifacts/mobile/src/store/habitsStore.ts                                               |  18 +-
+ artifacts/mobile/src/types/index.ts                                                     |   2 +-
+ artifacts/mobile/src/utils/i18n.ts                                                      |  30 ++
+ .../Pasted-Apply-the-following-additional-fixes-refinements-consis_1773397070671.txt    | 662 ++++++++++++++++++++++++++++++++++++++++++
+ .../Pasted-root-srv1482387-doyoomi-git-reset-HEAD-artifacts-mobile_1773389306097.txt    |  38 +++
+ 24 files changed, 1896 insertions(+), 465 deletions(-)
+ create mode 100644 artifacts/mobile/src/components/ui/ConfirmDialog.tsx
+ create mode 100644 artifacts/mobile/src/components/ui/IconColorPicker.tsx
+ create mode 100644 artifacts/mobile/src/components/ui/Toast.tsx
+ create mode 100644 artifacts/mobile/src/constants/pickerOptions.ts
+ create mode 100644 attached_assets/Pasted-Apply-the-following-additional-fixes-refinements-consis_1773397070671.txt
+ create mode 100644 attached_assets/Pasted-root-srv1482387-doyoomi-git-reset-HEAD-artifacts-mobile_1773389306097.txt
