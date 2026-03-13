@@ -118,7 +118,10 @@ export default function HomeScreen() {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   setSelectedDay(key);
                 }}
-                style={[styles.dayPill, { overflow: 'hidden' }]}
+                style={({ pressed }) => [styles.dayPill, { overflow: 'hidden', opacity: pressed ? 0.75 : 1 }]}
+                accessibilityRole="button"
+                accessibilityState={{ selected: isSelected }}
+                accessibilityLabel={`${getDayLabel(day, lang)} ${format(day, 'd')}`}
               >
                 {isSelected && (
                   <LinearGradient
@@ -290,12 +293,22 @@ function Section({ title, children, C, action, onAction, onTitlePress, isRTL }: 
   return (
     <View style={styles.section}>
       <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <Pressable onPress={onTitlePress} style={[styles.sectionTitleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]} disabled={!onTitlePress}>
+        <Pressable
+          onPress={onTitlePress}
+          style={({ pressed }) => [styles.sectionTitleRow, { flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed && onTitlePress ? 0.7 : 1 }]}
+          disabled={!onTitlePress}
+          accessibilityRole={onTitlePress ? 'button' : 'text'}
+        >
           <Text style={[styles.sectionTitle, { color: C.text }]}>{title}</Text>
           {onTitlePress && <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textMuted} />}
         </Pressable>
         {action && (
-          <Pressable onPress={onAction} style={[styles.sectionAction, { backgroundColor: C.tint + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <Pressable
+            onPress={onAction}
+            style={({ pressed }) => [styles.sectionAction, { backgroundColor: C.tint + '15', flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.7 : 1 }]}
+            accessibilityRole="button"
+            accessibilityLabel={action}
+          >
             <Ionicons name="add" size={14} color={C.tint} />
             <Text style={[styles.sectionActionText, { color: C.tint }]}>{action}</Text>
           </Pressable>
@@ -323,9 +336,15 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, C, isRTL }: an
       style={[animStyle, styles.taskRow, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
       onPressIn={() => { scale.value = withSpring(0.98); }}
       onPressOut={() => { scale.value = withSpring(1); }}
+      accessibilityRole="button"
     >
       <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.taskAccent} />
-      <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onToggle(); }} style={styles.taskCheck}>
+      <Pressable
+        onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onToggle(); }}
+        style={({ pressed }) => [styles.taskCheck, { opacity: pressed ? 0.7 : 1 }]}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: isCompleted }}
+      >
         <View style={[styles.checkCircle, { borderColor: isCompleted ? C.success : C.border, backgroundColor: isCompleted ? C.success : 'transparent' }]}>
           {isCompleted && <Ionicons name="checkmark" size={11} color="#fff" />}
         </View>
@@ -355,7 +374,10 @@ function FunHabitCard({ habit, onComplete, C }: { habit: any; onComplete: (id: s
   return (
     <Pressable
       onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onComplete(habit.id); }}
-      style={[styles.habitCard, { borderWidth: 1, borderColor: isDone ? habit.color : C.border }]}
+      style={({ pressed }) => [styles.habitCard, { borderWidth: 1, borderColor: isDone ? habit.color : C.border, opacity: pressed ? 0.8 : 1 }]}
+      accessibilityRole="button"
+      accessibilityState={{ checked: isDone }}
+      accessibilityLabel={habit.name}
     >
       <LinearGradient
         colors={isDone ? [habit.color, habit.color + 'CC'] : [C.card, C.card]}
@@ -421,7 +443,12 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
   if (entry) {
     const moodCfg = entry.mood ? MOOD_ICONS[entry.mood] : null;
     return (
-      <Pressable onPress={onOpen}>
+      <Pressable
+        onPress={onOpen}
+        style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+        accessibilityRole="button"
+        accessibilityLabel={entry.title || tFunc('todayEntry')}
+      >
         <View style={[styles.journalCard, { backgroundColor: C.card, borderColor: C.border }]}>
           <View style={[styles.journalCardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={[styles.journalIconBox, { backgroundColor: '#9B6EF5' + '18' }]}>
@@ -451,7 +478,12 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
   }
 
   return (
-    <Pressable onPress={onWrite}>
+    <Pressable
+      onPress={onWrite}
+      style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+      accessibilityRole="button"
+      accessibilityLabel={tFunc('startWriting')}
+    >
       <View style={[styles.journalCard, { backgroundColor: C.card, borderColor: C.border }]}>
         <View style={[styles.journalCardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={[styles.journalIconBox, { backgroundColor: '#9B6EF5' + '18' }]}>
@@ -463,7 +495,12 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
             </Text>
           </View>
         </View>
-        <Pressable onPress={onWrite} style={[styles.journalWriteBtn, { backgroundColor: '#9B6EF5' + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <Pressable
+          onPress={onWrite}
+          style={({ pressed }) => [styles.journalWriteBtn, { backgroundColor: '#9B6EF5' + '15', flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.7 : 1 }]}
+          accessibilityRole="button"
+          accessibilityLabel={tFunc('startWriting')}
+        >
           <Ionicons name="create-outline" size={16} color="#9B6EF5" />
           <Text style={[styles.journalWriteText, { color: '#9B6EF5' }]}>{tFunc('startWriting')}</Text>
         </Pressable>

@@ -117,11 +117,21 @@ export default function CalendarScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad + 100 }}>
         {/* Nav row */}
         <View style={[styles.navRow, isRTL && { flexDirection: 'row-reverse' }]}>
-          <Pressable onPress={() => navigate(isRTL ? 1 : -1)} style={styles.navBtn}>
+          <Pressable
+            onPress={() => navigate(isRTL ? 1 : -1)}
+            style={({ pressed }) => [styles.navBtn, { opacity: pressed ? 0.6 : 1 }]}
+            accessibilityRole="button"
+            accessibilityLabel={isRTL ? tFunc('next') : tFunc('back')}
+          >
             <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={20} color={C.tint} />
           </Pressable>
           <Text style={[styles.navLabel, { color: C.text }]}>{headerLabel}</Text>
-          <Pressable onPress={() => navigate(isRTL ? -1 : 1)} style={styles.navBtn}>
+          <Pressable
+            onPress={() => navigate(isRTL ? -1 : 1)}
+            style={({ pressed }) => [styles.navBtn, { opacity: pressed ? 0.6 : 1 }]}
+            accessibilityRole="button"
+            accessibilityLabel={isRTL ? tFunc('back') : tFunc('next')}
+          >
             <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={C.tint} />
           </Pressable>
         </View>
@@ -251,7 +261,14 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
           const day = parseISO(dayKey).getDate();
 
           return (
-            <Pressable key={dayKey} onPress={() => onSelectDate(dayKey)} style={styles.calCell}>
+            <Pressable
+              key={dayKey}
+              onPress={() => onSelectDate(dayKey)}
+              style={({ pressed }) => [styles.calCell, { opacity: pressed ? 0.7 : 1 }]}
+              accessibilityRole="button"
+              accessibilityState={{ selected: isSelected }}
+              accessibilityLabel={dayKey}
+            >
               <View style={[
                 styles.calDayCircle,
                 isSelected && styles.calDayCircleSelected,
@@ -305,11 +322,15 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
             <Pressable
               key={key}
               onPress={() => onSelectDate(key)}
-              style={[
+              style={({ pressed }) => [
                 styles.weekCell,
                 isSelected && styles.weekCellSelected,
                 isToday && !isSelected && { borderWidth: 1.5, borderColor: C.tint },
+                { opacity: pressed ? 0.7 : 1 },
               ]}
+              accessibilityRole="button"
+              accessibilityState={{ selected: isSelected }}
+              accessibilityLabel={key}
             >
               {isSelected && (
                 <LinearGradient

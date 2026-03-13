@@ -67,7 +67,9 @@ export default function GoalsScreen() {
           </View>
           <Pressable
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditGoal(null); setShowForm(true); }}
-            style={styles.addBtn}
+            style={({ pressed }) => [styles.addBtn, { opacity: pressed ? 0.8 : 1 }]}
+            accessibilityRole="button"
+            accessibilityLabel={tFunc('addGoal')}
           >
             <View style={styles.addBtnInner}>
               <Ionicons name="add" size={26} color="#7C5CFC" />
@@ -109,6 +111,9 @@ export default function GoalsScreen() {
                   <Pressable
                     onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setEditGoal(item); setShowForm(true); }}
                     hitSlop={10}
+                    style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                    accessibilityRole="button"
+                    accessibilityLabel={tFunc('editGoal')}
                   >
                     <Ionicons name="pencil" size={16} color={C.textMuted} />
                   </Pressable>
@@ -138,14 +143,24 @@ export default function GoalsScreen() {
                 <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Pressable
                     onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); incrementProgress(item.id); }}
-                    style={[styles.actionBtn, { borderColor: grad[0] + '40', backgroundColor: grad[0] + '10', flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+                    style={({ pressed }) => [
+                      styles.actionBtn,
+                      { borderColor: grad[0] + '40', backgroundColor: grad[0] + '10', flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.7 : 1 },
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityLabel={`+1 ${t('progress', lang)}`}
                   >
                     <Ionicons name="add-circle-outline" size={16} color={grad[0]} />
                     <Text style={[styles.actionText, { color: grad[0] }]}>+1 {t('progress', lang)}</Text>
                   </Pressable>
                   <Pressable
                     onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setConfirmGoal(item); }}
-                    style={[styles.actionBtnIcon, { borderColor: C.error + '30', backgroundColor: C.error + '10' }]}
+                    style={({ pressed }) => [
+                      styles.actionBtnIcon,
+                      { borderColor: C.error + '30', backgroundColor: C.error + '10', opacity: pressed ? 0.7 : 1 },
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityLabel={tFunc('deleteGoal')}
                   >
                     <Ionicons name="trash-outline" size={16} color={C.error} />
                   </Pressable>

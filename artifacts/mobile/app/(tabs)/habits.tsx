@@ -72,7 +72,9 @@ export default function HabitsScreen() {
               setEditHabit(null);
               setShowForm(true);
             }}
-            style={styles.addBtn}
+            style={({ pressed }) => [styles.addBtn, { opacity: pressed ? 0.8 : 1 }]}
+            accessibilityRole="button"
+            accessibilityLabel={tFunc('addHabit')}
           >
             <View style={styles.addBtnInner}>
               <Ionicons name="add" size={26} color="#A855F7" />
@@ -158,13 +160,17 @@ export default function HabitsScreen() {
                       showToast(tFunc('habitCompleted'), 'success');
                     }
                   }}
-                  style={[
+                  style={({ pressed }) => [
                     styles.actionBtn,
                     {
                       backgroundColor: isDoneToday ? item.color + '20' : C.surface,
                       borderColor: isDoneToday ? item.color : C.border,
+                      opacity: pressed ? 0.7 : 1,
                     },
                   ]}
+                  accessibilityRole="button"
+                  accessibilityLabel={isDoneToday ? tFunc('habitUncompleted') : tFunc('habitCompleted')}
+                  accessibilityState={{ checked: isDoneToday }}
                 >
                   <Ionicons
                     name={isDoneToday ? 'checkmark-circle' : 'checkmark-circle-outline'}
@@ -179,14 +185,24 @@ export default function HabitsScreen() {
                     setEditHabit(item);
                     setShowForm(true);
                   }}
-                  style={[styles.actionBtn, { backgroundColor: C.tint + '12', borderColor: C.tint + '30' }]}
+                  style={({ pressed }) => [
+                    styles.actionBtn,
+                    { backgroundColor: C.tint + '12', borderColor: C.tint + '30', opacity: pressed ? 0.7 : 1 },
+                  ]}
+                  accessibilityRole="button"
+                  accessibilityLabel={tFunc('editHabit')}
                 >
                   <Ionicons name="pencil-outline" size={15} color={C.tint} />
                 </Pressable>
 
                 <Pressable
                   onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setConfirmHabit(item); }}
-                  style={[styles.actionBtn, { backgroundColor: C.error + '12', borderColor: C.error + '30' }]}
+                  style={({ pressed }) => [
+                    styles.actionBtn,
+                    { backgroundColor: C.error + '12', borderColor: C.error + '30', opacity: pressed ? 0.7 : 1 },
+                  ]}
+                  accessibilityRole="button"
+                  accessibilityLabel={tFunc('deleteHabit')}
                 >
                   <Ionicons name="trash-outline" size={15} color={C.error} />
                 </Pressable>
