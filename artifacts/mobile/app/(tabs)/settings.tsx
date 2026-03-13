@@ -137,7 +137,7 @@ export default function MoreScreen() {
               label={tFunc('goals')}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.push('/(tabs)/goals');
+                router.push('/goals');
               }}
               isRTL={isRTL} C={C}
             />
