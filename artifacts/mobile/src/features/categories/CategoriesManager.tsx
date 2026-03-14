@@ -125,7 +125,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                 <View style={styles.catInfo}>
                   <Text style={[styles.catName, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{cat.name}</Text>
                 </View>
-                <View style={styles.catActions}>
+                <View style={[styles.catActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Pressable
                     onPress={() => openEdit(cat)}
                     style={[styles.catActionBtn, { backgroundColor: C.tint + '12' }]}

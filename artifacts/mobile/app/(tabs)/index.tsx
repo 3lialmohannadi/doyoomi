@@ -183,7 +183,7 @@ export default function HomeScreen() {
           {dayTasks.length === 0 ? (
             <Pressable
               onPress={() => setShowTaskForm(true)}
-              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.8 : 1 }]}
+              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.8 : 1, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
               accessibilityRole="button"
             >
               <View style={[styles.habitsEmptyIcon, { backgroundColor: C.tint + '15' }]}>
@@ -234,7 +234,7 @@ export default function HomeScreen() {
           {habits.length === 0 ? (
             <Pressable
               onPress={() => { setEditHabit(null); setShowHabitForm(true); }}
-              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.8 : 1 }]}
+              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.8 : 1, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
               accessibilityRole="button"
             >
               <View style={[styles.habitsEmptyIcon, { backgroundColor: C.tint + '15' }]}>
@@ -265,7 +265,7 @@ export default function HomeScreen() {
           {goals.length === 0 ? (
             <Pressable
               onPress={() => setShowGoalForm(true)}
-              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.8 : 1 }]}
+              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.8 : 1, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
               accessibilityRole="button"
             >
               <View style={[styles.habitsEmptyIcon, { backgroundColor: '#FF6B9D15' }]}>
@@ -569,9 +569,9 @@ function FunGoalCard({ goal, progress, gradient, C, isRTL }: any) {
       <View style={[styles.goalTrack, { backgroundColor: C.borderLight }]}>
         <LinearGradient
           colors={gradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={[styles.goalFill, { width: `${Math.min(pct, 100)}%` }]}
+          start={{ x: isRTL ? 1 : 0, y: 0 }}
+          end={{ x: isRTL ? 0 : 1, y: 0 }}
+          style={[styles.goalFill, { width: `${Math.min(pct, 100)}%`, alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}
         />
       </View>
     </View>
