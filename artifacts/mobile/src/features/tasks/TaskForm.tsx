@@ -240,17 +240,17 @@ function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay, lang }: 
   return (
     <View style={[calStyles.container, { backgroundColor: C.card, borderColor: C.border }]}>
       {/* Nav row: year back | month back | Month+Year label | month fwd | year fwd */}
-      <View style={calStyles.nav}>
+      <View style={[calStyles.nav, { flexDirection: isAr ? 'row-reverse' : 'row' }]}>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subYears(viewDate, 1)); setShowYearPicker(false); }}
-          style={[calStyles.navYearBtn, { backgroundColor: C.tint + '15' }]}
+          style={[calStyles.navYearBtn, { backgroundColor: C.tint + '15', flexDirection: isAr ? 'row-reverse' : 'row' }]}
           accessibilityLabel="Previous year"
         >
-          <Ionicons name="chevron-back" size={12} color={C.tint} />
-          <Ionicons name="chevron-back" size={12} color={C.tint} style={{ marginLeft: -6 }} />
+          <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={12} color={C.tint} />
+          <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={12} color={C.tint} style={{ marginLeft: isAr ? 0 : -6, marginRight: isAr ? -6 : 0 }} />
         </Pressable>
         <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); setShowYearPicker(false); }}>
-          <Ionicons name="chevron-back" size={20} color={C.tint} />
+          <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={20} color={C.tint} />
         </Pressable>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowYearPicker(v => !v); }}
@@ -262,15 +262,15 @@ function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay, lang }: 
           <Ionicons name={showYearPicker ? 'chevron-up' : 'chevron-down'} size={12} color={C.textMuted} />
         </Pressable>
         <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); setShowYearPicker(false); }}>
-          <Ionicons name="chevron-forward" size={20} color={C.tint} />
+          <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={20} color={C.tint} />
         </Pressable>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addYears(viewDate, 1)); setShowYearPicker(false); }}
-          style={[calStyles.navYearBtn, { backgroundColor: C.tint + '15' }]}
+          style={[calStyles.navYearBtn, { backgroundColor: C.tint + '15', flexDirection: isAr ? 'row-reverse' : 'row' }]}
           accessibilityLabel="Next year"
         >
-          <Ionicons name="chevron-forward" size={12} color={C.tint} />
-          <Ionicons name="chevron-forward" size={12} color={C.tint} style={{ marginLeft: -6 }} />
+          <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={12} color={C.tint} />
+          <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={12} color={C.tint} style={{ marginLeft: isAr ? 0 : -6, marginRight: isAr ? -6 : 0 }} />
         </Pressable>
       </View>
 

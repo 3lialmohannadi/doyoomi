@@ -169,9 +169,11 @@ interface SelectProps {
 
 export function FormSelect({ options, value, onChange }: SelectProps) {
   const { C } = useAppTheme();
+  const { profile } = useSettingsStore();
+  const isRTL = profile.language === 'ar';
 
   return (
-    <View style={styles.selectRow}>
+    <View style={[styles.selectRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       {options.map((opt) => {
         const isActive = opt.key === value;
         return (
@@ -244,6 +246,8 @@ interface PrioritySelectorProps {
 
 export function PrioritySelector({ value, onChange, options }: PrioritySelectorProps) {
   const { C } = useAppTheme();
+  const { profile } = useSettingsStore();
+  const isRTL = profile.language === 'ar';
   const priorityColors: Record<string, string> = {
     low: C.priorityLow,
     medium: C.priorityMedium,
@@ -251,7 +255,7 @@ export function PrioritySelector({ value, onChange, options }: PrioritySelectorP
   };
 
   return (
-    <View style={styles.priorityRow}>
+    <View style={[styles.priorityRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       {options.map((opt) => {
         const isActive = opt.key === value;
         const color = priorityColors[opt.key] || C.tint;
@@ -301,9 +305,11 @@ interface CategorySelectorProps {
 
 export function CategorySelector({ value, onChange, options }: CategorySelectorProps) {
   const { C } = useAppTheme();
+  const { profile } = useSettingsStore();
+  const isRTL = profile.language === 'ar';
 
   return (
-    <View style={styles.categoryGrid}>
+    <View style={[styles.categoryGrid, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       {options.map((opt) => {
         const isActive = opt.key === value;
         const color = opt.color || C.textMuted;

@@ -540,35 +540,35 @@ function DobCalendar({ selected, onSelect, C, lang }: any) {
   return (
     <View style={[dobStyles.container, { backgroundColor: C.surface, borderColor: C.border }]}>
       {/* Year navigation row */}
-      <View style={dobStyles.yearNav}>
+      <View style={[dobStyles.yearNav, { flexDirection: isAr ? 'row-reverse' : 'row' }]}>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subYears(viewDate, 1)); }}
-          style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15' }]}
+          style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15', flexDirection: isAr ? 'row-reverse' : 'row' }]}
           hitSlop={8}
         >
-          <Ionicons name="chevron-back" size={14} color={C.tint} />
-          <Ionicons name="chevron-back" size={14} color={C.tint} style={{ marginLeft: -8 }} />
+          <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={14} color={C.tint} />
+          <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={14} color={C.tint} style={{ marginLeft: isAr ? 0 : -8, marginRight: isAr ? -8 : 0 }} />
         </Pressable>
         <Text style={[dobStyles.yearLabel, { color: C.tint }]}>{viewDate.getFullYear()}</Text>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addYears(viewDate, 1)); }}
-          style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15' }]}
+          style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15', flexDirection: isAr ? 'row-reverse' : 'row' }]}
           hitSlop={8}
         >
-          <Ionicons name="chevron-forward" size={14} color={C.tint} />
-          <Ionicons name="chevron-forward" size={14} color={C.tint} style={{ marginLeft: -8 }} />
+          <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={14} color={C.tint} />
+          <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={14} color={C.tint} style={{ marginLeft: isAr ? 0 : -8, marginRight: isAr ? -8 : 0 }} />
         </Pressable>
       </View>
       {/* Month navigation row */}
-      <View style={dobStyles.nav}>
+      <View style={[dobStyles.nav, { flexDirection: isAr ? 'row-reverse' : 'row' }]}>
         <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); }} hitSlop={8}>
-          <Ionicons name="chevron-back" size={18} color={C.tint} />
+          <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={18} color={C.tint} />
         </Pressable>
         <Text style={[dobStyles.navLabel, { color: C.text }]}>
           {isAr ? DOB_AR_MONTH_NAMES[viewDate.getMonth()] : format(viewDate, 'MMMM')}
         </Text>
         <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); }} hitSlop={8}>
-          <Ionicons name="chevron-forward" size={18} color={C.tint} />
+          <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={18} color={C.tint} />
         </Pressable>
       </View>
       <View style={dobStyles.headerRow}>
