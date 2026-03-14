@@ -22,6 +22,7 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
   const { profile } = useSettingsStore();
   const { C } = useAppTheme();
   const lang = profile.language;
+  const isRTL = lang === 'ar';
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -97,7 +98,7 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
           error={titleError}
         />
         {titleError && (
-          <View style={styles.errorRow}>
+          <View style={[styles.errorRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Ionicons name="alert-circle-outline" size={14} color={C.error} />
             <Text style={[styles.errorText, { color: C.error }]}>{t('fieldRequired', lang)}</Text>
           </View>
@@ -139,7 +140,6 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
 
 const styles = StyleSheet.create({
   errorRow: {
-    flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     marginTop: 4,

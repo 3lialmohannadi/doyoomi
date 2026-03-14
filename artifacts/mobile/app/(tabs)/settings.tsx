@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import {
   ScrollView, StyleSheet, Text, View, Pressable, Modal, TextInput,
-  Platform, KeyboardAvoidingView,
+  Platform, KeyboardAvoidingView, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -226,14 +226,11 @@ export default function MoreScreen() {
 
           {/* About card */}
           <View style={[styles.aboutCard, { backgroundColor: C.card, borderColor: C.border }]}>
-            <LinearGradient
-              colors={['#7C5CFC', '#FF6B9D']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+            <Image
+              source={require('../../assets/images/icon.png')}
               style={styles.aboutLogo}
-            >
-              <Ionicons name="calendar" size={32} color="#fff" />
-            </LinearGradient>
+              resizeMode="contain"
+            />
             <Text style={[styles.aboutName, { color: C.text }]}>Do.Yoomi</Text>
             <Text style={[styles.aboutAr, { color: C.tint }]}>يومي</Text>
             <Text style={[styles.aboutTagline, { color: C.textSecondary }]}>{tFunc('yourDayYourWay')}</Text>
@@ -709,10 +706,8 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
   aboutLogo: {
-    width: 80, height: 80, borderRadius: 24,
-    alignItems: 'center', justifyContent: 'center',
+    width: 96, height: 96,
     marginBottom: Spacing.md,
-    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 6,
   },
   aboutName: { fontSize: 24, fontFamily: 'Inter_700Bold', marginBottom: 2 },
   aboutAr: { fontSize: 17, fontFamily: 'Inter_700Bold', marginBottom: Spacing.sm },

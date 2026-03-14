@@ -22,6 +22,7 @@ export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
   const { profile } = useSettingsStore();
   const { C } = useAppTheme();
   const lang = profile.language;
+  const isRTL = lang === 'ar';
 
   const [name, setName] = useState('');
   const [icon, setIcon] = useState(SHARED_ICONS[0]);
@@ -78,7 +79,7 @@ export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
           error={nameError}
         />
         {nameError && (
-          <View style={styles.errorRow}>
+          <View style={[styles.errorRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Ionicons name="alert-circle-outline" size={14} color={C.error} />
             <Text style={[styles.errorText, { color: C.error }]}>{t('fieldRequired', lang)}</Text>
           </View>
@@ -99,7 +100,6 @@ export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
 
 const styles = StyleSheet.create({
   errorRow: {
-    flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     marginTop: 4,

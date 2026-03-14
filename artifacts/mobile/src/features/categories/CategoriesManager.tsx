@@ -28,6 +28,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
   const { categories, addCategory, updateCategory, deleteCategory } = useCategoriesStore();
   const { profile } = useSettingsStore();
   const lang = profile.language;
+  const isRTL = lang === 'ar';
   const tFunc = (key: string) => t(key, lang);
 
   const [editingCat, setEditingCat] = useState<Category | null>(null);
@@ -81,7 +82,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <View style={[styles.container, { backgroundColor: C.background }]}>
         {/* Header */}
-        <View style={[styles.header, { borderBottomColor: C.border }]}>
+        <View style={[styles.header, { borderBottomColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <Pressable onPress={onClose} style={styles.closeBtn}>
             <Ionicons name="close" size={22} color={C.textSecondary} />
           </Pressable>
@@ -112,13 +113,17 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
             </View>
           ) : (
             categories.map((cat) => (
-              <View key={cat.id} style={[styles.catCard, { backgroundColor: C.card, borderColor: C.border }]}>
+              <View key={cat.id} style={[
+                styles.catCard,
+                { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' },
+                isRTL ? { paddingLeft: Spacing.md } : { paddingRight: Spacing.md },
+              ]}>
                 <View style={[styles.catAccent, { backgroundColor: cat.color }]} />
                 <View style={[styles.catIcon, { backgroundColor: cat.color + '18' }]}>
                   <Ionicons name={(cat.icon + '-outline') as any} size={22} color={cat.color} />
                 </View>
                 <View style={styles.catInfo}>
-                  <Text style={[styles.catName, { color: C.text }]}>{cat.name}</Text>
+                  <Text style={[styles.catName, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{cat.name}</Text>
                 </View>
                 <View style={styles.catActions}>
                   <Pressable
@@ -146,7 +151,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
       <Modal visible={showForm} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowForm(false)}>
         <View style={[styles.formContainer, { backgroundColor: C.background }]}>
             {/* Form header */}
-            <View style={[styles.formHeader, { borderBottomColor: C.border }]}>
+            <View style={[styles.formHeader, { borderBottomColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <Pressable onPress={() => setShowForm(false)} style={styles.closeBtn}>
                 <Ionicons name="close" size={22} color={C.textSecondary} />
               </Pressable>
@@ -171,12 +176,13 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
 
               {/* Name input */}
               <View style={styles.formField}>
-                <Text style={[styles.formLabel, { color: C.textSecondary }]}>{tFunc('name')}</Text>
+                <Text style={[styles.formLabel, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('name')}</Text>
                 <TextInput
                   value={name}
                   onChangeText={setName}
                   placeholder={lang === 'ar' ? 'اسم الفئة' : 'Category name'}
                   placeholderTextColor={C.textMuted}
+                  textAlign={isRTL ? 'right' : 'left'}
                   style={[styles.formInput, { backgroundColor: C.inputBg, borderColor: C.border, color: C.text }]}
                   autoFocus
                 />
@@ -184,21 +190,25 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
 
               {/* Live preview */}
               <View style={styles.formField}>
-                <Text style={[styles.formLabel, { color: C.textSecondary }]}>
+                <Text style={[styles.formLabel, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
                   {lang === 'ar' ? 'معاينة' : 'Preview'}
                 </Text>
-                <View style={[styles.preview, { backgroundColor: C.card, borderColor: C.border }]}>
+                <View style={[
+                  styles.preview,
+                  { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' },
+                  isRTL ? { paddingLeft: Spacing.md } : { paddingRight: Spacing.md },
+                ]}>
                   <View style={[styles.previewAccent, { backgroundColor: color }]} />
                   <View style={[styles.previewIconBox, { backgroundColor: color + '18' }]}>
                     <Ionicons name={(icon + '-outline') as any} size={20} color={color} />
                   </View>
-                  <Text style={[styles.previewText, { color: C.text }]}>{name || '...'}</Text>
+                  <Text style={[styles.previewText, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{name || '...'}</Text>
                 </View>
               </View>
 
               {/* Icon picker */}
               <View style={styles.formField}>
-                <Text style={[styles.formLabel, { color: C.textSecondary }]}>{tFunc('icon')}</Text>
+                <Text style={[styles.formLabel, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('icon')}</Text>
                 <View style={styles.iconGrid}>
                   {CATEGORY_ICONS.map((ic) => {
                     const isActive = icon === ic;
@@ -224,7 +234,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
 
               {/* Color picker */}
               <View style={styles.formField}>
-                <Text style={[styles.formLabel, { color: C.textSecondary }]}>{tFunc('color')}</Text>
+                <Text style={[styles.formLabel, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('color')}</Text>
                 <View style={styles.colorGrid}>
                   {CATEGORY_COLORS.map((cl) => {
                     const isActive = color === cl;
@@ -247,7 +257,11 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
             </KeyboardAwareScrollView>
 
             {/* Bottom save button */}
-            <View style={[styles.formBottomBar, { paddingBottom: insets.bottom + Spacing.md, borderTopColor: C.border }]}>
+            <View style={[styles.formBottomBar, {
+              paddingBottom: insets.bottom + Spacing.md,
+              borderTopColor: C.border,
+              flexDirection: isRTL ? 'row-reverse' : 'row',
+            }]}>
               <Pressable
                 onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowForm(false); }}
                 style={[styles.formCancelBtn, { backgroundColor: C.surface, borderColor: C.border }]}
@@ -274,7 +288,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg, paddingTop: Spacing.lg, paddingBottom: Spacing.md,
     borderBottomWidth: 1,
   },
@@ -289,11 +303,10 @@ const styles = StyleSheet.create({
   },
   list: { padding: Spacing.lg, gap: Spacing.sm },
 
-  // Category card
   catCard: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
+    alignItems: 'center', gap: Spacing.md,
     borderRadius: Radius.xl, borderWidth: 1, overflow: 'hidden',
-    paddingVertical: Spacing.md, paddingRight: Spacing.md,
+    paddingVertical: Spacing.md,
     ...Shadow.sm,
   },
   catAccent: { width: 4, alignSelf: 'stretch' },
@@ -309,7 +322,6 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
 
-  // Empty state
   emptyBox: { alignItems: 'center', paddingTop: 80, gap: Spacing.md },
   emptyIconBox: {
     width: 80, height: 80, borderRadius: 40,
@@ -325,10 +337,9 @@ const styles = StyleSheet.create({
   },
   emptyAddText: { fontSize: 15, fontFamily: 'Inter_600SemiBold', color: '#fff' },
 
-  // Form modal (full sheet)
   formContainer: { flex: 1 },
   formHeader: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg, paddingTop: Spacing.lg, paddingBottom: Spacing.md,
     borderBottomWidth: 1,
   },
@@ -375,22 +386,19 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 4,
   },
 
-  // Preview
   preview: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
+    alignItems: 'center', gap: Spacing.md,
     borderRadius: Radius.lg, borderWidth: 1, overflow: 'hidden',
-    paddingVertical: Spacing.md, paddingRight: Spacing.md,
+    paddingVertical: Spacing.md,
   },
   previewAccent: { width: 4, alignSelf: 'stretch' },
   previewIconBox: {
     width: 36, height: 36, borderRadius: Radius.sm,
     alignItems: 'center', justifyContent: 'center',
   },
-  previewText: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
+  previewText: { fontSize: 16, fontFamily: 'Inter_600SemiBold', flex: 1 },
 
-  // Bottom bar
   formBottomBar: {
-    flexDirection: 'row',
     gap: Spacing.md,
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.lg,
