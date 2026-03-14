@@ -1,0 +1,80 @@
+root@srv1482387:~/doyoomi# cd /root/doyoomi && bash update.sh
+🔄 جاري تحديث doyoomi...
+Already up to date.
+Scope: all 9 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit…
+└─ Done in 15ms
+Done in 1.8s using pnpm v10.32.1
+
+> @workspace/api-server@0.0.0 build /root/doyoomi/artifacts/api-server
+> tsx ./build.ts
+
+building server...
+
+  dist/index.cjs  849.7kb
+
+⚡ Done in 148ms
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [doyoomi-api](ids: [ 3 ])
+[PM2] [doyoomi-api](3) ✓
+┌────┬───────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name              │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 3  │ doyoomi-api       │ default     │ 0.0.0   │ fork    │ 70001    │ 0s     │ 21   │ online    │ 0%       │ 34.1mb   │ root     │ disabled │
+│ 2  │ doyoomi-mobile    │ default     │ 0.0.0   │ fork    │ 69250    │ 75m    │ 20   │ online    │ 0%       │ 54.4mb   │ root     │ disabled │
+│ 4  │ masarifi          │ default     │ 1.0.0   │ fork    │ 65085    │ 8h     │ 19   │ online    │ 0%       │ 74.7mb   │ root     │ disabled │
+└────┴───────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+Building static Expo Go deployment...
+Preparing build directories...
+Build: 1773502204210-70014
+Clearing Metro cache...
+Cache cleared
+Starting Metro...
+Setting EXPO_PUBLIC_DOMAIN=doyoomi.com
+[Metro] Starting project at /root/doyoomi/artifacts/mobile
+[Metro] React Compiler enabled
+[Metro] Starting Metro Bundler
+Metro ready
+Downloading bundles and manifests...
+This may take several minutes for production builds...
+Fetching ios bundle...
+Downloading: http://localhost:8081/artifacts/mobile/node_modules/expo-router/entry.bundle?platform=ios&dev=false&hot=false&lazy=false&minify=true
+[Metro Error] The following packages should be updated for best compatibility with the installed expo version:
+[Metro Error] expo-updates@55.0.13 - expected version: ~29.0.16
+[Metro Error] react-native-keyboard-controller@1.20.7 - expected version: 1.18.5
+Your project may not work correctly until you install the expected versions of the packages.
+[Metro] Waiting on http://localhost:8081
+[Metro] Logs for your project will appear below.
+[Metro] iOS node_modules/.pnpm/expo-router@6.0.23_@types+react-dom@19.1.11_@types+react@19.1.17__@types+react@19.1.17__647f0c9f9fafa8cae778bbb6d28cc5ec/node_modules/expo-router/entry.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+[Metro] iOS Bundled 1832ms node_modules/.pnpm/expo-router@6.0.23_@types+react-dom@19.1.11_@types+react@19.1.17__@types+react@19.1.17__647f0c9f9fafa8cae778bbb6d28cc5ec/node_modules/expo-router/entry.js (1902 modules)
+ios bundle ready
+Fetching android bundle...
+Downloading: http://localhost:8081/artifacts/mobile/node_modules/expo-router/entry.bundle?platform=android&dev=false&hot=false&lazy=false&minify=true
+[Metro] Android Bundled 1511ms node_modules/.pnpm/expo-router@6.0.23_@types+react-dom@19.1.11_@types+react@19.1.17__@types+react@19.1.17__647f0c9f9fafa8cae778bbb6d28cc5ec/node_modules/expo-router/entry.js (1929 modules)
+android bundle ready
+Fetching ios manifest...
+Fetching android manifest...
+android manifest ready
+ios manifest ready
+All downloads completed successfully
+Processing assets...
+Found 50 unique asset(s)
+Copying assets...
+Copied 50 assets
+Updated bundle URLs
+Updating manifests and creating landing page...
+Manifests updated
+Build complete! Deploy to: https://doyoomi.com
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [doyoomi-mobile](ids: [ 2 ])
+[PM2] [doyoomi-mobile](2) ✓
+┌────┬───────────────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name              │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 3  │ doyoomi-api       │ default     │ 0.0.0   │ fork    │ 70001    │ 16s    │ 21   │ online    │ 0%       │ 59.3mb   │ root     │ disabled │
+│ 2  │ doyoomi-mobile    │ default     │ 0.0.0   │ fork    │ 70093    │ 0s     │ 21   │ online    │ 0%       │ 16.7mb   │ root     │ disabled │
+│ 4  │ masarifi          │ default     │ 1.0.0   │ fork    │ 65085    │ 8h     │ 19   │ online    │ 0%       │ 74.6mb   │ root     │ disabled │
+└────┴───────────────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+✅ تم تحديث doyoomi!
