@@ -109,7 +109,7 @@ export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
       </FormField>
 
       <FormField label={t('mood', lang)}>
-        <View style={styles.moodGrid}>
+        <View style={[styles.moodGrid, { flexDirection: lang === 'ar' ? 'row-reverse' : 'row' }]}>
           {MOODS.map(m => {
             const isActive = mood === m.key;
             return (

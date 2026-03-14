@@ -11,7 +11,7 @@ import {
   FormModal, FormField, FormInput, FormPressableInput,
   PrioritySelector, CategorySelector,
 } from '../../components/ui/FormModal';
-import { Task, Priority, TaskStatus } from '../../types';
+import { Task, Priority, TaskStatus, Language } from '../../types';
 import { useTasksStore } from '../../store/tasksStore';
 import { useCategoriesStore } from '../../store/categoriesStore';
 import { useSettingsStore } from '../../store/settingsStore';
@@ -207,7 +207,15 @@ const AR_DAY_HEADERS_MON = ['اث','ثل','أر','خم','جم','سب','أح'];
 const EN_DAY_HEADERS_SUN = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 const EN_DAY_HEADERS_MON = ['Mo','Tu','We','Th','Fr','Sa','Su'];
 
-function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay, lang }: any) {
+interface InlineCalendarProps {
+  selected: string;
+  onSelect: (d: string) => void;
+  C: Record<string, string>;
+  startOfWeek: string;
+  lang: Language;
+}
+
+function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay, lang }: InlineCalendarProps) {
   const [viewDate, setViewDate] = useState(() => selected ? parseISO(selected) : new Date());
   const [showYearPicker, setShowYearPicker] = useState(false);
   const isAr = lang === 'ar';
@@ -401,7 +409,16 @@ const calStyles = StyleSheet.create({
 });
 
 // ── Pure JS Time Picker ──
-function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
+interface InlineTimePickerProps {
+  value: string;
+  onChange: (v: string) => void;
+  is12h: boolean;
+  C: Record<string, string>;
+  onDone: () => void;
+  lang: Language;
+}
+
+function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: InlineTimePickerProps) {
   const currentHour = value ? parseInt(value.split(':')[0]) : new Date().getHours();
   const currentMin = value ? parseInt(value.split(':')[1]) : 0;
 
@@ -426,7 +443,7 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
 
   return (
     <View style={[timeStyles.container, { backgroundColor: C.card, borderColor: C.border }]}>
-      <View style={timeStyles.row}>
+      <View style={[timeStyles.row, { flexDirection: lang === 'ar' ? 'row-reverse' : 'row' }]}>
         {/* Hour picker */}
         <View style={timeStyles.col}>
           <Text style={[timeStyles.label, { color: C.textMuted }]}>{t('hourLabel', lang)}</Text>

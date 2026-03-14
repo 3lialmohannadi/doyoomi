@@ -23,6 +23,7 @@ import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
 import { getTodayString, formatDateKey } from '../../src/utils/date';
+import { Language } from '../../src/types';
 
 export default function MoreScreen() {
   const { C } = useAppTheme();
@@ -511,7 +512,14 @@ const DOB_AR_MONTH_NAMES = ['يناير','فبراير','مارس','أبريل',
 const DOB_AR_DAY_HEADERS = ['أح','اث','ثل','أر','خم','جم','سب'];
 const DOB_EN_DAY_HEADERS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
-function DobCalendar({ selected, onSelect, C, lang }: any) {
+interface DobCalendarProps {
+  selected: string;
+  onSelect: (d: string) => void;
+  C: Record<string, string>;
+  lang: Language;
+}
+
+function DobCalendar({ selected, onSelect, C, lang }: DobCalendarProps) {
   const [viewDate, setViewDate] = useState(() => {
     if (selected) return parseISO(selected);
     const d = new Date();
