@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Radius, Spacing } from '../../theme';
 import { useSettingsStore } from '../../store/settingsStore';
+import { useAppTheme } from '../../hooks/useAppTheme';
 
 export type ToastType = 'success' | 'error' | 'info';
 
@@ -13,15 +14,16 @@ interface ToastProps {
   onHide: () => void;
 }
 
-const CONFIG: Record<ToastType, { color: string; icon: string; bg: string; border: string }> = {
-  success: { color: '#00C48C', icon: 'checkmark-circle',   bg: '#fff', border: '#00C48C30' },
-  error:   { color: '#FF4D6A', icon: 'alert-circle',       bg: '#fff', border: '#FF4D6A30' },
-  info:    { color: '#7C5CFC', icon: 'information-circle', bg: '#fff', border: '#7C5CFC30' },
+const CONFIG: Record<ToastType, { color: string; icon: string; border: string }> = {
+  success: { color: '#00C48C', icon: 'checkmark-circle',   border: '#00C48C30' },
+  error:   { color: '#FF4D6A', icon: 'alert-circle',       border: '#FF4D6A30' },
+  info:    { color: '#7C5CFC', icon: 'information-circle', border: '#7C5CFC30' },
 };
 
 export function Toast({ message, type = 'success', duration = 2500, onHide }: ToastProps) {
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(-16)).current;
+  const { C } = useAppTheme();
   const { profile } = useSettingsStore();
   const isRTL = profile.language === 'ar';
 
@@ -46,7 +48,7 @@ export function Toast({ message, type = 'success', duration = 2500, onHide }: To
   return (
     <Animated.View style={[
       styles.toast,
-      { backgroundColor: cfg.bg, borderColor: cfg.border, opacity, transform: [{ translateY }], flexDirection: isRTL ? 'row-reverse' : 'row' },
+      { backgroundColor: C.card, borderColor: cfg.border, opacity, transform: [{ translateY }], flexDirection: isRTL ? 'row-reverse' : 'row' },
     ]}>
       <Ionicons name={cfg.icon as any} size={20} color={cfg.color} />
       <Text style={[styles.text, { color: cfg.color, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>{message}</Text>

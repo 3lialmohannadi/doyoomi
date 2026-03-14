@@ -238,6 +238,10 @@ const translations: Record<Language, Record<string, string>> = {
     tapPlusToAddGoal: 'Tap + to add your first goal',
     noTasksForDay: 'No tasks scheduled for this day',
     tapToAddTask: 'Tap + to plan your day',
+
+    // Time picker
+    hourLabel: 'Hour',
+    minLabel: 'Min',
   },
 
   ar: {
@@ -477,6 +481,10 @@ const translations: Record<Language, Record<string, string>> = {
     tapPlusToAddGoal: 'اضغط + لإضافة أول هدف لك',
     noTasksForDay: 'لا توجد مهام مجدولة لهذا اليوم',
     tapToAddTask: 'اضغط + لتخطيط يومك',
+
+    // منتقي الوقت
+    hourLabel: 'ساعة',
+    minLabel: 'دقيقة',
   },
 };
 

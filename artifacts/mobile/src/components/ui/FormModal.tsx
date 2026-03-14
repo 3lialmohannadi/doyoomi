@@ -67,7 +67,6 @@ export function FormModal({
               paddingBottom: insets.bottom + Spacing.md,
               backgroundColor: C.background,
               borderTopColor: C.border,
-              flexDirection: isRTL ? 'row-reverse' : 'row',
             },
           ]}>
             <Pressable

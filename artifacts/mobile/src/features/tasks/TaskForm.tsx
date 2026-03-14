@@ -104,8 +104,11 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
     ...categories.map(c => ({ key: c.id, label: c.name, color: c.color, icon: c.icon })),
   ];
 
+  const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   const displayDate = dueDate
-    ? format(parseISO(dueDate), 'MMM d, yyyy')
+    ? lang === 'ar'
+      ? (() => { const d = parseISO(dueDate); return `${d.getDate()} ${AR_MONTHS[d.getMonth()]} ${d.getFullYear()}`; })()
+      : format(parseISO(dueDate), 'MMM d, yyyy')
     : '';
 
   const displayTime = dueTime
@@ -416,7 +419,7 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
       <View style={timeStyles.row}>
         {/* Hour picker */}
         <View style={timeStyles.col}>
-          <Text style={[timeStyles.label, { color: C.textMuted }]}>{lang === 'ar' ? 'ساعة' : 'Hour'}</Text>
+          <Text style={[timeStyles.label, { color: C.textMuted }]}>{t('hourLabel', lang)}</Text>
           <ScrollView style={timeStyles.scroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
             {hours.map(h => (
               <Pressable
@@ -440,7 +443,7 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
 
         {/* Minute picker */}
         <View style={timeStyles.col}>
-          <Text style={[timeStyles.label, { color: C.textMuted }]}>{lang === 'ar' ? 'دقيقة' : 'Min'}</Text>
+          <Text style={[timeStyles.label, { color: C.textMuted }]}>{t('minLabel', lang)}</Text>
           <ScrollView style={timeStyles.scroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
             {minutes.map(m => (
               <Pressable
