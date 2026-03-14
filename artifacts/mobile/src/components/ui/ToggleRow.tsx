@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Radius, Spacing, Typography } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
+import { useSettingsStore } from '../../store/settingsStore';
 import * as Haptics from 'expo-haptics';
 
 interface Option {
@@ -21,10 +22,12 @@ interface ToggleRowProps {
 
 export function ToggleRow({ label, options, value, onChange }: ToggleRowProps) {
   const { C } = useAppTheme();
+  const { profile } = useSettingsStore();
+  const isRTL = profile.language === 'ar';
 
   return (
-    <View style={styles.row}>
-      <Text style={[styles.label, { color: C.text }]}>{label}</Text>
+    <View style={[styles.row, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <Text style={[styles.label, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{label}</Text>
       <View style={[styles.toggle, { backgroundColor: C.segmentBg }]}>
         {options.map((opt) => {
           const isActive = opt.key === value;
@@ -58,7 +61,6 @@ export function ToggleRow({ label, options, value, onChange }: ToggleRowProps) {
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: Spacing.md + 2,

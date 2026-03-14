@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Radius, Typography } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
+import { useSettingsStore } from '../../store/settingsStore';
 import { Priority } from '../../types';
 
 interface PriorityBadgeProps {
@@ -11,6 +12,8 @@ interface PriorityBadgeProps {
 
 export function PriorityBadge({ priority, label }: PriorityBadgeProps) {
   const { C } = useAppTheme();
+  const { profile } = useSettingsStore();
+  const isRTL = profile.language === 'ar';
 
   const colors: Record<Priority, string> = {
     high: C.priorityHigh,
@@ -21,7 +24,7 @@ export function PriorityBadge({ priority, label }: PriorityBadgeProps) {
   const color = colors[priority];
 
   return (
-    <View style={[styles.badge, { backgroundColor: color + '20' }]}>
+    <View style={[styles.badge, { backgroundColor: color + '20', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       <View style={[styles.dot, { backgroundColor: color }]} />
       <Text style={[styles.text, { color }]}>{label}</Text>
     </View>
@@ -30,7 +33,6 @@ export function PriorityBadge({ priority, label }: PriorityBadgeProps) {
 
 const styles = StyleSheet.create({
   badge: {
-    flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     borderRadius: Radius.full,

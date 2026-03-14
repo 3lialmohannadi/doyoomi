@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Radius, Spacing } from '../../theme';
+import { useSettingsStore } from '../../store/settingsStore';
 
 export type ToastType = 'success' | 'error' | 'info';
 
@@ -21,6 +22,8 @@ const CONFIG: Record<ToastType, { color: string; icon: string; bg: string; borde
 export function Toast({ message, type = 'success', duration = 2500, onHide }: ToastProps) {
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(-16)).current;
+  const { profile } = useSettingsStore();
+  const isRTL = profile.language === 'ar';
 
   useEffect(() => {
     Animated.parallel([
@@ -43,10 +46,10 @@ export function Toast({ message, type = 'success', duration = 2500, onHide }: To
   return (
     <Animated.View style={[
       styles.toast,
-      { backgroundColor: cfg.bg, borderColor: cfg.border, opacity, transform: [{ translateY }] },
+      { backgroundColor: cfg.bg, borderColor: cfg.border, opacity, transform: [{ translateY }], flexDirection: isRTL ? 'row-reverse' : 'row' },
     ]}>
       <Ionicons name={cfg.icon as any} size={20} color={cfg.color} />
-      <Text style={[styles.text, { color: cfg.color }]} numberOfLines={2}>{message}</Text>
+      <Text style={[styles.text, { color: cfg.color, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>{message}</Text>
     </Animated.View>
   );
 }
@@ -57,7 +60,6 @@ const styles = StyleSheet.create({
     top: 60,
     left: 20,
     right: 20,
-    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
     paddingHorizontal: Spacing.lg,
