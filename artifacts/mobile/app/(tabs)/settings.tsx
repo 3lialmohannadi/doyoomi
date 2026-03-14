@@ -17,6 +17,7 @@ import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
+import { useJournalStore } from '../../src/store/journalStore';
 import { Spacing, Radius } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
@@ -34,6 +35,7 @@ export default function MoreScreen() {
   const { categories } = useCategoriesStore();
   const { goals } = useGoalsStore();
   const { habits } = useHabitsStore();
+  const { entries: journalEntries } = useJournalStore();
   const lang = profile.language;
   const isRTL = lang === 'ar';
 
@@ -81,6 +83,7 @@ export default function MoreScreen() {
 
   const goalsCount = goals.length;
   const habitsCount = habits.length;
+  const journalCount = journalEntries.length;
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
@@ -156,6 +159,17 @@ export default function MoreScreen() {
               sub={`${goalsCount} ${isRTL ? 'هدف' : 'goals'}`}
               colors={['#FF6B9D', '#A855F7']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/goals'); }}
+              isRTL={isRTL}
+              C={C}
+            />
+
+            {/* Daily Journal card */}
+            <ContentCard
+              icon="book"
+              label={tFunc('journal')}
+              sub={`${journalCount} ${isRTL ? 'إدخال' : 'entries'}`}
+              colors={['#9B6EF5', '#FF6B9D']}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/journal'); }}
               isRTL={isRTL}
               C={C}
             />
@@ -244,23 +258,35 @@ export default function MoreScreen() {
 
       <CategoriesManager visible={showCategories} onClose={() => setShowCategories(false)} />
 
-      {/* ── App Settings Modal ── */}
+      {/* ── App Settings Bottom Sheet ── */}
       <Modal
         visible={showAppSettings}
-        animationType="slide"
-        presentationStyle="pageSheet"
+        animationType="fade"
+        transparent
         onRequestClose={() => setShowAppSettings(false)}
+        statusBarTranslucent
       >
-        <View style={[styles.modal, { backgroundColor: C.background }]}>
-          <View style={[styles.modalHeader, { borderBottomColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Pressable onPress={() => setShowAppSettings(false)} style={styles.modalCloseBtn}>
-              <Ionicons name="close" size={22} color={C.textSecondary} />
-            </Pressable>
-            <Text style={[styles.modalTitle, { color: C.text }]}>{tFunc('appSettings')}</Text>
-            <View style={{ width: 36 }} />
-          </View>
+        <Pressable style={styles.settingsOverlay} onPress={() => setShowAppSettings(false)}>
+          <Pressable
+            style={[styles.settingsSheet, { backgroundColor: C.background, paddingBottom: insets.bottom + 24 }]}
+            onPress={() => {}}
+          >
+            <View style={styles.settingsHandle} />
+            <View style={[styles.settingsSheetHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <LinearGradient
+                colors={['#7C5CFC', '#00C48C']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.settingsSheetIcon}
+              >
+                <Ionicons name="options" size={18} color="#fff" />
+              </LinearGradient>
+              <Text style={[styles.settingsSheetTitle, { color: C.text }]}>{tFunc('appSettings')}</Text>
+              <Pressable onPress={() => setShowAppSettings(false)} style={styles.settingsCloseBtn}>
+                <Ionicons name="close" size={20} color={C.textSecondary} />
+              </Pressable>
+            </View>
 
-          <ScrollView contentContainerStyle={[styles.appSettingsContent, { paddingBottom: insets.bottom + 40 }]}>
             <AppSettingSection title={tFunc('language')} icon="language-outline" iconColor="#7C5CFC" C={C} isRTL={isRTL}>
               <ToggleRow
                 label=""
@@ -296,8 +322,8 @@ export default function MoreScreen() {
                 onChange={(v) => setStartOfWeek(v as StartOfWeek)}
               />
             </AppSettingSection>
-          </ScrollView>
-        </View>
+          </Pressable>
+        </Pressable>
       </Modal>
 
       {/* ── Profile Modal ── */}
@@ -764,7 +790,35 @@ const styles = StyleSheet.create({
   formInputInline: { flex: 1, fontSize: 15, fontFamily: 'Inter_400Regular', padding: 0 },
   dobPressable: { flex: 1, alignItems: 'center', gap: 4 },
 
-  // App Settings
+  // App Settings bottom sheet
+  settingsOverlay: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end',
+  },
+  settingsSheet: {
+    borderTopLeftRadius: 28, borderTopRightRadius: 28,
+    paddingTop: 12, paddingHorizontal: Spacing.lg,
+    gap: Spacing.md,
+    shadowColor: '#000', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.15, shadowRadius: 20, elevation: 20,
+  },
+  settingsHandle: {
+    width: 40, height: 4, borderRadius: 2,
+    backgroundColor: 'rgba(0,0,0,0.15)', alignSelf: 'center',
+    marginBottom: Spacing.sm,
+  },
+  settingsSheetHeader: {
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
+    marginBottom: Spacing.sm,
+  },
+  settingsSheetIcon: {
+    width: 38, height: 38, borderRadius: 12,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  settingsSheetTitle: { fontSize: 18, fontFamily: 'Inter_700Bold', flex: 1 },
+  settingsCloseBtn: {
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.08)',
+    alignItems: 'center', justifyContent: 'center',
+  },
   appSettingsContent: { padding: Spacing.lg, gap: Spacing.md },
   appSettingRow: {
     borderRadius: Radius.xl, borderWidth: 1,

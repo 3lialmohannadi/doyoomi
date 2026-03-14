@@ -52,7 +52,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Task actions
     addTask: 'Add Task',
-    addNew: '+ Add',
+    addNew: 'Add',
     markComplete: 'Mark done',
     postpone: 'Postpone',
     deleteTask: 'Delete task',
@@ -187,7 +187,7 @@ const translations: Record<Language, Record<string, string>> = {
     message: 'Message',
 
     // Journal
-    journal: 'Journal',
+    journal: 'Daily Journal',
     addEntry: 'New Entry',
     editEntry: 'Edit Entry',
     deleteEntry: 'Delete Entry',
@@ -278,7 +278,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // إجراءات المهام
     addTask: 'إضافة مهمة',
-    addNew: '+ إضافة',
+    addNew: 'إضافة',
     markComplete: 'تعيين منجز',
     postpone: 'تأجيل',
     deleteTask: 'حذف المهمة',
@@ -413,7 +413,7 @@ const translations: Record<Language, Record<string, string>> = {
     message: 'الرسالة',
 
     // اليومية
-    journal: 'اليومية',
+    journal: 'مذكرات يومية',
     addEntry: 'إدخال جديد',
     editEntry: 'تعديل الإدخال',
     deleteEntry: 'حذف الإدخال',

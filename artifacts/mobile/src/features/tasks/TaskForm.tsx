@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   format, parseISO, startOfMonth, getDaysInMonth, getDay,
-  addMonths, subMonths,
+  addMonths, subMonths, addYears, subYears,
 } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 import {
@@ -199,6 +199,7 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
 // ── Pure JS Inline Calendar ──
 function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay }: any) {
   const [viewDate, setViewDate] = useState(() => selected ? parseISO(selected) : new Date());
+  const [showYearPicker, setShowYearPicker] = useState(false);
 
   const weekStart = startDay === 'sunday' ? 0 : 1;
   const dayHeaders = startDay === 'sunday'
@@ -222,59 +223,121 @@ function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay }: any) {
     return c;
   }, [viewDate, offset, daysInMonth]);
 
+  const currentYear = viewDate.getFullYear();
+  const yearRange = Array.from({ length: 12 }, (_, i) => currentYear - 5 + i);
+
   return (
     <View style={[calStyles.container, { backgroundColor: C.card, borderColor: C.border }]}>
-      {/* Nav */}
+      {/* Nav row: year back | month back | Month+Year label | month fwd | year fwd */}
       <View style={calStyles.nav}>
-        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); }}>
+        <Pressable
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subYears(viewDate, 1)); setShowYearPicker(false); }}
+          style={[calStyles.navYearBtn, { backgroundColor: C.tint + '15' }]}
+          accessibilityLabel="Previous year"
+        >
+          <Ionicons name="chevron-back" size={12} color={C.tint} />
+          <Ionicons name="chevron-back" size={12} color={C.tint} style={{ marginLeft: -6 }} />
+        </Pressable>
+        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); setShowYearPicker(false); }}>
           <Ionicons name="chevron-back" size={20} color={C.tint} />
         </Pressable>
-        <Text style={[calStyles.navLabel, { color: C.text }]}>{format(viewDate, 'MMMM yyyy')}</Text>
-        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); }}>
+        <Pressable
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowYearPicker(v => !v); }}
+          style={calStyles.navLabelBtn}
+        >
+          <Text style={[calStyles.navLabel, { color: C.text }]}>{format(viewDate, 'MMM yyyy')}</Text>
+          <Ionicons name={showYearPicker ? 'chevron-up' : 'chevron-down'} size={12} color={C.textMuted} />
+        </Pressable>
+        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); setShowYearPicker(false); }}>
           <Ionicons name="chevron-forward" size={20} color={C.tint} />
+        </Pressable>
+        <Pressable
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addYears(viewDate, 1)); setShowYearPicker(false); }}
+          style={[calStyles.navYearBtn, { backgroundColor: C.tint + '15' }]}
+          accessibilityLabel="Next year"
+        >
+          <Ionicons name="chevron-forward" size={12} color={C.tint} />
+          <Ionicons name="chevron-forward" size={12} color={C.tint} style={{ marginLeft: -6 }} />
         </Pressable>
       </View>
 
-      {/* Day headers */}
-      <View style={calStyles.headerRow}>
-        {dayHeaders.map(d => (
-          <Text key={d} style={[calStyles.headerDay, { color: C.textMuted }]}>{d}</Text>
-        ))}
-      </View>
+      {/* Year picker grid */}
+      {showYearPicker && (
+        <View style={calStyles.yearGrid}>
+          {yearRange.map(yr => {
+            const isActive = yr === currentYear;
+            return (
+              <Pressable
+                key={yr}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  const d = new Date(viewDate);
+                  d.setFullYear(yr);
+                  setViewDate(d);
+                  setShowYearPicker(false);
+                }}
+                style={[calStyles.yearCell, { overflow: 'hidden' }]}
+              >
+                {isActive && (
+                  <LinearGradient
+                    colors={['#7C5CFC', '#FF6B9D']}
+                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+                    style={[StyleSheet.absoluteFill, { borderRadius: 8 }]}
+                  />
+                )}
+                <Text style={[calStyles.yearText, { color: isActive ? '#fff' : C.text, fontFamily: isActive ? 'Inter_700Bold' : 'Inter_400Regular' }]}>
+                  {yr}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      )}
 
-      {/* Grid */}
-      <View style={calStyles.grid}>
-        {cells.map((dayKey, i) => {
-          if (!dayKey) return <View key={i} style={calStyles.cell} />;
-          const isSelected = dayKey === selected;
-          const isToday = dayKey === today;
-          const day = parseISO(dayKey).getDate();
+      {!showYearPicker && (
+        <>
+          {/* Day headers */}
+          <View style={calStyles.headerRow}>
+            {dayHeaders.map(d => (
+              <Text key={d} style={[calStyles.headerDay, { color: C.textMuted }]}>{d}</Text>
+            ))}
+          </View>
 
-          return (
-            <Pressable
-              key={dayKey}
-              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onSelect(dayKey); }}
-              style={[calStyles.cell, { overflow: 'hidden' }]}
-            >
-              {isSelected && (
-                <LinearGradient
-                  colors={['#7C5CFC', '#FF6B9D']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={[StyleSheet.absoluteFill, { borderRadius: 999 }]}
-                />
-              )}
-              <Text style={[
-                calStyles.dayText,
-                { color: isSelected ? '#fff' : isToday ? C.tint : C.text },
-                isToday && !isSelected && { fontFamily: 'Inter_700Bold' },
-              ]}>
-                {day}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
+          {/* Grid */}
+          <View style={calStyles.grid}>
+            {cells.map((dayKey, i) => {
+              if (!dayKey) return <View key={i} style={calStyles.cell} />;
+              const isSelected = dayKey === selected;
+              const isToday = dayKey === today;
+              const day = parseISO(dayKey).getDate();
+
+              return (
+                <Pressable
+                  key={dayKey}
+                  onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onSelect(dayKey); }}
+                  style={[calStyles.cell, { overflow: 'hidden' }]}
+                >
+                  {isSelected && (
+                    <LinearGradient
+                      colors={['#7C5CFC', '#FF6B9D']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={[StyleSheet.absoluteFill, { borderRadius: 999 }]}
+                    />
+                  )}
+                  <Text style={[
+                    calStyles.dayText,
+                    { color: isSelected ? '#fff' : isToday ? C.tint : C.text },
+                    isToday && !isSelected && { fontFamily: 'Inter_700Bold' },
+                  ]}>
+                    {day}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </>
+      )}
     </View>
   );
 }
@@ -291,9 +354,27 @@ const calStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.sm,
-    paddingHorizontal: Spacing.xs,
   },
-  navLabel: { fontSize: 15, fontFamily: 'Inter_600SemiBold' },
+  navYearBtn: {
+    flexDirection: 'row', alignItems: 'center',
+    borderRadius: 6, paddingHorizontal: 4, paddingVertical: 4,
+  },
+  navLabelBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+    paddingHorizontal: 4, paddingVertical: 2,
+  },
+  navLabel: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
+  yearGrid: {
+    flexDirection: 'row', flexWrap: 'wrap',
+    marginBottom: Spacing.sm,
+  },
+  yearCell: {
+    width: `${100 / 4}%`,
+    paddingVertical: 8,
+    alignItems: 'center', justifyContent: 'center',
+    borderRadius: 8,
+  },
+  yearText: { fontSize: 13 },
   headerRow: { flexDirection: 'row', marginBottom: Spacing.xs },
   headerDay: { flex: 1, textAlign: 'center', fontSize: 11, fontFamily: 'Inter_600SemiBold' },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },

@@ -1,0 +1,348 @@
+Apply the following additional fixes, interaction improvements, UI refinements, and navigation corrections carefully and professionally.
+
+Important:
+Do not make quick patches.
+Inspect the current implementation first, then fix the requested items properly.
+If something already exists but is broken, incomplete, or poorly implemented, fix it cleanly.
+Preserve the app identity and improve the UX/UI without breaking working parts of the app.
+
+Very important:
+- Do not redesign the More page from scratch
+- Preserve the current More page design direction as much as possible
+- Only apply the requested structural, navigation, interaction, and UX improvements
+- Do not break the Dashboard calendar or Calendar page behavior if they are already correct
+
+==================================================
+NEW REQUIRED FIXES AND IMPROVEMENTS
+==================================================
+
+1) Fix the Dashboard Add button because it currently shows the + icon twice
+2) Turn the top-left + button into a Quick Add menu
+3) Fix Habits card navigation in More and Dashboard
+4) Fix Goals card navigation in More and Dashboard
+5) Add Daily Journal to the Content section in More
+6) Improve App Settings popup design and sizing
+7) Improve date picking in forms across the app
+8) Rename “Daily” / “Yawmiyah” to “Daily Journal / مذكرات يومية”
+
+==================================================
+1) DASHBOARD ADD BUTTON - FIX DOUBLE PLUS ICON
+==================================================
+
+Current issue:
+The Add button in the Dashboard currently shows the + symbol twice.
+
+Required:
+- Fix the Add button so it shows the icon correctly only once
+- Clean up the button design if needed
+- Make sure the button looks polished and consistent with the app identity
+- Do not leave duplicated icon layers or duplicated label/icon rendering
+
+Check:
+- button component
+- icon rendering
+- label rendering
+- any nested icon usage
+- any duplicated children or wrapper causing the issue
+
+==================================================
+2) TOP-LEFT + BUTTON = QUICK ADD MENU
+==================================================
+
+The + button at the top-left of the app should become a Quick Add entry point.
+
+Required behavior:
+When the user taps the + button, it should open a beautiful and user-friendly quick-add menu with these options:
+- Add Task
+- Add Habit
+- Add Goal
+- Add Daily Journal
+
+Requirements:
+- Design the quick-add menu in a clean and polished way
+- Make it match the app identity
+- Make it feel smooth and modern
+- Make the options easy to understand and easy to tap
+- Use proper icons and spacing
+- Keep the UX simple and elegant
+
+Acceptable UI patterns:
+- action sheet
+- popover menu
+- modal menu
+- small quick action panel
+
+Choose the best option for the current app structure and design.
+
+Important:
+- The menu should feel premium and intentional
+- It should not feel cluttered
+- It should not block usability
+- It should route correctly to:
+  - Add Task form
+  - Add Habit form
+  - Add Goal form
+  - Add Daily Journal form
+
+==================================================
+3) FIX HABITS CARD NAVIGATION IN MORE AND DASHBOARD
+==================================================
+
+Current issue:
+When tapping the Habits card, nothing happens.
+
+This must be fixed in:
+- More page
+- Dashboard
+
+Required:
+- Tapping the Habits card must open the Habits page correctly
+- Make sure the navigation works in all relevant places
+- Make sure the card is clearly tappable
+- Make sure press states/feedback work correctly
+
+Also verify:
+- route is correct
+- no dead navigation reference remains
+- no broken onPress binding remains
+
+==================================================
+4) FIX GOALS CARD NAVIGATION IN MORE AND DASHBOARD
+==================================================
+
+Current issue:
+When tapping the Goals card, nothing happens.
+
+This must be fixed in:
+- More page
+- Dashboard
+
+Required:
+- Tapping the Goals card must open the Goals page correctly
+- Make sure the navigation works in all relevant places
+- Make sure the card is clearly tappable
+- Make sure press states/feedback work correctly
+
+Also verify:
+- route is correct
+- no dead navigation reference remains
+- no broken onPress binding remains
+
+==================================================
+5) ADD DAILY JOURNAL TO THE CONTENT SECTION IN MORE
+==================================================
+
+Add Daily Journal to the Content section in More.
+
+The Content section order must now be:
+
+Content:
+- Habits
+- Goals
+- Daily Journal
+- Categories
+
+Requirements:
+- Update the More page structure accordingly
+- Make Daily Journal appear as part of the same stacked rectangular cards layout
+- Make it match the same design and style as the other content cards
+- Make sure tapping Daily Journal opens the correct page
+
+Below Content, keep:
+- App Settings
+- Support & Contact
+
+Required final More structure:
+- Profile
+- Content
+  - Habits
+  - Goals
+  - Daily Journal
+  - Categories
+- App Settings
+- Support & Contact
+
+Make sure this structure is clear, clean, and aligned with the current More page design direction.
+
+==================================================
+6) IMPROVE APP SETTINGS POPUP DESIGN AND SIZE
+==================================================
+
+Current issue:
+The App Settings popup/design does not feel appropriate for the amount of options it contains.
+The popup is too large, and the UX is not clean or attractive.
+
+Required:
+- Improve the App Settings popup/modal/bottom sheet design
+- Reduce its size to a more appropriate size
+- Organize the options more cleanly
+- Improve spacing, grouping, and overall presentation
+- Make the experience feel cleaner and more aligned with the app identity
+
+Requirements:
+- Do not make the popup oversized if there are only a few options
+- Present the settings in a more elegant way
+- Small card-style options are acceptable
+- Compact grouped layout is acceptable
+- Make it feel more refined and intentional
+
+Goal:
+The App Settings section should feel visually cleaner, more practical, and more beautiful.
+
+==================================================
+7) IMPROVE DATE PICKING IN FORMS ACROSS THE APP
+==================================================
+
+For date input in forms across all sections of the app, the date picker should make it easier to choose:
+- year
+- month
+- day
+
+Required:
+- Improve the date selection experience in all relevant forms
+- Make year/month/day selection easier and more user-friendly
+- Use a date picker approach that is more practical and efficient
+
+Apply this across forms where date entry exists, including if applicable:
+- Tasks
+- Habits
+- Goals
+- Daily Journal
+- any other forms using dates
+
+Requirements:
+- Keep the experience consistent across the app
+- Make sure the date picker works correctly in both Arabic and English
+- Make sure it fits the app identity
+- Make sure it is easy to choose dates far in the future or past
+- Avoid awkward date picking UX
+
+==================================================
+8) RENAME “DAILY” / “YAWMIYAH” TO “DAILY JOURNAL / مذكرات يومية”
+==================================================
+
+Rename the section/name from:
+- Daily
+- Yawmiyah / يومية
+
+To:
+- Daily Journal
+- مذكرات يومية
+
+Apply this update consistently across the app where relevant:
+- More page
+- page titles
+- buttons
+- labels
+- navigation titles
+- quick add menu
+- related forms
+- translations
+- empty states
+- any references in UI text
+
+Do not leave mixed naming behind.
+
+==================================================
+IMPLEMENTATION RULES
+==================================================
+
+While applying these changes:
+- inspect first
+- fix properly
+- preserve current app identity
+- do not break existing navigation
+- do not break working Dashboard logic
+- do not break More page structure
+- do not break translations
+- do not break RTL/LTR behavior
+- do not break Dashboard calendar or Calendar page behavior if already correct
+- clean related code if old/broken logic exists
+- remove duplicate or dead references if needed
+
+If any related component is messy:
+- refactor it cleanly
+
+==================================================
+FINAL REQUIRED REVIEW
+==================================================
+
+After implementing the above, perform a full review of all affected areas, including:
+- Dashboard Add button
+- top-left + button quick add behavior
+- Habits card navigation
+- Goals card navigation
+- More page Content section
+- Daily Journal card/navigation
+- App Settings popup design
+- date pickers across forms
+- renamed Daily Journal text across the app
+- translation consistency
+- Arabic/English behavior
+- visual consistency
+- interaction consistency
+
+Also do:
+- code cleanup
+- fix remaining errors
+- remove dead code
+- remove unused imports
+- remove broken references
+- fix runtime/build/type issues if any remain
+
+==================================================
+FINAL VERIFICATION CHECKLIST
+==================================================
+
+Before finishing, verify all of the following:
+
+1. Dashboard Add button no longer shows the + icon twice
+2. Top-left + button opens a Quick Add menu
+3. Quick Add menu includes:
+   - Add Task
+   - Add Habit
+   - Add Goal
+   - Add Daily Journal
+4. Quick Add menu routes correctly to the right forms/pages
+5. Habits card opens the Habits page from More
+6. Habits card opens the Habits page from Dashboard
+7. Goals card opens the Goals page from More
+8. Goals card opens the Goals page from Dashboard
+9. More page Content section order is now:
+   - Habits
+   - Goals
+   - Daily Journal
+   - Categories
+10. Daily Journal opens correctly from More
+11. App Settings popup is visually improved
+12. App Settings popup size is more appropriate
+13. Date picking is easier in app forms
+14. Year / month / day selection is easier
+15. Date picking works correctly in Arabic and English
+16. “Daily / يومية” was renamed consistently to “Daily Journal / مذكرات يومية”
+17. No mixed old/new naming remains
+18. No obvious navigation issues remain
+19. No obvious runtime/build/type issues remain
+20. Code cleanup was completed
+21. Remaining errors were fixed
+
+==================================================
+FINAL RESPONSE FORMAT
+==================================================
+
+After finishing, provide a clear summary including:
+- what was fixed
+- what navigation issues were corrected
+- how the Quick Add button/menu was implemented
+- what changed in the More page structure
+- what changed in the App Settings popup
+- how date selection was improved
+- where “Daily Journal / مذكرات يومية” naming was updated
+- what code was cleaned/refactored
+- whether final review was completed
+- whether full code cleanup was completed
+- whether remaining errors were fixed
+- any remaining issue if one still exists
+
+Do not stop at a partial implementation.
+Complete the fixes, UI improvements, navigation corrections, date picker improvements, renaming, review, code cleanup, and error fixing professionally.

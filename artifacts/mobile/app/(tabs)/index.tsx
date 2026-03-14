@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
-  ScrollView, StyleSheet, Text, View, Pressable, Platform,
+  ScrollView, StyleSheet, Text, View, Pressable, Platform, Modal,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,6 +23,7 @@ import { getTodayString, getWeekDays, getDayLabel, formatDateKey, formatTime, is
 import { HabitForm } from '../../src/features/habits/HabitForm';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
 import { JournalForm } from '../../src/features/journal/JournalForm';
+import { GoalForm } from '../../src/features/goals/GoalForm';
 import { Task, Habit, Mood, JournalEntry } from '../../src/types';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -43,6 +44,8 @@ export default function HomeScreen() {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [showHabitForm, setShowHabitForm] = useState(false);
   const [showJournalForm, setShowJournalForm] = useState(false);
+  const [showGoalForm, setShowGoalForm] = useState(false);
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [editHabit, setEditHabit] = useState<Habit | null>(null);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [selectedDay, setSelectedDay] = useState(getTodayString());
@@ -94,7 +97,7 @@ export default function HomeScreen() {
               <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left' }]}>Do.Yoomi</Text>
               <Text style={[styles.heroSub, { textAlign: isRTL ? 'right' : 'left' }]}>يومي</Text>
             </View>
-            <AddBtn onPress={() => setShowTaskForm(true)} />
+            <AddBtn onPress={() => setShowQuickAdd(true)} />
           </View>
 
         </LinearGradient>
@@ -260,6 +263,19 @@ export default function HomeScreen() {
       <TaskForm visible={showTaskForm} onClose={() => { setShowTaskForm(false); setEditTask(null); }} editTask={editTask} />
       <HabitForm visible={showHabitForm} onClose={() => { setShowHabitForm(false); setEditHabit(null); }} editHabit={editHabit} />
       <JournalForm visible={showJournalForm} onClose={() => setShowJournalForm(false)} />
+      <GoalForm visible={showGoalForm} onClose={() => setShowGoalForm(false)} editGoal={null} />
+      <QuickAddMenu
+        visible={showQuickAdd}
+        onClose={() => setShowQuickAdd(false)}
+        onTask={() => { setShowQuickAdd(false); setTimeout(() => setShowTaskForm(true), 200); }}
+        onHabit={() => { setShowQuickAdd(false); setTimeout(() => { setEditHabit(null); setShowHabitForm(true); }, 200); }}
+        onGoal={() => { setShowQuickAdd(false); setTimeout(() => setShowGoalForm(true), 200); }}
+        onJournal={() => { setShowQuickAdd(false); setTimeout(() => setShowJournalForm(true), 200); }}
+        isRTL={isRTL}
+        lang={lang}
+        C={C}
+        insets={insets}
+      />
     </View>
   );
 }
@@ -284,6 +300,53 @@ function AddBtn({ onPress }: { onPress: () => void }) {
       />
       <Ionicons name="add" size={28} color="#fff" />
     </AnimatedPressable>
+  );
+}
+
+function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, isRTL, lang, C, insets }: any) {
+  const tFunc = (key: string) => t(key, lang);
+  const items = [
+    { label: tFunc('addTask'), sublabel: isRTL ? 'مهمة جديدة' : 'New task', icon: 'checkmark-circle-outline', colors: ['#7C5CFC', '#A855F7'] as [string,string], onPress: onTask },
+    { label: tFunc('addHabit'), sublabel: isRTL ? 'عادة جديدة' : 'New habit', icon: 'leaf-outline', colors: ['#00C48C', '#00B8A9'] as [string,string], onPress: onHabit },
+    { label: tFunc('addGoal'), sublabel: isRTL ? 'هدف جديد' : 'New goal', icon: 'trophy-outline', colors: ['#FF6B35', '#FFB347'] as [string,string], onPress: onGoal },
+    { label: tFunc('addEntry'), sublabel: isRTL ? 'مذكرة يومية' : 'Daily journal', icon: 'book-outline', colors: ['#FF6B9D', '#A855F7'] as [string,string], onPress: onJournal },
+  ];
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent>
+      <Pressable style={qaStyles.overlay} onPress={onClose}>
+        <Pressable style={[qaStyles.sheet, { backgroundColor: C.card, paddingBottom: (insets?.bottom ?? 0) + 16 }]} onPress={() => {}}>
+          <View style={qaStyles.handle} />
+          <Text style={[qaStyles.sheetTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>
+            {isRTL ? 'إضافة سريعة' : 'Quick Add'}
+          </Text>
+          <View style={qaStyles.itemGrid}>
+            {items.map((item) => (
+              <Pressable
+                key={item.label}
+                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); item.onPress(); }}
+                style={({ pressed }) => [qaStyles.item, { opacity: pressed ? 0.82 : 1 }]}
+                accessibilityRole="button"
+              >
+                <LinearGradient colors={item.colors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={qaStyles.itemGrad}>
+                  <View style={qaStyles.itemIconWrap}>
+                    <Ionicons name={item.icon as any} size={26} color="#fff" />
+                  </View>
+                  <Text style={[qaStyles.itemLabel, { textAlign: isRTL ? 'right' : 'left' }]}>{item.label}</Text>
+                  <Text style={[qaStyles.itemSub, { textAlign: isRTL ? 'right' : 'left' }]}>{item.sublabel}</Text>
+                </LinearGradient>
+              </Pressable>
+            ))}
+          </View>
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onClose(); }}
+            style={({ pressed }) => [qaStyles.cancelBtn, { backgroundColor: C.surface, borderColor: C.border, opacity: pressed ? 0.7 : 1 }]}
+          >
+            <Text style={[qaStyles.cancelText, { color: C.textSecondary }]}>{tFunc('cancel')}</Text>
+          </Pressable>
+        </Pressable>
+      </Pressable>
+    </Modal>
   );
 }
 
@@ -754,4 +817,60 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg, paddingVertical: Spacing.sm + 2, marginTop: Spacing.xs,
   },
   journalWriteText: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
+});
+
+const qaStyles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'flex-end',
+  },
+  sheet: {
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingTop: 12,
+    paddingHorizontal: Spacing.lg,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 20,
+  },
+  handle: {
+    width: 40, height: 4, borderRadius: 2,
+    backgroundColor: 'rgba(0,0,0,0.15)',
+    alignSelf: 'center', marginBottom: Spacing.lg,
+  },
+  sheetTitle: {
+    fontSize: 20, fontFamily: 'Inter_700Bold',
+    marginBottom: Spacing.lg,
+  },
+  itemGrid: {
+    flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.md,
+    marginBottom: Spacing.lg,
+  },
+  item: {
+    width: '47%',
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
+  },
+  itemGrad: {
+    padding: Spacing.lg,
+    gap: Spacing.sm,
+    minHeight: 120,
+    justifyContent: 'space-between',
+  },
+  itemIconWrap: {
+    width: 44, height: 44, borderRadius: Radius.md,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  itemLabel: { fontSize: 15, fontFamily: 'Inter_700Bold', color: '#fff' },
+  itemSub: { fontSize: 12, fontFamily: 'Inter_400Regular', color: 'rgba(255,255,255,0.75)' },
+  cancelBtn: {
+    borderRadius: Radius.xl, borderWidth: 1,
+    paddingVertical: Spacing.md + 2,
+    alignItems: 'center',
+  },
+  cancelText: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
 });
