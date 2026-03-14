@@ -1,0 +1,38 @@
+oot@srv1482387:~/doyoomi# cd ~/doyoomi && git stash && git pull origin main && git stash pop
+Saved working directory and index state WIP on main: 9f7aa53 Round 5: back buttons (habits/goals), ContentCard stack (settings), AddBtn redesign (index)
+From https://github.com/3lialmohannadi/doyoomi
+ * branch            main       -> FETCH_HEAD
+Updating 9f7aa53..2bbcec7
+Fast-forward
+ artifacts/mobile/app.json                                      |   4 +--
+ artifacts/mobile/app/(tabs)/_layout.tsx                        |  29 +++-----------------
+ artifacts/mobile/app/(tabs)/goals.tsx                          |  22 +++++++--------
+ artifacts/mobile/app/(tabs)/habits.tsx                         |  29 +++++++++-----------
+ artifacts/mobile/app/(tabs)/index.tsx                          |  26 ++++++++----------
+ artifacts/mobile/app/(tabs)/settings.tsx                       | 100 +++++++++++++++++++++++++++++++++++--------------------------------
+ artifacts/mobile/app/_layout.tsx                               |  23 +++++++---------
+ artifacts/mobile/assets/images/icon.png                        | Bin 1283836 -> 757619 bytes
+ artifacts/mobile/assets/images/splash-icon.png                 | Bin 1283836 -> 757619 bytes
+ artifacts/mobile/src/components/ui/PriorityBadge.tsx           |   6 ++--
+ artifacts/mobile/src/components/ui/Toast.tsx                   |   8 ++++--
+ artifacts/mobile/src/components/ui/ToggleRow.tsx               |   8 ++++--
+ artifacts/mobile/src/features/categories/CategoriesManager.tsx |  56 +++++++++++++++++++++----------------
+ artifacts/mobile/src/features/goals/GoalForm.tsx               |   4 +--
+ artifacts/mobile/src/features/habits/HabitForm.tsx             |   4 +--
+ artifacts/mobile/src/features/tasks/TaskForm.tsx               |   8 +++---
+ 16 files changed, 157 insertions(+), 170 deletions(-)
+Auto-merging artifacts/mobile/app.json
+CONFLICT (content): Merge conflict in artifacts/mobile/app.json
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   artifacts/mobile/eas.json
+
+Unmerged paths:
+  (use "git restore --staged <file>..." to unstage)
+  (use "git add <file>..." to mark resolution)
+        both modified:   artifacts/mobile/app.json
+
+The stash entry is kept in case you need it again.
