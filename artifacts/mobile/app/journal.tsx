@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { IonIconName } from '../src/types';
 import { LinearGradient } from 'expo-linear-gradient';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 
