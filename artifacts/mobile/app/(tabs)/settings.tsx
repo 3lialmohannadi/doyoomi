@@ -15,6 +15,7 @@ import {
 
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
+import { useGoalsStore } from '../../src/store/goalsStore';
 import { Spacing, Radius, Shadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
@@ -30,6 +31,7 @@ export default function MoreScreen() {
 
   const { profile, setLanguage, setTheme, setTimeFormat, setStartOfWeek, setProfile } = useSettingsStore();
   const { categories } = useCategoriesStore();
+  const { goals } = useGoalsStore();
   const lang = profile.language;
   const isRTL = lang === 'ar';
 
@@ -69,27 +71,36 @@ export default function MoreScreen() {
 
   const displayDob = profileDob ? format(parseISO(profileDob), 'MMM d, yyyy') : '';
 
+  const settingsSummary = [
+    profile.language === 'ar' ? 'عربي' : 'English',
+    tFunc(profile.theme === 'dark' ? 'dark' : 'light'),
+    profile.time_format,
+  ].join(' · ');
+
+  const goalsCount = goals.length;
+
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad + 100 }}>
 
-        {/* Hero Header */}
+        {/* ── Hero ── */}
         <LinearGradient
-          colors={['#FF6B9D', '#A855F7', '#7C5CFC']}
+          colors={['#7C5CFC', '#A855F7', '#FF6B9D']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.hero, { paddingTop: topPad + Spacing.md }]}
         >
           <View style={styles.heroDecor1} />
           <View style={styles.heroDecor2} />
-          <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('more')}</Text>
+          <View style={styles.heroDecor3} />
 
-          {/* Profile card inside hero */}
+          <Text style={[styles.heroLabel, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('more')}</Text>
+
+          {/* Profile card */}
           <Pressable
             onPress={openProfileModal}
-            style={({ pressed }) => [styles.profileCard, { flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.92 : 1 }]}
+            style={({ pressed }) => [styles.profileCard, { flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.93 : 1 }]}
             accessibilityRole="button"
-            accessibilityLabel={tFunc('profile')}
           >
             <LinearGradient
               colors={['#7C5CFC', '#FF6B9D']}
@@ -101,91 +112,131 @@ export default function MoreScreen() {
                 {profile.name ? profile.name.charAt(0).toUpperCase() : '?'}
               </Text>
             </LinearGradient>
-            <View style={{ flex: 1, alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
-              <Text style={[styles.profileName, { textAlign: isRTL ? 'right' : 'left' }]}>{profile.name || tFunc('noNameSet')}</Text>
-              <Text style={[styles.profileSub, { textAlign: isRTL ? 'right' : 'left' }]}>
+
+            <View style={[styles.profileInfo, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+              <Text style={[styles.profileName, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+                {profile.name || tFunc('noNameSet')}
+              </Text>
+              <Text style={[styles.profileEmail, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
                 {profile.email || tFunc('tapToEditProfile')}
               </Text>
             </View>
-            <View style={styles.editChevron}>
-              <Ionicons name="pencil" size={14} color="#7C5CFC" />
+
+            <View style={styles.editBadge}>
+              <Ionicons name="pencil" size={13} color="#7C5CFC" />
             </View>
           </Pressable>
         </LinearGradient>
 
-        {/* Menu Content */}
-        <View style={{ paddingHorizontal: Spacing.lg, gap: Spacing.xl, marginTop: Spacing.xl }}>
+        {/* ── Content ── */}
+        <View style={[styles.pageContent, { paddingHorizontal: Spacing.lg }]}>
 
-          {/* Account section */}
-          <MenuSection title={tFunc('account')} icon="person-outline" color="#7C5CFC" C={C} isRTL={isRTL}>
-            <MenuItem
-              icon="person-circle-outline"
-              iconColor="#7C5CFC"
-              label={tFunc('profile')}
-              subtitle={profile.name || tFunc('noNameSet')}
-              onPress={openProfileModal}
-              isRTL={isRTL} C={C}
-              isLast
-            />
-          </MenuSection>
+          {/* Section: Content tiles */}
+          <SectionHeader title={tFunc('content')} isRTL={isRTL} C={C} />
+          <View style={[styles.tilesRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
 
-          {/* Content section */}
-          <MenuSection title={tFunc('content')} icon="grid-outline" color="#FF6B9D" C={C} isRTL={isRTL}>
-            <MenuItem
-              icon="trophy-outline"
-              iconColor="#FF6B9D"
-              label={tFunc('goals')}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.push('/goals');
-              }}
-              isRTL={isRTL} C={C}
-            />
-            <MenuDivider C={C} />
-            <MenuItem
-              icon="folder-open-outline"
-              iconColor="#FF6B35"
-              label={tFunc('categories')}
-              badge={categories.length}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setShowCategories(true);
-              }}
-              isRTL={isRTL} C={C}
-              isLast
-            />
-          </MenuSection>
+            {/* Goals tile */}
+            <Pressable
+              style={({ pressed }) => [styles.tile, { opacity: pressed ? 0.88 : 1, overflow: 'hidden' }]}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/goals'); }}
+              accessibilityRole="button"
+            >
+              <LinearGradient
+                colors={['#FF6B9D', '#A855F7']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFill}
+              />
+              <View style={styles.tileDecoCircle} />
+              <View style={styles.tileIconWrap}>
+                <Ionicons name="trophy" size={26} color="#fff" />
+              </View>
+              <Text style={styles.tileTitle}>{tFunc('goals')}</Text>
+              <Text style={styles.tileSub}>
+                {goalsCount} {isRTL ? 'هدف' : 'goals'}
+              </Text>
+              <View style={[styles.tileChevron, { alignSelf: isRTL ? 'flex-start' : 'flex-end' }]}>
+                <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={14} color="rgba(255,255,255,0.8)" />
+              </View>
+            </Pressable>
 
-          {/* Preferences section */}
-          <MenuSection title={tFunc('preferences')} icon="settings-outline" color="#00C48C" C={C} isRTL={isRTL}>
-            <MenuItem
-              icon="options-outline"
-              iconColor="#00C48C"
-              label={tFunc('appSettings')}
-              subtitle={`${tFunc(profile.language === 'ar' ? 'arabic' : 'english')} · ${tFunc(profile.theme === 'dark' ? 'dark' : 'light')}`}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setShowAppSettings(true);
-              }}
-              isRTL={isRTL} C={C}
-              isLast
-            />
-          </MenuSection>
+            {/* Categories tile */}
+            <Pressable
+              style={({ pressed }) => [styles.tile, { opacity: pressed ? 0.88 : 1, overflow: 'hidden' }]}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowCategories(true); }}
+              accessibilityRole="button"
+            >
+              <LinearGradient
+                colors={['#FF6B35', '#FFB347']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFill}
+              />
+              <View style={styles.tileDecoCircle} />
+              <View style={styles.tileIconWrap}>
+                <Ionicons name="folder-open" size={26} color="#fff" />
+              </View>
+              <Text style={styles.tileTitle}>{tFunc('categories')}</Text>
+              <Text style={styles.tileSub}>
+                {categories.length} {isRTL ? 'تصنيف' : 'items'}
+              </Text>
+              <View style={[styles.tileChevron, { alignSelf: isRTL ? 'flex-start' : 'flex-end' }]}>
+                <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={14} color="rgba(255,255,255,0.8)" />
+              </View>
+            </Pressable>
+          </View>
 
-          {/* Help section */}
-          <MenuSection title={tFunc('helpSection')} icon="headset-outline" color="#A855F7" C={C} isRTL={isRTL}>
-            <MenuItem
-              icon="mail-outline"
-              iconColor="#A855F7"
-              label={tFunc('supportAndContact')}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.push('/support');
-              }}
-              isRTL={isRTL} C={C}
-              isLast
+          {/* Section: App Settings */}
+          <SectionHeader title={tFunc('preferences')} isRTL={isRTL} C={C} />
+          <Pressable
+            style={({ pressed }) => [styles.wideCard, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.92 : 1 }]}
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowAppSettings(true); }}
+            accessibilityRole="button"
+          >
+            <View style={[styles.wideCardRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <LinearGradient
+                colors={['#7C5CFC', '#00C48C']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.wideCardIcon}
+              >
+                <Ionicons name="options" size={20} color="#fff" />
+              </LinearGradient>
+              <View style={[styles.wideCardText, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+                <Text style={[styles.wideCardTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('appSettings')}</Text>
+                <Text style={[styles.wideCardSub, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{settingsSummary}</Text>
+              </View>
+              <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={18} color={C.textMuted} />
+            </View>
+          </Pressable>
+
+          {/* Section: Help */}
+          <SectionHeader title={tFunc('helpSection')} isRTL={isRTL} C={C} />
+          <Pressable
+            style={({ pressed }) => [styles.wideCard, { overflow: 'hidden', opacity: pressed ? 0.92 : 1 }]}
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/support'); }}
+            accessibilityRole="button"
+          >
+            <LinearGradient
+              colors={['#A855F7', '#7C5CFC']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={[StyleSheet.absoluteFill]}
             />
-          </MenuSection>
+            <View style={styles.supportDecoCircle} />
+            <View style={[styles.wideCardRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <View style={styles.supportIconWrap}>
+                <Ionicons name="chatbubble-ellipses" size={22} color="#A855F7" />
+              </View>
+              <View style={[styles.wideCardText, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+                <Text style={[styles.wideCardTitle, { color: '#fff', textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('supportAndContact')}</Text>
+                <Text style={[styles.wideCardSub, { color: 'rgba(255,255,255,0.75)', textAlign: isRTL ? 'right' : 'left' }]}>
+                  {isRTL ? 'نحن هنا للمساعدة' : 'We are here to help'}
+                </Text>
+              </View>
+              <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={18} color="rgba(255,255,255,0.8)" />
+            </View>
+          </Pressable>
 
           {/* About card */}
           <View style={[styles.aboutCard, { backgroundColor: C.card, borderColor: C.border }]}>
@@ -195,7 +246,7 @@ export default function MoreScreen() {
               end={{ x: 1, y: 1 }}
               style={styles.aboutLogo}
             >
-              <Ionicons name="calendar" size={30} color="#fff" />
+              <Ionicons name="calendar" size={32} color="#fff" />
             </LinearGradient>
             <Text style={[styles.aboutName, { color: C.text }]}>Do.Yoomi</Text>
             <Text style={[styles.aboutAr, { color: C.tint }]}>يومي</Text>
@@ -210,7 +261,7 @@ export default function MoreScreen() {
 
       <CategoriesManager visible={showCategories} onClose={() => setShowCategories(false)} />
 
-      {/* App Settings Modal */}
+      {/* ── App Settings Modal ── */}
       <Modal
         visible={showAppSettings}
         animationType="slide"
@@ -266,7 +317,7 @@ export default function MoreScreen() {
         </View>
       </Modal>
 
-      {/* Profile Modal */}
+      {/* ── Profile Modal ── */}
       <Modal
         visible={showProfileModal}
         animationType="slide"
@@ -284,7 +335,6 @@ export default function MoreScreen() {
             </View>
 
             <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.modalContent} keyboardShouldPersistTaps="handled">
-              {/* Avatar */}
               <View style={styles.modalAvatarSection}>
                 <LinearGradient
                   colors={['#7C5CFC', '#FF6B9D']}
@@ -298,7 +348,6 @@ export default function MoreScreen() {
                 </LinearGradient>
               </View>
 
-              {/* Personal info */}
               <View style={styles.formSection}>
                 <View style={[styles.formSectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <View style={[styles.formSectionIcon, { backgroundColor: '#7C5CFC20' }]}>
@@ -341,7 +390,6 @@ export default function MoreScreen() {
                 </View>
               </View>
 
-              {/* Contact info */}
               <View style={styles.formSection}>
                 <View style={[styles.formSectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <View style={[styles.formSectionIcon, { backgroundColor: '#FF6B9D20' }]}>
@@ -378,7 +426,6 @@ export default function MoreScreen() {
               </View>
             </ScrollView>
 
-            {/* Bottom save */}
             <View style={[styles.modalBottomBar, { paddingBottom: insets.bottom + Spacing.md, borderTopColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <Pressable
                 onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowProfileModal(false); }}
@@ -399,59 +446,14 @@ export default function MoreScreen() {
   );
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// ─── Sub-components ────────────────────────────────────────────────────────────
 
-function MenuSection({ title, icon, color, C, isRTL, children }: any) {
+function SectionHeader({ title, isRTL, C }: { title: string; isRTL: boolean; C: any }) {
   return (
-    <View>
-      <View style={[styles.sectionLabel, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <View style={[styles.sectionIconWrap, { backgroundColor: color + '18' }]}>
-          <Ionicons name={icon} size={13} color={color} />
-        </View>
-        <Text style={[styles.sectionTitle, { color: C.textSecondary }]}>{title}</Text>
-      </View>
-      <View style={[styles.menuCard, { backgroundColor: C.card, borderColor: C.border }]}>
-        {children}
-      </View>
-    </View>
+    <Text style={[styles.sectionHeader, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>
+      {title}
+    </Text>
   );
-}
-
-function MenuItem({ icon, iconColor, label, subtitle, badge, onPress, isRTL, C, isLast }: any) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.menuItem,
-        { flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.7 : 1 },
-        !isLast && { borderBottomWidth: 1, borderBottomColor: C.borderLight },
-      ]}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-    >
-      <View style={[styles.menuItemIcon, { backgroundColor: iconColor + '15' }]}>
-        <Ionicons name={icon} size={18} color={iconColor} />
-      </View>
-      <View style={[styles.menuItemText, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
-        <Text style={[styles.menuItemLabel, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{label}</Text>
-        {subtitle && (
-          <Text style={[styles.menuItemSubtitle, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{subtitle}</Text>
-        )}
-      </View>
-      <View style={[styles.menuItemRight, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        {badge !== undefined && (
-          <View style={[styles.menuBadge, { backgroundColor: C.tint + '18' }]}>
-            <Text style={[styles.menuBadgeText, { color: C.tint }]}>{badge}</Text>
-          </View>
-        )}
-        <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textMuted} />
-      </View>
-    </Pressable>
-  );
-}
-
-function MenuDivider({ C }: { C: any }) {
-  return <View style={{ height: 1, backgroundColor: C.borderLight }} />;
 }
 
 function AppSettingSection({ title, icon, iconColor, C, isRTL, children }: any) {
@@ -463,9 +465,7 @@ function AppSettingSection({ title, icon, iconColor, C, isRTL, children }: any) 
         </View>
         <Text style={[styles.appSettingTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{title}</Text>
       </View>
-      <View style={styles.appSettingControl}>
-        {children}
-      </View>
+      <View>{children}</View>
     </View>
   );
 }
@@ -527,25 +527,20 @@ function DobCalendar({ selected, onSelect, C }: any) {
         {cells.map((dayKey, i) => {
           if (!dayKey) return <View key={i} style={dobStyles.cell} />;
           const isSelected = dayKey === selected;
-          const isFuture = dayKey > today;
+          const isTodayDate = dayKey === today;
           const day = parseISO(dayKey).getDate();
           return (
             <Pressable
               key={dayKey}
-              onPress={() => { if (!isFuture) { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onSelect(dayKey); } }}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onSelect(dayKey); }}
               style={dobStyles.cell}
-              disabled={isFuture}
             >
-              <View style={[dobStyles.dayCircle, isSelected && { overflow: 'hidden' as const }]}>
-                {isSelected && (
-                  <LinearGradient
-                    colors={['#7C5CFC', '#FF6B9D']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={[StyleSheet.absoluteFill, { borderRadius: 999 }]}
-                  />
-                )}
-                <Text style={[dobStyles.dayText, { color: isSelected ? '#fff' : isFuture ? C.textMuted + '50' : C.text }]}>
+              <View style={[
+                dobStyles.dayCircle,
+                isSelected && { backgroundColor: C.tint },
+                isTodayDate && !isSelected && { borderWidth: 1.5, borderColor: C.tint },
+              ]}>
+                <Text style={[dobStyles.dayText, { color: isSelected ? '#fff' : isTodayDate ? C.tint : C.text }]}>
                   {day}
                 </Text>
               </View>
@@ -557,7 +552,7 @@ function DobCalendar({ selected, onSelect, C }: any) {
   );
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// ─── Styles ────────────────────────────────────────────────────────────────────
 
 const dobStyles = StyleSheet.create({
   container: { borderRadius: Radius.lg, borderWidth: 1, padding: Spacing.md },
@@ -574,78 +569,141 @@ const dobStyles = StyleSheet.create({
 const styles = StyleSheet.create({
   container: { flex: 1 },
 
-  // Hero
+  // ── Hero ──
   hero: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxxl,
+    paddingBottom: 36,
     position: 'relative',
     overflow: 'hidden',
+    minHeight: 200,
   },
-  heroDecor1: { position: 'absolute', left: -40, top: -40, width: 160, height: 160, borderRadius: 80, backgroundColor: 'rgba(255,255,255,0.1)' },
-  heroDecor2: { position: 'absolute', right: -20, bottom: 10, width: 120, height: 120, borderRadius: 60, backgroundColor: 'rgba(255,255,255,0.07)' },
-  heroTitle: { fontSize: 30, fontFamily: 'Inter_700Bold', color: '#fff', marginBottom: Spacing.lg },
+  heroDecor1: {
+    position: 'absolute', left: -50, top: -50,
+    width: 200, height: 200, borderRadius: 100,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  heroDecor2: {
+    position: 'absolute', right: -30, bottom: -20,
+    width: 160, height: 160, borderRadius: 80,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+  },
+  heroDecor3: {
+    position: 'absolute', right: 60, top: 20,
+    width: 80, height: 80, borderRadius: 40,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+  },
+  heroLabel: {
+    fontSize: 32, fontFamily: 'Inter_700Bold', color: '#fff',
+    marginBottom: Spacing.lg,
+  },
 
   // Profile card in hero
   profileCard: {
-    alignItems: 'center', gap: Spacing.md,
-    backgroundColor: 'rgba(255,255,255,0.92)',
-    borderRadius: Radius.xl, padding: Spacing.lg,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 10, elevation: 6,
+    alignItems: 'center',
+    gap: Spacing.md,
+    backgroundColor: 'rgba(255,255,255,0.95)',
+    borderRadius: Radius.xl,
+    padding: Spacing.lg,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.18,
+    shadowRadius: 14,
+    elevation: 8,
   },
   avatarGrad: {
-    width: 54, height: 54, borderRadius: 27,
+    width: 58, height: 58, borderRadius: 29,
     alignItems: 'center', justifyContent: 'center',
   },
-  avatarText: { fontSize: 24, fontFamily: 'Inter_700Bold', color: '#fff' },
-  profileName: { fontSize: 18, fontFamily: 'Inter_700Bold', color: '#1A0A4A' },
-  profileSub: { fontSize: 13, fontFamily: 'Inter_400Regular', color: '#6B5C9E', marginTop: 1 },
-  editChevron: {
-    width: 30, height: 30, borderRadius: 15,
-    backgroundColor: 'rgba(124,92,252,0.12)',
+  avatarText: { fontSize: 26, fontFamily: 'Inter_700Bold', color: '#fff' },
+  profileInfo: { flex: 1, gap: 3 },
+  profileName: { fontSize: 17, fontFamily: 'Inter_700Bold', color: '#1A0A4A' },
+  profileEmail: { fontSize: 13, fontFamily: 'Inter_400Regular', color: '#6B5C9E' },
+  editBadge: {
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: 'rgba(124,92,252,0.1)',
     alignItems: 'center', justifyContent: 'center',
   },
 
-  // Section label
-  sectionLabel: { alignItems: 'center', gap: Spacing.xs, marginBottom: Spacing.sm },
-  sectionIconWrap: { width: 22, height: 22, borderRadius: 6, alignItems: 'center', justifyContent: 'center' },
-  sectionTitle: { fontSize: 12, fontFamily: 'Inter_700Bold', textTransform: 'uppercase', letterSpacing: 0.8 },
+  // ── Page content ──
+  pageContent: { paddingTop: Spacing.xxl, gap: Spacing.md },
 
-  // Menu card
-  menuCard: {
-    borderRadius: Radius.xl, borderWidth: 1, overflow: 'hidden',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
+  sectionHeader: {
+    fontSize: 12, fontFamily: 'Inter_700Bold',
+    textTransform: 'uppercase', letterSpacing: 1,
+    marginBottom: Spacing.xs, marginTop: Spacing.sm,
   },
-  menuItem: {
+
+  // Tile grid
+  tilesRow: { gap: Spacing.md, marginBottom: Spacing.xs },
+  tile: {
+    flex: 1, borderRadius: Radius.xl,
+    padding: Spacing.lg, minHeight: 140,
+    justifyContent: 'space-between',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 10, elevation: 5,
+  },
+  tileDecoCircle: {
+    position: 'absolute', right: -20, top: -20,
+    width: 100, height: 100, borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+  },
+  tileIconWrap: {
+    width: 52, height: 52, borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center', justifyContent: 'center',
+    marginBottom: Spacing.sm,
+  },
+  tileTitle: { fontSize: 17, fontFamily: 'Inter_700Bold', color: '#fff' },
+  tileSub: { fontSize: 12, fontFamily: 'Inter_500Medium', color: 'rgba(255,255,255,0.8)', marginTop: 2 },
+  tileChevron: { marginTop: Spacing.sm },
+
+  // Wide cards
+  wideCard: {
+    borderRadius: Radius.xl, borderWidth: 1,
+    position: 'relative', overflow: 'hidden',
+    marginBottom: Spacing.xs,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2,
+  },
+  wideCardRow: {
     alignItems: 'center', gap: Spacing.md,
-    paddingHorizontal: Spacing.md, paddingVertical: 14,
+    padding: Spacing.lg,
   },
-  menuItemIcon: {
-    width: 40, height: 40, borderRadius: 12,
+  wideCardIcon: {
+    width: 48, height: 48, borderRadius: 14,
     alignItems: 'center', justifyContent: 'center',
   },
-  menuItemText: { flex: 1, gap: 2 },
-  menuItemLabel: { fontSize: 15, fontFamily: 'Inter_600SemiBold' },
-  menuItemSubtitle: { fontSize: 12, fontFamily: 'Inter_400Regular' },
-  menuItemRight: { alignItems: 'center', gap: Spacing.xs },
-  menuBadge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
-  menuBadgeText: { fontSize: 12, fontFamily: 'Inter_700Bold' },
+  wideCardText: { flex: 1, gap: 3 },
+  wideCardTitle: { fontSize: 16, fontFamily: 'Inter_700Bold' },
+  wideCardSub: { fontSize: 12, fontFamily: 'Inter_400Regular' },
 
-  // About
+  // Support card extras
+  supportDecoCircle: {
+    position: 'absolute', right: -30, top: -30,
+    width: 120, height: 120, borderRadius: 60,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  supportIconWrap: {
+    width: 48, height: 48, borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+
+  // About card
   aboutCard: {
-    borderRadius: Radius.xl, borderWidth: 1, overflow: 'hidden',
+    borderRadius: Radius.xl, borderWidth: 1,
     alignItems: 'center', padding: Spacing.xxl,
-    marginTop: Spacing.sm,
+    marginTop: Spacing.sm, marginBottom: Spacing.sm,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
   aboutLogo: {
-    width: 72, height: 72, borderRadius: 22,
+    width: 80, height: 80, borderRadius: 24,
     alignItems: 'center', justifyContent: 'center',
     marginBottom: Spacing.md,
+    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 6,
   },
-  aboutName: { fontSize: 22, fontFamily: 'Inter_700Bold', marginBottom: 2 },
-  aboutAr: { fontSize: 16, fontFamily: 'Inter_600SemiBold', marginBottom: Spacing.sm },
+  aboutName: { fontSize: 24, fontFamily: 'Inter_700Bold', marginBottom: 2 },
+  aboutAr: { fontSize: 17, fontFamily: 'Inter_700Bold', marginBottom: Spacing.sm },
   aboutTagline: { fontSize: 14, fontFamily: 'Inter_400Regular', marginBottom: Spacing.md },
-  versionPill: { borderRadius: Radius.full, paddingHorizontal: 14, paddingVertical: 5 },
+  versionPill: { borderRadius: Radius.full, paddingHorizontal: 16, paddingVertical: 6 },
   versionText: { fontSize: 13, fontFamily: 'Inter_600SemiBold' },
 
   // Modals
@@ -697,15 +755,14 @@ const styles = StyleSheet.create({
   formInputInline: { flex: 1, fontSize: 15, fontFamily: 'Inter_400Regular', padding: 0 },
   dobPressable: { flex: 1, alignItems: 'center', gap: 4 },
 
-  // App Settings modal rows
+  // App Settings
   appSettingsContent: { padding: Spacing.lg, gap: Spacing.md },
   appSettingRow: {
-    borderRadius: Radius.xl, borderWidth: 1, overflow: 'hidden',
+    borderRadius: Radius.xl, borderWidth: 1,
     padding: Spacing.md,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
   appSettingRowHeader: { alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md },
   appSettingIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   appSettingTitle: { fontSize: 15, fontFamily: 'Inter_600SemiBold', flex: 1 },
-  appSettingControl: {},
 });

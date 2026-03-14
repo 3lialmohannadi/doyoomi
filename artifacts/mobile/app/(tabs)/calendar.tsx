@@ -14,7 +14,7 @@ import { useSettingsStore } from '../../src/store/settingsStore';
 import { Spacing, Typography, Radius, Shadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
-import { formatTime, formatDateKey, getTodayString } from '../../src/utils/date';
+import { formatTime, formatDateKey, getTodayString, formatDate } from '../../src/utils/date';
 import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
 import { AddButton } from '../../src/components/ui/AddButton';
 import { TaskCard } from '../../src/components/ui/TaskCard';
@@ -174,9 +174,9 @@ export default function CalendarScreen() {
         {/* Selected date tasks */}
         {(view === 'month' || view === 'week') && (
           <View style={styles.tasksSection}>
-            <View style={styles.tasksSectionHeader}>
-              <Text style={[styles.selectedDateLabel, { color: C.text }]}>
-                {selectedDate === getTodayString() ? tFunc('today2') : format(parseISO(selectedDate), 'MMMM d, yyyy')}
+            <View style={[styles.tasksSectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <Text style={[styles.selectedDateLabel, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>
+                {selectedDate === getTodayString() ? tFunc('today2') : formatDate(selectedDate, lang)}
               </Text>
               <Text style={[styles.taskCount, { color: C.textMuted }]}>
                 {selectedTasks.length} {tFunc('taskCount')}
@@ -226,35 +226,45 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
   const dayHeadersEn = startDay === 'sunday'
     ? ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
     : ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-  const dayHeadersAr = startDay === 'sunday'
+  const dayHeadersArBase = startDay === 'sunday'
     ? [AR_DAYS_SHORT[0], AR_DAYS_SHORT[1], AR_DAYS_SHORT[2], AR_DAYS_SHORT[3], AR_DAYS_SHORT[4], AR_DAYS_SHORT[5], AR_DAYS_SHORT[6]]
     : [AR_DAYS_SHORT[1], AR_DAYS_SHORT[2], AR_DAYS_SHORT[3], AR_DAYS_SHORT[4], AR_DAYS_SHORT[5], AR_DAYS_SHORT[6], AR_DAYS_SHORT[0]];
-  const dayHeaders = isRTL ? dayHeadersAr : dayHeadersEn;
+
+  // In RTL: reverse headers so Sunday appears on the right
+  const dayHeaders = isRTL ? [...dayHeadersArBase].reverse() : dayHeadersEn;
 
   const daysInMonth = getDaysInMonth(date);
   const firstDay = getDay(startOfMonth(date));
   const offset = (firstDay - weekStart + 7) % 7;
   const today = getTodayString();
 
-  const cells: (string | null)[] = [
+  const ltrCells: (string | null)[] = [
     ...Array(offset).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => {
       const d = new Date(date.getFullYear(), date.getMonth(), i + 1);
       return formatDateKey(d);
     }),
   ];
-  while (cells.length % 7 !== 0) cells.push(null);
+  while (ltrCells.length % 7 !== 0) ltrCells.push(null);
+
+  // Build rows; in RTL reverse each row so the grid reads right-to-left
+  const rows: (string | null)[][] = [];
+  for (let i = 0; i < ltrCells.length; i += 7) {
+    const row = ltrCells.slice(i, i + 7);
+    rows.push(isRTL ? [...row].reverse() : row);
+  }
+  const cells = rows.flat();
 
   return (
     <View style={[styles.calCard, { backgroundColor: C.card, borderColor: C.border }]}>
       <View style={styles.dayHeadersRow}>
-        {dayHeaders.map(d => (
-          <Text key={d} style={[styles.dayHeader, { color: C.textMuted }]}>{d}</Text>
+        {dayHeaders.map((d, idx) => (
+          <Text key={`${d}-${idx}`} style={[styles.dayHeader, { color: C.textMuted }]}>{d}</Text>
         ))}
       </View>
       <View style={styles.calGrid}>
         {cells.map((dayKey, i) => {
-          if (!dayKey) return <View key={i} style={styles.calCell} />;
+          if (!dayKey) return <View key={`empty-${i}`} style={styles.calCell} />;
           const isToday = dayKey === today;
           const isSelected = dayKey === selectedDate;
           const hasTasks = taskDates.has(dayKey);
@@ -291,7 +301,7 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
                 </Text>
               </View>
               {hasTasks && (
-                <View style={[styles.calDot, { backgroundColor: isSelected ? C.tint : C.tint }]} />
+                <View style={[styles.calDot, { backgroundColor: C.tint }]} />
               )}
             </Pressable>
           );
@@ -306,7 +316,9 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
   const weekStart = startDay === 'sunday' ? 0 : 1;
   const start = startOfWeek(date, { weekStartsOn: weekStart });
   const end = endOfWeek(date, { weekStartsOn: weekStart });
-  const days = eachDayOfInterval({ start, end });
+  const ltrDays = eachDayOfInterval({ start, end });
+  // In RTL: reverse so Sunday appears on the right
+  const days = isRTL ? [...ltrDays].reverse() : ltrDays;
   const today = getTodayString();
 
   return (

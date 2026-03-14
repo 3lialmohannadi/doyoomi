@@ -1,0 +1,312 @@
+The previous implementation is still incorrect in several important areas.
+
+You did NOT properly apply the previous instructions, especially for the More page.
+Go back to my earlier requirements and implement them correctly this time.
+
+Important:
+Do not make superficial edits.
+Do not claim completion unless the requested behavior and design are actually implemented.
+Review the previous instructions carefully, compare them against the current app, identify what was missed, and fix it properly.
+
+==================================================
+CRITICAL ISSUE 1: MORE PAGE WAS NOT IMPLEMENTED CORRECTLY
+==================================================
+
+The More page is still wrong.
+
+You did not do what was requested before.
+The page still does NOT match the app identity, structure, design language, or intended content.
+
+I want you to go back to my previous instructions for the More page and implement them properly.
+
+What is wrong now:
+- The More page still looks plain and unfinished
+- The design is completely different from the rest of the app
+- It does not feel like part of the app identity
+- It does not reflect the dashboard/home visual style
+- It does not look polished, grouped, premium, or intentionally designed
+
+The attached screenshots clearly show the problem:
+- The dashboard/home page has a strong visual identity
+- The current More page looks disconnected and generic
+- This mismatch is unacceptable
+
+==================================================
+WHAT I WANT FOR THE MORE PAGE
+==================================================
+
+Fully redesign the More page properly so it matches the app identity from all aspects.
+
+The More page must feel like a real part of the app and visually belong to the same design system as the Home/Dashboard page.
+
+Focus heavily on:
+- layout
+- spacing
+- colors
+- typography
+- card/list item design
+- icon style
+- hierarchy
+- grouping
+- header treatment
+- section presentation
+- tap states
+- alignment
+- RTL/LTR behavior
+
+The More page must NOT look empty, flat, default, or like a placeholder screen.
+
+It should feel polished and visually branded like the rest of the app.
+
+==================================================
+MORE PAGE REQUIRED CONTENT
+==================================================
+
+The More page must contain these items:
+
+- Profile
+- Goals
+- Categories
+- App Settings
+- Support
+
+Requirements:
+- Organize them properly in a visually strong layout
+- Make each item easy to understand and easy to tap
+- Use a layout that matches the app identity
+- Use proper icons, spacing, and visual grouping
+- Make navigation from each item work correctly
+
+Possible acceptable structure:
+- premium grouped menu cards
+- elegant list sections
+- identity-matching menu blocks
+- visually rich but clean layout
+
+But do NOT leave it as a plain basic list with no personality.
+
+==================================================
+MORE PAGE VISUAL DIRECTION
+==================================================
+
+Use the Home / Dashboard page as the visual reference for identity.
+
+The More page should align with the same overall product feel:
+- premium
+- soft but polished
+- intentional spacing
+- modern card/group treatment
+- cohesive typography
+- proper icon sizing and placement
+- same visual tone as the rest of the app
+
+Important:
+I am NOT asking for a random settings list screen.
+I am asking for a fully designed More page that matches the app brand and identity.
+
+==================================================
+CRITICAL ISSUE 2: WEEKLY CALENDAR IN DASHBOARD (ARABIC)
+==================================================
+
+The weekly calendar on the Dashboard is still wrong in Arabic.
+
+Required behavior:
+When the app language is Arabic:
+- the week must start from the right side, not from the left
+- weekday order should feel natural in Arabic
+- it should display as:
+  Sunday, Monday, Tuesday, etc.
+but in proper RTL visual order starting from the right side
+
+In Arabic mode:
+- the weekly strip should begin from the right
+- Sunday should appear at the right side as the first day in the row
+- the layout should not behave like English/LTR
+
+This must be fixed properly.
+
+==================================================
+CRITICAL ISSUE 3: CALENDAR PAGE ALSO HAS THE SAME PROBLEM
+==================================================
+
+The same issue also exists in the Calendar page.
+
+Required behavior:
+When the app language is Arabic:
+- the calendar layout should respect RTL properly
+- week layout/order should start correctly from the right side
+- weekday headers and day grid behavior should match Arabic expectations
+- do not leave the calendar using LTR week structure in Arabic mode
+
+When the app language is English:
+- keep correct LTR behavior
+
+Important:
+Do not hardcode one layout for all languages.
+This must respond correctly to the current app language.
+
+==================================================
+CRITICAL ISSUE 4: RTL / LTR ISSUES STILL EXIST
+==================================================
+
+RTL and LTR issues are STILL not solved.
+
+This needs a much stronger and more focused audit.
+
+I want you to inspect the app much more aggressively and fix RTL/LTR behavior properly.
+
+Focus heavily on:
+- text alignment
+- row direction
+- card alignment
+- paddings and margins that should flip
+- icon placement
+- arrow direction
+- list item direction
+- section headers
+- input alignment
+- modal alignment
+- bottom sheet alignment
+- calendar direction
+- date labels
+- navigation elements
+- mixed Arabic/English text layout
+
+Rules:
+- Arabic = correct RTL behavior and right-aligned text where appropriate
+- English = correct LTR behavior and left-aligned text where appropriate
+
+Do not do partial fixes.
+Perform a concentrated RTL/LTR correction pass.
+
+==================================================
+CRITICAL ISSUE 5: HABIT CARDS COLOR IDENTITY
+==================================================
+
+The Habit cards design in the Habits page looks better now, but the card color treatment is still inconsistent with the app identity.
+
+The issue:
+- the card color style does not fully match the rest of the app design
+- it feels visually different from the main app identity
+
+Required:
+- keep the improved structure of the habit cards
+- but adjust the card colors and visual treatment so they match the app identity better
+- make them feel cohesive with the rest of the app
+- do not let them feel like they belong to a different theme/system
+
+Focus on:
+- background color treatment
+- gradient usage if applicable
+- contrast
+- border/shadow treatment if used
+- consistency with dashboard / goals / overall theme
+
+==================================================
+IMPLEMENTATION INSTRUCTIONS
+==================================================
+
+Do the following properly:
+
+1. Review the previous instructions I gave you, especially for the More page
+2. Compare them against the current implementation
+3. Identify exactly what was not implemented
+4. Fix those gaps properly
+5. Redesign the More page correctly
+6. Fix Dashboard weekly calendar Arabic order/direction
+7. Fix Calendar page Arabic order/direction
+8. Perform a concentrated RTL/LTR correction pass
+9. Adjust Habit card color identity to match the app better
+10. Clean the related code after implementation
+
+==================================================
+QUALITY RULES
+==================================================
+
+While doing this work:
+- do not make fake completion claims
+- do not stop after minor edits
+- do not leave the More page as a plain generic screen
+- do not leave Arabic calendars using English/LTR logic
+- do not leave RTL/LTR partially fixed
+- do not leave visual inconsistencies in habit cards
+
+If existing code is messy or conflicting:
+- refactor it properly
+
+If layout logic is duplicated:
+- consolidate it cleanly
+
+==================================================
+FINAL REVIEW REQUIRED
+==================================================
+
+After implementation, perform a full and strict review of these areas:
+
+- More page design
+- More page structure
+- More page navigation items
+- Dashboard weekly calendar in Arabic
+- Calendar page week/day direction in Arabic
+- RTL/LTR behavior in affected screens
+- Habit card visual identity
+- alignment and spacing consistency
+- Arabic/English language behavior
+- visual identity consistency with Home/Dashboard
+
+Also do:
+- code cleanup
+- fix remaining errors
+- remove dead code
+- remove unused imports
+- remove conflicting layout logic
+- remove broken references if any
+- fix type/runtime/build issues if any remain
+
+==================================================
+FINAL VERIFICATION CHECKLIST
+==================================================
+
+Before finishing, verify all of the following:
+
+1. More page was actually redesigned, not just slightly edited
+2. More page now matches the app identity
+3. More page no longer looks plain/generic/disconnected
+4. More page includes:
+   - Profile
+   - Goals
+   - Categories
+   - App Settings
+   - Support
+5. More page navigation works correctly
+6. Dashboard weekly calendar starts from the right in Arabic
+7. Dashboard weekly calendar behaves correctly in Arabic mode
+8. Calendar page also behaves correctly in Arabic mode
+9. Arabic calendar layout is no longer using English/LTR logic
+10. RTL issues were re-audited thoroughly
+11. LTR issues were re-audited thoroughly
+12. Habit cards keep their improved structure
+13. Habit card colors now match the app identity better
+14. No obvious visual mismatch remains between Home and More
+15. No obvious RTL/LTR issues remain in affected areas
+16. Code cleanup was completed
+17. Remaining errors were fixed
+
+==================================================
+FINAL RESPONSE FORMAT
+==================================================
+
+After finishing, provide a clear summary including:
+- what was wrong and missed from the previous implementation
+- what was redesigned in the More page
+- what was fixed in Dashboard weekly calendar
+- what was fixed in Calendar page direction/order
+- what RTL/LTR issues were fixed
+- what was changed in Habit card color treatment
+- what code was cleaned/refactored
+- whether final strict review was completed
+- whether remaining errors were fixed
+- any remaining issue if one still exists
+
+Do not leave this in a half-fixed state.
+Implement the missed requirements properly this time.

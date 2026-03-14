@@ -49,6 +49,10 @@ export default function HomeScreen() {
   const isRTL = lang === 'ar';
 
   const weekDays = useMemo(() => getWeekDays(profile.start_of_week), [profile.start_of_week]);
+  const weekStripDays = useMemo(
+    () => isRTL ? [...weekDays].reverse() : weekDays,
+    [weekDays, isRTL],
+  );
   const today = getTodayString();
   const tFunc = (key: string) => t(key, lang);
 
@@ -105,7 +109,7 @@ export default function HomeScreen() {
 
         {/* Week Strip */}
         <View style={[styles.weekCard, { backgroundColor: C.card, borderColor: C.border, borderWidth: 1, ...Shadow.sm }]}>
-          {weekDays.map((day) => {
+          {weekStripDays.map((day) => {
             const key = formatDateKey(day);
             const isSelected = key === selectedDay;
             const isToday = key === today;

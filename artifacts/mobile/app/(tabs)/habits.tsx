@@ -211,8 +211,9 @@ function HabitCard({
         animStyle,
         styles.habitCard,
         {
-          backgroundColor: isDoneToday ? item.color + '0D' : C.card,
-          borderColor: isDoneToday ? item.color + '50' : C.border,
+          flexDirection: isRTL ? 'row-reverse' : 'row',
+          backgroundColor: isDoneToday ? item.color + '12' : C.card,
+          borderColor: isDoneToday ? item.color + '60' : C.border,
         },
         Shadow.sm,
       ]}
@@ -223,8 +224,13 @@ function HabitCard({
       accessibilityState={{ checked: isDoneToday }}
       accessibilityLabel={item.name}
     >
-      {/* Colored left accent */}
-      <View style={[styles.habitAccent, { backgroundColor: item.color }]} />
+      {/* Gradient accent bar */}
+      <LinearGradient
+        colors={isDoneToday ? [item.color, item.color + 'AA'] : ['#7C5CFC', '#FF6B9D']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.habitAccent}
+      />
 
       {/* Card content */}
       <View style={[styles.habitBody, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -283,14 +289,23 @@ function HabitCard({
             style={({ pressed }) => [
               styles.completeBtn,
               {
-                backgroundColor: isDoneToday ? item.color : C.surface,
                 borderColor: isDoneToday ? item.color : C.border,
+                overflow: 'hidden',
                 opacity: pressed ? 0.75 : 1,
+                backgroundColor: isDoneToday ? 'transparent' : C.surface,
               },
             ]}
             accessibilityRole="button"
             accessibilityLabel={isDoneToday ? tFunc('habitUncompleted') : tFunc('completeHabit')}
           >
+            {isDoneToday && (
+              <LinearGradient
+                colors={['#7C5CFC', '#FF6B9D']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFill}
+              />
+            )}
             <Ionicons
               name={isDoneToday ? 'checkmark' : 'checkmark-outline'}
               size={18}
@@ -374,7 +389,6 @@ const styles = StyleSheet.create({
   habitCard: {
     borderRadius: Radius.xl, borderWidth: 1,
     overflow: 'hidden',
-    flexDirection: 'row',
   },
   habitAccent: { width: 4 },
   habitBody: {
