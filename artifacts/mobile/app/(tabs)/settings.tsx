@@ -21,9 +21,7 @@ import { useJournalStore } from '../../src/store/journalStore';
 import { Spacing, Radius } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
-import { ToggleRow } from '../../src/components/ui/ToggleRow';
 import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
-import { Language, Theme, TimeFormat, StartOfWeek } from '../../src/types';
 import { getTodayString, formatDateKey } from '../../src/utils/date';
 
 export default function MoreScreen() {
@@ -41,7 +39,6 @@ export default function MoreScreen() {
 
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
-  const [showAppSettings, setShowAppSettings] = useState(false);
   const [profileName, setProfileName] = useState(profile.name);
   const [profileEmail, setProfileEmail] = useState(profile.email);
   const [profilePhone, setProfilePhone] = useState(profile.phone_number ?? '');
@@ -74,12 +71,6 @@ export default function MoreScreen() {
   };
 
   const displayDob = profileDob ? format(parseISO(profileDob), 'MMM d, yyyy') : '';
-
-  const settingsSummary = [
-    profile.language === 'ar' ? 'عربي' : 'English',
-    tFunc(profile.theme === 'dark' ? 'dark' : 'light'),
-    profile.time_format,
-  ].join(' · ');
 
   const goalsCount = goals.length;
   const habitsCount = habits.length;
@@ -186,29 +177,46 @@ export default function MoreScreen() {
             />
           </View>
 
-          {/* Section: App Settings */}
-          <SectionHeader title={tFunc('preferences')} isRTL={isRTL} C={C} />
-          <Pressable
-            style={({ pressed }) => [styles.wideCard, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.92 : 1 }]}
-            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowAppSettings(true); }}
-            accessibilityRole="button"
-          >
-            <View style={[styles.wideCardRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <LinearGradient
-                colors={['#7C5CFC', '#00C48C']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.wideCardIcon}
-              >
-                <Ionicons name="options" size={20} color="#fff" />
-              </LinearGradient>
-              <View style={[styles.wideCardText, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
-                <Text style={[styles.wideCardTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('appSettings')}</Text>
-                <Text style={[styles.wideCardSub, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{settingsSummary}</Text>
-              </View>
-              <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={18} color={C.textMuted} />
+          {/* Section: Settings */}
+          <SectionHeader title={tFunc('settings')} isRTL={isRTL} C={C} />
+          <View style={styles.settingGrid}>
+            <View style={[styles.settingGridRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <SettingCard
+                icon="language-outline"
+                iconColor="#7C5CFC"
+                title={tFunc('language')}
+                value={profile.language === 'ar' ? 'عربي' : 'English'}
+                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setLanguage(profile.language === 'ar' ? 'en' : 'ar'); }}
+                C={C}
+              />
+              <SettingCard
+                icon="moon-outline"
+                iconColor="#A855F7"
+                title={tFunc('theme')}
+                value={tFunc(profile.theme === 'dark' ? 'dark' : 'light')}
+                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setTheme(profile.theme === 'dark' ? 'light' : 'dark'); }}
+                C={C}
+              />
             </View>
-          </Pressable>
+            <View style={[styles.settingGridRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <SettingCard
+                icon="time-outline"
+                iconColor="#FF6B9D"
+                title={tFunc('timeFormat')}
+                value={profile.time_format}
+                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setTimeFormat(profile.time_format === '12h' ? '24h' : '12h'); }}
+                C={C}
+              />
+              <SettingCard
+                icon="calendar-outline"
+                iconColor="#00C48C"
+                title={tFunc('startOfWeek')}
+                value={profile.start_of_week === 'monday' ? (isRTL ? 'الإثنين' : 'Mon') : (isRTL ? 'الأحد' : 'Sun')}
+                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setStartOfWeek(profile.start_of_week === 'monday' ? 'sunday' : 'monday'); }}
+                C={C}
+              />
+            </View>
+          </View>
 
           {/* Section: Help */}
           <SectionHeader title={tFunc('helpSection')} isRTL={isRTL} C={C} />
@@ -257,74 +265,6 @@ export default function MoreScreen() {
       </ScrollView>
 
       <CategoriesManager visible={showCategories} onClose={() => setShowCategories(false)} />
-
-      {/* ── App Settings Bottom Sheet ── */}
-      <Modal
-        visible={showAppSettings}
-        animationType="fade"
-        transparent
-        onRequestClose={() => setShowAppSettings(false)}
-        statusBarTranslucent
-      >
-        <Pressable style={styles.settingsOverlay} onPress={() => setShowAppSettings(false)}>
-          <Pressable
-            style={[styles.settingsSheet, { backgroundColor: C.background, paddingBottom: insets.bottom + 24 }]}
-            onPress={() => {}}
-          >
-            <View style={styles.settingsHandle} />
-            <View style={[styles.settingsSheetHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <LinearGradient
-                colors={['#7C5CFC', '#00C48C']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.settingsSheetIcon}
-              >
-                <Ionicons name="options" size={18} color="#fff" />
-              </LinearGradient>
-              <Text style={[styles.settingsSheetTitle, { color: C.text }]}>{tFunc('appSettings')}</Text>
-              <Pressable onPress={() => setShowAppSettings(false)} style={styles.settingsCloseBtn}>
-                <Ionicons name="close" size={20} color={C.textSecondary} />
-              </Pressable>
-            </View>
-
-            <AppSettingSection title={tFunc('language')} icon="language-outline" iconColor="#7C5CFC" C={C} isRTL={isRTL}>
-              <ToggleRow
-                label=""
-                options={[{ key: 'en', label: 'English' }, { key: 'ar', label: 'عربي' }]}
-                value={profile.language}
-                onChange={(v) => setLanguage(v as Language)}
-              />
-            </AppSettingSection>
-
-            <AppSettingSection title={tFunc('theme')} icon="moon-outline" iconColor="#A855F7" C={C} isRTL={isRTL}>
-              <ToggleRow
-                label=""
-                options={[{ key: 'light', label: tFunc('light') }, { key: 'dark', label: tFunc('dark') }]}
-                value={profile.theme}
-                onChange={(v) => setTheme(v as Theme)}
-              />
-            </AppSettingSection>
-
-            <AppSettingSection title={tFunc('timeFormat')} icon="time-outline" iconColor="#FF6B9D" C={C} isRTL={isRTL}>
-              <ToggleRow
-                label=""
-                options={[{ key: '12h', label: '12h' }, { key: '24h', label: '24h' }]}
-                value={profile.time_format}
-                onChange={(v) => setTimeFormat(v as TimeFormat)}
-              />
-            </AppSettingSection>
-
-            <AppSettingSection title={tFunc('startOfWeek')} icon="calendar-outline" iconColor="#00C48C" C={C} isRTL={isRTL}>
-              <ToggleRow
-                label=""
-                options={[{ key: 'monday', label: isRTL ? 'الإثنين' : 'Mon' }, { key: 'sunday', label: isRTL ? 'الأحد' : 'Sun' }]}
-                value={profile.start_of_week}
-                onChange={(v) => setStartOfWeek(v as StartOfWeek)}
-              />
-            </AppSettingSection>
-          </Pressable>
-        </Pressable>
-      </Modal>
 
       {/* ── Profile Modal ── */}
       <Modal
@@ -498,17 +438,26 @@ function ContentCard({ icon, label, sub, colors, onPress, isRTL, C }: {
   );
 }
 
-function AppSettingSection({ title, icon, iconColor, C, isRTL, children }: any) {
+function SettingCard({ icon, iconColor, title, value, onPress, C }: {
+  icon: any; iconColor: string; title: string; value: string;
+  onPress: () => void; C: any;
+}) {
   return (
-    <View style={[styles.appSettingRow, { backgroundColor: C.card, borderColor: C.border }]}>
-      <View style={[styles.appSettingRowHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <View style={[styles.appSettingIcon, { backgroundColor: iconColor + '15' }]}>
-          <Ionicons name={icon} size={16} color={iconColor} />
-        </View>
-        <Text style={[styles.appSettingTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{title}</Text>
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.settingCard,
+        { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.82 : 1 },
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel={title + ': ' + value}
+    >
+      <View style={[styles.settingCardIcon, { backgroundColor: iconColor + '18' }]}>
+        <Ionicons name={icon} size={22} color={iconColor} />
       </View>
-      <View>{children}</View>
-    </View>
+      <Text style={[styles.settingCardTitle, { color: C.textMuted }]} numberOfLines={1}>{title}</Text>
+      <Text style={[styles.settingCardValue, { color: C.text }]} numberOfLines={1}>{value}</Text>
+    </Pressable>
   );
 }
 
@@ -820,42 +769,19 @@ const styles = StyleSheet.create({
   formInputInline: { flex: 1, fontSize: 15, fontFamily: 'Inter_400Regular', padding: 0 },
   dobPressable: { flex: 1, alignItems: 'center', gap: 4 },
 
-  // App Settings bottom sheet
-  settingsOverlay: {
-    flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end',
+  // Settings 2×2 grid
+  settingGrid: { gap: Spacing.sm, marginBottom: Spacing.xs },
+  settingGridRow: { gap: Spacing.sm },
+  settingCard: {
+    flex: 1, borderRadius: Radius.xl, borderWidth: 1,
+    padding: Spacing.md, alignItems: 'center', gap: 6,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2,
   },
-  settingsSheet: {
-    borderTopLeftRadius: 28, borderTopRightRadius: 28,
-    paddingTop: 12, paddingHorizontal: Spacing.lg,
-    gap: Spacing.md,
-    shadowColor: '#000', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.15, shadowRadius: 20, elevation: 20,
-  },
-  settingsHandle: {
-    width: 40, height: 4, borderRadius: 2,
-    backgroundColor: 'rgba(0,0,0,0.15)', alignSelf: 'center',
-    marginBottom: Spacing.sm,
-  },
-  settingsSheetHeader: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
-    marginBottom: Spacing.sm,
-  },
-  settingsSheetIcon: {
-    width: 38, height: 38, borderRadius: 12,
+  settingCardIcon: {
+    width: 48, height: 48, borderRadius: 14,
     alignItems: 'center', justifyContent: 'center',
+    marginBottom: 2,
   },
-  settingsSheetTitle: { fontSize: 18, fontFamily: 'Inter_700Bold', flex: 1 },
-  settingsCloseBtn: {
-    width: 32, height: 32, borderRadius: 16,
-    backgroundColor: 'rgba(0,0,0,0.08)',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  appSettingsContent: { padding: Spacing.lg, gap: Spacing.md },
-  appSettingRow: {
-    borderRadius: Radius.xl, borderWidth: 1,
-    padding: Spacing.md,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
-  },
-  appSettingRowHeader: { alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md },
-  appSettingIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  appSettingTitle: { fontSize: 15, fontFamily: 'Inter_600SemiBold', flex: 1 },
+  settingCardTitle: { fontSize: 11, fontFamily: 'Inter_600SemiBold', textTransform: 'uppercase', letterSpacing: 0.4, textAlign: 'center' },
+  settingCardValue: { fontSize: 15, fontFamily: 'Inter_700Bold', textAlign: 'center' },
 });

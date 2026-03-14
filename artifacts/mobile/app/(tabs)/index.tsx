@@ -91,8 +91,9 @@ export default function HomeScreen() {
           <View style={[styles.heroContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={[styles.heroLeft, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
               <Text style={[styles.greeting, { textAlign: isRTL ? 'right' : 'left' }]}>{getGreeting(lang)}</Text>
-              <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left' }]}>Do.Yoomi</Text>
-              <Text style={[styles.heroSub, { textAlign: isRTL ? 'right' : 'left' }]}>يومي</Text>
+              <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+                {profile.name || (isRTL ? 'يومي' : 'Do.Yoomi')}
+              </Text>
             </View>
             <AddBtn onPress={() => setShowQuickAdd(true)} label={tFunc('quickAdd')} />
           </View>
@@ -213,6 +214,7 @@ export default function HomeScreen() {
           C={C} isRTL={isRTL}
           action={tFunc('addNew')}
           onAction={() => { setEditHabit(null); setShowHabitForm(true); }}
+          onTitlePress={() => router.push('/habits')}
         >
           {habits.length === 0 ? (
             <Pressable

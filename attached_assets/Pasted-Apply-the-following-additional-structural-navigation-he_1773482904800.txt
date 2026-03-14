@@ -1,0 +1,286 @@
+Apply the following additional structural, navigation, header, and UI refinements carefully and professionally.
+
+Important:
+Do not make quick patches.
+Inspect the current implementation first, then apply the requested changes cleanly.
+If something already exists but is broken, incomplete, messy, or inconsistent, fix it properly.
+Preserve the app identity and make sure all changes work correctly in both Arabic and English.
+
+Very important:
+- Keep everything aligned with the app identity from all aspects
+- Make sure the final result works correctly for both Arabic and English
+- Respect RTL/LTR behavior based on the selected language
+- Do not redesign unrelated parts unnecessarily
+
+==================================================
+NEW REQUIRED CHANGES
+==================================================
+
+1) Make the Habits title on the Dashboard tappable
+2) Remove the separate App Settings section/page and move its content into the main More page
+3) Rebuild the More page order and grouping
+4) Update the header greeting area to show the user’s name instead of the app name
+5) Ensure all of the above matches the app identity and works correctly in Arabic and English
+
+==================================================
+1) DASHBOARD - HABITS TITLE SHOULD OPEN HABITS PAGE
+==================================================
+
+Required:
+- Enable tapping on the Habits section title in the Dashboard
+- When the user taps the Habits title, it should open the Habits page
+
+Requirements:
+- Make the title clearly tappable if appropriate
+- Keep the interaction elegant and natural
+- Make sure it works reliably
+- Ensure the press feedback/state is clean
+- Do not break the existing Dashboard layout
+
+Also verify:
+- the route is correct
+- no broken navigation reference remains
+- the Dashboard and Habits page remain properly connected
+
+==================================================
+2) REMOVE THE SEPARATE APP SETTINGS SECTION/PAGE
+==================================================
+
+Required:
+- Remove the separate App Settings section/page
+- Move its content into the main More page
+
+Important:
+- Do not lose any existing settings options
+- Do not leave broken routes or dead references
+- Clean up any obsolete navigation to the old App Settings location
+- If a dedicated App Settings popup/page currently exists, remove its separate access point and integrate the settings directly into the More page
+
+==================================================
+3) REBUILD THE MORE PAGE ORDER AND GROUPING
+==================================================
+
+The More page should now have this order:
+
+- Profile
+
+Then:
+
+- Content:
+  - Habits
+  - Goals
+  - Daily Journal
+  - Categories
+
+Then:
+
+- Settings:
+  - Language
+  - Appearance
+  - Time Format
+  - Start of Week
+
+These settings should be shown as two cards side by side per row.
+
+Then:
+
+- Support & Contact
+
+Requirements:
+- Update the More page to follow this structure exactly
+- Keep the current More page design direction as much as possible
+- Do not redesign the More page from scratch
+- Make the layout clean, polished, and aligned with the app identity
+- Make the grouping visually clear and easy to understand
+- Make all items easy to tap and use
+
+Content section requirements:
+- Habits
+- Goals
+- Daily Journal
+- Categories
+should remain visually consistent with each other
+- keep them in the same clean stacked rectangular card style if that is the current pattern
+
+Settings section requirements:
+- Language
+- Appearance
+- Time Format
+- Start of Week
+must be shown as small clean cards
+- two cards per row
+- visually balanced
+- not oversized
+- properly aligned in both Arabic and English
+- spacing and sizing should feel clean and intentional
+
+Support section:
+- keep Support & Contact below the Settings section
+- make sure it remains easy to access and consistent with the rest of the page
+
+Also do:
+- remove any old “App Settings” section label if it still exists separately
+- remove broken navigation to old settings screen if no longer needed
+- clean old code/references related to the previous structure
+
+==================================================
+4) HEADER - SHOW USER NAME INSTEAD OF APP NAME
+==================================================
+
+Current requirement:
+In the header, there is currently:
+- Good morning / Good evening (depending on time)
+- then the app name
+
+Change this so it becomes:
+- Greeting based on time
+- User’s name
+
+Example:
+Good morning
+Ali Almohannadi
+
+Arabic example:
+صباح الخير
+علي المهندي
+
+Requirements:
+- Remove the app name from this greeting area
+- Show the user’s name instead
+- Keep the greeting based on time of day
+- Make sure the typography and layout look elegant and aligned with the app identity
+- Make sure it works properly in both Arabic and English
+- Make sure alignment and spacing are correct
+- Make sure fallback behavior is safe if the user name is missing
+
+If the user name is unavailable:
+- use a safe fallback that still looks clean
+- but prioritize using the real stored/display name if available
+
+==================================================
+5) LANGUAGE / DESIGN / IDENTITY REQUIREMENTS
+==================================================
+
+All of the above changes must:
+- match the app identity
+- match the current design language
+- work correctly in Arabic
+- work correctly in English
+- respect RTL and LTR correctly
+- preserve consistent colors, typography, icons, spacing, and sizing
+- feel polished and intentional
+
+Check carefully:
+- text alignment
+- card alignment
+- row direction
+- spacing between sections
+- settings cards layout in Arabic and English
+- header alignment
+- greeting + user name layout
+- More page hierarchy
+- tap behavior and feedback
+- navigation consistency
+
+==================================================
+IMPLEMENTATION RULES
+==================================================
+
+While doing this work:
+- inspect first
+- implement properly
+- preserve the app identity
+- do not break working navigation
+- do not break translations
+- do not break RTL/LTR behavior
+- do not create duplicated settings access
+- do not leave dead code or broken references
+- do not redesign unrelated screens unnecessarily
+
+If old code becomes obsolete:
+- clean it properly
+
+If any related component is messy:
+- refactor it carefully
+
+==================================================
+FINAL REQUIRED REVIEW
+==================================================
+
+After implementation, perform a focused review of all affected areas, including:
+- Dashboard Habits title behavior
+- Habits page navigation from Dashboard
+- More page structure
+- Content section
+- Settings cards layout
+- Support & Contact placement
+- old App Settings references
+- header greeting area
+- user name display
+- Arabic/English behavior
+- RTL/LTR behavior
+- visual consistency
+- navigation consistency
+
+Also do:
+- code cleanup
+- fix remaining errors
+- remove dead code
+- remove unused imports
+- remove broken references
+- fix runtime/build/type issues if any remain
+
+==================================================
+FINAL VERIFICATION CHECKLIST
+==================================================
+
+Before finishing, verify all of the following:
+
+1. Tapping the Habits title on the Dashboard opens the Habits page
+2. The More page no longer has a separate App Settings section/page
+3. Settings content was moved into the main More page
+4. More page order is now:
+   - Profile
+   - Content
+     - Habits
+     - Goals
+     - Daily Journal
+     - Categories
+   - Settings
+     - Language
+     - Appearance
+     - Time Format
+     - Start of Week
+   - Support & Contact
+5. The four settings options are shown as two cards per row
+6. The More page still matches the app identity
+7. The header no longer shows the app name in the greeting area
+8. The header now shows:
+   - time-based greeting
+   - user name
+9. The greeting/user name layout works correctly in Arabic
+10. The greeting/user name layout works correctly in English
+11. RTL/LTR behavior remains correct
+12. No broken navigation or dead references remain
+13. No obvious runtime/build/type issues remain
+14. Code cleanup was completed
+15. Remaining errors were fixed
+
+==================================================
+FINAL RESPONSE FORMAT
+==================================================
+
+After finishing, provide a clear summary including:
+- what was changed in the Dashboard
+- what was changed in the More page
+- how the settings were moved into More
+- what was changed in the header
+- how Arabic/English behavior was handled
+- what code was cleaned/refactored
+- whether final review was completed
+- whether full code cleanup was completed
+- whether remaining errors were fixed
+- any remaining issue if one still exists
+
+Do not stop at a partial implementation.
+Complete the changes, review, cleanup, and error fixing professionally.
