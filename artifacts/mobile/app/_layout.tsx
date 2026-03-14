@@ -8,6 +8,7 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import * as Updates from "expo-updates";
 import React, { useEffect, useState } from "react";
 import { I18nManager, View, Text, StyleSheet, Image } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -86,12 +87,14 @@ function RootLayoutNav() {
   }, []);
 
   useEffect(() => {
-    const isRTL = profile.language === "ar";
+    if (!ready) return;
+    const wantsRTL = profile.language === "ar";
     I18nManager.allowRTL(true);
-    if (I18nManager.isRTL !== isRTL) {
-      I18nManager.forceRTL(isRTL);
+    if (I18nManager.isRTL !== wantsRTL) {
+      I18nManager.forceRTL(wantsRTL);
+      Updates.reloadAsync().catch(() => {});
     }
-  }, [profile.language]);
+  }, [profile.language, ready]);
 
   if (!ready) return <LoadingScreen />;
 

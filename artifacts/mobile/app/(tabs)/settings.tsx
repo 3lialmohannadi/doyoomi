@@ -189,6 +189,7 @@ export default function MoreScreen() {
                 activeIndex={profile.language === 'en' ? 0 : 1}
                 onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setLanguage(i === 0 ? 'en' : 'ar'); }}
                 C={C}
+                isRTL={isRTL}
               />
               <SettingCard
                 icon="moon-outline"
@@ -198,6 +199,7 @@ export default function MoreScreen() {
                 activeIndex={profile.theme === 'light' ? 0 : 1}
                 onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setTheme(i === 0 ? 'light' : 'dark'); }}
                 C={C}
+                isRTL={isRTL}
               />
             </View>
             <View style={[styles.settingGridRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -209,6 +211,7 @@ export default function MoreScreen() {
                 activeIndex={profile.time_format === '12h' ? 0 : 1}
                 onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setTimeFormat(i === 0 ? '12h' : '24h'); }}
                 C={C}
+                isRTL={isRTL}
               />
               <SettingCard
                 icon="calendar-outline"
@@ -218,6 +221,7 @@ export default function MoreScreen() {
                 activeIndex={profile.start_of_week === 'sunday' ? 0 : 1}
                 onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setStartOfWeek(i === 0 ? 'sunday' : 'monday'); }}
                 C={C}
+                isRTL={isRTL}
               />
             </View>
           </View>
@@ -442,18 +446,18 @@ function ContentCard({ icon, label, sub, colors, onPress, isRTL, C }: {
   );
 }
 
-function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C }: {
+function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C, isRTL }: {
   icon: any; iconColor: string; title: string;
   options: string[]; activeIndex: number;
-  onSelect: (index: number) => void; C: any;
+  onSelect: (index: number) => void; C: any; isRTL?: boolean;
 }) {
   return (
     <View style={[styles.settingCard, { backgroundColor: C.card, borderColor: C.border }]}>
-      <View style={styles.settingCardHeader}>
+      <View style={[styles.settingCardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <View style={[styles.settingCardIcon, { backgroundColor: iconColor + '18' }]}>
           <Ionicons name={icon} size={17} color={iconColor} />
         </View>
-        <Text style={[styles.settingCardTitle, { color: C.textMuted }]} numberOfLines={1}>{title}</Text>
+        <Text style={[styles.settingCardTitle, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{title}</Text>
       </View>
       <View style={styles.settingCardOptions}>
         {options.map((opt, i) => (
