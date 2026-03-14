@@ -9,12 +9,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect, useState } from "react";
-import { I18nManager, View, Text, StyleSheet } from "react-native";
+import { I18nManager, View, Text, StyleSheet, Image } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useSettingsStore } from "@/src/store/settingsStore";
@@ -31,14 +30,16 @@ const queryClient = new QueryClient();
 function LoadingScreen() {
   return (
     <LinearGradient
-      colors={["#7C5CFC", "#FF6B9D"]}
+      colors={["#7C5CFC", "#A855F7", "#FF6B9D"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={loadStyles.container}
     >
-      <View style={loadStyles.logoRing}>
-        <Ionicons name="calendar" size={42} color="#7C5CFC" />
-      </View>
+      <Image
+        source={require("../assets/images/icon.png")}
+        style={loadStyles.icon}
+        resizeMode="contain"
+      />
       <Text style={loadStyles.name}>Do.Yoomi</Text>
       <Text style={loadStyles.arabic}>يومي</Text>
       <View style={loadStyles.dotsRow}>
@@ -52,13 +53,9 @@ function LoadingScreen() {
 
 const loadStyles = StyleSheet.create({
   container: { flex: 1, alignItems: "center", justifyContent: "center", gap: 8 },
-  logoRing: {
-    width: 96, height: 96, borderRadius: 48,
-    backgroundColor: "#fff",
-    alignItems: "center", justifyContent: "center",
-    marginBottom: 16,
-    shadowColor: "#000", shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25, shadowRadius: 20, elevation: 12,
+  icon: {
+    width: 110, height: 110,
+    marginBottom: 12,
   },
   name: { fontSize: 32, fontFamily: "Inter_700Bold", color: "#fff" },
   arabic: { fontSize: 20, fontFamily: "Inter_700Bold", color: "rgba(255,255,255,0.75)" },

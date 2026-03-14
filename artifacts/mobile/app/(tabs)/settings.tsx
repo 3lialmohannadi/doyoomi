@@ -16,7 +16,8 @@ import {
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
-import { Spacing, Radius, Shadow } from '../../src/theme';
+import { useHabitsStore } from '../../src/store/habitsStore';
+import { Spacing, Radius } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { ToggleRow } from '../../src/components/ui/ToggleRow';
@@ -32,6 +33,7 @@ export default function MoreScreen() {
   const { profile, setLanguage, setTheme, setTimeFormat, setStartOfWeek, setProfile } = useSettingsStore();
   const { categories } = useCategoriesStore();
   const { goals } = useGoalsStore();
+  const { habits } = useHabitsStore();
   const lang = profile.language;
   const isRTL = lang === 'ar';
 
@@ -78,6 +80,7 @@ export default function MoreScreen() {
   ].join(' · ');
 
   const goalsCount = goals.length;
+  const habitsCount = habits.length;
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
@@ -131,59 +134,42 @@ export default function MoreScreen() {
         {/* ── Content ── */}
         <View style={[styles.pageContent, { paddingHorizontal: Spacing.lg }]}>
 
-          {/* Section: Content tiles */}
+          {/* Section: Content */}
           <SectionHeader title={tFunc('content')} isRTL={isRTL} C={C} />
-          <View style={[styles.tilesRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View style={styles.contentCards}>
 
-            {/* Goals tile */}
-            <Pressable
-              style={({ pressed }) => [styles.tile, { opacity: pressed ? 0.88 : 1, overflow: 'hidden' }]}
+            {/* Habits card */}
+            <ContentCard
+              icon="leaf"
+              label={tFunc('habits')}
+              sub={`${habitsCount} ${isRTL ? 'عادة' : 'habits'}`}
+              colors={['#A855F7', '#7C5CFC']}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/habits'); }}
+              isRTL={isRTL}
+              C={C}
+            />
+
+            {/* Goals card */}
+            <ContentCard
+              icon="trophy"
+              label={tFunc('goals')}
+              sub={`${goalsCount} ${isRTL ? 'هدف' : 'goals'}`}
+              colors={['#FF6B9D', '#A855F7']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/goals'); }}
-              accessibilityRole="button"
-            >
-              <LinearGradient
-                colors={['#FF6B9D', '#A855F7']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={StyleSheet.absoluteFill}
-              />
-              <View style={styles.tileDecoCircle} />
-              <View style={styles.tileIconWrap}>
-                <Ionicons name="trophy" size={26} color="#fff" />
-              </View>
-              <Text style={styles.tileTitle}>{tFunc('goals')}</Text>
-              <Text style={styles.tileSub}>
-                {goalsCount} {isRTL ? 'هدف' : 'goals'}
-              </Text>
-              <View style={[styles.tileChevron, { alignSelf: isRTL ? 'flex-start' : 'flex-end' }]}>
-                <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={14} color="rgba(255,255,255,0.8)" />
-              </View>
-            </Pressable>
+              isRTL={isRTL}
+              C={C}
+            />
 
-            {/* Categories tile */}
-            <Pressable
-              style={({ pressed }) => [styles.tile, { opacity: pressed ? 0.88 : 1, overflow: 'hidden' }]}
+            {/* Categories card */}
+            <ContentCard
+              icon="folder-open"
+              label={tFunc('categories')}
+              sub={`${categories.length} ${isRTL ? 'تصنيف' : 'categories'}`}
+              colors={['#FF6B35', '#FFB347']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowCategories(true); }}
-              accessibilityRole="button"
-            >
-              <LinearGradient
-                colors={['#FF6B35', '#FFB347']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={StyleSheet.absoluteFill}
-              />
-              <View style={styles.tileDecoCircle} />
-              <View style={styles.tileIconWrap}>
-                <Ionicons name="folder-open" size={26} color="#fff" />
-              </View>
-              <Text style={styles.tileTitle}>{tFunc('categories')}</Text>
-              <Text style={styles.tileSub}>
-                {categories.length} {isRTL ? 'تصنيف' : 'items'}
-              </Text>
-              <View style={[styles.tileChevron, { alignSelf: isRTL ? 'flex-start' : 'flex-end' }]}>
-                <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={14} color="rgba(255,255,255,0.8)" />
-              </View>
-            </Pressable>
+              isRTL={isRTL}
+              C={C}
+            />
           </View>
 
           {/* Section: App Settings */}
@@ -456,6 +442,39 @@ function SectionHeader({ title, isRTL, C }: { title: string; isRTL: boolean; C: 
   );
 }
 
+function ContentCard({ icon, label, sub, colors, onPress, isRTL, C }: {
+  icon: any; label: string; sub: string;
+  colors: [string, string]; onPress: () => void;
+  isRTL: boolean; C: any;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.contentCard,
+        { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.88 : 1 },
+      ]}
+      accessibilityRole="button"
+    >
+      <View style={[styles.contentCardRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        <LinearGradient
+          colors={colors}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.contentCardIcon}
+        >
+          <Ionicons name={icon} size={20} color="#fff" />
+        </LinearGradient>
+        <View style={[styles.contentCardText, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+          <Text style={[styles.contentCardLabel, { color: C.text }]}>{label}</Text>
+          <Text style={[styles.contentCardSub, { color: C.textMuted }]}>{sub}</Text>
+        </View>
+        <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={18} color={C.textMuted} />
+      </View>
+    </Pressable>
+  );
+}
+
 function AppSettingSection({ title, icon, iconColor, C, isRTL, children }: any) {
   return (
     <View style={[styles.appSettingRow, { backgroundColor: C.card, borderColor: C.border }]}>
@@ -633,28 +652,23 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs, marginTop: Spacing.sm,
   },
 
-  // Tile grid
-  tilesRow: { gap: Spacing.md, marginBottom: Spacing.xs },
-  tile: {
-    flex: 1, borderRadius: Radius.xl,
-    padding: Spacing.lg, minHeight: 140,
-    justifyContent: 'space-between',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 10, elevation: 5,
+  // Content cards (vertical stacked)
+  contentCards: { gap: Spacing.sm, marginBottom: Spacing.xs },
+  contentCard: {
+    borderRadius: Radius.xl, borderWidth: 1,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2,
   },
-  tileDecoCircle: {
-    position: 'absolute', right: -20, top: -20,
-    width: 100, height: 100, borderRadius: 50,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+  contentCardRow: {
+    alignItems: 'center', gap: Spacing.md,
+    paddingVertical: Spacing.md, paddingHorizontal: Spacing.lg,
   },
-  tileIconWrap: {
-    width: 52, height: 52, borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+  contentCardIcon: {
+    width: 44, height: 44, borderRadius: 13,
     alignItems: 'center', justifyContent: 'center',
-    marginBottom: Spacing.sm,
   },
-  tileTitle: { fontSize: 17, fontFamily: 'Inter_700Bold', color: '#fff' },
-  tileSub: { fontSize: 12, fontFamily: 'Inter_500Medium', color: 'rgba(255,255,255,0.8)', marginTop: 2 },
-  tileChevron: { marginTop: Spacing.sm },
+  contentCardText: { flex: 1, gap: 2 },
+  contentCardLabel: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
+  contentCardSub: { fontSize: 12, fontFamily: 'Inter_400Regular' },
 
   // Wide cards
   wideCard: {

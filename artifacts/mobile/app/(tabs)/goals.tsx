@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
+import { router } from 'expo-router';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { Spacing, Radius } from '../../src/theme';
@@ -61,9 +62,16 @@ export default function GoalsScreen() {
         <View style={styles.headerDecor1} />
         <View style={styles.headerDecor2} />
         <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View>
-            <Text style={[styles.headerTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('goals')}</Text>
-            <Text style={[styles.headerSub, { textAlign: isRTL ? 'right' : 'left' }]}>{goals.length} {tFunc('activeGoals')}</Text>
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.back(); }}
+            style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}
+            accessibilityRole="button"
+          >
+            <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={22} color="#fff" />
+          </Pressable>
+          <View style={{ flex: 1, alignItems: 'center' }}>
+            <Text style={[styles.headerTitle, { textAlign: 'center' }]}>{tFunc('goals')}</Text>
+            <Text style={[styles.headerSub, { textAlign: 'center' }]}>{goals.length} {tFunc('activeGoals')}</Text>
           </View>
           <Pressable
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditGoal(null); setShowForm(true); }}
@@ -229,6 +237,11 @@ const styles = StyleSheet.create({
   headerRow: { alignItems: 'center', justifyContent: 'space-between' },
   headerTitle: { fontSize: 28, fontFamily: 'Inter_700Bold', color: '#fff' },
   headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: 'Inter_500Medium', marginTop: 2 },
+  backBtn: {
+    width: 40, height: 40, borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center', justifyContent: 'center',
+  },
   addBtn: {},
   addBtnInner: {
     width: 46, height: 46, borderRadius: 23,
