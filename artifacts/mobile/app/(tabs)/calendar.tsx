@@ -141,7 +141,7 @@ export default function CalendarScreen() {
           <MonthView
             date={currentDate}
             selectedDate={selectedDate}
-            onSelectDate={(d) => {
+            onSelectDate={(d: string) => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               setSelectedDate(d);
             }}
@@ -156,7 +156,7 @@ export default function CalendarScreen() {
           <WeekView
             date={currentDate}
             selectedDate={selectedDate}
-            onSelectDate={(d) => {
+            onSelectDate={(d: string) => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               setSelectedDate(d);
             }}
