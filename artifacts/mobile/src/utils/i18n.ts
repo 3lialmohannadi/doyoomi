@@ -225,6 +225,15 @@ const translations: Record<Language, Record<string, string>> = {
     startWriting: 'Start Writing',
     searchEntries: 'Search entries...',
     entries: 'entries',
+
+    // Quick Add menu
+    quickAdd: 'Quick Add',
+    quickAddTask: 'New task',
+    quickAddHabit: 'New habit',
+    quickAddGoal: 'New goal',
+    quickAddJournal: 'Daily journal',
+    noHabitsYet: 'No habits yet',
+    tapPlusToAdd: 'Tap + to add your first habit',
   },
 
   ar: {
@@ -451,6 +460,15 @@ const translations: Record<Language, Record<string, string>> = {
     startWriting: 'ابدأ الكتابة',
     searchEntries: 'ابحث في الإدخالات...',
     entries: 'إدخالات',
+
+    // قائمة الإضافة السريعة
+    quickAdd: 'إضافة سريعة',
+    quickAddTask: 'مهمة جديدة',
+    quickAddHabit: 'عادة جديدة',
+    quickAddGoal: 'هدف جديد',
+    quickAddJournal: 'مذكرة يومية',
+    noHabitsYet: 'لا توجد عادات بعد',
+    tapPlusToAdd: 'اضغط + لإضافة أول عادة لك',
   },
 };
 

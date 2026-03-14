@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import {
   format, parseISO, startOfMonth, getDaysInMonth, getDay,
-  addMonths, subMonths,
+  addMonths, subMonths, addYears, subYears,
 } from 'date-fns';
 
 import { useSettingsStore } from '../../src/store/settingsStore';
@@ -551,12 +551,33 @@ function DobCalendar({ selected, onSelect, C }: any) {
 
   return (
     <View style={[dobStyles.container, { backgroundColor: C.surface, borderColor: C.border }]}>
+      {/* Year navigation row */}
+      <View style={dobStyles.yearNav}>
+        <Pressable
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subYears(viewDate, 1)); }}
+          style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15' }]}
+          hitSlop={8}
+        >
+          <Ionicons name="chevron-back" size={14} color={C.tint} />
+          <Ionicons name="chevron-back" size={14} color={C.tint} style={{ marginLeft: -8 }} />
+        </Pressable>
+        <Text style={[dobStyles.yearLabel, { color: C.tint }]}>{format(viewDate, 'yyyy')}</Text>
+        <Pressable
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addYears(viewDate, 1)); }}
+          style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15' }]}
+          hitSlop={8}
+        >
+          <Ionicons name="chevron-forward" size={14} color={C.tint} />
+          <Ionicons name="chevron-forward" size={14} color={C.tint} style={{ marginLeft: -8 }} />
+        </Pressable>
+      </View>
+      {/* Month navigation row */}
       <View style={dobStyles.nav}>
-        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); }}>
+        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); }} hitSlop={8}>
           <Ionicons name="chevron-back" size={18} color={C.tint} />
         </Pressable>
-        <Text style={[dobStyles.navLabel, { color: C.text }]}>{format(viewDate, 'MMMM yyyy')}</Text>
-        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); }}>
+        <Text style={[dobStyles.navLabel, { color: C.text }]}>{format(viewDate, 'MMMM')}</Text>
+        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); }} hitSlop={8}>
           <Ionicons name="chevron-forward" size={18} color={C.tint} />
         </Pressable>
       </View>
@@ -567,7 +588,7 @@ function DobCalendar({ selected, onSelect, C }: any) {
       </View>
       <View style={dobStyles.grid}>
         {cells.map((dayKey, i) => {
-          if (!dayKey) return <View key={i} style={dobStyles.cell} />;
+          if (!dayKey) return <View key={'empty-' + i} style={dobStyles.cell} />;
           const isSelected = dayKey === selected;
           const isTodayDate = dayKey === today;
           const day = parseISO(dayKey).getDate();
@@ -598,6 +619,15 @@ function DobCalendar({ selected, onSelect, C }: any) {
 
 const dobStyles = StyleSheet.create({
   container: { borderRadius: Radius.lg, borderWidth: 1, padding: Spacing.md },
+  yearNav: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    marginBottom: Spacing.xs,
+  },
+  yearNavBtn: {
+    flexDirection: 'row', alignItems: 'center',
+    borderRadius: Radius.sm, paddingHorizontal: 6, paddingVertical: 4,
+  },
+  yearLabel: { fontSize: 15, fontFamily: 'Inter_700Bold' },
   nav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.sm },
   navLabel: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
   headerRow: { flexDirection: 'row', marginBottom: Spacing.xs },

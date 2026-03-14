@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
-  ScrollView, StyleSheet, Text, View, Pressable, Platform, Modal,
+  ScrollView, StyleSheet, Text, View, Pressable, Platform, Modal, Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -62,11 +62,8 @@ export default function HomeScreen() {
   const todayTasks = useMemo(() => tasks.filter(task => task.due_date === today), [tasks, today]);
   const completedToday = todayTasks.filter(task => task.status === 'completed').length;
   const overdueCount = tasks.filter(task => task.status === 'overdue' || (task.due_date && isOverdue(task.due_date) && task.status === 'pending')).length;
-  const thisWeek = tasks.filter(task => {
-    if (!task.due_date) return false;
-    const d = new Date(task.due_date);
-    return d >= weekDays[0] && d <= weekDays[6];
-  }).length;
+  const weekKeys = useMemo(() => new Set(weekDays.map(d => formatDateKey(d))), [weekDays]);
+  const thisWeek = useMemo(() => tasks.filter(task => task.due_date && weekKeys.has(task.due_date)).length, [tasks, weekKeys]);
   const maxStreak = habits.reduce((max, h) => Math.max(max, h.streak_days), 0);
   const dayTasks = tasks.filter(task => task.due_date === selectedDay);
   const allDone = todayTasks.length > 0 && todayTasks.every(task => task.status === 'completed');
@@ -97,7 +94,7 @@ export default function HomeScreen() {
               <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left' }]}>Do.Yoomi</Text>
               <Text style={[styles.heroSub, { textAlign: isRTL ? 'right' : 'left' }]}>يومي</Text>
             </View>
-            <AddBtn onPress={() => setShowQuickAdd(true)} />
+            <AddBtn onPress={() => setShowQuickAdd(true)} label={tFunc('quickAdd')} />
           </View>
 
         </LinearGradient>
@@ -194,6 +191,14 @@ export default function HomeScreen() {
                     catColor={cat?.color}
                     timeStr={task.due_time ? formatTime(task.due_time, profile.time_format === '12h') : undefined}
                     onToggle={() => toggleComplete(task.id)}
+                    onLongPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                      Alert.alert(task.title, undefined, [
+                        { text: tFunc('cancel'), style: 'cancel' },
+                        { text: tFunc('postpone'), onPress: () => postponeTask(task.id) },
+                        { text: tFunc('deleteTask'), style: 'destructive', onPress: () => deleteTask(task.id) },
+                      ]);
+                    }}
                     C={C} isRTL={isRTL}
                   />
                 );
@@ -209,11 +214,28 @@ export default function HomeScreen() {
           action={tFunc('addNew')}
           onAction={() => { setEditHabit(null); setShowHabitForm(true); }}
         >
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -Spacing.lg }} contentContainerStyle={{ paddingHorizontal: Spacing.lg, gap: Spacing.md }}>
-            {habits.map(h => (
-              <FunHabitCard key={h.id} habit={h} onComplete={completeHabit} onUncomplete={uncompleteHabit} C={C} />
-            ))}
-          </ScrollView>
+          {habits.length === 0 ? (
+            <Pressable
+              onPress={() => { setEditHabit(null); setShowHabitForm(true); }}
+              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.8 : 1 }]}
+              accessibilityRole="button"
+            >
+              <View style={[styles.habitsEmptyIcon, { backgroundColor: C.tint + '15' }]}>
+                <Ionicons name="leaf-outline" size={28} color={C.tint} />
+              </View>
+              <View style={{ flex: 1, alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
+                <Text style={[styles.habitsEmptyTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('noHabitsYet')}</Text>
+                <Text style={[styles.habitsEmptySubtitle, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('tapPlusToAdd')}</Text>
+              </View>
+              <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textMuted} />
+            </Pressable>
+          ) : (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -Spacing.lg }} contentContainerStyle={{ paddingHorizontal: Spacing.lg, gap: Spacing.md }}>
+              {habits.map(h => (
+                <FunHabitCard key={h.id} habit={h} onComplete={completeHabit} onUncomplete={uncompleteHabit} C={C} />
+              ))}
+            </ScrollView>
+          )}
         </Section>
 
         {/* Goals */}
@@ -280,7 +302,7 @@ export default function HomeScreen() {
   );
 }
 
-function AddBtn({ onPress }: { onPress: () => void }) {
+function AddBtn({ onPress, label }: { onPress: () => void; label: string }) {
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
   return (
@@ -290,7 +312,7 @@ function AddBtn({ onPress }: { onPress: () => void }) {
       onPressOut={() => { scale.value = withSpring(1, { damping: 14 }); }}
       onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onPress(); }}
       accessibilityRole="button"
-      accessibilityLabel="Add task"
+      accessibilityLabel={label}
     >
       <LinearGradient
         colors={['#9B6EF5', '#FF6B9D']}
@@ -306,10 +328,10 @@ function AddBtn({ onPress }: { onPress: () => void }) {
 function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, isRTL, lang, C, insets }: any) {
   const tFunc = (key: string) => t(key, lang);
   const items = [
-    { label: tFunc('addTask'), sublabel: isRTL ? 'مهمة جديدة' : 'New task', icon: 'checkmark-circle-outline', colors: ['#7C5CFC', '#A855F7'] as [string,string], onPress: onTask },
-    { label: tFunc('addHabit'), sublabel: isRTL ? 'عادة جديدة' : 'New habit', icon: 'leaf-outline', colors: ['#00C48C', '#00B8A9'] as [string,string], onPress: onHabit },
-    { label: tFunc('addGoal'), sublabel: isRTL ? 'هدف جديد' : 'New goal', icon: 'trophy-outline', colors: ['#FF6B35', '#FFB347'] as [string,string], onPress: onGoal },
-    { label: tFunc('addEntry'), sublabel: isRTL ? 'مذكرة يومية' : 'Daily journal', icon: 'book-outline', colors: ['#FF6B9D', '#A855F7'] as [string,string], onPress: onJournal },
+    { label: tFunc('addTask'), sublabel: tFunc('quickAddTask'), icon: 'checkmark-circle-outline', colors: ['#7C5CFC', '#A855F7'] as [string,string], onPress: onTask },
+    { label: tFunc('addHabit'), sublabel: tFunc('quickAddHabit'), icon: 'leaf-outline', colors: ['#00C48C', '#00B8A9'] as [string,string], onPress: onHabit },
+    { label: tFunc('addGoal'), sublabel: tFunc('quickAddGoal'), icon: 'trophy-outline', colors: ['#FF6B35', '#FFB347'] as [string,string], onPress: onGoal },
+    { label: tFunc('addEntry'), sublabel: tFunc('quickAddJournal'), icon: 'book-outline', colors: ['#FF6B9D', '#A855F7'] as [string,string], onPress: onJournal },
   ];
 
   return (
@@ -318,7 +340,7 @@ function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, is
         <Pressable style={[qaStyles.sheet, { backgroundColor: C.card, paddingBottom: (insets?.bottom ?? 0) + 16 }]} onPress={() => {}}>
           <View style={qaStyles.handle} />
           <Text style={[qaStyles.sheetTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>
-            {isRTL ? 'إضافة سريعة' : 'Quick Add'}
+            {tFunc('quickAdd')}
           </Text>
           <View style={qaStyles.itemGrid}>
             {items.map((item) => (
@@ -392,7 +414,7 @@ function Section({ title, children, C, action, onAction, onTitlePress, isRTL }: 
   );
 }
 
-function FunTaskRow({ task, catName, catColor, timeStr, onToggle, C, isRTL }: any) {
+function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C, isRTL }: any) {
   const isCompleted = task.status === 'completed';
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
@@ -409,6 +431,8 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, C, isRTL }: an
       style={[animStyle, styles.taskRow, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
       onPressIn={() => { scale.value = withSpring(0.98); }}
       onPressOut={() => { scale.value = withSpring(1); }}
+      onLongPress={onLongPress}
+      delayLongPress={400}
       accessibilityRole="button"
     >
       <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.taskAccent} />
@@ -624,7 +648,7 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: any) {
           const h = d.count > 0 ? Math.max((d.count / maxVal) * 64, 8) : 6;
           const doneH = d.done > 0 ? Math.max((d.done / maxVal) * 64, 6) : 0;
           return (
-            <View key={i} style={styles.chartCol}>
+            <View key={d.day + '-' + i} style={styles.chartCol}>
               <View style={styles.chartBar}>
                 <View style={[styles.chartBarBg, { height: h, backgroundColor: C.borderLight, borderRadius: 8 }]}>
                   {doneH > 0 && (
@@ -795,6 +819,27 @@ const styles = StyleSheet.create({
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   legendDot: { width: 10, height: 10, borderRadius: 5 },
   legendText: { fontSize: 11, fontFamily: 'Inter_500Medium' },
+
+  // Habits empty state
+  habitsEmpty: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    padding: Spacing.lg,
+    shadowColor: '#7C5CFC',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  habitsEmptyIcon: {
+    width: 52, height: 52, borderRadius: 26,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  habitsEmptyTitle: { fontSize: 15, fontFamily: 'Inter_600SemiBold' },
+  habitsEmptySubtitle: { fontSize: 12, fontFamily: 'Inter_400Regular', marginTop: 2 },
 
   // Journal card
   journalCard: {

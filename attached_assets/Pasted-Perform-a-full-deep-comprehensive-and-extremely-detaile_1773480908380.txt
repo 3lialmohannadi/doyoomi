@@ -1,0 +1,420 @@
+Perform a full, deep, comprehensive, and extremely detailed audit of the entire app and codebase.
+
+Important:
+Do not do a shallow check.
+Do not only test one or two screens.
+Do not only fix obvious UI issues.
+I want a serious full inspection of the entire project from all angles, followed by proper fixes, debugging, refactoring, cleanup, and validation.
+
+This is a complete quality-control, debugging, and stabilization pass.
+
+==================================================
+PRIMARY GOAL
+==================================================
+
+Inspect the entire application and codebase carefully, identify every issue you can find, fix what needs fixing, clean what needs cleaning, debug what needs debugging, and improve overall stability, quality, consistency, and maintainability.
+
+I want a very thorough full-app review covering:
+- code quality
+- UI
+- UX
+- navigation
+- forms
+- translations
+- RTL/LTR
+- state management
+- storage/data handling
+- styling consistency
+- responsiveness
+- edge cases
+- runtime errors
+- type errors
+- build issues
+- logical bugs
+- duplicated code
+- dead code
+- outdated code
+- broken references
+- design inconsistencies
+- weak interaction patterns
+- anything else that may cause instability or poor user experience
+
+==================================================
+FULL SCOPE OF THE AUDIT
+==================================================
+
+Audit and inspect ALL of the following:
+
+1. App structure
+2. Navigation structure
+3. Bottom navigation / routes / screen registration
+4. Home / Dashboard
+5. More page
+6. Tasks
+7. Habits
+8. Goals
+9. Daily Journal
+10. Categories
+11. App Settings
+12. Support / Contact
+13. Profile
+14. Calendar
+15. All forms
+16. All modals
+17. All bottom sheets
+18. All popups
+19. All reusable components
+20. Shared UI components
+21. Shared utility functions
+22. Shared hooks
+23. State management/store
+24. Data models / schemas / interfaces / types
+25. Storage / persistence logic
+26. i18n / translations
+27. Arabic / English behavior
+28. RTL / LTR behavior
+29. Typography system
+30. Color system
+31. Icon usage
+32. Spacing / sizing / layout consistency
+33. Empty states
+34. Loading states
+35. Success/error/feedback messages
+36. App icon / asset references
+37. Build configuration
+38. Runtime console errors
+39. TypeScript / type issues if applicable
+40. Performance issues caused by bad structure or repeated logic
+41. Code duplication
+42. Dead code / unused imports / unused files
+43. Inconsistent naming
+44. Broken event handlers / broken onPress / broken routes
+45. Any hidden regression caused by previous changes
+
+==================================================
+WHAT YOU MUST DO
+==================================================
+
+Step 1:
+Audit first.
+Inspect the full app carefully before making random changes.
+
+Step 2:
+Identify all issues:
+- visual issues
+- logic issues
+- navigation issues
+- translation issues
+- alignment issues
+- code issues
+- runtime issues
+- type/build issues
+- UX issues
+- consistency issues
+
+Step 3:
+Fix them properly.
+Do not patch carelessly.
+Fix root causes where possible.
+
+Step 4:
+Clean the codebase:
+- remove dead code
+- remove unused imports
+- remove duplicate logic
+- remove outdated references
+- remove broken references
+- remove unnecessary wrappers/components if appropriate
+- improve maintainability where needed
+
+Step 5:
+Run a final full validation pass and make sure the app is stable.
+
+==================================================
+UI / UX AUDIT REQUIREMENTS
+==================================================
+
+Perform a very detailed UI/UX audit across the entire app.
+
+Check:
+- visual consistency
+- spacing consistency
+- typography consistency
+- icon consistency
+- color consistency
+- card consistency
+- button consistency
+- form consistency
+- popup/modal consistency
+- selected/unselected states
+- disabled states
+- pressed states
+- empty states
+- loading states
+- visual hierarchy
+- readability
+- tap target usability
+- balance of layouts
+- awkward layouts
+- overcrowded areas
+- poor grouping of content
+- poor information hierarchy
+- anything that feels unfinished or visually off
+
+Fix where needed, but preserve the app identity.
+Do not redesign the product into something else.
+Improve and polish what is already there.
+
+==================================================
+CODE / DEBUG / ENGINEERING AUDIT REQUIREMENTS
+==================================================
+
+Perform a deep code and debugging audit.
+
+Check:
+- runtime errors
+- console warnings/errors
+- broken states
+- stale state
+- incorrect state updates
+- race conditions if relevant
+- broken handlers
+- broken navigation actions
+- invalid routes
+- bad conditional rendering
+- duplicated component logic
+- duplicated styling logic
+- dead branches
+- dead imports
+- dead components
+- invalid type usage
+- incorrect prop usage
+- weak null/undefined handling
+- invalid fallback handling
+- weak error handling
+- bad async handling if present
+- storage read/write safety
+- data mapping issues
+- broken formatting helpers
+- broken language helpers
+- broken date helpers
+- outdated config references
+- asset/config mismatches
+- hidden regressions
+
+Fix what needs to be fixed cleanly and safely.
+
+==================================================
+LANGUAGE / RTL / LTR AUDIT REQUIREMENTS
+==================================================
+
+Perform a full audit of Arabic and English behavior.
+
+Check:
+- text alignment
+- layout direction
+- row order
+- icon placement where direction matters
+- back navigation direction
+- card alignment
+- labels
+- placeholders
+- form alignment
+- popup alignment
+- modal alignment
+- empty-state text
+- header alignment
+- mixed Arabic/English text behavior
+- language switching behavior
+- translation coverage
+- incorrect hardcoded English/Arabic text
+- inconsistent naming between languages
+
+Important:
+If any area still behaves incorrectly in Arabic or English, fix it.
+
+==================================================
+FORMS / INTERACTION AUDIT REQUIREMENTS
+==================================================
+
+Inspect all forms and input flows.
+
+Check:
+- input behavior
+- validation behavior
+- error messages
+- keyboard handling
+- submit behavior
+- cancel behavior
+- date picking
+- save/update flows
+- feedback messages
+- visual consistency
+- disabled states
+- focus behavior
+- user clarity
+
+Fix:
+- awkward forms
+- broken forms
+- inconsistent forms
+- bad date pickers
+- bad validation flows
+- hidden action buttons
+- anything that harms usability
+
+==================================================
+NAVIGATION AUDIT REQUIREMENTS
+==================================================
+
+Inspect all navigation thoroughly.
+
+Check:
+- all tab navigation
+- More page links
+- Profile navigation
+- Habits navigation
+- Goals navigation
+- Categories navigation
+- App Settings navigation
+- Support navigation
+- Daily Journal navigation
+- Quick Add navigation
+- form open/close behavior
+- modal routes if applicable
+- back navigation behavior
+- broken onPress actions
+- screens that do not open
+- wrong screen opens
+- dead route references
+
+Fix every broken or weak navigation flow.
+
+==================================================
+DESIGN SYSTEM / CONSISTENCY AUDIT REQUIREMENTS
+==================================================
+
+Inspect the overall design system quality.
+
+Check:
+- fonts
+- font sizes
+- weights
+- spacing scale
+- padding scale
+- margins
+- radii
+- icon sizes
+- input sizes
+- button sizes
+- color usage
+- card usage
+- section spacing
+- alignment rhythm
+
+If there is inconsistency, clean it up carefully.
+Do not massively redesign the app, but make it cleaner and more unified.
+
+==================================================
+PERFORMANCE / MAINTAINABILITY AUDIT REQUIREMENTS
+==================================================
+
+Inspect for issues that affect maintainability and quality.
+
+Check:
+- repeated code
+- overcomplicated components
+- messy file structure
+- difficult-to-maintain logic
+- duplicated styles
+- duplicated helpers
+- large components that should be cleaned up
+- weak naming
+- unnecessary complexity
+- brittle logic
+
+Refactor carefully where it improves stability and maintainability.
+
+==================================================
+DO NOT DO THESE THINGS
+==================================================
+
+- Do not do a shallow review
+- Do not only check one section
+- Do not stop after fixing one or two visible bugs
+- Do not leave known issues behind without stating them
+- Do not redesign the whole app unnecessarily
+- Do not break working parts while fixing other parts
+- Do not leave dead code behind
+- Do not leave build/runtime/type errors behind
+- Do not claim completion without actually checking the full app carefully
+
+==================================================
+REQUIRED FINAL ACTIONS
+==================================================
+
+After the audit and fixes, do ALL of the following:
+- full code cleanup
+- remove dead code
+- remove unused imports
+- remove broken references
+- remove duplicate logic where appropriate
+- fix remaining build/runtime/type issues
+- re-check all major screens
+- re-check all important flows
+- re-check navigation
+- re-check language behavior
+- re-check forms
+- re-check popups/modals
+- re-check styling consistency
+- re-check app stability
+
+==================================================
+FINAL VERIFICATION CHECKLIST
+==================================================
+
+Before finishing, verify all of the following:
+
+1. Full app audit was completed
+2. Full code audit was completed
+3. Full UI audit was completed
+4. Full UX audit was completed
+5. Full navigation audit was completed
+6. Full forms audit was completed
+7. Full Arabic/English audit was completed
+8. Full RTL/LTR audit was completed
+9. Full styling/design consistency audit was completed
+10. Full debugging pass was completed
+11. Runtime issues were checked and fixed
+12. Build issues were checked and fixed
+13. Type issues were checked and fixed
+14. Dead code was cleaned
+15. Unused imports were removed
+16. Duplicate logic was reduced where appropriate
+17. Broken references were removed/fixed
+18. Major screens were rechecked
+19. Major user flows were rechecked
+20. The app is more stable, polished, and maintainable after this pass
+
+==================================================
+FINAL RESPONSE FORMAT
+==================================================
+
+After finishing, provide a detailed final report including:
+
+- all issues found
+- what was fixed
+- what was improved
+- what was refactored
+- what was cleaned
+- what files/areas were affected
+- what debugging issues were found and fixed
+- what UI/UX issues were found and fixed
+- what navigation issues were found and fixed
+- what language/RTL/LTR issues were found and fixed
+- whether code cleanup was completed
+- whether final validation was completed
+- any remaining issue that still exists, if any
+
+Do not give me a vague summary.
+Give me a real final audit/fix report after the full work is actually done.

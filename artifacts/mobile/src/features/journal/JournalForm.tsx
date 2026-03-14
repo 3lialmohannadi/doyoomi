@@ -20,11 +20,11 @@ interface JournalFormProps {
 const MOODS: { key: Mood; icon: string; color: string; labelKey: string }[] = [
   { key: 'excellent', icon: 'happy',                  color: '#00C48C', labelKey: 'moodExcellent' },
   { key: 'veryGood',  icon: 'happy-outline',           color: '#4CAF82', labelKey: 'moodVeryGood' },
-  { key: 'good',      icon: 'thumbs-up-outline',       color: '#6C8EF5', labelKey: 'moodGood' },
+  { key: 'good',      icon: 'thumbs-up-outline',       color: '#7C5CFC', labelKey: 'moodGood' },
   { key: 'neutral',   icon: 'remove-circle-outline',   color: '#FFB800', labelKey: 'moodNeutral' },
   { key: 'tired',     icon: 'bed-outline',             color: '#FF8A50', labelKey: 'moodTired' },
-  { key: 'stressed',  icon: 'flash-outline',           color: '#F97316', labelKey: 'moodStressed' },
-  { key: 'sad',       icon: 'cloudy-outline',          color: '#8B5CF6', labelKey: 'moodSad' },
+  { key: 'stressed',  icon: 'flash-outline',           color: '#FF6B35', labelKey: 'moodStressed' },
+  { key: 'sad',       icon: 'rainy-outline',           color: '#A855F7', labelKey: 'moodSad' },
   { key: 'bad',       icon: 'sad-outline',             color: '#FF4D6A', labelKey: 'moodBad' },
 ];
 
