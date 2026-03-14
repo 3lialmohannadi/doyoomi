@@ -70,7 +70,12 @@ export default function MoreScreen() {
     setShowProfileModal(false);
   };
 
-  const displayDob = profileDob ? format(parseISO(profileDob), 'MMM d, yyyy') : '';
+  const DOB_AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  const displayDob = profileDob
+    ? isRTL
+      ? (() => { const d = parseISO(profileDob); return `${d.getDate()} ${DOB_AR_MONTHS[d.getMonth()]} ${d.getFullYear()}`; })()
+      : format(parseISO(profileDob), 'MMM d, yyyy')
+    : '';
 
   const goalsCount = goals.length;
   const habitsCount = habits.length;
@@ -341,6 +346,7 @@ export default function MoreScreen() {
                         selected={profileDob}
                         onSelect={(d: string) => { setProfileDob(d); setShowDobPicker(false); }}
                         C={C}
+                        lang={lang}
                       />
                     </View>
                   )}
@@ -501,15 +507,20 @@ function ProfileField({ label, icon, C, isRTL, children }: any) {
   );
 }
 
-function DobCalendar({ selected, onSelect, C }: any) {
+const DOB_AR_MONTH_NAMES = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const DOB_AR_DAY_HEADERS = ['أح','اث','ثل','أر','خم','جم','سب'];
+const DOB_EN_DAY_HEADERS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+function DobCalendar({ selected, onSelect, C, lang }: any) {
   const [viewDate, setViewDate] = useState(() => {
     if (selected) return parseISO(selected);
     const d = new Date();
     d.setFullYear(d.getFullYear() - 20);
     return d;
   });
+  const isAr = lang === 'ar';
 
-  const dayHeaders = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const dayHeaders = isAr ? DOB_AR_DAY_HEADERS : DOB_EN_DAY_HEADERS;
   const daysInMonth = getDaysInMonth(viewDate);
   const firstDay = getDay(startOfMonth(viewDate));
   const today = getTodayString();
@@ -538,7 +549,7 @@ function DobCalendar({ selected, onSelect, C }: any) {
           <Ionicons name="chevron-back" size={14} color={C.tint} />
           <Ionicons name="chevron-back" size={14} color={C.tint} style={{ marginLeft: -8 }} />
         </Pressable>
-        <Text style={[dobStyles.yearLabel, { color: C.tint }]}>{format(viewDate, 'yyyy')}</Text>
+        <Text style={[dobStyles.yearLabel, { color: C.tint }]}>{viewDate.getFullYear()}</Text>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addYears(viewDate, 1)); }}
           style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15' }]}
@@ -553,7 +564,9 @@ function DobCalendar({ selected, onSelect, C }: any) {
         <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); }} hitSlop={8}>
           <Ionicons name="chevron-back" size={18} color={C.tint} />
         </Pressable>
-        <Text style={[dobStyles.navLabel, { color: C.text }]}>{format(viewDate, 'MMMM')}</Text>
+        <Text style={[dobStyles.navLabel, { color: C.text }]}>
+          {isAr ? DOB_AR_MONTH_NAMES[viewDate.getMonth()] : format(viewDate, 'MMMM')}
+        </Text>
         <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); }} hitSlop={8}>
           <Ionicons name="chevron-forward" size={18} color={C.tint} />
         </Pressable>

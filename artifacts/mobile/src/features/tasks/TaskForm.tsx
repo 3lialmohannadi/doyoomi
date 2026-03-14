@@ -157,6 +157,7 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
             onSelect={(d: string) => { setDueDate(d); setShowDatePicker(false); }}
             C={C}
             startOfWeek={profile.start_of_week}
+            lang={lang}
           />
         )}
       </FormField>
@@ -200,14 +201,21 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
 }
 
 // ── Pure JS Inline Calendar ──
-function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay }: any) {
+const AR_MONTHS_CAL = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const AR_DAY_HEADERS_SUN = ['أح','اث','ثل','أر','خم','جم','سب'];
+const AR_DAY_HEADERS_MON = ['اث','ثل','أر','خم','جم','سب','أح'];
+const EN_DAY_HEADERS_SUN = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+const EN_DAY_HEADERS_MON = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+
+function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay, lang }: any) {
   const [viewDate, setViewDate] = useState(() => selected ? parseISO(selected) : new Date());
   const [showYearPicker, setShowYearPicker] = useState(false);
+  const isAr = lang === 'ar';
 
   const weekStart = startDay === 'sunday' ? 0 : 1;
-  const dayHeaders = startDay === 'sunday'
-    ? ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-    : ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+  const dayHeaders = isAr
+    ? (startDay === 'sunday' ? AR_DAY_HEADERS_SUN : AR_DAY_HEADERS_MON)
+    : (startDay === 'sunday' ? EN_DAY_HEADERS_SUN : EN_DAY_HEADERS_MON);
 
   const daysInMonth = getDaysInMonth(viewDate);
   const firstDay = getDay(startOfMonth(viewDate));
@@ -248,7 +256,9 @@ function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay }: any) {
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowYearPicker(v => !v); }}
           style={calStyles.navLabelBtn}
         >
-          <Text style={[calStyles.navLabel, { color: C.text }]}>{format(viewDate, 'MMM yyyy')}</Text>
+          <Text style={[calStyles.navLabel, { color: C.text }]}>
+            {isAr ? `${AR_MONTHS_CAL[viewDate.getMonth()]} ${viewDate.getFullYear()}` : format(viewDate, 'MMM yyyy')}
+          </Text>
           <Ionicons name={showYearPicker ? 'chevron-up' : 'chevron-down'} size={12} color={C.textMuted} />
         </Pressable>
         <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); setShowYearPicker(false); }}>

@@ -399,7 +399,7 @@ const translations: Record<Language, Record<string, string>> = {
     none: 'بدون',
     taskTitlePlaceholder: 'عنوان المهمة',
     descriptionPlaceholder: 'أضف وصفاً...',
-    datePlaceholder: 'YYYY-MM-DD',
+    datePlaceholder: 'اختر التاريخ',
     timePlaceholder: 'HH:MM',
     goalTitlePlaceholder: 'عنوان الهدف',
     goalDescPlaceholder: 'الوصف...',
