@@ -1,3 +1,8 @@
+import type { ComponentProps } from 'react';
+import type { Ionicons } from '@expo/vector-icons';
+
+export type IonIconName = ComponentProps<typeof Ionicons>['name'];
+
 export type Priority = 'low' | 'medium' | 'high';
 export type TaskStatus = 'pending' | 'completed' | 'overdue' | 'postponed' | 'cancelled';
 export type GoalType = 'monthly' | 'yearly';

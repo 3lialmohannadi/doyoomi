@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Ionicons } from '@expo/vector-icons';
+import type { IonIconName } from '../../types';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -127,7 +128,7 @@ interface InputProps {
   onChangeText: (t: string) => void;
   placeholder?: string;
   multiline?: boolean;
-  keyboardType?: any;
+  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'number-pad' | 'decimal-pad' | 'url';
   error?: boolean;
 }
 
@@ -331,7 +332,7 @@ export function CategorySelector({ value, onChange, options }: CategorySelectorP
             accessibilityLabel={opt.label}
           >
             {opt.icon ? (
-              <Ionicons name={(opt.icon + '-outline') as any} size={16} color={isActive ? color : C.textMuted} />
+              <Ionicons name={(opt.icon + '-outline') as IonIconName} size={16} color={isActive ? color : C.textMuted} />
             ) : null}
             <Text style={[styles.categoryText, { color: isActive ? color : C.textSecondary }]} numberOfLines={1}>
               {opt.label}

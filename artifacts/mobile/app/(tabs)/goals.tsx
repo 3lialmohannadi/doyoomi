@@ -5,6 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import type { IonIconName } from '../../src/types';
 import * as Haptics from 'expo-haptics';
 
 import { router, useLocalSearchParams } from 'expo-router';
@@ -98,7 +99,7 @@ export default function GoalsScreen() {
         renderItem={({ item, index }) => {
           const grad = GOAL_GRADIENTS[index % GOAL_GRADIENTS.length];
           const pct = item.target_value > 0 ? item.current_value / item.target_value : 0;
-          const iconName = (item.icon + '-outline') as any;
+          const iconName = (item.icon + '-outline') as IonIconName;
 
           return (
             <View style={[styles.goalCard, { backgroundColor: C.card, borderColor: C.border }]}>

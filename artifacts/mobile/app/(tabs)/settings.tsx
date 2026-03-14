@@ -3,6 +3,7 @@ import {
   ScrollView, StyleSheet, Text, View, Pressable, Modal, TextInput,
   Platform, KeyboardAvoidingView, Image,
 } from 'react-native';
+import type { DimensionValue } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -632,7 +633,7 @@ const dobStyles = StyleSheet.create({
   headerRow: { flexDirection: 'row', marginBottom: Spacing.xs },
   headerDay: { flex: 1, textAlign: 'center', fontSize: 11, fontFamily: 'Inter_600SemiBold' },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
-  cell: { width: `${100 / 7}%` as any, alignItems: 'center', justifyContent: 'center', paddingVertical: 2 },
+  cell: { width: `${100 / 7}%` as DimensionValue, alignItems: 'center' as const, justifyContent: 'center' as const, paddingVertical: 2 },
   dayCircle: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   dayText: { fontSize: 13, fontFamily: 'Inter_500Medium' },
 });

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Pressable, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import type { IonIconName } from '../../types';
 import * as Haptics from 'expo-haptics';
 import { Radius, Spacing } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
@@ -42,7 +43,7 @@ export function IconPicker({ selectedIcon, selectedColor, onIconChange, iconSuff
             accessibilityState={{ selected: isActive }}
           >
             <Ionicons
-              name={((ic + iconSuffix) as any)}
+              name={(ic + iconSuffix) as IonIconName}
               size={22}
               color={isActive ? color : C.textMuted}
             />

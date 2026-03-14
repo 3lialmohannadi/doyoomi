@@ -5,7 +5,9 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import type { DimensionValue } from 'react-native';
 import { format } from 'date-fns';
+import type { IonIconName } from '../../src/types';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
@@ -106,7 +108,7 @@ export default function HabitsScreen() {
                   styles.progressFill,
                   {
                     backgroundColor: '#fff',
-                    width: `${Math.round((doneToday / habits.length) * 100)}%` as any,
+                    width: `${Math.round((doneToday / habits.length) * 100)}%` as DimensionValue,
                     alignSelf: isRTL ? 'flex-end' : 'flex-start',
                   },
                 ]}
@@ -208,7 +210,7 @@ function HabitCard({
   item: Habit;
   isDoneToday: boolean;
   isRTL: boolean;
-  C: any;
+  C: Record<string, string>;
   tFunc: (k: string) => string;
   onToggle: () => void;
   onEdit: () => void;
@@ -256,7 +258,7 @@ function HabitCard({
           },
         ]}>
           <Ionicons
-            name={(item.icon + (isDoneToday ? '' : '-outline')) as any}
+            name={(item.icon + (isDoneToday ? '' : '-outline')) as IonIconName}
             size={24}
             color={item.color}
           />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Pressable, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import type { IonIconName } from '../../types';
 import * as Haptics from 'expo-haptics';
 import { FormModal, FormField, FormInput } from '../../components/ui/FormModal';
 import { JournalEntry, Mood } from '../../types';
@@ -128,7 +129,7 @@ export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
                   },
                 ]}
               >
-                <Ionicons name={m.icon as any} size={22} color={isActive ? m.color : C.textMuted} />
+                <Ionicons name={m.icon as IonIconName} size={22} color={isActive ? m.color : C.textMuted} />
                 <Text style={[styles.moodLabel, { color: isActive ? m.color : C.textSecondary }]} numberOfLines={1}>
                   {t(m.labelKey, lang)}
                 </Text>

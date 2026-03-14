@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import type { IonIconName } from '../../types';
 import { Radius, Spacing } from '../../theme';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
@@ -50,7 +51,7 @@ export function Toast({ message, type = 'success', duration = 2500, onHide }: To
       styles.toast,
       { backgroundColor: C.card, borderColor: cfg.border, opacity, transform: [{ translateY }], flexDirection: isRTL ? 'row-reverse' : 'row' },
     ]}>
-      <Ionicons name={cfg.icon as any} size={20} color={cfg.color} />
+      <Ionicons name={cfg.icon as IonIconName} size={20} color={cfg.color} />
       <Text style={[styles.text, { color: cfg.color, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>{message}</Text>
     </Animated.View>
   );

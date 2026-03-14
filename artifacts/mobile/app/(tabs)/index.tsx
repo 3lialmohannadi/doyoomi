@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { format } from 'date-fns';
+import type { IonIconName } from '../../src/types';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { router } from 'expo-router';
@@ -393,7 +394,7 @@ function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, is
               >
                 <LinearGradient colors={item.colors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={qaStyles.itemGrad}>
                   <View style={qaStyles.itemIconWrap}>
-                    <Ionicons name={item.icon as any} size={26} color="#fff" />
+                    <Ionicons name={item.icon as IonIconName} size={26} color="#fff" />
                   </View>
                   <Text style={[qaStyles.itemLabel, { textAlign: isRTL ? 'right' : 'left' }]}>{item.label}</Text>
                   <Text style={[qaStyles.itemSub, { textAlign: isRTL ? 'right' : 'left' }]}>{item.sublabel}</Text>
@@ -546,7 +547,7 @@ function FunHabitCard({
       >
         <View style={styles.habitTopRow}>
           <View style={[styles.habitIconBox, { backgroundColor: isDone ? 'rgba(255,255,255,0.25)' : habit.color + '20' }]}>
-            <Ionicons name={(habit.icon + (isDone ? '' : '-outline')) as any} size={22} color={isDone ? '#fff' : habit.color} />
+            <Ionicons name={(habit.icon + (isDone ? '' : '-outline')) as IonIconName} size={22} color={isDone ? '#fff' : habit.color} />
           </View>
           {isDone && <Ionicons name="checkmark-circle" size={20} color="#FFD700" />}
         </View>
@@ -570,7 +571,7 @@ function FunGoalCard({ goal, progress, gradient, C, isRTL }: {
     <View style={[styles.goalCard, { backgroundColor: C.card, borderColor: C.border }]}>
       <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md }}>
         <LinearGradient colors={gradient} style={styles.goalIcon}>
-          <Ionicons name={((goal.icon ?? 'star') + '-outline') as any} size={18} color="#fff" />
+          <Ionicons name={((goal.icon ?? 'star') + '-outline') as IonIconName} size={18} color="#fff" />
         </LinearGradient>
         <View style={{ flex: 1 }}>
           <Text style={[styles.goalTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{goal.title}</Text>
@@ -624,7 +625,7 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
               </Text>
               {moodCfg && (
                 <View style={[styles.journalMoodBadge, { backgroundColor: moodCfg.color + '18', flexDirection: isRTL ? 'row-reverse' : 'row', alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}>
-                  <Ionicons name={moodCfg.icon as any} size={12} color={moodCfg.color} />
+                  <Ionicons name={moodCfg.icon as IonIconName} size={12} color={moodCfg.color} />
                   <Text style={[styles.journalMoodText, { color: moodCfg.color }]}>
                     {tFunc(`mood${entry.mood!.charAt(0).toUpperCase() + entry.mood!.slice(1)}`)}
                   </Text>
@@ -698,7 +699,7 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: {
   return (
     <View style={[styles.chartCard, { backgroundColor: C.card, borderColor: C.border }]}>
       <View style={styles.chartBars}>
-        {data.map((d: any, i: number) => {
+        {data.map((d: { day: string; count: number; done: number }, i: number) => {
           const h = d.count > 0 ? Math.max((d.count / maxVal) * 64, 8) : 6;
           const doneH = d.done > 0 ? Math.max((d.done / maxVal) * 64, 6) : 0;
           return (
@@ -843,7 +844,7 @@ const styles = StyleSheet.create({
   habitTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   habitIconBox: { width: 40, height: 40, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
   habitName: { fontSize: 14, fontFamily: 'Inter_600SemiBold', lineHeight: 19 },
-  streakRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 'auto' as any },
+  streakRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 'auto' as const },
   streakNum: { fontSize: 14, fontFamily: 'Inter_700Bold' },
 
   // Goal card

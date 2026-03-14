@@ -5,6 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import type { IonIconName } from '../../src/types';
 
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
@@ -176,7 +177,7 @@ export default function TasksScreen() {
       {hasActiveFilter && (
         <View style={[styles.activeFilterRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={[styles.activeFilterPill, { backgroundColor: activeGrad[0] + '15', borderColor: activeGrad[0] + '40', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Ionicons name={activeOption.icon as any} size={13} color={activeGrad[0]} />
+            <Ionicons name={activeOption.icon as IonIconName} size={13} color={activeGrad[0]} />
             <Text style={[styles.activeFilterText, { color: activeGrad[0] }]}>{activeOption.label}</Text>
           </View>
           <Pressable
@@ -292,7 +293,7 @@ export default function TasksScreen() {
                     accessibilityLabel={opt.label}
                   >
                     <View style={[styles.filterOptionIcon, { backgroundColor: isActive ? grad[0] + '25' : C.background }]}>
-                      <Ionicons name={opt.icon as any} size={18} color={isActive ? grad[0] : C.textMuted} />
+                      <Ionicons name={opt.icon as IonIconName} size={18} color={isActive ? grad[0] : C.textMuted} />
                     </View>
                     <Text style={[styles.filterOptionText, { color: isActive ? grad[0] : C.text }]}>{opt.label}</Text>
                     {isActive && (
