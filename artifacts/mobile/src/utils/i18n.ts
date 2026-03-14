@@ -234,6 +234,10 @@ const translations: Record<Language, Record<string, string>> = {
     quickAddJournal: 'Daily journal',
     noHabitsYet: 'No habits yet',
     tapPlusToAdd: 'Tap + to add your first habit',
+    noGoalsYet: 'No goals yet',
+    tapPlusToAddGoal: 'Tap + to add your first goal',
+    noTasksForDay: 'No tasks scheduled for this day',
+    tapToAddTask: 'Tap + to plan your day',
   },
 
   ar: {
@@ -469,6 +473,10 @@ const translations: Record<Language, Record<string, string>> = {
     quickAddJournal: 'مذكرة يومية',
     noHabitsYet: 'لا توجد عادات بعد',
     tapPlusToAdd: 'اضغط + لإضافة أول عادة لك',
+    noGoalsYet: 'لا توجد أهداف بعد',
+    tapPlusToAddGoal: 'اضغط + لإضافة أول هدف لك',
+    noTasksForDay: 'لا توجد مهام مجدولة لهذا اليوم',
+    tapToAddTask: 'اضغط + لتخطيط يومك',
   },
 };
 

@@ -138,7 +138,7 @@ export default function MoreScreen() {
               label={tFunc('habits')}
               sub={`${habitsCount} ${isRTL ? 'عادة' : 'habits'}`}
               colors={['#A855F7', '#7C5CFC']}
-              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/habits'); }}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push({ pathname: '/habits', params: { from: 'more' } }); }}
               isRTL={isRTL}
               C={C}
             />
@@ -149,7 +149,7 @@ export default function MoreScreen() {
               label={tFunc('goals')}
               sub={`${goalsCount} ${isRTL ? 'هدف' : 'goals'}`}
               colors={['#FF6B9D', '#A855F7']}
-              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/goals'); }}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push({ pathname: '/goals', params: { from: 'more' } }); }}
               isRTL={isRTL}
               C={C}
             />
@@ -185,16 +185,18 @@ export default function MoreScreen() {
                 icon="language-outline"
                 iconColor="#7C5CFC"
                 title={tFunc('language')}
-                value={profile.language === 'ar' ? 'عربي' : 'English'}
-                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setLanguage(profile.language === 'ar' ? 'en' : 'ar'); }}
+                options={['English', 'عربي']}
+                activeIndex={profile.language === 'en' ? 0 : 1}
+                onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setLanguage(i === 0 ? 'en' : 'ar'); }}
                 C={C}
               />
               <SettingCard
                 icon="moon-outline"
                 iconColor="#A855F7"
                 title={tFunc('theme')}
-                value={tFunc(profile.theme === 'dark' ? 'dark' : 'light')}
-                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setTheme(profile.theme === 'dark' ? 'light' : 'dark'); }}
+                options={isRTL ? ['فاتح', 'داكن'] : ['Light', 'Dark']}
+                activeIndex={profile.theme === 'light' ? 0 : 1}
+                onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setTheme(i === 0 ? 'light' : 'dark'); }}
                 C={C}
               />
             </View>
@@ -203,16 +205,18 @@ export default function MoreScreen() {
                 icon="time-outline"
                 iconColor="#FF6B9D"
                 title={tFunc('timeFormat')}
-                value={profile.time_format}
-                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setTimeFormat(profile.time_format === '12h' ? '24h' : '12h'); }}
+                options={['12h', '24h']}
+                activeIndex={profile.time_format === '12h' ? 0 : 1}
+                onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setTimeFormat(i === 0 ? '12h' : '24h'); }}
                 C={C}
               />
               <SettingCard
                 icon="calendar-outline"
                 iconColor="#00C48C"
                 title={tFunc('startOfWeek')}
-                value={profile.start_of_week === 'monday' ? (isRTL ? 'الإثنين' : 'Mon') : (isRTL ? 'الأحد' : 'Sun')}
-                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setStartOfWeek(profile.start_of_week === 'monday' ? 'sunday' : 'monday'); }}
+                options={isRTL ? ['الأحد', 'الإثنين'] : ['Sun', 'Mon']}
+                activeIndex={profile.start_of_week === 'sunday' ? 0 : 1}
+                onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setStartOfWeek(i === 0 ? 'sunday' : 'monday'); }}
                 C={C}
               />
             </View>
@@ -438,26 +442,46 @@ function ContentCard({ icon, label, sub, colors, onPress, isRTL, C }: {
   );
 }
 
-function SettingCard({ icon, iconColor, title, value, onPress, C }: {
-  icon: any; iconColor: string; title: string; value: string;
-  onPress: () => void; C: any;
+function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C }: {
+  icon: any; iconColor: string; title: string;
+  options: string[]; activeIndex: number;
+  onSelect: (index: number) => void; C: any;
 }) {
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.settingCard,
-        { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.82 : 1 },
-      ]}
-      accessibilityRole="button"
-      accessibilityLabel={title + ': ' + value}
-    >
-      <View style={[styles.settingCardIcon, { backgroundColor: iconColor + '18' }]}>
-        <Ionicons name={icon} size={22} color={iconColor} />
+    <View style={[styles.settingCard, { backgroundColor: C.card, borderColor: C.border }]}>
+      <View style={styles.settingCardHeader}>
+        <View style={[styles.settingCardIcon, { backgroundColor: iconColor + '18' }]}>
+          <Ionicons name={icon} size={17} color={iconColor} />
+        </View>
+        <Text style={[styles.settingCardTitle, { color: C.textMuted }]} numberOfLines={1}>{title}</Text>
       </View>
-      <Text style={[styles.settingCardTitle, { color: C.textMuted }]} numberOfLines={1}>{title}</Text>
-      <Text style={[styles.settingCardValue, { color: C.text }]} numberOfLines={1}>{value}</Text>
-    </Pressable>
+      <View style={styles.settingCardOptions}>
+        {options.map((opt, i) => (
+          <Pressable
+            key={i}
+            onPress={() => onSelect(i)}
+            style={({ pressed }) => [
+              styles.settingCardOption,
+              {
+                backgroundColor: i === activeIndex ? iconColor + '18' : C.surface,
+                borderColor: i === activeIndex ? iconColor : C.border,
+                opacity: pressed ? 0.75 : 1,
+              },
+            ]}
+            accessibilityRole="radio"
+            accessibilityState={{ checked: i === activeIndex }}
+            accessibilityLabel={opt}
+          >
+            <Text style={[
+              styles.settingCardOptionText,
+              { color: i === activeIndex ? iconColor : C.textMuted, fontFamily: i === activeIndex ? 'Inter_700Bold' : 'Inter_400Regular' },
+            ]}>
+              {opt}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+    </View>
   );
 }
 
@@ -774,14 +798,19 @@ const styles = StyleSheet.create({
   settingGridRow: { gap: Spacing.sm },
   settingCard: {
     flex: 1, borderRadius: Radius.xl, borderWidth: 1,
-    padding: Spacing.md, alignItems: 'center', gap: 6,
+    padding: Spacing.md, gap: Spacing.sm,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2,
   },
+  settingCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   settingCardIcon: {
-    width: 48, height: 48, borderRadius: 14,
+    width: 32, height: 32, borderRadius: 9,
     alignItems: 'center', justifyContent: 'center',
-    marginBottom: 2,
   },
-  settingCardTitle: { fontSize: 11, fontFamily: 'Inter_600SemiBold', textTransform: 'uppercase', letterSpacing: 0.4, textAlign: 'center' },
-  settingCardValue: { fontSize: 15, fontFamily: 'Inter_700Bold', textAlign: 'center' },
+  settingCardTitle: { flex: 1, fontSize: 12, fontFamily: 'Inter_600SemiBold', letterSpacing: 0.1 },
+  settingCardOptions: { flexDirection: 'row', gap: 5 },
+  settingCardOption: {
+    flex: 1, borderRadius: Radius.md, borderWidth: 1.5,
+    paddingVertical: 7, alignItems: 'center', justifyContent: 'center',
+  },
+  settingCardOptionText: { fontSize: 12, textAlign: 'center' },
 });

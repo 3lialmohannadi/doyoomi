@@ -7,7 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { Spacing, Radius } from '../../src/theme';
@@ -32,6 +32,7 @@ export default function GoalsScreen() {
   const { C } = useAppTheme();
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
+  const { from } = useLocalSearchParams<{ from?: string }>();
 
   const { goals, deleteGoal, incrementProgress } = useGoalsStore();
   const { profile } = useSettingsStore();
@@ -63,7 +64,10 @@ export default function GoalsScreen() {
         <View style={styles.headerDecor2} />
         <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <Pressable
-            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.back(); }}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              from === 'more' ? router.navigate('/settings') : router.back();
+            }}
             style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}
             accessibilityRole="button"
           >

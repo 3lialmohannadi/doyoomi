@@ -9,7 +9,7 @@ import { format } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { Spacing, Radius, Shadow } from '../../src/theme';
@@ -27,6 +27,7 @@ export default function HabitsScreen() {
   const { C } = useAppTheme();
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
+  const { from } = useLocalSearchParams<{ from?: string }>();
 
   const { habits, completeHabit, uncompleteHabit, deleteHabit } = useHabitsStore();
   const { profile } = useSettingsStore();
@@ -66,7 +67,10 @@ export default function HabitsScreen() {
 
         <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <Pressable
-            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.back(); }}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              from === 'more' ? router.navigate('/settings') : router.back();
+            }}
             style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}
             accessibilityRole="button"
           >

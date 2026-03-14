@@ -1,0 +1,336 @@
+Apply the following additional improvements, fixes, UX refinements, and full quality-control checks carefully and professionally.
+
+Important:
+Do not make quick patches.
+Inspect the current implementation first, then apply the requested changes cleanly.
+If something already exists but is unclear, inconsistent, broken, or incomplete, fix it properly.
+Preserve the app identity and improve the user experience without breaking working parts of the app.
+
+Very important:
+- After implementing these changes, perform a full, deep, and careful audit of the entire app
+- Fix remaining bugs and errors
+- clean the code
+- check UI/UX quality
+- check design consistency
+- check light mode and dark mode
+- check main pages and child pages
+- make sure the app feels polished, stable, and consistent
+- avoid crashes, broken flows, and hidden regressions
+
+==================================================
+NEW REQUIRED IMPROVEMENTS
+==================================================
+
+1) Improve the empty state for Goals on the Dashboard
+2) Show an empty state for Tasks when there are no tasks for the selected day
+3) Fix back navigation for Habits and Goals when opened from More
+4) Improve Settings cards so the available options are visible directly inside each card
+5) Improve user-facing texts, messages, micro-interactions, and visual polish
+6) Run a full comprehensive audit of the app after implementation
+7) Fix bugs, errors, weak UX, weak design consistency, and clean the code
+
+==================================================
+1) DASHBOARD - GOALS EMPTY STATE
+==================================================
+
+Current requirement:
+When there are no goals, the Dashboard should show an empty state similar in style/presentation to the current Habits empty state.
+
+What I mean:
+Right now, the Habits section already has a nice empty-state style/message.
+I want the Goals section to use the same display style/pattern.
+
+Required behavior:
+When there are no goals, show a message equivalent to:
+- No goals yet, tap + to add your first goal
+
+The key requirement:
+- Use the same visual presentation style/pattern as the Habits empty state
+- It should feel visually consistent with the Habits section
+- It should look intentional and aligned with the Dashboard design
+- Do not create a completely different empty-state style for Goals
+
+Goal:
+The Goals empty state should feel like the Goals version of the current Habits empty state.
+
+==================================================
+2) DASHBOARD - TASKS EMPTY STATE FOR THE DAY
+==================================================
+
+Required:
+When there are no tasks for the selected/current day, show a clear empty state in the Tasks section on the Dashboard.
+
+Message meaning:
+- There are no tasks for this day
+
+Requirements:
+- Show this in the Tasks area on the Dashboard
+- Make it clean and visually aligned with the Dashboard design
+- It should not look broken or blank
+- It should feel like a proper empty state, not missing content
+
+Keep it:
+- simple
+- clear
+- polished
+- consistent with the rest of the app
+
+==================================================
+3) FIX BACK NAVIGATION FOR HABITS AND GOALS WHEN OPENED FROM MORE
+==================================================
+
+Current issue:
+When opening Habits from the More page, everything opens correctly, but pressing the Back button takes the user to the Dashboard, which is wrong.
+
+The same issue also happens for Goals.
+
+Important clarification:
+- This problem happens only when opening Habits or Goals from the More page
+- If they are opened from the Dashboard, navigation is already fine
+
+Required:
+- Fix the back navigation stack/history when Habits is opened from More
+- Fix the back navigation stack/history when Goals is opened from More
+
+Expected behavior:
+- If the user opens Habits from More, pressing Back should return to the previous page (More), not Dashboard
+- If the user opens Goals from More, pressing Back should return to the previous page (More), not Dashboard
+
+Check:
+- route push vs replace behavior
+- stack history
+- navigation source
+- screen registration
+- nested navigation behavior
+- back button handler if customized
+
+Do not break the already-correct behavior when Habits or Goals are opened from the Dashboard.
+
+==================================================
+4) SETTINGS CARDS - MAKE OPTIONS VISIBLE INSIDE THE CARD
+==================================================
+
+Current feedback:
+The Settings section is good overall and I have no major issue with it.
+However, each settings card should show the available options directly, because the current interaction is not very clear.
+
+Required behavior:
+For each settings card, display the actual available choices clearly inside the card.
+
+Example:
+Language:
+- Arabic
+- English
+
+And the user can select one of them directly.
+
+Apply the same pattern to the other settings cards as well, such as:
+- Language
+- Appearance
+- Time Format
+- Start of Week
+
+Requirements:
+- Make the options visible and understandable directly
+- Improve clarity of the settings UX
+- Keep the design clean and compact
+- Make the selected option visually obvious
+- Make the cards still look aligned with the app identity
+- Do not make them oversized or messy
+
+Goal:
+The settings section should be clearer, more interactive, and easier to understand at a glance.
+
+==================================================
+5) IMPROVE USER-FACING TEXTS, MESSAGES, MICRO-INTERACTIONS, AND POLISH
+==================================================
+
+Refine the user-facing experience across the app.
+
+Please improve:
+- texts shown to the user
+- labels
+- helper texts
+- success messages
+- error messages
+- empty-state messages
+- confirmation messages
+- small interaction feedback
+- secondary/polish details
+- minor visual and interaction refinements
+
+Goal:
+Make the app feel more polished, friendly, and intentional.
+
+Important:
+- Keep it aligned with the app identity
+- Keep it suitable in both Arabic and English
+- Improve wording and clarity where needed
+- Improve small UX moments and user feedback
+
+==================================================
+6) FULL COMPREHENSIVE APP AUDIT AFTER IMPLEMENTATION
+==================================================
+
+After implementing the above changes, perform a full, deep, comprehensive, and very careful audit of the entire app.
+
+This audit must include:
+
+- main pages
+- child/sub-pages
+- Dashboard
+- More page
+- Tasks
+- Habits
+- Goals
+- Daily Journal
+- Categories
+- Settings
+- Support/Contact
+- Profile
+- all forms
+- all navigation flows
+- all empty states
+- all feedback messages
+- all translations
+- Arabic/English behavior
+- RTL/LTR behavior
+- design consistency
+- visual identity consistency
+- spacing / sizing / typography consistency
+- light mode
+- dark mode
+- interaction consistency
+- runtime stability
+- crash risks
+- hidden regressions
+- broken flows
+- broken buttons
+- broken navigation
+- bugs
+- UI issues
+- UX issues
+
+==================================================
+7) FIX BUGS, CLEAN CODE, AND IMPROVE STABILITY
+==================================================
+
+After the audit, do all of the following:
+
+- fix bugs
+- fix remaining UI/UX issues
+- fix broken or weak navigation
+- fix inconsistent or weak texts/messages
+- fix remaining design inconsistencies
+- fix light mode issues
+- fix dark mode issues
+- clean the code
+- remove dead code
+- remove unused imports
+- remove broken references
+- remove duplicate logic where appropriate
+- fix runtime issues
+- fix build issues
+- fix type issues if applicable
+- improve maintainability where needed
+
+Goal:
+The app should feel stable, polished, consistent, and production-ready.
+It should not have obvious crashes, obvious bugs, obvious broken flows, or obvious visual inconsistency.
+
+==================================================
+IMPLEMENTATION RULES
+==================================================
+
+While doing this work:
+- inspect first
+- fix root causes where possible
+- preserve the app identity
+- preserve already-correct working flows
+- do not break Dashboard behavior that is already correct
+- do not break More page structure
+- do not break Arabic/English support
+- do not break RTL/LTR behavior
+- do not break light mode/dark mode
+- do not leave partial fixes
+- do not leave hidden regressions
+- do not leave dead code after changes
+
+If any component or navigation flow is messy:
+- refactor it carefully and safely
+
+==================================================
+FINAL REQUIRED REVIEW
+==================================================
+
+After finishing, perform a strict final review of all affected areas, including:
+
+- Goals empty state on Dashboard
+- Tasks empty state on Dashboard
+- Habits navigation from More
+- Goals navigation from More
+- Back button behavior
+- Settings cards and visible option choices
+- user-facing messages and texts
+- polish and micro-interactions
+- Arabic/English content
+- RTL/LTR behavior
+- light mode
+- dark mode
+- design consistency
+- main pages
+- child pages
+- navigation consistency
+- code cleanliness
+- runtime stability
+
+==================================================
+FINAL VERIFICATION CHECKLIST
+==================================================
+
+Before finishing, verify all of the following:
+
+1. Goals empty state on Dashboard now matches the Habits empty-state style/pattern
+2. Goals empty state clearly tells the user they can add their first goal
+3. When there are no tasks for the day, the Dashboard shows a clean Tasks empty state
+4. Opening Habits from More and pressing Back returns to More, not Dashboard
+5. Opening Goals from More and pressing Back returns to More, not Dashboard
+6. Opening Habits from Dashboard still works correctly
+7. Opening Goals from Dashboard still works correctly
+8. Settings cards now show the available choices directly
+9. Language card clearly shows Arabic and English options
+10. Other settings cards clearly show their available options
+11. Selected options are visually clear
+12. User-facing texts and messages were improved
+13. Micro-interactions and polish were improved
+14. Full app audit was completed
+15. Bugs were checked and fixed
+16. Code cleanup was completed
+17. Design consistency was reviewed
+18. Main pages and child pages were reviewed
+19. Light mode was checked and fixed where needed
+20. Dark mode was checked and fixed where needed
+21. No obvious crashes remain
+22. No obvious broken flows remain
+23. No obvious major UI inconsistencies remain
+
+==================================================
+FINAL RESPONSE FORMAT
+==================================================
+
+After finishing, provide a clear summary including:
+- what was fixed on the Dashboard
+- what was fixed in navigation from More
+- what was improved in the Settings cards
+- what user-facing texts/messages were improved
+- what UX/UI polish was added
+- what bugs were found and fixed
+- what was cleaned in the code
+- whether the full audit was completed
+- whether light mode and dark mode were checked
+- whether main pages and child pages were checked
+- whether remaining errors were fixed
+- any remaining issue if one still exists
+
+Do not stop at a partial implementation.
+Complete the improvements, navigation fixes, UX/UI polish, full audit, bug fixing, code cleanup, and stability pass professionally.

@@ -173,14 +173,29 @@ export default function HomeScreen() {
         )}
 
         {/* Today Tasks */}
-        {dayTasks.length > 0 && (
-          <Section
-            title={selectedDay === today ? tFunc('today2') : formatShortDate(selectedDay, lang)}
-            C={C} isRTL={isRTL}
-            action={tFunc('addNew')}
-            onAction={() => setShowTaskForm(true)}
-            onTitlePress={() => router.push('/tasks')}
-          >
+        <Section
+          title={selectedDay === today ? tFunc('today2') : formatShortDate(selectedDay, lang)}
+          C={C} isRTL={isRTL}
+          action={tFunc('addNew')}
+          onAction={() => setShowTaskForm(true)}
+          onTitlePress={() => router.push('/tasks')}
+        >
+          {dayTasks.length === 0 ? (
+            <Pressable
+              onPress={() => setShowTaskForm(true)}
+              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.8 : 1 }]}
+              accessibilityRole="button"
+            >
+              <View style={[styles.habitsEmptyIcon, { backgroundColor: C.tint + '15' }]}>
+                <Ionicons name="calendar-clear-outline" size={28} color={C.tint} />
+              </View>
+              <View style={{ flex: 1, alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
+                <Text style={[styles.habitsEmptyTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('noTasksForDay')}</Text>
+                <Text style={[styles.habitsEmptySubtitle, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('tapToAddTask')}</Text>
+              </View>
+              <Ionicons name="add-circle-outline" size={24} color={C.tint} />
+            </Pressable>
+          ) : (
             <View style={{ gap: Spacing.sm }}>
               {dayTasks.slice(0, 4).map(task => {
                 const cat = categories.find(c => c.id === task.category_id);
@@ -205,8 +220,8 @@ export default function HomeScreen() {
                 );
               })}
             </View>
-          </Section>
-        )}
+          )}
+        </Section>
 
         {/* Habits */}
         <Section
@@ -241,8 +256,28 @@ export default function HomeScreen() {
         </Section>
 
         {/* Goals */}
-        {topGoals.length > 0 && (
-          <Section title={tFunc('goalsSection')} C={C} isRTL={isRTL} onTitlePress={() => router.push('/goals')}>
+        <Section
+          title={tFunc('goalsSection')} C={C} isRTL={isRTL}
+          action={tFunc('addNew')}
+          onAction={() => setShowGoalForm(true)}
+          onTitlePress={() => router.push('/goals')}
+        >
+          {goals.length === 0 ? (
+            <Pressable
+              onPress={() => setShowGoalForm(true)}
+              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.8 : 1 }]}
+              accessibilityRole="button"
+            >
+              <View style={[styles.habitsEmptyIcon, { backgroundColor: '#FF6B9D15' }]}>
+                <Ionicons name="trophy-outline" size={28} color="#FF6B9D" />
+              </View>
+              <View style={{ flex: 1, alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
+                <Text style={[styles.habitsEmptyTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('noGoalsYet')}</Text>
+                <Text style={[styles.habitsEmptySubtitle, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('tapPlusToAddGoal')}</Text>
+              </View>
+              <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textMuted} />
+            </Pressable>
+          ) : (
             <View style={{ gap: Spacing.md }}>
               {topGoals.map((g, i) => {
                 const pct = g.target_value > 0 ? g.current_value / g.target_value : 0;
@@ -260,8 +295,8 @@ export default function HomeScreen() {
                 );
               })}
             </View>
-          </Section>
-        )}
+          )}
+        </Section>
 
         {/* Journal Card */}
         <Section
