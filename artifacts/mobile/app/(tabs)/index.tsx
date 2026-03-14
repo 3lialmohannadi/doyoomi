@@ -24,7 +24,7 @@ import { HabitForm } from '../../src/features/habits/HabitForm';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
 import { JournalForm } from '../../src/features/journal/JournalForm';
 import { GoalForm } from '../../src/features/goals/GoalForm';
-import { Task, Habit, Mood, JournalEntry } from '../../src/types';
+import { Task, Habit, Mood, JournalEntry, Language } from '../../src/types';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -362,7 +362,11 @@ function AddBtn({ onPress, label }: { onPress: () => void; label: string }) {
   );
 }
 
-function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, isRTL, lang, C, insets }: any) {
+function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, isRTL, lang, C, insets }: {
+  visible: boolean; onClose: () => void; onTask: () => void; onHabit: () => void;
+  onGoal: () => void; onJournal: () => void; isRTL: boolean; lang: Language;
+  C: Record<string, string>; insets: { bottom: number };
+}) {
   const tFunc = (key: string) => t(key, lang);
   const items = [
     { label: tFunc('addTask'), sublabel: tFunc('quickAddTask'), icon: 'checkmark-circle-outline', colors: ['#7C5CFC', '#A855F7'] as [string,string], onPress: onTask },
@@ -409,7 +413,7 @@ function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, is
   );
 }
 
-function HeroStat({ icon, value, label, color, C }: { icon: any; value: number; label: string; color: string; C: any }) {
+function HeroStat({ icon, value, label, color, C }: { icon: keyof typeof Ionicons.glyphMap; value: number; label: string; color: string; C: Record<string, string> }) {
   return (
     <View style={styles.heroStat}>
       <View style={[styles.heroStatIcon, { backgroundColor: color + '18' }]}>
@@ -421,7 +425,10 @@ function HeroStat({ icon, value, label, color, C }: { icon: any; value: number; 
   );
 }
 
-function Section({ title, children, C, action, onAction, onTitlePress, isRTL }: any) {
+function Section({ title, children, C, action, onAction, onTitlePress, isRTL }: {
+  title: string; children: React.ReactNode; C: Record<string, string>;
+  action?: string; onAction?: () => void; onTitlePress?: () => void; isRTL: boolean;
+}) {
   return (
     <View style={styles.section}>
       <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -451,7 +458,11 @@ function Section({ title, children, C, action, onAction, onTitlePress, isRTL }: 
   );
 }
 
-function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C, isRTL }: any) {
+function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C, isRTL }: {
+  task: Task; catName?: string; catColor?: string; timeStr?: string;
+  onToggle: (id: string) => void; onLongPress: (task: Task) => void;
+  C: Record<string, string>; isRTL: boolean;
+}) {
   const isCompleted = task.status === 'completed';
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
@@ -468,13 +479,13 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C
       style={[animStyle, styles.taskRow, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
       onPressIn={() => { scale.value = withSpring(0.98); }}
       onPressOut={() => { scale.value = withSpring(1); }}
-      onLongPress={onLongPress}
+      onLongPress={() => onLongPress(task)}
       delayLongPress={400}
       accessibilityRole="button"
     >
       <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.taskAccent} />
       <Pressable
-        onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onToggle(); }}
+        onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onToggle(task.id); }}
         style={({ pressed }) => [styles.taskCheck, { opacity: pressed ? 0.7 : 1 }]}
         accessibilityRole="checkbox"
         accessibilityState={{ checked: isCompleted }}
@@ -503,10 +514,10 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C
 function FunHabitCard({
   habit, onComplete, onUncomplete, C,
 }: {
-  habit: any;
+  habit: Habit;
   onComplete: (id: string) => void;
   onUncomplete: (id: string) => void;
-  C: any;
+  C: Record<string, string>;
 }) {
   const today = format(new Date(), 'yyyy-MM-dd');
   const lastDate = habit.last_completed_at ? format(new Date(habit.last_completed_at), 'yyyy-MM-dd') : null;
@@ -549,7 +560,10 @@ function FunHabitCard({
   );
 }
 
-function FunGoalCard({ goal, progress, gradient, C, isRTL }: any) {
+function FunGoalCard({ goal, progress, gradient, C, isRTL }: {
+  goal: { title: string; icon?: string; current_value: number; target_value: number };
+  progress: number; gradient: [string, string]; C: Record<string, string>; isRTL: boolean;
+}) {
   const pct = Math.round(progress * 100);
 
   return (
@@ -589,7 +603,7 @@ const MOOD_ICONS: Record<Mood, { icon: string; color: string }> = {
   bad:        { icon: 'sad-outline',            color: '#FF4D6A' },
 };
 
-function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: JournalEntry; onWrite: () => void; onOpen: () => void; C: any; tFunc: (k: string) => string; isRTL?: boolean }) {
+function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: JournalEntry; onWrite: () => void; onOpen: () => void; C: Record<string, string>; tFunc: (k: string) => string; isRTL?: boolean }) {
   if (entry) {
     const moodCfg = entry.mood ? MOOD_ICONS[entry.mood] : null;
     return (
@@ -659,12 +673,15 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
   );
 }
 
-function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: any) {
+function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: {
+  weekDays: Date[]; tasks: Task[]; C: Record<string, string>;
+  tFunc: (key: string) => string; lang: Language;
+}) {
   const maxVal = 8;
   const data = weekDays.map((d: Date) => {
     const key = formatDateKey(d);
-    const count = tasks.filter((task: any) => task.due_date === key).length;
-    const done = tasks.filter((task: any) => task.due_date === key && task.status === 'completed').length;
+    const count = tasks.filter((task) => task.due_date === key).length;
+    const done = tasks.filter((task) => task.due_date === key && task.status === 'completed').length;
     return { day: getDayLabel(d, lang).slice(0, 1), count, done };
   });
 

@@ -22,7 +22,7 @@ import { Spacing, Radius } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
-import { getTodayString, formatDateKey } from '../../src/utils/date';
+import { getTodayString, formatDateKey, AR_MONTHS } from '../../src/utils/date';
 import { Language } from '../../src/types';
 
 export default function MoreScreen() {
@@ -71,10 +71,9 @@ export default function MoreScreen() {
     setShowProfileModal(false);
   };
 
-  const DOB_AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   const displayDob = profileDob
     ? isRTL
-      ? (() => { const d = parseISO(profileDob); return `${d.getDate()} ${DOB_AR_MONTHS[d.getMonth()]} ${d.getFullYear()}`; })()
+      ? (() => { const d = parseISO(profileDob); return `${d.getDate()} ${AR_MONTHS[d.getMonth()]} ${d.getFullYear()}`; })()
       : format(parseISO(profileDob), 'MMM d, yyyy')
     : '';
 
@@ -142,7 +141,7 @@ export default function MoreScreen() {
             <ContentCard
               icon="leaf"
               label={tFunc('habits')}
-              sub={`${habitsCount} ${isRTL ? 'عادة' : 'habits'}`}
+              sub={`${habitsCount} ${tFunc('habitCount')}`}
               colors={['#A855F7', '#7C5CFC']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push({ pathname: '/habits', params: { from: 'more' } }); }}
               isRTL={isRTL}
@@ -153,7 +152,7 @@ export default function MoreScreen() {
             <ContentCard
               icon="trophy"
               label={tFunc('goals')}
-              sub={`${goalsCount} ${isRTL ? 'هدف' : 'goals'}`}
+              sub={`${goalsCount} ${tFunc('goalCount')}`}
               colors={['#FF6B9D', '#A855F7']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push({ pathname: '/goals', params: { from: 'more' } }); }}
               isRTL={isRTL}
@@ -164,7 +163,7 @@ export default function MoreScreen() {
             <ContentCard
               icon="book"
               label={tFunc('journal')}
-              sub={`${journalCount} ${isRTL ? 'إدخال' : 'entries'}`}
+              sub={`${journalCount} ${tFunc('entryCount')}`}
               colors={['#9B6EF5', '#FF6B9D']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/journal'); }}
               isRTL={isRTL}
@@ -175,7 +174,7 @@ export default function MoreScreen() {
             <ContentCard
               icon="folder-open"
               label={tFunc('categories')}
-              sub={`${categories.length} ${isRTL ? 'تصنيف' : 'categories'}`}
+              sub={`${categories.length} ${tFunc('categoryCount')}`}
               colors={['#FF6B35', '#FFB347']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowCategories(true); }}
               isRTL={isRTL}
@@ -253,7 +252,7 @@ export default function MoreScreen() {
               <View style={[styles.wideCardText, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
                 <Text style={[styles.wideCardTitle, { color: '#fff', textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('supportAndContact')}</Text>
                 <Text style={[styles.wideCardSub, { color: 'rgba(255,255,255,0.75)', textAlign: isRTL ? 'right' : 'left' }]}>
-                  {isRTL ? 'نحن هنا للمساعدة' : 'We are here to help'}
+                  {tFunc('weAreHereToHelp')}
                 </Text>
               </View>
               <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={18} color="rgba(255,255,255,0.8)" />
@@ -412,7 +411,7 @@ export default function MoreScreen() {
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
-function SectionHeader({ title, isRTL, C }: { title: string; isRTL: boolean; C: any }) {
+function SectionHeader({ title, isRTL, C }: { title: string; isRTL: boolean; C: Record<string, string> }) {
   return (
     <Text style={[styles.sectionHeader, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>
       {title}
@@ -421,9 +420,9 @@ function SectionHeader({ title, isRTL, C }: { title: string; isRTL: boolean; C: 
 }
 
 function ContentCard({ icon, label, sub, colors, onPress, isRTL, C }: {
-  icon: any; label: string; sub: string;
+  icon: keyof typeof Ionicons.glyphMap; label: string; sub: string;
   colors: [string, string]; onPress: () => void;
-  isRTL: boolean; C: any;
+  isRTL: boolean; C: Record<string, string>;
 }) {
   return (
     <Pressable
@@ -454,9 +453,9 @@ function ContentCard({ icon, label, sub, colors, onPress, isRTL, C }: {
 }
 
 function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C, isRTL }: {
-  icon: any; iconColor: string; title: string;
+  icon: keyof typeof Ionicons.glyphMap; iconColor: string; title: string;
   options: string[]; activeIndex: number;
-  onSelect: (index: number) => void; C: any; isRTL?: boolean;
+  onSelect: (index: number) => void; C: Record<string, string>; isRTL?: boolean;
 }) {
   return (
     <View style={[styles.settingCard, { backgroundColor: C.card, borderColor: C.border }]}>
@@ -496,7 +495,10 @@ function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C
   );
 }
 
-function ProfileField({ label, icon, C, isRTL, children }: any) {
+function ProfileField({ label, icon, C, isRTL, children }: {
+  label: string; icon: keyof typeof Ionicons.glyphMap;
+  C: Record<string, string>; isRTL: boolean; children: React.ReactNode;
+}) {
   return (
     <View style={[styles.profileField, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       <View style={[styles.profileFieldLeft, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -508,7 +510,6 @@ function ProfileField({ label, icon, C, isRTL, children }: any) {
   );
 }
 
-const DOB_AR_MONTH_NAMES = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 const DOB_AR_DAY_HEADERS = ['أح','اث','ثل','أر','خم','جم','سب'];
 const DOB_EN_DAY_HEADERS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
@@ -573,7 +574,7 @@ function DobCalendar({ selected, onSelect, C, lang }: DobCalendarProps) {
           <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={18} color={C.tint} />
         </Pressable>
         <Text style={[dobStyles.navLabel, { color: C.text }]}>
-          {isAr ? DOB_AR_MONTH_NAMES[viewDate.getMonth()] : format(viewDate, 'MMMM')}
+          {isAr ? AR_MONTHS[viewDate.getMonth()] : format(viewDate, 'MMMM')}
         </Text>
         <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); }} hitSlop={8}>
           <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={18} color={C.tint} />

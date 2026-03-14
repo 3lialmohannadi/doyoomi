@@ -105,7 +105,7 @@ Expo/React Native productivity app — Do.Yoomi (يومي). Offline-first with Z
 - `src/components/ui/FormModal.tsx` — Shared form modal with RTL support + KeyboardAvoidingView
 - `src/store/` — Zustand stores (tasks, habits, goals, journal, categories, settings)
 - `src/utils/i18n.ts` — EN/AR translations; phone placeholder uses +974
-- `src/utils/date.ts` — Date formatting with Arabic locale support (formatDate/formatShortDate)
+- `src/utils/date.ts` — Date formatting with Arabic locale support; exports shared `AR_MONTHS`, `AR_DAYS_FULL`, `AR_DAYS_SHORT_SUN/MON`, `EN_DAYS_SHORT_SUN/MON` constants (single source of truth for all calendar/date components)
 - `src/theme/index.ts` — Design tokens (colors, spacing, radius, shadow, typography)
 - `assets/images/icon.png` — App icon (يومي branded)
 

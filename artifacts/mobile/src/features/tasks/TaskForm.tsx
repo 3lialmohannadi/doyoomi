@@ -17,7 +17,7 @@ import { useCategoriesStore } from '../../store/categoriesStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { t } from '../../utils/i18n';
-import { getTodayString, formatDateKey } from '../../utils/date';
+import { getTodayString, formatDateKey, AR_MONTHS, AR_DAYS_SHORT_SUN, AR_DAYS_SHORT_MON, EN_DAYS_SHORT_SUN, EN_DAYS_SHORT_MON } from '../../utils/date';
 import { Radius, Spacing } from '../../theme';
 
 interface TaskFormProps {
@@ -104,7 +104,6 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
     ...categories.map(c => ({ key: c.id, label: c.name, color: c.color, icon: c.icon })),
   ];
 
-  const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   const displayDate = dueDate
     ? lang === 'ar'
       ? (() => { const d = parseISO(dueDate); return `${d.getDate()} ${AR_MONTHS[d.getMonth()]} ${d.getFullYear()}`; })()
@@ -201,11 +200,6 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
 }
 
 // ── Pure JS Inline Calendar ──
-const AR_MONTHS_CAL = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-const AR_DAY_HEADERS_SUN = ['أح','اث','ثل','أر','خم','جم','سب'];
-const AR_DAY_HEADERS_MON = ['اث','ثل','أر','خم','جم','سب','أح'];
-const EN_DAY_HEADERS_SUN = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-const EN_DAY_HEADERS_MON = ['Mo','Tu','We','Th','Fr','Sa','Su'];
 
 interface InlineCalendarProps {
   selected: string;
@@ -222,8 +216,8 @@ function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay, lang }: 
 
   const weekStart = startDay === 'sunday' ? 0 : 1;
   const dayHeaders = isAr
-    ? (startDay === 'sunday' ? AR_DAY_HEADERS_SUN : AR_DAY_HEADERS_MON)
-    : (startDay === 'sunday' ? EN_DAY_HEADERS_SUN : EN_DAY_HEADERS_MON);
+    ? (startDay === 'sunday' ? AR_DAYS_SHORT_SUN : AR_DAYS_SHORT_MON)
+    : (startDay === 'sunday' ? EN_DAYS_SHORT_SUN : EN_DAYS_SHORT_MON);
 
   const daysInMonth = getDaysInMonth(viewDate);
   const firstDay = getDay(startOfMonth(viewDate));
@@ -265,7 +259,7 @@ function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay, lang }: 
           style={calStyles.navLabelBtn}
         >
           <Text style={[calStyles.navLabel, { color: C.text }]}>
-            {isAr ? `${AR_MONTHS_CAL[viewDate.getMonth()]} ${viewDate.getFullYear()}` : format(viewDate, 'MMM yyyy')}
+            {isAr ? `${AR_MONTHS[viewDate.getMonth()]} ${viewDate.getFullYear()}` : format(viewDate, 'MMM yyyy')}
           </Text>
           <Ionicons name={showYearPicker ? 'chevron-up' : 'chevron-down'} size={12} color={C.textMuted} />
         </Pressable>

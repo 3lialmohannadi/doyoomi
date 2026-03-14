@@ -247,6 +247,13 @@ const translations: Record<Language, Record<string, string>> = {
     addCategoryHint: 'Add a category to organize your tasks',
     categoryNamePlaceholder: 'Category name',
     preview: 'Preview',
+
+    // Count labels
+    habitCount: 'habits',
+    goalCount: 'goals',
+    entryCount: 'entries',
+    categoryCount: 'categories',
+    weAreHereToHelp: 'We are here to help',
   },
 
   ar: {
@@ -495,6 +502,13 @@ const translations: Record<Language, Record<string, string>> = {
     addCategoryHint: 'أضف فئة لتنظيم مهامك',
     categoryNamePlaceholder: 'اسم الفئة',
     preview: 'معاينة',
+
+    // تسميات العدد
+    habitCount: 'عادة',
+    goalCount: 'هدف',
+    entryCount: 'إدخال',
+    categoryCount: 'تصنيف',
+    weAreHereToHelp: 'نحن هنا للمساعدة',
   },
 };
 
