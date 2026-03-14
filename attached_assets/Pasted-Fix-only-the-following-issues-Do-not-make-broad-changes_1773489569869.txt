@@ -1,0 +1,214 @@
+Fix only the following issues. Do not make broad changes. Do not redesign unrelated screens. Do not touch anything outside the exact areas required.
+
+Very important:
+- Arabic means RIGHT-TO-LEFT (RTL)
+- English means LEFT-TO-RIGHT (LTR)
+- This applies to everything relevant:
+  - text alignment
+  - card alignment
+  - row direction
+  - headers
+  - labels
+  - navigation-related UI
+  - settings cards layout
+  - greeting/user name layout
+  - all related tappable sections
+- Do not break RTL/LTR again
+- Inspect first, then apply only the minimal safe fix
+
+==================================================
+1) DASHBOARD SECTION TITLES MUST OPEN THEIR PAGES
+==================================================
+
+Required:
+Enable tapping on these Dashboard section titles so they open their correct pages:
+
+- Habits title -> opens Habits page
+- Goals title -> opens Goals page
+- Daily Journal title -> opens Daily Journal page
+
+Requirements:
+- Make the title clearly tappable if appropriate
+- Keep the interaction elegant and natural
+- Make sure it works reliably
+- Ensure the press feedback/state is clean
+- Do not break the existing Dashboard layout
+
+Also verify:
+- the route is correct
+- no broken navigation reference remains
+- Dashboard and destination pages remain properly connected
+
+==================================================
+2) FIX BACK NAVIGATION FOR HABITS AND GOALS WHEN OPENED FROM MORE
+==================================================
+
+Current issue:
+When opening Habits from the More page, pressing Back takes the user to Dashboard, which is wrong.
+
+The same issue also happens for Goals.
+
+Important clarification:
+- This problem happens only when Habits or Goals are opened from the More page
+- If they are opened from the Dashboard, navigation is already correct and must stay unchanged
+
+Required:
+- Fix the back navigation stack/history when Habits is opened from More
+- Fix the back navigation stack/history when Goals is opened from More
+
+Expected behavior:
+- If the user opens Habits from More, pressing Back should return to More, not Dashboard
+- If the user opens Goals from More, pressing Back should return to More, not Dashboard
+
+Check:
+- route push vs replace behavior
+- stack history
+- navigation source
+- screen registration
+- nested navigation behavior
+- back button handler if customized
+
+Do not break the already-correct behavior when Habits or Goals are opened from the Dashboard.
+
+==================================================
+3) LANGUAGE / DIRECTION / IDENTITY REQUIREMENTS
+==================================================
+
+All of the above changes must:
+- match the app identity
+- match the current design language
+- work correctly in Arabic
+- work correctly in English
+- respect RTL and LTR correctly
+- preserve consistent colors, typography, icons, spacing, and sizing
+- feel polished and intentional
+
+Critical language rule:
+- Arabic = right to left
+- English = left to right
+
+Check carefully:
+- text alignment
+- card alignment
+- row direction
+- spacing between sections
+- settings cards layout in Arabic and English
+- header alignment
+- greeting + user name layout
+- More page hierarchy
+- tap behavior and feedback
+- navigation consistency
+
+==================================================
+4) IMPROVE USER-FACING TEXTS, MESSAGES, MICRO-INTERACTIONS, AND POLISH
+==================================================
+
+Refine the user-facing experience across the app.
+
+Please improve:
+- texts shown to the user
+- labels
+- helper texts
+- success messages
+- error messages
+- empty-state messages
+- confirmation messages
+- small interaction feedback
+- secondary/polish details
+- minor visual and interaction refinements
+
+Goal:
+Make the app feel more polished, friendly, and intentional.
+
+Important:
+- Keep it aligned with the app identity
+- Keep it suitable in both Arabic and English
+- Improve wording and clarity where needed
+- Improve small UX moments and user feedback
+
+==================================================
+IMPLEMENTATION RULES
+==================================================
+
+While doing this work:
+- inspect first
+- implement properly
+- preserve the app identity
+- do not break working navigation
+- do not break translations
+- do not break RTL/LTR behavior
+- do not create duplicated settings access
+- do not leave dead code or broken references
+- do not redesign unrelated screens unnecessarily
+
+If old code becomes obsolete:
+- clean it properly
+
+If any related component is messy:
+- refactor it carefully
+
+Very important:
+- Fix only these items
+- Do not make unrelated changes
+- Do not modify screens that are not part of this request
+- Do not introduce regressions
+
+==================================================
+5) FINAL COMPREHENSIVE CHECK AFTER IMPLEMENTATION
+==================================================
+
+After implementing the above, perform a focused but careful review of:
+- Dashboard section title navigation
+- Habits navigation from More
+- Goals navigation from More
+- Daily Journal title navigation from Dashboard
+- back button behavior
+- Arabic behavior
+- English behavior
+- RTL/LTR behavior
+- visual consistency
+- messages/text polish
+
+Also do:
+- code cleanup
+- remove dead code
+- remove unused imports
+- remove broken references
+- fix remaining errors related to these changes
+- check for runtime/build/type issues caused by these changes
+
+==================================================
+FINAL VERIFICATION CHECKLIST
+==================================================
+
+Before finishing, verify all of the following:
+
+1. Tapping Habits title on Dashboard opens Habits page
+2. Tapping Goals title on Dashboard opens Goals page
+3. Tapping Daily Journal title on Dashboard opens Daily Journal page
+4. Opening Habits from More and pressing Back returns to More
+5. Opening Goals from More and pressing Back returns to More
+6. Opening Habits from Dashboard still works correctly
+7. Opening Goals from Dashboard still works correctly
+8. Arabic layout behaves as RTL where appropriate
+9. English layout behaves as LTR where appropriate
+10. No RTL/LTR regressions were introduced
+11. User-facing texts/messages were improved
+12. No unrelated screens were changed unnecessarily
+13. Code cleanup was completed
+14. Remaining related errors were fixed
+
+==================================================
+FINAL RESPONSE FORMAT
+==================================================
+
+After finishing, provide a clear summary including:
+- what was fixed
+- which files were changed
+- how Dashboard title navigation was fixed
+- how More -> Habits/Goals back navigation was fixed
+- what RTL/LTR issues were checked/fixed
+- what user-facing texts/messages were improved
+- what code was cleaned
+- whether final verification was completed
+- whether any issue still remains
