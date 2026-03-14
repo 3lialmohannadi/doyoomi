@@ -1,7 +1,5 @@
 import { BlurView } from "expo-blur";
-import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Tabs } from "expo-router";
-import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 import { SymbolView } from "expo-symbols";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
@@ -10,33 +8,7 @@ import { useSettingsStore } from "../../src/store/settingsStore";
 import { useAppTheme } from "../../src/hooks/useAppTheme";
 import { t } from "../../src/utils/i18n";
 
-function NativeTabLayout() {
-  const { profile } = useSettingsStore();
-  const lang = profile.language;
-  const tFunc = (key: string) => t(key, lang);
-  return (
-    <NativeTabs>
-      <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: "house", selected: "house.fill" }} />
-        <Label>{tFunc('home')}</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="calendar">
-        <Icon sf={{ default: "calendar", selected: "calendar" }} />
-        <Label>{tFunc('calendar')}</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="tasks">
-        <Icon sf={{ default: "checklist", selected: "checklist" }} />
-        <Label>{tFunc('tasks')}</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="settings">
-        <Icon sf={{ default: "ellipsis.circle", selected: "ellipsis.circle.fill" }} />
-        <Label>{tFunc('more')}</Label>
-      </NativeTabs.Trigger>
-    </NativeTabs>
-  );
-}
-
-function ClassicTabLayout() {
+export default function TabLayout() {
   const { profile } = useSettingsStore();
   const { scheme, C } = useAppTheme();
   const lang = profile.language;
@@ -65,13 +37,13 @@ function ClassicTabLayout() {
           ) : isWeb ? (
             <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? "#0D0A1E" : "#F5F3FF" }]} />
           ) : null,
-        tabBarLabelStyle: { fontFamily: 'Inter_600SemiBold', fontSize: 10 },
+        tabBarLabelStyle: { fontFamily: "Inter_600SemiBold", fontSize: 10 },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: tFunc('home'),
+          title: tFunc("home"),
           tabBarIcon: ({ color }) =>
             isIOS ? <SymbolView name="house" tintColor={color} size={24} /> : <Ionicons name="home-outline" size={22} color={color} />,
         }}
@@ -79,7 +51,7 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="calendar"
         options={{
-          title: tFunc('calendar'),
+          title: tFunc("calendar"),
           tabBarIcon: ({ color }) =>
             isIOS ? <SymbolView name="calendar" tintColor={color} size={24} /> : <Ionicons name="calendar-outline" size={22} color={color} />,
         }}
@@ -87,7 +59,7 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="tasks"
         options={{
-          title: tFunc('tasks'),
+          title: tFunc("tasks"),
           tabBarIcon: ({ color }) =>
             isIOS ? <SymbolView name="checklist" tintColor={color} size={24} /> : <Ionicons name="checkmark-circle-outline" size={22} color={color} />,
         }}
@@ -95,7 +67,7 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: tFunc('more'),
+          title: tFunc("more"),
           tabBarIcon: ({ color }) =>
             isIOS ? <SymbolView name="ellipsis.circle" tintColor={color} size={24} /> : <Ionicons name="grid-outline" size={22} color={color} />,
         }}
@@ -105,9 +77,4 @@ function ClassicTabLayout() {
       <Tabs.Screen name="goals" options={{ href: null }} />
     </Tabs>
   );
-}
-
-export default function TabLayout() {
-  if (isLiquidGlassAvailable()) return <NativeTabLayout />;
-  return <ClassicTabLayout />;
 }

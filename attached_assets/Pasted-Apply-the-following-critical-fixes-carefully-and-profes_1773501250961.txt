@@ -1,0 +1,288 @@
+Apply the following critical fixes carefully and professionally.
+
+Important:
+These issues were found during testing on iOS.
+Do not make quick patches.
+Inspect the current implementation first, identify the real causes, then fix them properly.
+Do not pretend the issue is fixed unless it is actually fixed.
+Do not break working parts while fixing these issues.
+
+Very important:
+There are still major problems with language handling, RTL/LTR behavior, navigation behavior, and some tap actions.
+You must review these areas very carefully and fix them properly.
+
+==================================================
+CRITICAL ISSUES FOUND DURING iOS TESTING
+==================================================
+
+1) Crash when switching language
+2) Dashboard: Habits and Goals still do not open correctly when tapped
+3) Major Arabic direction / RTL problems across the app
+4) In More page / Settings-related section, tapping Habits or Goals does nothing
+5) Back navigation behavior must depend on where the page was opened from
+6) Profile page date picker must be improved to match the rest of the app
+
+==================================================
+1) CRASH WHEN SWITCHING LANGUAGE
+==================================================
+
+Current issue:
+There is a crash when switching the app language.
+
+Required:
+- Find the real cause of the crash
+- Fix it properly
+- Make language switching stable and safe
+
+Check carefully:
+- i18n/language switching logic
+- state updates during language change
+- layout direction updates
+- screen rerenders after language change
+- navigation state after language change
+- any component that breaks on language toggle
+- any null/undefined translation-related issue
+- any settings persistence issue related to language
+
+Requirements:
+- Switching language must not crash the app
+- It must work safely on iOS
+- Arabic and English should switch correctly
+- Related screens should update correctly after the language is changed
+
+==================================================
+2) DASHBOARD - HABITS AND GOALS STILL DO NOT OPEN CORRECTLY
+==================================================
+
+Current issue:
+On the Dashboard, there are still problems when tapping:
+- Habits
+- Goals
+
+They are still not opening the required pages correctly.
+
+Required:
+- Fix tapping Habits on Dashboard so it opens the Habits page correctly
+- Fix tapping Goals on Dashboard so it opens the Goals page correctly
+
+Requirements:
+- Make sure the tap action actually works
+- Make sure the route is correct
+- Make sure the target page opens reliably
+- Make sure tap feedback is clean
+- Do not break the Dashboard layout
+
+==================================================
+3) MAJOR ARABIC / RTL PROBLEMS ACROSS THE APP
+==================================================
+
+Current issue:
+There is still a very big problem in Arabic across the app.
+Text direction is wrong, arrow directions are wrong, layout direction is wrong, and the app still behaves incorrectly in Arabic.
+
+This issue is serious and must be reviewed carefully across the whole app.
+
+Required:
+Perform a strong and thorough language/direction audit and fix Arabic behavior properly.
+
+Arabic rules:
+- Arabic = Right to Left (RTL)
+- Text should align correctly for Arabic
+- Arrows and directional icons must point/display correctly
+- Layouts must respect RTL
+- Rows, cards, and sections must behave naturally in Arabic
+
+English rules:
+- English = Left to Right (LTR)
+- Text should align correctly for English
+- Layouts must respect LTR
+
+Check very carefully across the app:
+- text alignment
+- row direction
+- layout direction
+- arrows / chevrons / back arrows
+- cards
+- headers
+- settings cards
+- forms
+- labels
+- placeholders
+- modal layouts
+- section alignment
+- support pages
+- profile page
+- dashboard
+- more page
+- child pages
+- calendar direction in Arabic
+- all related navigation UI
+
+Important:
+The whole language/direction system needs a serious review.
+Do not do a superficial fix.
+Fix the RTL/LTR behavior properly.
+
+==================================================
+4) MORE PAGE / SETTINGS-RELATED SECTION - HABITS AND GOALS NOT TAPPABLE
+==================================================
+
+Current issue:
+In the More page / settings-related section, when I tap Habits or Goals, nothing happens.
+
+Required:
+- Make Habits tappable and open the Habits page correctly
+- Make Goals tappable and open the Goals page correctly
+
+Requirements:
+- Ensure tap actions work reliably
+- Ensure the correct pages open
+- Ensure press feedback is clear
+- Ensure there are no broken onPress bindings
+- Ensure navigation references are correct
+
+==================================================
+5) BACK NAVIGATION MUST DEPEND ON WHERE THE PAGE WAS OPENED FROM
+==================================================
+
+Required behavior:
+- If I open Habits or Goals from the Dashboard, then press Back, it should return me to the Dashboard
+- If I open Habits or Goals from the More page, then press Back, it should return me to the More page
+
+This source-based back navigation behavior must work correctly.
+
+Requirements:
+- Fix stack behavior
+- Fix navigation source handling
+- Make sure the correct previous screen is preserved
+- Do not break already-correct flows while fixing this
+
+Check carefully:
+- push vs replace
+- stack history
+- source screen tracking if needed
+- nested navigation
+- back handlers if customized
+
+==================================================
+6) PROFILE PAGE - DATE PICKER SHOULD MATCH THE REST OF THE APP
+==================================================
+
+Current issue:
+In the Profile page, the date picker should be improved to match the rest of the app and make year/month/day editing easy.
+
+Required:
+- Improve the Profile page date picker
+- Make it easy to change:
+  - year
+  - month
+  - day
+- Make it behave consistently with the date picker experience used in other sections of the app
+
+Requirements:
+- Keep the UI clean
+- Make it user-friendly
+- Make sure it works correctly in Arabic and English
+- Make sure it works properly on iOS
+
+==================================================
+PLATFORM NOTE
+==================================================
+
+These issues were found during testing on:
+- iOS
+
+So you must verify these fixes carefully on iOS.
+
+If something is not actually verified on iOS, say so clearly.
+Do not pretend it was verified if it was not.
+
+==================================================
+IMPLEMENTATION RULES
+==================================================
+
+While fixing these issues:
+- inspect first
+- fix root causes where possible
+- preserve the app identity
+- do not break working parts
+- do not break navigation while fixing direction issues
+- do not break design while fixing language issues
+- do not leave dead code
+- do not leave broken references
+- do not leave half-fixed RTL/LTR behavior
+
+If old code or navigation logic is messy:
+- clean/refactor it carefully
+
+==================================================
+FINAL REQUIRED REVIEW
+==================================================
+
+After implementation, perform a careful review of:
+- language switching
+- crash behavior
+- Dashboard Habits tap
+- Dashboard Goals tap
+- More page Habits tap
+- More page Goals tap
+- source-based back navigation
+- Arabic layout behavior
+- English layout behavior
+- RTL/LTR behavior
+- arrows/icons direction
+- Profile date picker
+- iOS behavior for all of the above
+
+Also do:
+- code cleanup
+- remove dead code
+- remove unused imports
+- remove broken references
+- fix remaining related errors
+- fix runtime/build/type issues caused by these areas
+
+==================================================
+FINAL VERIFICATION CHECKLIST
+==================================================
+
+Before finishing, verify all of the following:
+
+1. Switching language no longer crashes the app
+2. Language switching works correctly on iOS
+3. Tapping Habits on Dashboard opens the Habits page correctly
+4. Tapping Goals on Dashboard opens the Goals page correctly
+5. Tapping Habits from More opens the Habits page correctly
+6. Tapping Goals from More opens the Goals page correctly
+7. If Habits is opened from Dashboard, Back returns to Dashboard
+8. If Goals is opened from Dashboard, Back returns to Dashboard
+9. If Habits is opened from More, Back returns to More
+10. If Goals is opened from More, Back returns to More
+11. Arabic behaves correctly as RTL
+12. English behaves correctly as LTR
+13. Text alignment is correct in Arabic
+14. Text alignment is correct in English
+15. Directional arrows/icons behave correctly
+16. Calendar direction/localization in Arabic was reviewed and fixed where needed
+17. Profile date picker is easier to use
+18. Profile date picker allows year/month/day editing easily
+19. Profile date picker works correctly on iOS
+20. No obvious related runtime/build/type issues remain
+21. Code cleanup was completed
+
+==================================================
+FINAL RESPONSE FORMAT
+==================================================
+
+After finishing, provide a clear summary including:
+- what caused the language switching crash
+- how it was fixed
+- what was fixed in Dashboard navigation
+- what was fixed in More page navigation
+- how back navigation behavior was corrected
+- what RTL/LTR issues were found and fixed
+- what was fixed in Arabic direction behavior
+- what was improved in the Profile date picker
+- whether each fix was verified on iOS
+- what code was cleaned/refactored
+- whether any issue still remains

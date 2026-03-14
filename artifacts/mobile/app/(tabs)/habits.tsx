@@ -71,7 +71,11 @@ export default function HabitsScreen() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              from === 'more' ? router.navigate('/settings') : router.back();
+              if (from === 'more') {
+                router.navigate('/settings');
+              } else {
+                router.navigate('/');
+              }
             }}
             style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}
             accessibilityRole="button"

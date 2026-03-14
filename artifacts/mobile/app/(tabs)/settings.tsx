@@ -514,6 +514,9 @@ function ProfileField({ label, icon, C, isRTL, children }: {
 const DOB_AR_DAY_HEADERS = ['أح','اث','ثل','أر','خم','جم','سب'];
 const DOB_EN_DAY_HEADERS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
+const CURRENT_YEAR = new Date().getFullYear();
+const DOB_YEARS: number[] = Array.from({ length: CURRENT_YEAR - 1929 }, (_, i) => CURRENT_YEAR - i);
+
 interface DobCalendarProps {
   selected: string;
   onSelect: (d: string) => void;
@@ -528,6 +531,7 @@ function DobCalendar({ selected, onSelect, C, lang }: DobCalendarProps) {
     d.setFullYear(d.getFullYear() - 20);
     return d;
   });
+  const [showYearPicker, setShowYearPicker] = useState(false);
   const isAr = lang === 'ar';
 
   const dayHeaders = isAr ? DOB_AR_DAY_HEADERS : DOB_EN_DAY_HEADERS;
@@ -549,43 +553,92 @@ function DobCalendar({ selected, onSelect, C, lang }: DobCalendarProps) {
 
   return (
     <View style={[dobStyles.container, { backgroundColor: C.surface, borderColor: C.border }]}>
-      {/* Year navigation row */}
-      <View style={[dobStyles.yearNav, { flexDirection: isAr ? 'row-reverse' : 'row' }]}>
+      {/* ── Year row ── */}
+      <View style={[dobStyles.yearRow, { flexDirection: isAr ? 'row-reverse' : 'row' }]}>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subYears(viewDate, 1)); }}
-          style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15', flexDirection: isAr ? 'row-reverse' : 'row' }]}
+          style={[dobStyles.arrowBtn, { backgroundColor: C.tint + '15' }]}
           hitSlop={8}
         >
-          <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={14} color={C.tint} />
-          <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={14} color={C.tint} style={{ marginLeft: isAr ? 0 : -8, marginRight: isAr ? -8 : 0 }} />
+          <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={16} color={C.tint} />
         </Pressable>
-        <Text style={[dobStyles.yearLabel, { color: C.tint }]}>{viewDate.getFullYear()}</Text>
+
+        <Pressable
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowYearPicker(v => !v); }}
+          style={[dobStyles.yearLabelBtn, { backgroundColor: C.tint + '12', flexDirection: isAr ? 'row-reverse' : 'row' }]}
+        >
+          <Text style={[dobStyles.yearLabel, { color: C.tint }]}>{viewDate.getFullYear()}</Text>
+          <Ionicons name={showYearPicker ? 'chevron-up' : 'chevron-down'} size={14} color={C.tint} style={{ marginLeft: isAr ? 0 : 4, marginRight: isAr ? 4 : 0 }} />
+        </Pressable>
+
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addYears(viewDate, 1)); }}
-          style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15', flexDirection: isAr ? 'row-reverse' : 'row' }]}
+          style={[dobStyles.arrowBtn, { backgroundColor: C.tint + '15' }]}
           hitSlop={8}
         >
-          <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={14} color={C.tint} />
-          <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={14} color={C.tint} style={{ marginLeft: isAr ? 0 : -8, marginRight: isAr ? -8 : 0 }} />
+          <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={16} color={C.tint} />
         </Pressable>
       </View>
-      {/* Month navigation row */}
-      <View style={[dobStyles.nav, { flexDirection: isAr ? 'row-reverse' : 'row' }]}>
-        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); }} hitSlop={8}>
+
+      {/* ── Year picker panel ── */}
+      {showYearPicker && (
+        <View style={[dobStyles.yearPicker, { backgroundColor: C.card, borderColor: C.border }]}>
+          <ScrollView
+            style={{ maxHeight: 180 }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {DOB_YEARS.map(yr => {
+              const isActive = yr === viewDate.getFullYear();
+              return (
+                <Pressable
+                  key={yr}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setViewDate(new Date(yr, viewDate.getMonth(), 1));
+                    setShowYearPicker(false);
+                  }}
+                  style={[dobStyles.yearPickerItem, isActive && { backgroundColor: C.tint + '20' }]}
+                >
+                  <Text style={[dobStyles.yearPickerText, { color: isActive ? C.tint : C.text, fontFamily: isActive ? 'Inter_700Bold' : 'Inter_400Regular' }]}>
+                    {yr}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* ── Month navigation ── */}
+      <View style={[dobStyles.monthRow, { flexDirection: isAr ? 'row-reverse' : 'row' }]}>
+        <Pressable
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); }}
+          style={[dobStyles.arrowBtn, { backgroundColor: C.surface }]}
+          hitSlop={8}
+        >
           <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={18} color={C.tint} />
         </Pressable>
-        <Text style={[dobStyles.navLabel, { color: C.text }]}>
+        <Text style={[dobStyles.monthLabel, { color: C.text }]}>
           {isAr ? AR_MONTHS[viewDate.getMonth()] : format(viewDate, 'MMMM')}
         </Text>
-        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); }} hitSlop={8}>
+        <Pressable
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); }}
+          style={[dobStyles.arrowBtn, { backgroundColor: C.surface }]}
+          hitSlop={8}
+        >
           <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={18} color={C.tint} />
         </Pressable>
       </View>
+
+      {/* ── Day headers ── */}
       <View style={dobStyles.headerRow}>
         {dayHeaders.map(d => (
           <Text key={d} style={[dobStyles.headerDay, { color: C.textMuted }]}>{d}</Text>
         ))}
       </View>
+
+      {/* ── Day grid ── */}
       <View style={dobStyles.grid}>
         {cells.map((dayKey, i) => {
           if (!dayKey) return <View key={'empty-' + i} style={dobStyles.cell} />;
@@ -619,17 +672,34 @@ function DobCalendar({ selected, onSelect, C, lang }: DobCalendarProps) {
 
 const dobStyles = StyleSheet.create({
   container: { borderRadius: Radius.lg, borderWidth: 1, padding: Spacing.md },
-  yearNav: {
+  yearRow: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     marginBottom: Spacing.xs,
   },
-  yearNavBtn: {
+  arrowBtn: {
+    width: 32, height: 32, borderRadius: 16,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  yearLabelBtn: {
     flexDirection: 'row', alignItems: 'center',
-    borderRadius: Radius.sm, paddingHorizontal: 6, paddingVertical: 4,
+    borderRadius: Radius.sm, paddingHorizontal: 10, paddingVertical: 4,
+    gap: 4,
   },
   yearLabel: { fontSize: 15, fontFamily: 'Inter_700Bold' },
-  nav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.sm },
-  navLabel: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
+  yearPicker: {
+    borderRadius: Radius.md, borderWidth: 1,
+    marginBottom: Spacing.sm, overflow: 'hidden',
+  },
+  yearPickerItem: {
+    paddingVertical: 8, paddingHorizontal: Spacing.md,
+    alignItems: 'center',
+  },
+  yearPickerText: { fontSize: 15 },
+  monthRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    marginBottom: Spacing.sm,
+  },
+  monthLabel: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
   headerRow: { flexDirection: 'row', marginBottom: Spacing.xs },
   headerDay: { flex: 1, textAlign: 'center', fontSize: 11, fontFamily: 'Inter_600SemiBold' },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
