@@ -109,12 +109,6 @@ Expo/React Native productivity app — Do.Yoomi (يومي). Offline-first with Z
 - `src/theme/index.ts` — Design tokens (colors, spacing, radius, shadow, typography)
 - `assets/images/icon.png` — App icon (يومي branded)
 
-**Deployment commands (run from `/root/doyoomi/artifacts/mobile` on srv1482387):**
-- TestFlight update: `eas build --platform ios --profile production --auto-submit`
-- Web build: `EXPO_PUBLIC_DOMAIN=SERVER_IP PORT=8080 pnpm --filter @workspace/mobile run build`
-- Web serve: `PORT=8080 pnpm --filter @workspace/mobile run serve`
-- GitHub update on server: `cd ~/doyoomi && git pull origin main`
-
 **Tabs:** Home, Calendar, Tasks, Habits, Goals, More (was Settings)
 - "More" tab (settings.tsx) is a hub page: Profile edit modal, Goals nav, Categories, App Settings modal, Support
 

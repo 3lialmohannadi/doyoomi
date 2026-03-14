@@ -269,19 +269,14 @@ function AddBtn({ onPress }: { onPress: () => void }) {
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
   return (
     <AnimatedPressable
-      style={[animStyle, { overflow: 'hidden', borderRadius: 30 }]}
-      onPressIn={() => { scale.value = withSpring(0.9, { damping: 15 }); }}
-      onPressOut={() => { scale.value = withSpring(1, { damping: 15 }); }}
+      style={animStyle}
+      onPressIn={() => { scale.value = withSpring(0.88); }}
+      onPressOut={() => { scale.value = withSpring(1); }}
       onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onPress(); }}
     >
-      <LinearGradient
-        colors={['rgba(255,255,255,1)', 'rgba(245,240,255,0.97)']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.addBtn}
-      >
-        <Ionicons name="add" size={30} color="#7C5CFC" />
-      </LinearGradient>
+      <View style={styles.addBtn}>
+        <Ionicons name="add" size={28} color="#7C5CFC" />
+      </View>
     </AnimatedPressable>
   );
 }
@@ -616,13 +611,10 @@ const styles = StyleSheet.create({
   heroTitle: { fontSize: 32, color: '#fff', fontFamily: 'Inter_700Bold', lineHeight: 36 },
   heroSub: { fontSize: 16, color: 'rgba(255,255,255,0.65)', fontFamily: 'Inter_500Medium' },
   addBtn: {
-    width: 56, height: 56, borderRadius: 28,
+    width: 48, height: 48, borderRadius: 24,
+    backgroundColor: '#fff',
     alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#7C5CFC',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 14,
-    elevation: 10,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 6,
   },
   statsRow: {
     flexDirection: 'row',
