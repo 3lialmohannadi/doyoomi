@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
+import { router } from 'expo-router';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { Spacing, Radius } from '../../src/theme';
@@ -60,11 +61,16 @@ export default function GoalsScreen() {
       >
         <View style={styles.headerDecor1} />
         <View style={styles.headerDecor2} />
-        <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View>
-            <Text style={[styles.headerTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('goals')}</Text>
-            <Text style={[styles.headerSub, { textAlign: isRTL ? 'right' : 'left' }]}>{goals.length} {tFunc('activeGoals')}</Text>
-          </View>
+        <View style={[styles.topNav, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.navigate('/settings'); }}
+            style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}
+            accessibilityRole="button"
+            accessibilityLabel={tFunc('back')}
+          >
+            <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={22} color="#fff" />
+          </Pressable>
+          <View style={{ flex: 1 }} />
           <Pressable
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditGoal(null); setShowForm(true); }}
             style={({ pressed }) => [styles.addBtn, { opacity: pressed ? 0.8 : 1 }]}
@@ -75,6 +81,10 @@ export default function GoalsScreen() {
               <Ionicons name="add" size={26} color="#7C5CFC" />
             </View>
           </Pressable>
+        </View>
+        <View style={[{ alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+          <Text style={[styles.headerTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('goals')}</Text>
+          <Text style={[styles.headerSub, { textAlign: isRTL ? 'right' : 'left' }]}>{goals.length} {tFunc('activeGoals')}</Text>
         </View>
       </LinearGradient>
 
@@ -226,7 +236,12 @@ const styles = StyleSheet.create({
     width: 80, height: 80, borderRadius: 40,
     backgroundColor: 'rgba(255,255,255,0.07)',
   },
-  headerRow: { alignItems: 'center', justifyContent: 'space-between' },
+  topNav: { alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.sm },
+  backBtn: {
+    width: 36, height: 36, borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center', justifyContent: 'center',
+  },
   headerTitle: { fontSize: 28, fontFamily: 'Inter_700Bold', color: '#fff' },
   headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: 'Inter_500Medium', marginTop: 2 },
   addBtn: {},

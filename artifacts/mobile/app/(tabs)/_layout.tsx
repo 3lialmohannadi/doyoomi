@@ -21,20 +21,12 @@ function NativeTabLayout() {
         <Label>{tFunc('home')}</Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="calendar">
-        <Icon sf={{ default: "calendar", selected: "calendar.fill" }} />
+        <Icon sf={{ default: "calendar", selected: "calendar" }} />
         <Label>{tFunc('calendar')}</Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="tasks">
         <Icon sf={{ default: "checklist", selected: "checklist" }} />
         <Label>{tFunc('tasks')}</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="habits">
-        <Icon sf={{ default: "leaf", selected: "leaf.fill" }} />
-        <Label>{tFunc('habits')}</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="goals">
-        <Icon sf={{ default: "target", selected: "target" }} />
-        <Label>{tFunc('goals')}</Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <Icon sf={{ default: "ellipsis.circle", selected: "ellipsis.circle.fill" }} />
@@ -103,17 +95,15 @@ function ClassicTabLayout() {
       <Tabs.Screen
         name="habits"
         options={{
+          href: null,
           title: tFunc('habits'),
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="leaf" tintColor={color} size={24} /> : <Ionicons name="leaf-outline" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="goals"
         options={{
+          href: null,
           title: tFunc('goals'),
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="target" tintColor={color} size={24} /> : <Ionicons name="trophy-outline" size={22} color={color} />,
         }}
       />
       <Tabs.Screen

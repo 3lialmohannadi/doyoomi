@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
+import { router } from 'expo-router';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { Spacing, Radius, Shadow } from '../../src/theme';
@@ -63,13 +64,16 @@ export default function HabitsScreen() {
         <View style={styles.headerDecor1} />
         <View style={styles.headerDecor2} />
 
-        <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
-            <Text style={[styles.headerTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('habits')}</Text>
-            <Text style={[styles.headerSub, { textAlign: isRTL ? 'right' : 'left' }]}>
-              {doneToday}/{habits.length} {tFunc('doneToday')}
-            </Text>
-          </View>
+        <View style={[styles.topNav, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.navigate('/settings'); }}
+            style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}
+            accessibilityRole="button"
+            accessibilityLabel={tFunc('back')}
+          >
+            <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={22} color="#fff" />
+          </Pressable>
+          <View style={{ flex: 1 }} />
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -84,6 +88,12 @@ export default function HabitsScreen() {
               <Ionicons name="add" size={26} color="#A855F7" />
             </View>
           </Pressable>
+        </View>
+        <View style={[styles.headerTitleBlock, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+          <Text style={[styles.headerTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('habits')}</Text>
+          <Text style={[styles.headerSub, { textAlign: isRTL ? 'right' : 'left' }]}>
+            {doneToday}/{habits.length} {tFunc('doneToday')}
+          </Text>
         </View>
 
         {habits.length > 0 && (
@@ -363,9 +373,15 @@ const styles = StyleSheet.create({
     width: 90, height: 90, borderRadius: 45,
     backgroundColor: 'rgba(255,255,255,0.07)',
   },
-  headerRow: {
-    alignItems: 'center', justifyContent: 'space-between',
+  topNav: {
+    alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.sm,
   },
+  backBtn: {
+    width: 36, height: 36, borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  headerTitleBlock: { marginBottom: Spacing.xs },
   headerTitle: { fontSize: 28, fontFamily: 'Inter_700Bold', color: '#fff' },
   headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: 'Inter_500Medium', marginTop: 2 },
   addBtn: {},
