@@ -6,7 +6,6 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import type { IonIconName } from '../src/types';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -156,7 +155,7 @@ export default function SupportScreen() {
                       },
                     ]}
                   >
-                    <Ionicons name={cat.icon as IonIconName} size={17} color={isActive ? cat.color : C.textMuted} />
+                    <Ionicons name={cat.icon as any} size={17} color={isActive ? cat.color : C.textMuted} />
                     <Text style={[styles.chipText, { color: isActive ? cat.color : C.textSecondary }]} numberOfLines={1}>
                       {tFunc(cat.key)}
                     </Text>

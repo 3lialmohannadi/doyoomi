@@ -14,7 +14,7 @@ import { useSettingsStore } from '../../src/store/settingsStore';
 import { Spacing, Typography, Radius, Shadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
-import { formatTime, formatDateKey, getTodayString, formatDate, AR_MONTHS, AR_DAYS_FULL } from '../../src/utils/date';
+import { formatTime, formatDateKey, getTodayString, formatDate } from '../../src/utils/date';
 import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
 import { AddButton } from '../../src/components/ui/AddButton';
 import { TaskCard } from '../../src/components/ui/TaskCard';
@@ -23,7 +23,9 @@ import { TaskForm } from '../../src/features/tasks/TaskForm';
 import { Task } from '../../src/types';
 import { LinearGradient } from 'expo-linear-gradient';
 
+const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 const AR_DAYS_SHORT = ['أح','إث','ثل','أر','خم','جم','سب'];
+const AR_DAYS_FULL = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 
 function formatHeaderAr(date: Date, view: string, startDay: string) {
   if (view === 'month') return `${AR_MONTHS[date.getMonth()]} ${date.getFullYear()}`;
@@ -217,10 +219,7 @@ export default function CalendarScreen() {
   );
 }
 
-function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, lang, C }: {
-  date: Date; selectedDate: string; onSelectDate: (d: string) => void;
-  taskDates: Set<string>; startOfWeek: string; lang: string; C: Record<string, string>;
-}) {
+function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, lang, C }: any) {
   const isRTL = lang === 'ar';
   const weekStart = startDay === 'sunday' ? 0 : 1;
 
@@ -312,10 +311,7 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
   );
 }
 
-function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, lang, C }: {
-  date: Date; selectedDate: string; onSelectDate: (d: string) => void;
-  taskDates: Set<string>; startOfWeek: string; lang: string; C: Record<string, string>;
-}) {
+function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, lang, C }: any) {
   const isRTL = lang === 'ar';
   const weekStart = startDay === 'sunday' ? 0 : 1;
   const start = startOfWeek(date, { weekStartsOn: weekStart });
@@ -373,20 +369,17 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
   );
 }
 
-function DayView({ date, tasks, categories, C, tFunc }: {
-  date: Date; tasks: Task[]; categories: { id: string; name: string; color: string }[];
-  C: Record<string, string>; tFunc: (key: string) => string;
-}) {
+function DayView({ date, tasks, categories, C, tFunc }: any) {
   const key = formatDateKey(date);
-  const dayTasks = tasks.filter((t) => t.due_date === key);
+  const dayTasks = tasks.filter((t: any) => t.due_date === key);
 
   return (
     <View style={styles.dayViewContainer}>
       {dayTasks.length === 0 ? (
         <EmptyState icon="calendar-outline" title={tFunc('noTasksThisDay')} />
       ) : (
-        dayTasks.map((task) => {
-          const cat = categories.find((c) => c.id === task.category_id);
+        dayTasks.map((task: any) => {
+          const cat = categories.find((c: any) => c.id === task.category_id);
           const accentColor = task.priority === 'high' ? C.priorityHigh : task.priority === 'medium' ? C.priorityMedium : C.priorityLow;
           return (
             <View key={task.id} style={[styles.dayTaskCard, { backgroundColor: C.card, borderColor: C.border }]}>

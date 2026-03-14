@@ -8,7 +8,7 @@ import { useHabitsStore } from '../../store/habitsStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { t } from '../../utils/i18n';
-
+import { Spacing } from '../../theme';
 import { SHARED_ICONS, SHARED_COLORS } from '../../constants/pickerOptions';
 
 interface HabitFormProps {
