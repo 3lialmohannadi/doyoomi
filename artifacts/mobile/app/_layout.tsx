@@ -8,7 +8,7 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { I18nManager, View, Text, StyleSheet, Image } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
@@ -73,8 +73,6 @@ function RootLayoutNav() {
   const { profile } = useSettingsStore();
 
   const [ready, setReady] = useState(false);
-  const [navKey, setNavKey] = useState(0);
-  const prevLang = useRef(profile.language);
 
   useEffect(() => {
     Promise.allSettled([
@@ -88,21 +86,17 @@ function RootLayoutNav() {
   }, []);
 
   useEffect(() => {
-    if (!ready) return;
-    const wantsRTL = profile.language === "ar";
+    const isRTL = profile.language === "ar";
     I18nManager.allowRTL(true);
-    I18nManager.forceRTL(wantsRTL);
-
-    if (prevLang.current !== profile.language) {
-      prevLang.current = profile.language;
-      setNavKey(k => k + 1);
+    if (I18nManager.isRTL !== isRTL) {
+      I18nManager.forceRTL(isRTL);
     }
-  }, [profile.language, ready]);
+  }, [profile.language]);
 
   if (!ready) return <LoadingScreen />;
 
   return (
-    <Stack key={navKey} screenOptions={{ headerBackTitle: "Back" }}>
+    <Stack screenOptions={{ headerBackTitle: "Back" }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="journal" options={{ headerShown: false, presentation: "modal" }} />
       <Stack.Screen name="support" options={{ headerShown: false }} />

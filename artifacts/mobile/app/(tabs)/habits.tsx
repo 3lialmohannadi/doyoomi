@@ -5,9 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import type { DimensionValue } from 'react-native';
 import { format } from 'date-fns';
-import type { IonIconName } from '../../src/types';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
@@ -71,11 +69,7 @@ export default function HabitsScreen() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              if (from === 'more') {
-                router.navigate('/settings');
-              } else {
-                router.navigate('/');
-              }
+              from === 'more' ? router.navigate('/settings') : router.back();
             }}
             style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}
             accessibilityRole="button"
@@ -112,7 +106,7 @@ export default function HabitsScreen() {
                   styles.progressFill,
                   {
                     backgroundColor: '#fff',
-                    width: `${Math.round((doneToday / habits.length) * 100)}%` as DimensionValue,
+                    width: `${Math.round((doneToday / habits.length) * 100)}%` as any,
                     alignSelf: isRTL ? 'flex-end' : 'flex-start',
                   },
                 ]}
@@ -214,7 +208,7 @@ function HabitCard({
   item: Habit;
   isDoneToday: boolean;
   isRTL: boolean;
-  C: Record<string, string>;
+  C: any;
   tFunc: (k: string) => string;
   onToggle: () => void;
   onEdit: () => void;
@@ -262,7 +256,7 @@ function HabitCard({
           },
         ]}>
           <Ionicons
-            name={(item.icon + (isDoneToday ? '' : '-outline')) as IonIconName}
+            name={(item.icon + (isDoneToday ? '' : '-outline')) as any}
             size={24}
             color={item.color}
           />

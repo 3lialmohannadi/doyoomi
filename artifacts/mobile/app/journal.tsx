@@ -4,9 +4,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import type { IonIconName } from '../src/types';
 import { LinearGradient } from 'expo-linear-gradient';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 
@@ -140,7 +139,7 @@ export default function JournalScreen() {
                   </Text>
                   {moodCfg && (
                     <View style={[styles.moodBadge, { backgroundColor: moodCfg.color + '18', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                      <Ionicons name={moodCfg.icon as IonIconName} size={14} color={moodCfg.color} />
+                      <Ionicons name={moodCfg.icon as any} size={14} color={moodCfg.color} />
                       <Text style={[styles.moodText, { color: moodCfg.color }]}>
                         {tFunc(`mood${item.mood!.charAt(0).toUpperCase() + item.mood!.slice(1)}`)}
                       </Text>

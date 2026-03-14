@@ -5,7 +5,6 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import type { IonIconName } from '../../src/types';
 import * as Haptics from 'expo-haptics';
 
 import { router, useLocalSearchParams } from 'expo-router';
@@ -67,11 +66,7 @@ export default function GoalsScreen() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              if (from === 'more') {
-                router.navigate('/settings');
-              } else {
-                router.navigate('/');
-              }
+              from === 'more' ? router.navigate('/settings') : router.back();
             }}
             style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}
             accessibilityRole="button"
@@ -103,7 +98,7 @@ export default function GoalsScreen() {
         renderItem={({ item, index }) => {
           const grad = GOAL_GRADIENTS[index % GOAL_GRADIENTS.length];
           const pct = item.target_value > 0 ? item.current_value / item.target_value : 0;
-          const iconName = (item.icon + '-outline') as IonIconName;
+          const iconName = (item.icon + '-outline') as any;
 
           return (
             <View style={[styles.goalCard, { backgroundColor: C.card, borderColor: C.border }]}>

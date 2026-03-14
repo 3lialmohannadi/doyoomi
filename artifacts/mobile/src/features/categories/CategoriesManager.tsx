@@ -4,7 +4,6 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Ionicons } from '@expo/vector-icons';
-import type { IonIconName } from '../../types';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -104,7 +103,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               </View>
               <Text style={[styles.emptyTitle, { color: C.text }]}>{tFunc('none')}</Text>
               <Text style={[styles.emptySub, { color: C.textMuted }]}>
-                {tFunc('addCategoryHint')}
+                {lang === 'ar' ? 'أضف فئة لتنظيم مهامك' : 'Add a category to organize your tasks'}
               </Text>
               <Pressable onPress={openAdd} style={styles.emptyAddBtn}>
                 <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]} />
@@ -121,12 +120,12 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               ]}>
                 <View style={[styles.catAccent, { backgroundColor: cat.color }]} />
                 <View style={[styles.catIcon, { backgroundColor: cat.color + '18' }]}>
-                  <Ionicons name={(cat.icon + '-outline') as IonIconName} size={22} color={cat.color} />
+                  <Ionicons name={(cat.icon + '-outline') as any} size={22} color={cat.color} />
                 </View>
                 <View style={styles.catInfo}>
                   <Text style={[styles.catName, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{cat.name}</Text>
                 </View>
-                <View style={[styles.catActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <View style={styles.catActions}>
                   <Pressable
                     onPress={() => openEdit(cat)}
                     style={[styles.catActionBtn, { backgroundColor: C.tint + '12' }]}
@@ -171,7 +170,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               {/* Preview icon */}
               <View style={styles.formPreviewSection}>
                 <View style={[styles.formPreviewIcon, { backgroundColor: color + '18' }]}>
-                  <Ionicons name={(icon + '-outline') as IonIconName} size={32} color={color} />
+                  <Ionicons name={(icon + '-outline') as any} size={32} color={color} />
                 </View>
               </View>
 
@@ -181,7 +180,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                 <TextInput
                   value={name}
                   onChangeText={setName}
-                  placeholder={tFunc('categoryNamePlaceholder')}
+                  placeholder={lang === 'ar' ? 'اسم الفئة' : 'Category name'}
                   placeholderTextColor={C.textMuted}
                   textAlign={isRTL ? 'right' : 'left'}
                   style={[styles.formInput, { backgroundColor: C.inputBg, borderColor: C.border, color: C.text }]}
@@ -192,7 +191,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               {/* Live preview */}
               <View style={styles.formField}>
                 <Text style={[styles.formLabel, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
-                  {tFunc('preview')}
+                  {lang === 'ar' ? 'معاينة' : 'Preview'}
                 </Text>
                 <View style={[
                   styles.preview,
@@ -201,7 +200,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                 ]}>
                   <View style={[styles.previewAccent, { backgroundColor: color }]} />
                   <View style={[styles.previewIconBox, { backgroundColor: color + '18' }]}>
-                    <Ionicons name={(icon + '-outline') as IonIconName} size={20} color={color} />
+                    <Ionicons name={(icon + '-outline') as any} size={20} color={color} />
                   </View>
                   <Text style={[styles.previewText, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{name || '...'}</Text>
                 </View>
@@ -226,7 +225,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                           },
                         ]}
                       >
-                        <Ionicons name={(ic + '-outline') as IonIconName} size={20} color={isActive ? color : C.textMuted} />
+                        <Ionicons name={(ic + '-outline') as any} size={20} color={isActive ? color : C.textMuted} />
                       </Pressable>
                     );
                   })}

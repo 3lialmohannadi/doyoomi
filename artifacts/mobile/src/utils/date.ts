@@ -1,16 +1,10 @@
 import { format, isToday, isYesterday, isTomorrow, parseISO, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
 import { Language, StartOfWeek } from '../types';
 
-export const AR_MONTHS = [
+const AR_MONTHS = [
   'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
   'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
 ];
-
-export const AR_DAYS_SHORT_SUN = ['أح','اث','ثل','أر','خم','جم','سب'];
-export const AR_DAYS_SHORT_MON = ['اث','ثل','أر','خم','جم','سب','أح'];
-export const EN_DAYS_SHORT_SUN = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-export const EN_DAYS_SHORT_MON = ['Mo','Tu','We','Th','Fr','Sa','Su'];
-export const AR_DAYS_FULL = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 
 export function formatDate(dateStr: string, lang: Language): string {
   try {

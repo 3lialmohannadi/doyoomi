@@ -5,7 +5,6 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Ionicons } from '@expo/vector-icons';
-import type { IonIconName } from '../../types';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
@@ -128,7 +127,7 @@ interface InputProps {
   onChangeText: (t: string) => void;
   placeholder?: string;
   multiline?: boolean;
-  keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad' | 'number-pad' | 'decimal-pad' | 'url';
+  keyboardType?: any;
   error?: boolean;
 }
 
@@ -170,11 +169,9 @@ interface SelectProps {
 
 export function FormSelect({ options, value, onChange }: SelectProps) {
   const { C } = useAppTheme();
-  const { profile } = useSettingsStore();
-  const isRTL = profile.language === 'ar';
 
   return (
-    <View style={[styles.selectRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+    <View style={styles.selectRow}>
       {options.map((opt) => {
         const isActive = opt.key === value;
         return (
@@ -247,8 +244,6 @@ interface PrioritySelectorProps {
 
 export function PrioritySelector({ value, onChange, options }: PrioritySelectorProps) {
   const { C } = useAppTheme();
-  const { profile } = useSettingsStore();
-  const isRTL = profile.language === 'ar';
   const priorityColors: Record<string, string> = {
     low: C.priorityLow,
     medium: C.priorityMedium,
@@ -256,7 +251,7 @@ export function PrioritySelector({ value, onChange, options }: PrioritySelectorP
   };
 
   return (
-    <View style={[styles.priorityRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+    <View style={styles.priorityRow}>
       {options.map((opt) => {
         const isActive = opt.key === value;
         const color = priorityColors[opt.key] || C.tint;
@@ -306,11 +301,9 @@ interface CategorySelectorProps {
 
 export function CategorySelector({ value, onChange, options }: CategorySelectorProps) {
   const { C } = useAppTheme();
-  const { profile } = useSettingsStore();
-  const isRTL = profile.language === 'ar';
 
   return (
-    <View style={[styles.categoryGrid, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+    <View style={styles.categoryGrid}>
       {options.map((opt) => {
         const isActive = opt.key === value;
         const color = opt.color || C.textMuted;
@@ -332,7 +325,7 @@ export function CategorySelector({ value, onChange, options }: CategorySelectorP
             accessibilityLabel={opt.label}
           >
             {opt.icon ? (
-              <Ionicons name={(opt.icon + '-outline') as IonIconName} size={16} color={isActive ? color : C.textMuted} />
+              <Ionicons name={(opt.icon + '-outline') as any} size={16} color={isActive ? color : C.textMuted} />
             ) : null}
             <Text style={[styles.categoryText, { color: isActive ? color : C.textSecondary }]} numberOfLines={1}>
               {opt.label}
@@ -453,7 +446,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_500Medium',
   },
   bottomBar: {
-    flexDirection: 'row',
     gap: Spacing.md,
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.lg,

@@ -3,7 +3,6 @@ import {
   ScrollView, StyleSheet, Text, View, Pressable, Modal, TextInput,
   Platform, KeyboardAvoidingView, Image,
 } from 'react-native';
-import type { DimensionValue } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -23,8 +22,7 @@ import { Spacing, Radius } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
-import { getTodayString, formatDateKey, AR_MONTHS } from '../../src/utils/date';
-import { Language } from '../../src/types';
+import { getTodayString, formatDateKey } from '../../src/utils/date';
 
 export default function MoreScreen() {
   const { C } = useAppTheme();
@@ -72,11 +70,7 @@ export default function MoreScreen() {
     setShowProfileModal(false);
   };
 
-  const displayDob = profileDob
-    ? isRTL
-      ? (() => { const d = parseISO(profileDob); return `${d.getDate()} ${AR_MONTHS[d.getMonth()]} ${d.getFullYear()}`; })()
-      : format(parseISO(profileDob), 'MMM d, yyyy')
-    : '';
+  const displayDob = profileDob ? format(parseISO(profileDob), 'MMM d, yyyy') : '';
 
   const goalsCount = goals.length;
   const habitsCount = habits.length;
@@ -142,7 +136,7 @@ export default function MoreScreen() {
             <ContentCard
               icon="leaf"
               label={tFunc('habits')}
-              sub={`${habitsCount} ${tFunc('habitCount')}`}
+              sub={`${habitsCount} ${isRTL ? 'عادة' : 'habits'}`}
               colors={['#A855F7', '#7C5CFC']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push({ pathname: '/habits', params: { from: 'more' } }); }}
               isRTL={isRTL}
@@ -153,7 +147,7 @@ export default function MoreScreen() {
             <ContentCard
               icon="trophy"
               label={tFunc('goals')}
-              sub={`${goalsCount} ${tFunc('goalCount')}`}
+              sub={`${goalsCount} ${isRTL ? 'هدف' : 'goals'}`}
               colors={['#FF6B9D', '#A855F7']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push({ pathname: '/goals', params: { from: 'more' } }); }}
               isRTL={isRTL}
@@ -164,7 +158,7 @@ export default function MoreScreen() {
             <ContentCard
               icon="book"
               label={tFunc('journal')}
-              sub={`${journalCount} ${tFunc('entryCount')}`}
+              sub={`${journalCount} ${isRTL ? 'إدخال' : 'entries'}`}
               colors={['#9B6EF5', '#FF6B9D']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/journal'); }}
               isRTL={isRTL}
@@ -175,7 +169,7 @@ export default function MoreScreen() {
             <ContentCard
               icon="folder-open"
               label={tFunc('categories')}
-              sub={`${categories.length} ${tFunc('categoryCount')}`}
+              sub={`${categories.length} ${isRTL ? 'تصنيف' : 'categories'}`}
               colors={['#FF6B35', '#FFB347']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowCategories(true); }}
               isRTL={isRTL}
@@ -195,7 +189,6 @@ export default function MoreScreen() {
                 activeIndex={profile.language === 'en' ? 0 : 1}
                 onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setLanguage(i === 0 ? 'en' : 'ar'); }}
                 C={C}
-                isRTL={isRTL}
               />
               <SettingCard
                 icon="moon-outline"
@@ -205,7 +198,6 @@ export default function MoreScreen() {
                 activeIndex={profile.theme === 'light' ? 0 : 1}
                 onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setTheme(i === 0 ? 'light' : 'dark'); }}
                 C={C}
-                isRTL={isRTL}
               />
             </View>
             <View style={[styles.settingGridRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -217,7 +209,6 @@ export default function MoreScreen() {
                 activeIndex={profile.time_format === '12h' ? 0 : 1}
                 onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setTimeFormat(i === 0 ? '12h' : '24h'); }}
                 C={C}
-                isRTL={isRTL}
               />
               <SettingCard
                 icon="calendar-outline"
@@ -227,7 +218,6 @@ export default function MoreScreen() {
                 activeIndex={profile.start_of_week === 'sunday' ? 0 : 1}
                 onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setStartOfWeek(i === 0 ? 'sunday' : 'monday'); }}
                 C={C}
-                isRTL={isRTL}
               />
             </View>
           </View>
@@ -253,7 +243,7 @@ export default function MoreScreen() {
               <View style={[styles.wideCardText, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
                 <Text style={[styles.wideCardTitle, { color: '#fff', textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('supportAndContact')}</Text>
                 <Text style={[styles.wideCardSub, { color: 'rgba(255,255,255,0.75)', textAlign: isRTL ? 'right' : 'left' }]}>
-                  {tFunc('weAreHereToHelp')}
+                  {isRTL ? 'نحن هنا للمساعدة' : 'We are here to help'}
                 </Text>
               </View>
               <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={18} color="rgba(255,255,255,0.8)" />
@@ -347,7 +337,6 @@ export default function MoreScreen() {
                         selected={profileDob}
                         onSelect={(d: string) => { setProfileDob(d); setShowDobPicker(false); }}
                         C={C}
-                        lang={lang}
                       />
                     </View>
                   )}
@@ -412,7 +401,7 @@ export default function MoreScreen() {
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
-function SectionHeader({ title, isRTL, C }: { title: string; isRTL: boolean; C: Record<string, string> }) {
+function SectionHeader({ title, isRTL, C }: { title: string; isRTL: boolean; C: any }) {
   return (
     <Text style={[styles.sectionHeader, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>
       {title}
@@ -421,9 +410,9 @@ function SectionHeader({ title, isRTL, C }: { title: string; isRTL: boolean; C: 
 }
 
 function ContentCard({ icon, label, sub, colors, onPress, isRTL, C }: {
-  icon: keyof typeof Ionicons.glyphMap; label: string; sub: string;
+  icon: any; label: string; sub: string;
   colors: [string, string]; onPress: () => void;
-  isRTL: boolean; C: Record<string, string>;
+  isRTL: boolean; C: any;
 }) {
   return (
     <Pressable
@@ -453,18 +442,18 @@ function ContentCard({ icon, label, sub, colors, onPress, isRTL, C }: {
   );
 }
 
-function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C, isRTL }: {
-  icon: keyof typeof Ionicons.glyphMap; iconColor: string; title: string;
+function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C }: {
+  icon: any; iconColor: string; title: string;
   options: string[]; activeIndex: number;
-  onSelect: (index: number) => void; C: Record<string, string>; isRTL?: boolean;
+  onSelect: (index: number) => void; C: any;
 }) {
   return (
     <View style={[styles.settingCard, { backgroundColor: C.card, borderColor: C.border }]}>
-      <View style={[styles.settingCardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <View style={styles.settingCardHeader}>
         <View style={[styles.settingCardIcon, { backgroundColor: iconColor + '18' }]}>
           <Ionicons name={icon} size={17} color={iconColor} />
         </View>
-        <Text style={[styles.settingCardTitle, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{title}</Text>
+        <Text style={[styles.settingCardTitle, { color: C.textMuted }]} numberOfLines={1}>{title}</Text>
       </View>
       <View style={styles.settingCardOptions}>
         {options.map((opt, i) => (
@@ -496,10 +485,7 @@ function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C
   );
 }
 
-function ProfileField({ label, icon, C, isRTL, children }: {
-  label: string; icon: keyof typeof Ionicons.glyphMap;
-  C: Record<string, string>; isRTL: boolean; children: React.ReactNode;
-}) {
+function ProfileField({ label, icon, C, isRTL, children }: any) {
   return (
     <View style={[styles.profileField, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       <View style={[styles.profileFieldLeft, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -511,30 +497,15 @@ function ProfileField({ label, icon, C, isRTL, children }: {
   );
 }
 
-const DOB_AR_DAY_HEADERS = ['أح','اث','ثل','أر','خم','جم','سب'];
-const DOB_EN_DAY_HEADERS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-
-const CURRENT_YEAR = new Date().getFullYear();
-const DOB_YEARS: number[] = Array.from({ length: CURRENT_YEAR - 1929 }, (_, i) => CURRENT_YEAR - i);
-
-interface DobCalendarProps {
-  selected: string;
-  onSelect: (d: string) => void;
-  C: Record<string, string>;
-  lang: Language;
-}
-
-function DobCalendar({ selected, onSelect, C, lang }: DobCalendarProps) {
+function DobCalendar({ selected, onSelect, C }: any) {
   const [viewDate, setViewDate] = useState(() => {
     if (selected) return parseISO(selected);
     const d = new Date();
     d.setFullYear(d.getFullYear() - 20);
     return d;
   });
-  const [showYearPicker, setShowYearPicker] = useState(false);
-  const isAr = lang === 'ar';
 
-  const dayHeaders = isAr ? DOB_AR_DAY_HEADERS : DOB_EN_DAY_HEADERS;
+  const dayHeaders = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
   const daysInMonth = getDaysInMonth(viewDate);
   const firstDay = getDay(startOfMonth(viewDate));
   const today = getTodayString();
@@ -553,92 +524,41 @@ function DobCalendar({ selected, onSelect, C, lang }: DobCalendarProps) {
 
   return (
     <View style={[dobStyles.container, { backgroundColor: C.surface, borderColor: C.border }]}>
-      {/* ── Year row ── */}
-      <View style={[dobStyles.yearRow, { flexDirection: isAr ? 'row-reverse' : 'row' }]}>
+      {/* Year navigation row */}
+      <View style={dobStyles.yearNav}>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subYears(viewDate, 1)); }}
-          style={[dobStyles.arrowBtn, { backgroundColor: C.tint + '15' }]}
+          style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15' }]}
           hitSlop={8}
         >
-          <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={16} color={C.tint} />
+          <Ionicons name="chevron-back" size={14} color={C.tint} />
+          <Ionicons name="chevron-back" size={14} color={C.tint} style={{ marginLeft: -8 }} />
         </Pressable>
-
-        <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowYearPicker(v => !v); }}
-          style={[dobStyles.yearLabelBtn, { backgroundColor: C.tint + '12', flexDirection: isAr ? 'row-reverse' : 'row' }]}
-        >
-          <Text style={[dobStyles.yearLabel, { color: C.tint }]}>{viewDate.getFullYear()}</Text>
-          <Ionicons name={showYearPicker ? 'chevron-up' : 'chevron-down'} size={14} color={C.tint} style={{ marginLeft: isAr ? 0 : 4, marginRight: isAr ? 4 : 0 }} />
-        </Pressable>
-
+        <Text style={[dobStyles.yearLabel, { color: C.tint }]}>{format(viewDate, 'yyyy')}</Text>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addYears(viewDate, 1)); }}
-          style={[dobStyles.arrowBtn, { backgroundColor: C.tint + '15' }]}
+          style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15' }]}
           hitSlop={8}
         >
-          <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={16} color={C.tint} />
+          <Ionicons name="chevron-forward" size={14} color={C.tint} />
+          <Ionicons name="chevron-forward" size={14} color={C.tint} style={{ marginLeft: -8 }} />
         </Pressable>
       </View>
-
-      {/* ── Year picker panel ── */}
-      {showYearPicker && (
-        <View style={[dobStyles.yearPicker, { backgroundColor: C.card, borderColor: C.border }]}>
-          <ScrollView
-            style={{ maxHeight: 180 }}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            {DOB_YEARS.map(yr => {
-              const isActive = yr === viewDate.getFullYear();
-              return (
-                <Pressable
-                  key={yr}
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    setViewDate(new Date(yr, viewDate.getMonth(), 1));
-                    setShowYearPicker(false);
-                  }}
-                  style={[dobStyles.yearPickerItem, isActive && { backgroundColor: C.tint + '20' }]}
-                >
-                  <Text style={[dobStyles.yearPickerText, { color: isActive ? C.tint : C.text, fontFamily: isActive ? 'Inter_700Bold' : 'Inter_400Regular' }]}>
-                    {yr}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
-      )}
-
-      {/* ── Month navigation ── */}
-      <View style={[dobStyles.monthRow, { flexDirection: isAr ? 'row-reverse' : 'row' }]}>
-        <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); }}
-          style={[dobStyles.arrowBtn, { backgroundColor: C.surface }]}
-          hitSlop={8}
-        >
-          <Ionicons name={isAr ? 'chevron-forward' : 'chevron-back'} size={18} color={C.tint} />
+      {/* Month navigation row */}
+      <View style={dobStyles.nav}>
+        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); }} hitSlop={8}>
+          <Ionicons name="chevron-back" size={18} color={C.tint} />
         </Pressable>
-        <Text style={[dobStyles.monthLabel, { color: C.text }]}>
-          {isAr ? AR_MONTHS[viewDate.getMonth()] : format(viewDate, 'MMMM')}
-        </Text>
-        <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); }}
-          style={[dobStyles.arrowBtn, { backgroundColor: C.surface }]}
-          hitSlop={8}
-        >
-          <Ionicons name={isAr ? 'chevron-back' : 'chevron-forward'} size={18} color={C.tint} />
+        <Text style={[dobStyles.navLabel, { color: C.text }]}>{format(viewDate, 'MMMM')}</Text>
+        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); }} hitSlop={8}>
+          <Ionicons name="chevron-forward" size={18} color={C.tint} />
         </Pressable>
       </View>
-
-      {/* ── Day headers ── */}
       <View style={dobStyles.headerRow}>
         {dayHeaders.map(d => (
           <Text key={d} style={[dobStyles.headerDay, { color: C.textMuted }]}>{d}</Text>
         ))}
       </View>
-
-      {/* ── Day grid ── */}
       <View style={dobStyles.grid}>
         {cells.map((dayKey, i) => {
           if (!dayKey) return <View key={'empty-' + i} style={dobStyles.cell} />;
@@ -672,38 +592,21 @@ function DobCalendar({ selected, onSelect, C, lang }: DobCalendarProps) {
 
 const dobStyles = StyleSheet.create({
   container: { borderRadius: Radius.lg, borderWidth: 1, padding: Spacing.md },
-  yearRow: {
+  yearNav: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     marginBottom: Spacing.xs,
   },
-  arrowBtn: {
-    width: 32, height: 32, borderRadius: 16,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  yearLabelBtn: {
+  yearNavBtn: {
     flexDirection: 'row', alignItems: 'center',
-    borderRadius: Radius.sm, paddingHorizontal: 10, paddingVertical: 4,
-    gap: 4,
+    borderRadius: Radius.sm, paddingHorizontal: 6, paddingVertical: 4,
   },
   yearLabel: { fontSize: 15, fontFamily: 'Inter_700Bold' },
-  yearPicker: {
-    borderRadius: Radius.md, borderWidth: 1,
-    marginBottom: Spacing.sm, overflow: 'hidden',
-  },
-  yearPickerItem: {
-    paddingVertical: 8, paddingHorizontal: Spacing.md,
-    alignItems: 'center',
-  },
-  yearPickerText: { fontSize: 15 },
-  monthRow: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    marginBottom: Spacing.sm,
-  },
-  monthLabel: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
+  nav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.sm },
+  navLabel: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
   headerRow: { flexDirection: 'row', marginBottom: Spacing.xs },
   headerDay: { flex: 1, textAlign: 'center', fontSize: 11, fontFamily: 'Inter_600SemiBold' },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
-  cell: { width: `${100 / 7}%` as DimensionValue, alignItems: 'center' as const, justifyContent: 'center' as const, paddingVertical: 2 },
+  cell: { width: `${100 / 7}%` as any, alignItems: 'center', justifyContent: 'center', paddingVertical: 2 },
   dayCircle: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   dayText: { fontSize: 13, fontFamily: 'Inter_500Medium' },
 });
