@@ -242,6 +242,11 @@ const translations: Record<Language, Record<string, string>> = {
     // Time picker
     hourLabel: 'Hour',
     minLabel: 'Min',
+
+    // Categories
+    addCategoryHint: 'Add a category to organize your tasks',
+    categoryNamePlaceholder: 'Category name',
+    preview: 'Preview',
   },
 
   ar: {
@@ -485,6 +490,11 @@ const translations: Record<Language, Record<string, string>> = {
     // منتقي الوقت
     hourLabel: 'ساعة',
     minLabel: 'دقيقة',
+
+    // الفئات
+    addCategoryHint: 'أضف فئة لتنظيم مهامك',
+    categoryNamePlaceholder: 'اسم الفئة',
+    preview: 'معاينة',
   },
 };
 

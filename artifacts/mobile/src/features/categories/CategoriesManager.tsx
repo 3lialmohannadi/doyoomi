@@ -103,7 +103,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               </View>
               <Text style={[styles.emptyTitle, { color: C.text }]}>{tFunc('none')}</Text>
               <Text style={[styles.emptySub, { color: C.textMuted }]}>
-                {lang === 'ar' ? 'أضف فئة لتنظيم مهامك' : 'Add a category to organize your tasks'}
+                {tFunc('addCategoryHint')}
               </Text>
               <Pressable onPress={openAdd} style={styles.emptyAddBtn}>
                 <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]} />
@@ -180,7 +180,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                 <TextInput
                   value={name}
                   onChangeText={setName}
-                  placeholder={lang === 'ar' ? 'اسم الفئة' : 'Category name'}
+                  placeholder={tFunc('categoryNamePlaceholder')}
                   placeholderTextColor={C.textMuted}
                   textAlign={isRTL ? 'right' : 'left'}
                   style={[styles.formInput, { backgroundColor: C.inputBg, borderColor: C.border, color: C.text }]}
@@ -191,7 +191,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               {/* Live preview */}
               <View style={styles.formField}>
                 <Text style={[styles.formLabel, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
-                  {lang === 'ar' ? 'معاينة' : 'Preview'}
+                  {tFunc('preview')}
                 </Text>
                 <View style={[
                   styles.preview,
