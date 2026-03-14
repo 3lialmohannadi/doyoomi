@@ -151,7 +151,7 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
         {showDatePicker && (
           <InlineCalendar
             selected={dueDate}
-            onSelect={(d) => { setDueDate(d); setShowDatePicker(false); }}
+            onSelect={(d: string) => { setDueDate(d); setShowDatePicker(false); }}
             C={C}
             startOfWeek={profile.start_of_week}
           />
@@ -168,7 +168,7 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
         {showTimePicker && (
           <InlineTimePicker
             value={dueTime}
-            onChange={(v) => setDueTime(v)}
+            onChange={(v: string) => setDueTime(v)}
             is12h={is12h}
             C={C}
             lang={lang}
@@ -335,7 +335,7 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
       <View style={timeStyles.row}>
         {/* Hour picker */}
         <View style={timeStyles.col}>
-          <Text style={[timeStyles.label, { color: C.textMuted }]}>Hour</Text>
+          <Text style={[timeStyles.label, { color: C.textMuted }]}>{lang === 'ar' ? 'ساعة' : 'Hour'}</Text>
           <ScrollView style={timeStyles.scroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
             {hours.map(h => (
               <Pressable
@@ -359,7 +359,7 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
 
         {/* Minute picker */}
         <View style={timeStyles.col}>
-          <Text style={[timeStyles.label, { color: C.textMuted }]}>Min</Text>
+          <Text style={[timeStyles.label, { color: C.textMuted }]}>{lang === 'ar' ? 'دقيقة' : 'Min'}</Text>
           <ScrollView style={timeStyles.scroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
             {minutes.map(m => (
               <Pressable
