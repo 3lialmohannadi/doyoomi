@@ -1,0 +1,102 @@
+Fix only language direction and layout direction behavior.
+
+Important:
+This is the rule and it must be applied correctly across the app.
+
+Language direction rules:
+- When Arabic is selected, everything must behave from RIGHT to LEFT (RTL)
+- When English is selected, everything must behave from LEFT to RIGHT (LTR)
+
+This applies to all relevant parts of the app, including:
+- text alignment
+- writing direction
+- cards
+- rows
+- sections
+- headers
+- arrows / chevrons
+- labels
+- placeholders
+- forms
+- settings cards
+- More page
+- Dashboard
+- Calendar 
+- child pages
+- internal pages
+- content layout
+- section alignment
+
+Very important:
+If Arabic is selected:
+- the app should start from the right
+- text should align correctly for Arabic
+- rows and cards should follow RTL where appropriate
+
+If English is selected:
+- the app should start from the left
+- text should align correctly for English
+- rows and cards should follow LTR where appropriate
+
+EXCEPTION:
+The bottom tab bar must always stay left-to-right in both languages.
+It must always stay in this order from the left:
+- Home
+- Calendar
+- Tasks
+- More
+
+Important bottom tab bar rule:
+- Do not flip the bottom tab bar in Arabic
+- Do not reorder the bottom tab bar in Arabic
+- Keep it left-to-right in all cases
+- Keep the same order in all languages:
+  Home -> Calendar -> Tasks -> More
+
+So:
+- Whole app direction follows language
+- Bottom tab bar always stays left-to-right
+
+Requirements:
+- inspect the current direction logic first
+- fix only direction/layout issues
+- do not redesign unrelated UI
+- do not break navigation
+- do not break working screens
+- do not touch unrelated business logic
+
+Check carefully:
+- Arabic screens
+- English screens
+- headers
+- cards
+- forms
+- More page
+- Dashboard
+- Calendar 
+- internal pages
+- arrows
+- section rows
+- settings cards
+- any layout that is currently reversed incorrectly
+
+After fixing, verify:
+1. Arabic is RTL across the app where appropriate
+2. English is LTR across the app where appropriate
+3. Bottom tab bar stays left-to-right in both Arabic and English
+4. Bottom tab bar order remains:
+   - Home
+   - Calendar
+   - Tasks
+   - More
+5. No unrelated screens were changed unnecessarily
+6. No navigation was broken
+7. No regressions were introduced
+
+Final response format:
+- what was fixed
+- which files were changed
+- how Arabic RTL was corrected
+- how English LTR was corrected
+- how you ensured the bottom tab bar stayed left-to-right
+- whether any issue still remains

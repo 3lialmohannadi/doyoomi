@@ -71,7 +71,6 @@ function RootLayoutNav() {
   const { loadGoals } = useGoalsStore();
   const { loadCategories } = useCategoriesStore();
   const { loadEntries } = useJournalStore();
-  const { profile } = useSettingsStore();
 
   const [dataReady, setDataReady] = useState(false);
   const [videoFinished, setVideoFinished] = useState(false);
@@ -90,12 +89,11 @@ function RootLayoutNav() {
   }, []);
 
   useEffect(() => {
-    const isRTL = profile.language === "ar";
-    I18nManager.allowRTL(true);
-    if (I18nManager.isRTL !== isRTL) {
-      I18nManager.forceRTL(isRTL);
+    I18nManager.allowRTL(false);
+    if (I18nManager.isRTL) {
+      I18nManager.forceRTL(false);
     }
-  }, [profile.language]);
+  }, []);
 
   useEffect(() => {
     if (dataReady && videoFinished && splashVisible.current) {
