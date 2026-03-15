@@ -289,7 +289,7 @@ export default function HomeScreen() {
                 ];
                 const grad = goalGradients[i % goalGradients.length];
                 return (
-                  <Pressable key={g.id} onPress={() => router.push('/goals')}>
+                  <Pressable key={g.id} onPress={() => router.navigate('/goals')}>
                     <FunGoalCard goal={g} progress={pct} gradient={grad} C={C} isRTL={isRTL} />
                   </Pressable>
                 );
