@@ -138,7 +138,7 @@ export default function MoreScreen() {
               label={tFunc('habits')}
               sub={`${habitsCount} ${isRTL ? 'عادة' : 'habits'}`}
               colors={['#A855F7', '#7C5CFC']}
-              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push({ pathname: '/habits', params: { from: 'more' } }); }}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.navigate('/habits'); }}
               isRTL={isRTL}
               C={C}
             />
@@ -149,7 +149,7 @@ export default function MoreScreen() {
               label={tFunc('goals')}
               sub={`${goalsCount} ${isRTL ? 'هدف' : 'goals'}`}
               colors={['#FF6B9D', '#A855F7']}
-              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push({ pathname: '/goals', params: { from: 'more' } }); }}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.navigate('/goals'); }}
               isRTL={isRTL}
               C={C}
             />
