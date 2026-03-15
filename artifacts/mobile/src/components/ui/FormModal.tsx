@@ -1,9 +1,8 @@
 import React from 'react';
 import {
   Modal, View, Text, Pressable, StyleSheet,
-  TextInput, Platform, KeyboardAvoidingView,
+  TextInput, Platform, KeyboardAvoidingView, ScrollView,
 } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -52,14 +51,14 @@ export function FormModal({
             <View style={{ width: 36 }} />
           </View>
 
-          <KeyboardAwareScrollView
+          <ScrollView
             style={styles.scroll}
             contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 100 }]}
             keyboardShouldPersistTaps="handled"
-            bottomOffset={80}
+            showsVerticalScrollIndicator={false}
           >
             {children}
-          </KeyboardAwareScrollView>
+          </ScrollView>
 
           <View style={[
             styles.bottomBar,
