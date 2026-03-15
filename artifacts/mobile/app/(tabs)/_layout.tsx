@@ -1,7 +1,5 @@
 import { BlurView } from "expo-blur";
-import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Tabs } from "expo-router";
-import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 import { SymbolView } from "expo-symbols";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
@@ -10,33 +8,7 @@ import { useSettingsStore } from "../../src/store/settingsStore";
 import { useAppTheme } from "../../src/hooks/useAppTheme";
 import { t } from "../../src/utils/i18n";
 
-function NativeTabLayout() {
-  const { profile } = useSettingsStore();
-  const lang = profile.language;
-  const tFunc = (key: string) => t(key, lang);
-  return (
-    <NativeTabs>
-      <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: "house", selected: "house.fill" }} />
-        <Label>{tFunc('home')}</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="calendar">
-        <Icon sf={{ default: "calendar", selected: "calendar" }} />
-        <Label>{tFunc('calendar')}</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="tasks">
-        <Icon sf={{ default: "checklist", selected: "checklist" }} />
-        <Label>{tFunc('tasks')}</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="settings">
-        <Icon sf={{ default: "ellipsis.circle", selected: "ellipsis.circle.fill" }} />
-        <Label>{tFunc('more')}</Label>
-      </NativeTabs.Trigger>
-    </NativeTabs>
-  );
-}
-
-function ClassicTabLayout() {
+export default function TabLayout() {
   const { profile } = useSettingsStore();
   const { scheme, C } = useAppTheme();
   const lang = profile.language;
@@ -100,14 +72,8 @@ function ClassicTabLayout() {
             isIOS ? <SymbolView name="ellipsis.circle" tintColor={color} size={24} /> : <Ionicons name="grid-outline" size={22} color={color} />,
         }}
       />
-      {/* Hidden screens — accessible via router.push but not shown in tab bar */}
       <Tabs.Screen name="habits" options={{ href: null }} />
       <Tabs.Screen name="goals" options={{ href: null }} />
     </Tabs>
   );
-}
-
-export default function TabLayout() {
-  if (isLiquidGlassAvailable()) return <NativeTabLayout />;
-  return <ClassicTabLayout />;
 }
