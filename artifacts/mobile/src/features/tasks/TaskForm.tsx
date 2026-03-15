@@ -1,23 +1,21 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Pressable, Text, StyleSheet, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-  format, parseISO, startOfMonth, getDaysInMonth, getDay,
-  addMonths, subMonths, addYears, subYears,
-} from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 import {
   FormModal, FormField, FormInput, FormPressableInput,
   PrioritySelector, CategorySelector,
 } from '../../components/ui/FormModal';
+import { FormDatePicker } from '../../components/ui/FormDatePicker';
 import { Task, Priority, TaskStatus } from '../../types';
 import { useTasksStore } from '../../store/tasksStore';
 import { useCategoriesStore } from '../../store/categoriesStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { t } from '../../utils/i18n';
-import { getTodayString, formatDateKey } from '../../utils/date';
+import { getTodayString } from '../../utils/date';
 import { Radius, Spacing } from '../../theme';
 
 interface TaskFormProps {
@@ -152,12 +150,12 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
           onPress={() => { setShowDatePicker(!showDatePicker); setShowTimePicker(false); }}
         />
         {showDatePicker && (
-          <InlineCalendar
+          <FormDatePicker
             selected={dueDate}
             onSelect={(d: string) => { setDueDate(d); setShowDatePicker(false); }}
             C={C}
-            startOfWeek={profile.start_of_week}
             lang={lang}
+            startOfWeek={profile.start_of_week}
           />
         )}
       </FormField>
@@ -200,217 +198,7 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
   );
 }
 
-const CAL_AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-const CAL_AR_DAYS_SUN = ['أح','إث','ثل','أر','خم','جم','سب'];
-const CAL_AR_DAYS_MON = ['إث','ثل','أر','خم','جم','سب','أح'];
-
-// ── Pure JS Inline Calendar ──
-function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay, lang }: any) {
-  const [viewDate, setViewDate] = useState(() => selected ? parseISO(selected) : new Date());
-  const [showYearPicker, setShowYearPicker] = useState(false);
-  const isRTL = lang === 'ar';
-
-  const weekStart = startDay === 'sunday' ? 0 : 1;
-  const enHeaders = startDay === 'sunday'
-    ? ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-    : ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-  const arHeadersBase = startDay === 'sunday' ? CAL_AR_DAYS_SUN : CAL_AR_DAYS_MON;
-  const dayHeaders = isRTL ? [...arHeadersBase].reverse() : enHeaders;
-
-  const daysInMonth = getDaysInMonth(viewDate);
-  const firstDay = getDay(startOfMonth(viewDate));
-  const offset = (firstDay - weekStart + 7) % 7;
-  const today = getTodayString();
-
-  const ltrCells: (string | null)[] = useMemo(() => {
-    const c: (string | null)[] = [
-      ...Array(offset).fill(null),
-      ...Array.from({ length: daysInMonth }, (_, i) => {
-        const d = new Date(viewDate.getFullYear(), viewDate.getMonth(), i + 1);
-        return formatDateKey(d);
-      }),
-    ];
-    while (c.length % 7 !== 0) c.push(null);
-    return c;
-  }, [viewDate, offset, daysInMonth]);
-
-  const cells = useMemo(() => {
-    if (!isRTL) return ltrCells;
-    const rows: (string | null)[][] = [];
-    for (let i = 0; i < ltrCells.length; i += 7) {
-      rows.push([...ltrCells.slice(i, i + 7)].reverse());
-    }
-    return rows.flat();
-  }, [ltrCells, isRTL]);
-
-  const currentYear = viewDate.getFullYear();
-  const yearRange = Array.from({ length: 12 }, (_, i) => currentYear - 5 + i);
-  const navLabel = isRTL
-    ? `${CAL_AR_MONTHS[viewDate.getMonth()]} ${viewDate.getFullYear()}`
-    : format(viewDate, 'MMM yyyy');
-
-  return (
-    <View style={[calStyles.container, { backgroundColor: C.card, borderColor: C.border }]}>
-      {/* Nav row: year back | month back | Month+Year label | month fwd | year fwd */}
-      <View style={calStyles.nav}>
-        <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(isRTL ? addYears(viewDate, 1) : subYears(viewDate, 1)); setShowYearPicker(false); }}
-          style={[calStyles.navYearBtn, { backgroundColor: C.tint + '15' }]}
-          accessibilityLabel={isRTL ? 'Next year' : 'Previous year'}
-        >
-          <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={12} color={C.tint} />
-          <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={12} color={C.tint} style={{ marginLeft: -6 }} />
-        </Pressable>
-        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(isRTL ? addMonths(viewDate, 1) : subMonths(viewDate, 1)); setShowYearPicker(false); }}>
-          <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={20} color={C.tint} />
-        </Pressable>
-        <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowYearPicker(v => !v); }}
-          style={calStyles.navLabelBtn}
-        >
-          <Text style={[calStyles.navLabel, { color: C.text }]}>{navLabel}</Text>
-          <Ionicons name={showYearPicker ? 'chevron-up' : 'chevron-down'} size={12} color={C.textMuted} />
-        </Pressable>
-        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(isRTL ? subMonths(viewDate, 1) : addMonths(viewDate, 1)); setShowYearPicker(false); }}>
-          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={C.tint} />
-        </Pressable>
-        <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(isRTL ? subYears(viewDate, 1) : addYears(viewDate, 1)); setShowYearPicker(false); }}
-          style={[calStyles.navYearBtn, { backgroundColor: C.tint + '15' }]}
-          accessibilityLabel={isRTL ? 'Previous year' : 'Next year'}
-        >
-          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={12} color={C.tint} />
-          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={12} color={C.tint} style={{ marginLeft: -6 }} />
-        </Pressable>
-      </View>
-
-      {/* Year picker grid */}
-      {showYearPicker && (
-        <View style={calStyles.yearGrid}>
-          {yearRange.map(yr => {
-            const isActive = yr === currentYear;
-            return (
-              <Pressable
-                key={yr}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  const d = new Date(viewDate);
-                  d.setFullYear(yr);
-                  setViewDate(d);
-                  setShowYearPicker(false);
-                }}
-                style={[calStyles.yearCell, { overflow: 'hidden' }]}
-              >
-                {isActive && (
-                  <LinearGradient
-                    colors={['#7C5CFC', '#FF6B9D']}
-                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-                    style={[StyleSheet.absoluteFill, { borderRadius: 8 }]}
-                  />
-                )}
-                <Text style={[calStyles.yearText, { color: isActive ? '#fff' : C.text, fontFamily: isActive ? 'Inter_700Bold' : 'Inter_400Regular' }]}>
-                  {yr}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
-      )}
-
-      {!showYearPicker && (
-        <>
-          {/* Day headers */}
-          <View style={calStyles.headerRow}>
-            {dayHeaders.map((d, idx) => (
-              <Text key={`${d}-${idx}`} style={[calStyles.headerDay, { color: C.textMuted }]}>{d}</Text>
-            ))}
-          </View>
-
-          {/* Grid */}
-          <View style={calStyles.grid}>
-            {cells.map((dayKey, i) => {
-              if (!dayKey) return <View key={i} style={calStyles.cell} />;
-              const isSelected = dayKey === selected;
-              const isToday = dayKey === today;
-              const day = parseISO(dayKey).getDate();
-
-              return (
-                <Pressable
-                  key={dayKey}
-                  onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onSelect(dayKey); }}
-                  style={[calStyles.cell, { overflow: 'hidden' }]}
-                >
-                  {isSelected && (
-                    <LinearGradient
-                      colors={['#7C5CFC', '#FF6B9D']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={[StyleSheet.absoluteFill, { borderRadius: 999 }]}
-                    />
-                  )}
-                  <Text style={[
-                    calStyles.dayText,
-                    { color: isSelected ? '#fff' : isToday ? C.tint : C.text },
-                    isToday && !isSelected && { fontFamily: 'Inter_700Bold' },
-                  ]}>
-                    {day}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        </>
-      )}
-    </View>
-  );
-}
-
-const calStyles = StyleSheet.create({
-  container: {
-    borderRadius: Radius.xl,
-    borderWidth: 1,
-    padding: Spacing.md,
-    marginTop: Spacing.sm,
-  },
-  nav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.sm,
-  },
-  navYearBtn: {
-    flexDirection: 'row', alignItems: 'center',
-    borderRadius: 6, paddingHorizontal: 4, paddingVertical: 4,
-  },
-  navLabelBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 3,
-    paddingHorizontal: 4, paddingVertical: 2,
-  },
-  navLabel: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
-  yearGrid: {
-    flexDirection: 'row', flexWrap: 'wrap',
-    marginBottom: Spacing.sm,
-  },
-  yearCell: {
-    width: `${100 / 4}%`,
-    paddingVertical: 8,
-    alignItems: 'center', justifyContent: 'center',
-    borderRadius: 8,
-  },
-  yearText: { fontSize: 13 },
-  headerRow: { flexDirection: 'row', marginBottom: Spacing.xs },
-  headerDay: { flex: 1, textAlign: 'center', fontSize: 11, fontFamily: 'Inter_600SemiBold' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap' },
-  cell: {
-    width: `${100 / 7}%`,
-    aspectRatio: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dayText: { fontSize: 14, fontFamily: 'Inter_500Medium' },
-});
-
-// ── Pure JS Time Picker ──
+// ── Inline Time Picker ────────────────────────────────────────────────────────
 function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
   const currentHour = value ? parseInt(value.split(':')[0]) : new Date().getHours();
   const currentMin = value ? parseInt(value.split(':')[1]) : 0;
@@ -435,9 +223,8 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
   };
 
   return (
-    <View style={[timeStyles.container, { backgroundColor: C.card, borderColor: C.border }]}>
+    <View style={[timeStyles.container, { backgroundColor: C.surface, borderColor: C.border }]}>
       <View style={timeStyles.row}>
-        {/* Hour picker */}
         <View style={timeStyles.col}>
           <Text style={[timeStyles.label, { color: C.textMuted }]}>{t('hourLabel', lang)}</Text>
           <ScrollView style={timeStyles.scroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
@@ -461,7 +248,6 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
 
         <Text style={[timeStyles.colon, { color: C.text }]}>:</Text>
 
-        {/* Minute picker */}
         <View style={timeStyles.col}>
           <Text style={[timeStyles.label, { color: C.textMuted }]}>{t('minLabel', lang)}</Text>
           <ScrollView style={timeStyles.scroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
@@ -500,7 +286,7 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
 
 const timeStyles = StyleSheet.create({
   container: {
-    borderRadius: Radius.xl,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     padding: Spacing.md,
     marginTop: Spacing.sm,
