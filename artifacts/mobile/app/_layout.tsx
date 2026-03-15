@@ -8,12 +8,12 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect, useState } from "react";
-import { I18nManager, View, Text, StyleSheet, Image } from "react-native";
+import { useVideoPlayer, VideoView } from "expo-video";
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, I18nManager, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useSettingsStore } from "@/src/store/settingsStore";
@@ -27,41 +27,42 @@ SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
 
-function LoadingScreen() {
+const VIDEO_SOURCE = require("../assets/videos/intro.mp4");
+const MAX_VIDEO_DURATION = 10000; // 10s hard cap
+
+function VideoSplash({ onFinish }: { onFinish: () => void }) {
+  const finishedRef = useRef(false);
+
+  const finish = () => {
+    if (finishedRef.current) return;
+    finishedRef.current = true;
+    onFinish();
+  };
+
+  const player = useVideoPlayer(VIDEO_SOURCE, (p) => {
+    p.loop = false;
+    p.muted = false;
+    p.play();
+  });
+
+  useEffect(() => {
+    const sub = player.addListener("playToEnd", finish);
+    const timer = setTimeout(finish, MAX_VIDEO_DURATION);
+    return () => {
+      sub.remove();
+      clearTimeout(timer);
+    };
+  }, [player]);
+
   return (
-    <LinearGradient
-      colors={["#7C5CFC", "#A855F7", "#FF6B9D"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={loadStyles.container}
-    >
-      <Image
-        source={require("../assets/images/icon.png")}
-        style={loadStyles.icon}
-        resizeMode="contain"
-      />
-      <Text style={loadStyles.name}>Do.Yoomi</Text>
-      <Text style={loadStyles.arabic}>يومي</Text>
-      <View style={loadStyles.dotsRow}>
-        <View style={loadStyles.dot} />
-        <View style={[loadStyles.dot, { opacity: 0.6 }]} />
-        <View style={[loadStyles.dot, { opacity: 0.3 }]} />
-      </View>
-    </LinearGradient>
+    <VideoView
+      player={player}
+      style={StyleSheet.absoluteFill}
+      contentFit="cover"
+      nativeControls={false}
+    />
   );
 }
-
-const loadStyles = StyleSheet.create({
-  container: { flex: 1, alignItems: "center", justifyContent: "center", gap: 8 },
-  icon: {
-    width: 110, height: 110,
-    marginBottom: 12,
-  },
-  name: { fontSize: 32, fontFamily: "Inter_700Bold", color: "#fff" },
-  arabic: { fontSize: 20, fontFamily: "Inter_700Bold", color: "rgba(255,255,255,0.75)" },
-  dotsRow: { flexDirection: "row", gap: 8, marginTop: 24 },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#fff" },
-});
 
 function RootLayoutNav() {
   const { loadSettings } = useSettingsStore();
@@ -72,7 +73,10 @@ function RootLayoutNav() {
   const { loadEntries } = useJournalStore();
   const { profile } = useSettingsStore();
 
-  const [ready, setReady] = useState(false);
+  const [dataReady, setDataReady] = useState(false);
+  const [videoFinished, setVideoFinished] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const splashVisible = useRef(true);
 
   useEffect(() => {
     Promise.allSettled([
@@ -82,7 +86,7 @@ function RootLayoutNav() {
       loadGoals(),
       loadCategories(),
       loadEntries(),
-    ]).then(() => setReady(true));
+    ]).then(() => setDataReady(true));
   }, []);
 
   useEffect(() => {
@@ -93,14 +97,32 @@ function RootLayoutNav() {
     }
   }, [profile.language]);
 
-  if (!ready) return <LoadingScreen />;
+  useEffect(() => {
+    if (dataReady && videoFinished && splashVisible.current) {
+      splashVisible.current = false;
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [dataReady, videoFinished]);
 
   return (
-    <Stack screenOptions={{ headerBackTitle: "Back" }}>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="journal" options={{ headerShown: false, presentation: "modal" }} />
-      <Stack.Screen name="support" options={{ headerShown: false }} />
-    </Stack>
+    <>
+      <Stack screenOptions={{ headerBackTitle: "Back" }}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="journal" options={{ headerShown: false, presentation: "modal" }} />
+        <Stack.Screen name="support" options={{ headerShown: false }} />
+      </Stack>
+
+      <Animated.View
+        style={[StyleSheet.absoluteFill, { opacity: fadeAnim }]}
+        pointerEvents={dataReady && videoFinished ? "none" : "auto"}
+      >
+        <VideoSplash onFinish={() => setVideoFinished(true)} />
+      </Animated.View>
+    </>
   );
 }
 
