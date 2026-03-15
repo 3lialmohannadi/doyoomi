@@ -8,7 +8,6 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useVideoPlayer, VideoView } from "expo-video";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, I18nManager, StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -16,6 +15,7 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import AppSplashScreen from "@/src/components/SplashScreen";
 import { useSettingsStore } from "@/src/store/settingsStore";
 import { useTasksStore } from "@/src/store/tasksStore";
 import { useHabitsStore } from "@/src/store/habitsStore";
@@ -27,43 +27,6 @@ SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
 
-const VIDEO_SOURCE = require("../assets/videos/intro.mp4");
-const MAX_VIDEO_DURATION = 10000; // 10s hard cap
-
-function VideoSplash({ onFinish }: { onFinish: () => void }) {
-  const finishedRef = useRef(false);
-
-  const finish = () => {
-    if (finishedRef.current) return;
-    finishedRef.current = true;
-    onFinish();
-  };
-
-  const player = useVideoPlayer(VIDEO_SOURCE, (p) => {
-    p.loop = false;
-    p.muted = false;
-    p.play();
-  });
-
-  useEffect(() => {
-    const sub = player.addListener("playToEnd", finish);
-    const timer = setTimeout(finish, MAX_VIDEO_DURATION);
-    return () => {
-      sub.remove();
-      clearTimeout(timer);
-    };
-  }, [player]);
-
-  return (
-    <VideoView
-      player={player}
-      style={StyleSheet.absoluteFill}
-      contentFit="cover"
-      nativeControls={false}
-    />
-  );
-}
-
 function RootLayoutNav() {
   const { loadSettings } = useSettingsStore();
   const { loadTasks } = useTasksStore();
@@ -73,7 +36,7 @@ function RootLayoutNav() {
   const { loadEntries } = useJournalStore();
 
   const [dataReady, setDataReady] = useState(false);
-  const [videoFinished, setVideoFinished] = useState(false);
+  const [splashDone, setSplashDone] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const splashVisible = useRef(true);
 
@@ -89,14 +52,14 @@ function RootLayoutNav() {
   }, []);
 
   useEffect(() => {
-    I18nManager.allowRTL(false);
+    I18nManager.allowRTL(true);
     if (I18nManager.isRTL) {
       I18nManager.forceRTL(false);
     }
   }, []);
 
   useEffect(() => {
-    if (dataReady && videoFinished && splashVisible.current) {
+    if (dataReady && splashDone && splashVisible.current) {
       splashVisible.current = false;
       Animated.timing(fadeAnim, {
         toValue: 0,
@@ -104,7 +67,7 @@ function RootLayoutNav() {
         useNativeDriver: true,
       }).start();
     }
-  }, [dataReady, videoFinished]);
+  }, [dataReady, splashDone]);
 
   return (
     <>
@@ -116,9 +79,9 @@ function RootLayoutNav() {
 
       <Animated.View
         style={[StyleSheet.absoluteFill, { opacity: fadeAnim }]}
-        pointerEvents={dataReady && videoFinished ? "none" : "auto"}
+        pointerEvents={dataReady && splashDone ? "none" : "auto"}
       >
-        <VideoSplash onFinish={() => setVideoFinished(true)} />
+        <AppSplashScreen onFinish={() => setSplashDone(true)} duration={3000} />
       </Animated.View>
     </>
   );
