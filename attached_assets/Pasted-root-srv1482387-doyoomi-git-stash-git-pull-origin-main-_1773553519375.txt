@@ -1,0 +1,43 @@
+root@srv1482387:~/doyoomi# git stash && git pull origin main && git stash pop
+Saved working directory and index state WIP on main: f57ddcf fix(nav): use router.navigate for goal card onPress in Dashboard Goals section
+From https://github.com/3lialmohannadi/doyoomi
+ * branch            main       -> FETCH_HEAD
+Updating f57ddcf..53b8fbd
+Fast-forward
+ artifacts/mobile/app.json                                                               |   3 +-
+ artifacts/mobile/app/(tabs)/_layout.tsx                                                 |  36 +------
+ artifacts/mobile/app/(tabs)/index.tsx                                                   |   8 +-
+ artifacts/mobile/app/_layout.tsx                                                        | 108 ++++++++++++--------
+ artifacts/mobile/app/journal.tsx                                                        |  37 +++++--
+ artifacts/mobile/assets/images/icon.png                                                 | Bin 757619 -> 628058 bytes
+ artifacts/mobile/assets/videos/intro.mp4                                                | Bin 0 -> 1151502 bytes
+ artifacts/mobile/package.json                                                           |   1 +
+ artifacts/mobile/src/components/ui/FormDatePicker.tsx                                   | 184 ++++++++++++++++++++++++++++++++++
+ artifacts/mobile/src/features/journal/JournalForm.tsx                                   | 128 ++++++++++++++++++------
+ artifacts/mobile/src/features/tasks/TaskForm.tsx                                        | 232 ++-----------------------------------------
+ artifacts/mobile/src/types/index.ts                                                     |   7 +-
+ artifacts/mobile/src/utils/i18n.ts                                                      |  50 +++++++++-
+ .../Pasted-Perform-a-full-app-inspection-and-codebase-cleanup-then_1773553158382.txt    |  84 ++++++++++++++++
+ pnpm-lock.yaml                                                                          |  16 +++
+ 15 files changed, 543 insertions(+), 351 deletions(-)
+ create mode 100644 artifacts/mobile/assets/videos/intro.mp4
+ create mode 100644 artifacts/mobile/src/components/ui/FormDatePicker.tsx
+ create mode 100644 attached_assets/Pasted-Perform-a-full-app-inspection-and-codebase-cleanup-then_1773553158382.txt
+Auto-merging artifacts/mobile/app.json
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   artifacts/mobile/app.json
+        modified:   artifacts/mobile/eas.json
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        app.json
+        artifacts/mobile/static-build/
+        update.sh
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Dropped refs/stash@{0} (a258133775cdcb17e47bbcdfe878a7c2100d9d09)
