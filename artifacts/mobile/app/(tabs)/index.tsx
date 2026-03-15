@@ -76,6 +76,7 @@ export default function HomeScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: (isWeb ? 34 : 0) + 100 }}
+        delaysContentTouches={false}
       >
         {/* Hero Header */}
         <LinearGradient
@@ -229,7 +230,7 @@ export default function HomeScreen() {
           C={C} isRTL={isRTL}
           action={tFunc('addNew')}
           onAction={() => { setEditHabit(null); setShowHabitForm(true); }}
-          onTitlePress={() => router.navigate('/habits')}
+          onTitlePress={() => router.push('/habits')}
         >
           {habits.length === 0 ? (
             <Pressable
@@ -260,7 +261,7 @@ export default function HomeScreen() {
           title={tFunc('goalsSection')} C={C} isRTL={isRTL}
           action={tFunc('addNew')}
           onAction={() => setShowGoalForm(true)}
-          onTitlePress={() => router.navigate('/goals')}
+          onTitlePress={() => router.push('/goals')}
         >
           {goals.length === 0 ? (
             <Pressable
@@ -289,7 +290,7 @@ export default function HomeScreen() {
                 ];
                 const grad = goalGradients[i % goalGradients.length];
                 return (
-                  <Pressable key={g.id} onPress={() => router.navigate('/goals')}>
+                  <Pressable key={g.id} onPress={() => router.push('/goals')}>
                     <FunGoalCard goal={g} progress={pct} gradient={grad} C={C} isRTL={isRTL} />
                   </Pressable>
                 );
@@ -430,6 +431,7 @@ function Section({ title, children, C, action, onAction, onTitlePress, isRTL }: 
           style={({ pressed }) => [styles.sectionTitleRow, { flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed && onTitlePress ? 0.7 : 1 }]}
           disabled={!onTitlePress}
           accessibilityRole={onTitlePress ? 'button' : 'text'}
+          hitSlop={8}
         >
           <Text style={[styles.sectionTitle, { color: C.text }]}>{title}</Text>
           {onTitlePress && <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textMuted} />}
