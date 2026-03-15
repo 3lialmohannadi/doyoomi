@@ -20,14 +20,38 @@ interface JournalFormProps {
 }
 
 const MOODS: { key: Mood; icon: string; color: string; labelKey: string }[] = [
-  { key: 'excellent', icon: 'happy',                  color: '#00C48C', labelKey: 'moodExcellent' },
-  { key: 'veryGood',  icon: 'happy-outline',           color: '#4CAF82', labelKey: 'moodVeryGood' },
-  { key: 'good',      icon: 'thumbs-up-outline',       color: '#7C5CFC', labelKey: 'moodGood' },
-  { key: 'neutral',   icon: 'remove-circle-outline',   color: '#FFB800', labelKey: 'moodNeutral' },
-  { key: 'tired',     icon: 'bed-outline',             color: '#FF8A50', labelKey: 'moodTired' },
-  { key: 'stressed',  icon: 'flash-outline',           color: '#FF6B35', labelKey: 'moodStressed' },
-  { key: 'sad',       icon: 'rainy-outline',           color: '#A855F7', labelKey: 'moodSad' },
-  { key: 'bad',       icon: 'sad-outline',             color: '#FF4D6A', labelKey: 'moodBad' },
+  // ── Positive ──
+  { key: 'happy',       icon: 'happy',                   color: '#00C48C', labelKey: 'moodHappy' },
+  { key: 'excited',     icon: 'rocket-outline',           color: '#7C5CFC', labelKey: 'moodExcited' },
+  { key: 'energetic',   icon: 'flash-outline',            color: '#FF9500', labelKey: 'moodEnergetic' },
+  { key: 'grateful',    icon: 'heart-outline',            color: '#FF6B9D', labelKey: 'moodGrateful' },
+  { key: 'optimistic',  icon: 'sunny-outline',            color: '#FFB800', labelKey: 'moodOptimistic' },
+  { key: 'proud',       icon: 'ribbon-outline',           color: '#5E5CE6', labelKey: 'moodProud' },
+  { key: 'satisfied',   icon: 'thumbs-up-outline',        color: '#4CAF82', labelKey: 'moodSatisfied' },
+  { key: 'good',        icon: 'happy-outline',            color: '#34C759', labelKey: 'moodGood' },
+  { key: 'reassured',   icon: 'shield-checkmark-outline', color: '#30B0C7', labelKey: 'moodReassured' },
+  { key: 'comfortable', icon: 'leaf-outline',             color: '#65B040', labelKey: 'moodComfortable' },
+  { key: 'calm',        icon: 'water-outline',            color: '#64B5F6', labelKey: 'moodCalm' },
+  { key: 'surprised',   icon: 'star-outline',             color: '#BF5AF2', labelKey: 'moodSurprised' },
+  // ── Neutral ──
+  { key: 'neutral',     icon: 'remove-circle-outline',   color: '#8E8E93', labelKey: 'moodNeutral' },
+  { key: 'hesitant',    icon: 'help-circle-outline',      color: '#AEAEB2', labelKey: 'moodHesitant' },
+  { key: 'distracted',  icon: 'git-branch-outline',       color: '#C7B065', labelKey: 'moodDistracted' },
+  { key: 'bored',       icon: 'time-outline',             color: '#A0A0A0', labelKey: 'moodBored' },
+  { key: 'lazy',        icon: 'bed-outline',              color: '#B0A0D0', labelKey: 'moodLazy' },
+  // ── Negative ──
+  { key: 'tired',       icon: 'battery-half-outline',     color: '#FF8A50', labelKey: 'moodTired' },
+  { key: 'exhausted',   icon: 'battery-dead-outline',     color: '#FF6B35', labelKey: 'moodExhausted' },
+  { key: 'anxious',     icon: 'alert-circle-outline',     color: '#FF9F0A', labelKey: 'moodAnxious' },
+  { key: 'stressed',    icon: 'thunderstorm-outline',     color: '#FF6B35', labelKey: 'moodStressed' },
+  { key: 'scared',      icon: 'warning-outline',          color: '#C0664A', labelKey: 'moodScared' },
+  { key: 'lonely',      icon: 'person-outline',           color: '#9B59B6', labelKey: 'moodLonely' },
+  { key: 'frustrated',  icon: 'close-circle-outline',     color: '#E67E22', labelKey: 'moodFrustrated' },
+  { key: 'sad',         icon: 'rainy-outline',            color: '#A855F7', labelKey: 'moodSad' },
+  { key: 'bad',         icon: 'sad-outline',              color: '#FF4D6A', labelKey: 'moodBad' },
+  { key: 'sick',        icon: 'medkit-outline',           color: '#E74C3C', labelKey: 'moodSick' },
+  { key: 'depressed',   icon: 'cloud-outline',            color: '#7F8C8D', labelKey: 'moodDepressed' },
+  { key: 'angry',       icon: 'flame-outline',            color: '#FF3B30', labelKey: 'moodAngry' },
 ];
 
 const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
