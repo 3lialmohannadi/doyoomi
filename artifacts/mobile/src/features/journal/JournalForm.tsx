@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Pressable, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { format, parseISO } from 'date-fns';
 import * as Haptics from 'expo-haptics';
-import { FormModal, FormField, FormInput } from '../../components/ui/FormModal';
+import { FormModal, FormField, FormInput, FormPressableInput } from '../../components/ui/FormModal';
+import { FormDatePicker } from '../../components/ui/FormDatePicker';
 import { JournalEntry, Mood } from '../../types';
 import { useJournalStore } from '../../store/journalStore';
 import { useSettingsStore } from '../../store/settingsStore';
@@ -28,12 +30,16 @@ const MOODS: { key: Mood; icon: string; color: string; labelKey: string }[] = [
   { key: 'bad',       icon: 'sad-outline',             color: '#FF4D6A', labelKey: 'moodBad' },
 ];
 
+const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
 export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
   const { addEntry, updateEntry } = useJournalStore();
   const { profile } = useSettingsStore();
   const { C } = useAppTheme();
   const lang = profile.language;
 
+  const [entryDate, setEntryDate] = useState(getTodayString());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [mood, setMood] = useState<Mood | undefined>(undefined);
@@ -42,12 +48,15 @@ export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
 
   useEffect(() => {
     setContentError(false);
+    setShowDatePicker(false);
     if (editEntry) {
+      setEntryDate(editEntry.date ?? getTodayString());
       setTitle(editEntry.title ?? '');
       setContent(editEntry.content);
       setMood(editEntry.mood);
       setTagsStr(editEntry.tags?.join(', ') ?? '');
     } else {
+      setEntryDate(getTodayString());
       setTitle('');
       setContent('');
       setMood(undefined);
@@ -66,7 +75,7 @@ export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
       : undefined;
 
     const data = {
-      date: editEntry?.date ?? getTodayString(),
+      date: entryDate,
       title: title.trim() || undefined,
       content: content.trim(),
       mood,
@@ -81,6 +90,12 @@ export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
     onClose();
   };
 
+  const displayDate = entryDate
+    ? lang === 'ar'
+      ? (() => { const d = parseISO(entryDate); return `${d.getDate()} ${AR_MONTHS[d.getMonth()]} ${d.getFullYear()}`; })()
+      : format(parseISO(entryDate), 'MMM d, yyyy')
+    : '';
+
   return (
     <FormModal
       visible={visible}
@@ -90,6 +105,24 @@ export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
       saveLabel={t('save', lang)}
       cancelLabel={t('cancel', lang)}
     >
+      <FormField label={t('date', lang)}>
+        <FormPressableInput
+          value={displayDate}
+          placeholder={t('datePlaceholder', lang)}
+          icon="calendar-outline"
+          onPress={() => { setShowDatePicker(!showDatePicker); }}
+        />
+        {showDatePicker && (
+          <FormDatePicker
+            selected={entryDate}
+            onSelect={(d: string) => { setEntryDate(d); setShowDatePicker(false); }}
+            C={C}
+            lang={lang}
+            startOfWeek={profile.start_of_week}
+          />
+        )}
+      </FormField>
+
       <FormField label={t('entryTitle', lang)}>
         <FormInput
           value={title}
