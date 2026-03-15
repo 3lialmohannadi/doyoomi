@@ -178,7 +178,7 @@ export default function HomeScreen() {
           C={C} isRTL={isRTL}
           action={tFunc('addNew')}
           onAction={() => setShowTaskForm(true)}
-          onTitlePress={() => router.push('/tasks')}
+          onTitlePress={() => router.navigate('/tasks')}
         >
           {dayTasks.length === 0 ? (
             <Pressable
@@ -229,7 +229,7 @@ export default function HomeScreen() {
           C={C} isRTL={isRTL}
           action={tFunc('addNew')}
           onAction={() => { setEditHabit(null); setShowHabitForm(true); }}
-          onTitlePress={() => router.push('/habits')}
+          onTitlePress={() => router.navigate('/habits')}
         >
           {habits.length === 0 ? (
             <Pressable
@@ -260,7 +260,7 @@ export default function HomeScreen() {
           title={tFunc('goalsSection')} C={C} isRTL={isRTL}
           action={tFunc('addNew')}
           onAction={() => setShowGoalForm(true)}
-          onTitlePress={() => router.push('/goals')}
+          onTitlePress={() => router.navigate('/goals')}
         >
           {goals.length === 0 ? (
             <Pressable
