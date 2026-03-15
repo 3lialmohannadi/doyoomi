@@ -446,6 +446,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_500Medium',
   },
   bottomBar: {
+    flexDirection: 'row',
     gap: Spacing.md,
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.lg,

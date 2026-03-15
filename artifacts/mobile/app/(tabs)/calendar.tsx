@@ -101,7 +101,7 @@ export default function CalendarScreen() {
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: topPad + Spacing.sm, backgroundColor: C.background }]}>
+      <View style={[styles.header, { paddingTop: topPad + Spacing.sm, backgroundColor: C.background, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <Text style={[styles.headerTitle, { color: C.text }]}>{tFunc('calendar')}</Text>
         <AddButton onPress={() => { setEditTask(null); setShowTaskForm(true); }} size={40} />
       </View>
@@ -168,7 +168,7 @@ export default function CalendarScreen() {
         )}
 
         {view === 'day' && (
-          <DayView date={currentDate} tasks={tasks} categories={categories} C={C} tFunc={tFunc} />
+          <DayView date={currentDate} tasks={tasks} categories={categories} C={C} tFunc={tFunc} isRTL={isRTL} />
         )}
 
         {/* Selected date tasks */}
@@ -369,7 +369,7 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
   );
 }
 
-function DayView({ date, tasks, categories, C, tFunc }: any) {
+function DayView({ date, tasks, categories, C, tFunc, isRTL }: any) {
   const key = formatDateKey(date);
   const dayTasks = tasks.filter((t: any) => t.due_date === key);
 
@@ -382,13 +382,13 @@ function DayView({ date, tasks, categories, C, tFunc }: any) {
           const cat = categories.find((c: any) => c.id === task.category_id);
           const accentColor = task.priority === 'high' ? C.priorityHigh : task.priority === 'medium' ? C.priorityMedium : C.priorityLow;
           return (
-            <View key={task.id} style={[styles.dayTaskCard, { backgroundColor: C.card, borderColor: C.border }]}>
+            <View key={task.id} style={[styles.dayTaskCard, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <View style={[styles.dayTaskAccent, { backgroundColor: accentColor }]} />
-              <View style={styles.dayTaskContent}>
-                <Text style={[styles.dayTaskTitle, { color: C.text }]}>{task.title}</Text>
-                {task.due_time && <Text style={[styles.dayTaskTime, { color: C.textMuted }]}>{task.due_time}</Text>}
+              <View style={[styles.dayTaskContent, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+                <Text style={[styles.dayTaskTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{task.title}</Text>
+                {task.due_time && <Text style={[styles.dayTaskTime, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>{task.due_time}</Text>}
                 {cat && (
-                  <View style={[styles.dayTaskCat, { backgroundColor: cat.color + '20' }]}>
+                  <View style={[styles.dayTaskCat, { backgroundColor: cat.color + '20', alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}>
                     <Text style={[styles.dayTaskCatText, { color: cat.color }]}>{cat.name}</Text>
                   </View>
                 )}

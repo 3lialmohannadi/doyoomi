@@ -189,6 +189,7 @@ export default function MoreScreen() {
                 activeIndex={profile.language === 'en' ? 0 : 1}
                 onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setLanguage(i === 0 ? 'en' : 'ar'); }}
                 C={C}
+                isRTL={isRTL}
               />
               <SettingCard
                 icon="moon-outline"
@@ -198,6 +199,7 @@ export default function MoreScreen() {
                 activeIndex={profile.theme === 'light' ? 0 : 1}
                 onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setTheme(i === 0 ? 'light' : 'dark'); }}
                 C={C}
+                isRTL={isRTL}
               />
             </View>
             <View style={[styles.settingGridRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -209,6 +211,7 @@ export default function MoreScreen() {
                 activeIndex={profile.time_format === '12h' ? 0 : 1}
                 onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setTimeFormat(i === 0 ? '12h' : '24h'); }}
                 C={C}
+                isRTL={isRTL}
               />
               <SettingCard
                 icon="calendar-outline"
@@ -218,6 +221,7 @@ export default function MoreScreen() {
                 activeIndex={profile.start_of_week === 'sunday' ? 0 : 1}
                 onSelect={(i) => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setStartOfWeek(i === 0 ? 'sunday' : 'monday'); }}
                 C={C}
+                isRTL={isRTL}
               />
             </View>
           </View>
@@ -337,6 +341,8 @@ export default function MoreScreen() {
                         selected={profileDob}
                         onSelect={(d: string) => { setProfileDob(d); setShowDobPicker(false); }}
                         C={C}
+                        isRTL={isRTL}
+                        lang={lang}
                       />
                     </View>
                   )}
@@ -442,14 +448,14 @@ function ContentCard({ icon, label, sub, colors, onPress, isRTL, C }: {
   );
 }
 
-function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C }: {
+function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C, isRTL }: {
   icon: any; iconColor: string; title: string;
   options: string[]; activeIndex: number;
-  onSelect: (index: number) => void; C: any;
+  onSelect: (index: number) => void; C: any; isRTL?: boolean;
 }) {
   return (
     <View style={[styles.settingCard, { backgroundColor: C.card, borderColor: C.border }]}>
-      <View style={styles.settingCardHeader}>
+      <View style={[styles.settingCardHeader, isRTL && { flexDirection: 'row-reverse' }]}>
         <View style={[styles.settingCardIcon, { backgroundColor: iconColor + '18' }]}>
           <Ionicons name={icon} size={17} color={iconColor} />
         </View>
@@ -497,7 +503,11 @@ function ProfileField({ label, icon, C, isRTL, children }: any) {
   );
 }
 
-function DobCalendar({ selected, onSelect, C }: any) {
+const DOB_AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const DOB_AR_DAYS = ['أح','إث','ثل','أر','خم','جم','سب'];
+const DOB_EN_DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+function DobCalendar({ selected, onSelect, C, isRTL, lang }: any) {
   const [viewDate, setViewDate] = useState(() => {
     if (selected) return parseISO(selected);
     const d = new Date();
@@ -505,12 +515,13 @@ function DobCalendar({ selected, onSelect, C }: any) {
     return d;
   });
 
-  const dayHeaders = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const dayHeaders = isRTL ? [...DOB_AR_DAYS].reverse() : DOB_EN_DAYS;
   const daysInMonth = getDaysInMonth(viewDate);
   const firstDay = getDay(startOfMonth(viewDate));
   const today = getTodayString();
+  const monthLabel = isRTL ? DOB_AR_MONTHS[viewDate.getMonth()] : format(viewDate, 'MMMM');
 
-  const cells: (string | null)[] = useMemo(() => {
+  const ltrCells: (string | null)[] = useMemo(() => {
     const c: (string | null)[] = [
       ...Array(firstDay).fill(null),
       ...Array.from({ length: daysInMonth }, (_, i) => {
@@ -522,45 +533,54 @@ function DobCalendar({ selected, onSelect, C }: any) {
     return c;
   }, [viewDate, firstDay, daysInMonth]);
 
+  const displayCells = useMemo(() => {
+    if (!isRTL) return ltrCells;
+    const rows: (string | null)[][] = [];
+    for (let i = 0; i < ltrCells.length; i += 7) {
+      rows.push([...ltrCells.slice(i, i + 7)].reverse());
+    }
+    return rows.flat();
+  }, [ltrCells, isRTL]);
+
   return (
     <View style={[dobStyles.container, { backgroundColor: C.surface, borderColor: C.border }]}>
       {/* Year navigation row */}
-      <View style={dobStyles.yearNav}>
+      <View style={[dobStyles.yearNav, isRTL && { flexDirection: 'row-reverse' }]}>
         <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subYears(viewDate, 1)); }}
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(isRTL ? addYears(viewDate, 1) : subYears(viewDate, 1)); }}
           style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15' }]}
           hitSlop={8}
         >
-          <Ionicons name="chevron-back" size={14} color={C.tint} />
-          <Ionicons name="chevron-back" size={14} color={C.tint} style={{ marginLeft: -8 }} />
+          <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={14} color={C.tint} />
+          <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={14} color={C.tint} style={{ marginLeft: -8 }} />
         </Pressable>
         <Text style={[dobStyles.yearLabel, { color: C.tint }]}>{format(viewDate, 'yyyy')}</Text>
         <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addYears(viewDate, 1)); }}
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(isRTL ? subYears(viewDate, 1) : addYears(viewDate, 1)); }}
           style={[dobStyles.yearNavBtn, { backgroundColor: C.tint + '15' }]}
           hitSlop={8}
         >
-          <Ionicons name="chevron-forward" size={14} color={C.tint} />
-          <Ionicons name="chevron-forward" size={14} color={C.tint} style={{ marginLeft: -8 }} />
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={14} color={C.tint} />
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={14} color={C.tint} style={{ marginLeft: -8 }} />
         </Pressable>
       </View>
       {/* Month navigation row */}
-      <View style={dobStyles.nav}>
-        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); }} hitSlop={8}>
-          <Ionicons name="chevron-back" size={18} color={C.tint} />
+      <View style={[dobStyles.nav, isRTL && { flexDirection: 'row-reverse' }]}>
+        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(isRTL ? addMonths(viewDate, 1) : subMonths(viewDate, 1)); }} hitSlop={8}>
+          <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={18} color={C.tint} />
         </Pressable>
-        <Text style={[dobStyles.navLabel, { color: C.text }]}>{format(viewDate, 'MMMM')}</Text>
-        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); }} hitSlop={8}>
-          <Ionicons name="chevron-forward" size={18} color={C.tint} />
+        <Text style={[dobStyles.navLabel, { color: C.text }]}>{monthLabel}</Text>
+        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(isRTL ? subMonths(viewDate, 1) : addMonths(viewDate, 1)); }} hitSlop={8}>
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={18} color={C.tint} />
         </Pressable>
       </View>
       <View style={dobStyles.headerRow}>
-        {dayHeaders.map(d => (
-          <Text key={d} style={[dobStyles.headerDay, { color: C.textMuted }]}>{d}</Text>
+        {dayHeaders.map((d, idx) => (
+          <Text key={`${d}-${idx}`} style={[dobStyles.headerDay, { color: C.textMuted }]}>{d}</Text>
         ))}
       </View>
       <View style={dobStyles.grid}>
-        {cells.map((dayKey, i) => {
+        {displayCells.map((dayKey, i) => {
           if (!dayKey) return <View key={'empty-' + i} style={dobStyles.cell} />;
           const isSelected = dayKey === selected;
           const isTodayDate = dayKey === today;

@@ -157,6 +157,7 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
             onSelect={(d: string) => { setDueDate(d); setShowDatePicker(false); }}
             C={C}
             startOfWeek={profile.start_of_week}
+            lang={lang}
           />
         )}
       </FormField>
@@ -199,22 +200,29 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
   );
 }
 
+const CAL_AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const CAL_AR_DAYS_SUN = ['أح','إث','ثل','أر','خم','جم','سب'];
+const CAL_AR_DAYS_MON = ['إث','ثل','أر','خم','جم','سب','أح'];
+
 // ── Pure JS Inline Calendar ──
-function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay }: any) {
+function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay, lang }: any) {
   const [viewDate, setViewDate] = useState(() => selected ? parseISO(selected) : new Date());
   const [showYearPicker, setShowYearPicker] = useState(false);
+  const isRTL = lang === 'ar';
 
   const weekStart = startDay === 'sunday' ? 0 : 1;
-  const dayHeaders = startDay === 'sunday'
+  const enHeaders = startDay === 'sunday'
     ? ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
     : ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+  const arHeadersBase = startDay === 'sunday' ? CAL_AR_DAYS_SUN : CAL_AR_DAYS_MON;
+  const dayHeaders = isRTL ? [...arHeadersBase].reverse() : enHeaders;
 
   const daysInMonth = getDaysInMonth(viewDate);
   const firstDay = getDay(startOfMonth(viewDate));
   const offset = (firstDay - weekStart + 7) % 7;
   const today = getTodayString();
 
-  const cells: (string | null)[] = useMemo(() => {
+  const ltrCells: (string | null)[] = useMemo(() => {
     const c: (string | null)[] = [
       ...Array(offset).fill(null),
       ...Array.from({ length: daysInMonth }, (_, i) => {
@@ -226,41 +234,53 @@ function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay }: any) {
     return c;
   }, [viewDate, offset, daysInMonth]);
 
+  const cells = useMemo(() => {
+    if (!isRTL) return ltrCells;
+    const rows: (string | null)[][] = [];
+    for (let i = 0; i < ltrCells.length; i += 7) {
+      rows.push([...ltrCells.slice(i, i + 7)].reverse());
+    }
+    return rows.flat();
+  }, [ltrCells, isRTL]);
+
   const currentYear = viewDate.getFullYear();
   const yearRange = Array.from({ length: 12 }, (_, i) => currentYear - 5 + i);
+  const navLabel = isRTL
+    ? `${CAL_AR_MONTHS[viewDate.getMonth()]} ${viewDate.getFullYear()}`
+    : format(viewDate, 'MMM yyyy');
 
   return (
     <View style={[calStyles.container, { backgroundColor: C.card, borderColor: C.border }]}>
       {/* Nav row: year back | month back | Month+Year label | month fwd | year fwd */}
       <View style={calStyles.nav}>
         <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subYears(viewDate, 1)); setShowYearPicker(false); }}
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(isRTL ? addYears(viewDate, 1) : subYears(viewDate, 1)); setShowYearPicker(false); }}
           style={[calStyles.navYearBtn, { backgroundColor: C.tint + '15' }]}
-          accessibilityLabel="Previous year"
+          accessibilityLabel={isRTL ? 'Next year' : 'Previous year'}
         >
-          <Ionicons name="chevron-back" size={12} color={C.tint} />
-          <Ionicons name="chevron-back" size={12} color={C.tint} style={{ marginLeft: -6 }} />
+          <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={12} color={C.tint} />
+          <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={12} color={C.tint} style={{ marginLeft: -6 }} />
         </Pressable>
-        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(subMonths(viewDate, 1)); setShowYearPicker(false); }}>
-          <Ionicons name="chevron-back" size={20} color={C.tint} />
+        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(isRTL ? addMonths(viewDate, 1) : subMonths(viewDate, 1)); setShowYearPicker(false); }}>
+          <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={20} color={C.tint} />
         </Pressable>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowYearPicker(v => !v); }}
           style={calStyles.navLabelBtn}
         >
-          <Text style={[calStyles.navLabel, { color: C.text }]}>{format(viewDate, 'MMM yyyy')}</Text>
+          <Text style={[calStyles.navLabel, { color: C.text }]}>{navLabel}</Text>
           <Ionicons name={showYearPicker ? 'chevron-up' : 'chevron-down'} size={12} color={C.textMuted} />
         </Pressable>
-        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addMonths(viewDate, 1)); setShowYearPicker(false); }}>
-          <Ionicons name="chevron-forward" size={20} color={C.tint} />
+        <Pressable onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(isRTL ? subMonths(viewDate, 1) : addMonths(viewDate, 1)); setShowYearPicker(false); }}>
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={C.tint} />
         </Pressable>
         <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(addYears(viewDate, 1)); setShowYearPicker(false); }}
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setViewDate(isRTL ? subYears(viewDate, 1) : addYears(viewDate, 1)); setShowYearPicker(false); }}
           style={[calStyles.navYearBtn, { backgroundColor: C.tint + '15' }]}
-          accessibilityLabel="Next year"
+          accessibilityLabel={isRTL ? 'Previous year' : 'Next year'}
         >
-          <Ionicons name="chevron-forward" size={12} color={C.tint} />
-          <Ionicons name="chevron-forward" size={12} color={C.tint} style={{ marginLeft: -6 }} />
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={12} color={C.tint} />
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={12} color={C.tint} style={{ marginLeft: -6 }} />
         </Pressable>
       </View>
 
@@ -301,8 +321,8 @@ function InlineCalendar({ selected, onSelect, C, startOfWeek: startDay }: any) {
         <>
           {/* Day headers */}
           <View style={calStyles.headerRow}>
-            {dayHeaders.map(d => (
-              <Text key={d} style={[calStyles.headerDay, { color: C.textMuted }]}>{d}</Text>
+            {dayHeaders.map((d, idx) => (
+              <Text key={`${d}-${idx}`} style={[calStyles.headerDay, { color: C.textMuted }]}>{d}</Text>
             ))}
           </View>
 

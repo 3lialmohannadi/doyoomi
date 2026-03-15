@@ -183,7 +183,7 @@ export default function HomeScreen() {
           {dayTasks.length === 0 ? (
             <Pressable
               onPress={() => setShowTaskForm(true)}
-              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.8 : 1 }]}
+              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.8 : 1 }]}
               accessibilityRole="button"
             >
               <View style={[styles.habitsEmptyIcon, { backgroundColor: C.tint + '15' }]}>
@@ -234,7 +234,7 @@ export default function HomeScreen() {
           {habits.length === 0 ? (
             <Pressable
               onPress={() => { setEditHabit(null); setShowHabitForm(true); }}
-              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.8 : 1 }]}
+              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.8 : 1 }]}
               accessibilityRole="button"
             >
               <View style={[styles.habitsEmptyIcon, { backgroundColor: C.tint + '15' }]}>
@@ -265,7 +265,7 @@ export default function HomeScreen() {
           {goals.length === 0 ? (
             <Pressable
               onPress={() => setShowGoalForm(true)}
-              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.8 : 1 }]}
+              style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.8 : 1 }]}
               accessibilityRole="button"
             >
               <View style={[styles.habitsEmptyIcon, { backgroundColor: '#FF6B9D15' }]}>
@@ -660,6 +660,7 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
 }
 
 function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: any) {
+  const isRTL = lang === 'ar';
   const maxVal = 8;
   const data = weekDays.map((d: Date) => {
     const key = formatDateKey(d);
@@ -701,12 +702,12 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: any) {
           );
         })}
       </View>
-      <View style={styles.chartLegend}>
-        <View style={styles.legendItem}>
+      <View style={[styles.chartLegend, isRTL && { flexDirection: 'row-reverse' }]}>
+        <View style={[styles.legendItem, isRTL && { flexDirection: 'row-reverse' }]}>
           <LinearGradient colors={['#7C5CFC', '#A855F7']} style={styles.legendDot} />
           <Text style={[styles.legendText, { color: C.textSecondary }]}>{tFunc('chartDone')}</Text>
         </View>
-        <View style={styles.legendItem}>
+        <View style={[styles.legendItem, isRTL && { flexDirection: 'row-reverse' }]}>
           <View style={[styles.legendDot, { backgroundColor: C.borderLight }]} />
           <Text style={[styles.legendText, { color: C.textSecondary }]}>{tFunc('chartTotal')}</Text>
         </View>
