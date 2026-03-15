@@ -170,26 +170,27 @@ export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
           {MOODS.map(m => {
             const isActive = mood === m.key;
             return (
-              <Pressable
-                key={m.key}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setMood(isActive ? undefined : m.key);
-                }}
-                style={[
-                  styles.moodBtn,
-                  {
-                    backgroundColor: isActive ? m.color + '20' : C.surface,
-                    borderColor: isActive ? m.color : C.border,
-                    borderWidth: isActive ? 2 : 1,
-                  },
-                ]}
-              >
-                <Ionicons name={m.icon as any} size={22} color={isActive ? m.color : C.textMuted} />
-                <Text style={[styles.moodLabel, { color: isActive ? m.color : C.textSecondary }]} numberOfLines={1}>
-                  {t(m.labelKey, lang)}
-                </Text>
-              </Pressable>
+              <View key={m.key} style={styles.moodCell}>
+                <Pressable
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setMood(isActive ? undefined : m.key);
+                  }}
+                  style={[
+                    styles.moodBtn,
+                    {
+                      backgroundColor: isActive ? m.color + '20' : C.surface,
+                      borderColor: isActive ? m.color : C.border,
+                      borderWidth: isActive ? 2 : 1,
+                    },
+                  ]}
+                >
+                  <Ionicons name={m.icon as any} size={22} color={isActive ? m.color : C.textMuted} />
+                  <Text style={[styles.moodLabel, { color: isActive ? m.color : C.textSecondary }]} numberOfLines={1}>
+                    {t(m.labelKey, lang)}
+                  </Text>
+                </Pressable>
+              </View>
             );
           })}
         </View>
@@ -210,19 +211,23 @@ const styles = StyleSheet.create({
   moodGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: Spacing.sm,
+  },
+  moodCell: {
+    width: '20%',
+    padding: 3,
   },
   moodBtn: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
     borderRadius: Radius.lg,
     paddingVertical: Spacing.sm + 2,
-    paddingHorizontal: Spacing.md,
-    minWidth: 72,
+    paddingHorizontal: 2,
   },
   moodLabel: {
     fontSize: 11,
     fontFamily: 'Inter_600SemiBold',
+    textAlign: 'center',
   },
 });
