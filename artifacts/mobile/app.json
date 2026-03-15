@@ -1,11 +1,11 @@
 {
   "expo": {
     "name": "Do.Yoomi — يومي",
-    "slug": "mobile",
+    "slug": "doyoomi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mobile",
+    "scheme": "doyoomi",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -15,23 +15,18 @@
     },
     "ios": {
       "supportsTablet": false,
-      "buildNumber": "2",
+      "buildNumber": "1",
       "bundleIdentifier": "com.doyoomi.app"
     },
     "android": {
       "package": "com.doyoomi.app",
-      "versionCode": 2
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/images/icon.png"
     },
     "plugins": [
-      [
-        "expo-router",
-        {
-          "origin": "https://replit.com/"
-        }
-      ],
+      "expo-router",
       "expo-font",
       "expo-web-browser",
       "expo-video"
