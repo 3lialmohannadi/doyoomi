@@ -257,7 +257,7 @@ export default function MoreScreen() {
           {/* About card */}
           <View style={[styles.aboutCard, { backgroundColor: C.card, borderColor: C.border }]}>
             <Image
-              source={require('../../assets/images/icon.png')}
+              source={require('../../assets/images/icon-nobg.png')}
               style={styles.aboutLogo}
               resizeMode="contain"
             />
