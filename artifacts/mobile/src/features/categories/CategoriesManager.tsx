@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Modal, View, Text, Pressable, ScrollView, TextInput, StyleSheet, Alert,
 } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -161,11 +160,11 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               <View style={{ width: 36 }} />
             </View>
 
-            <KeyboardAwareScrollView
+            <ScrollView
+              style={{ flex: 1 }}
               contentContainerStyle={styles.formContent}
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
-              bottomOffset={80}
             >
               {/* Preview icon */}
               <View style={styles.formPreviewSection}>
@@ -254,7 +253,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                   })}
                 </View>
               </View>
-            </KeyboardAwareScrollView>
+            </ScrollView>
 
             {/* Bottom save button */}
             <View style={[styles.formBottomBar, {
