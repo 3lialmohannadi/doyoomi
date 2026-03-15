@@ -1,7 +1,12 @@
 export type Priority = 'low' | 'medium' | 'high';
 export type TaskStatus = 'pending' | 'completed' | 'overdue' | 'postponed' | 'cancelled';
 export type GoalType = 'monthly' | 'yearly';
-export type Mood = 'excellent' | 'veryGood' | 'good' | 'neutral' | 'tired' | 'stressed' | 'sad' | 'bad';
+export type Mood =
+  | 'happy' | 'excited' | 'energetic' | 'grateful' | 'optimistic' | 'proud'
+  | 'satisfied' | 'good' | 'reassured' | 'comfortable' | 'calm' | 'surprised'
+  | 'neutral' | 'hesitant' | 'distracted' | 'bored' | 'lazy'
+  | 'tired' | 'exhausted' | 'anxious' | 'stressed' | 'scared' | 'lonely'
+  | 'frustrated' | 'sad' | 'bad' | 'sick' | 'depressed' | 'angry';
 export type Language = 'en' | 'ar';
 export type Theme = 'light' | 'dark';
 export type TimeFormat = '12h' | '24h';
