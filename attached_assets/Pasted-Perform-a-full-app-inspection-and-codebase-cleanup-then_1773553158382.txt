@@ -1,0 +1,84 @@
+Perform a full app inspection and codebase cleanup, then fix any bugs, crashes, instability issues, and weak implementation you find.
+
+Important:
+Do not do a shallow check.
+Do not only inspect one or two screens.
+I want a real full review of the app and codebase, followed by proper fixes and cleanup.
+
+Required:
+Inspect the app carefully from all important angles, including:
+- app screens
+- sub-pages
+- internal flows
+- navigation
+- forms
+- buttons
+- cards
+- modals / sheets / popups
+- Dashboard
+- More page
+- Tasks
+- Habits
+- Goals
+- Daily Journal
+- Categories
+- Settings
+- Support / Contact
+- Profile
+- Calendar
+- empty states
+- loading states
+- date pickers
+- app startup / launch behavior
+- icon / assets / references
+- code structure
+- shared components
+- navigation config
+- state/store logic
+- helpers/utilities
+- build/runtime/type issues if applicable
+
+What you must do:
+1. Inspect the full app carefully
+2. Identify bugs, crashes, regressions, broken navigation, broken logic, weak implementation, or hidden issues
+3. Fix the issues properly
+4. Clean the codebase
+5. Remove dead code
+6. Remove unused imports
+7. Remove broken references
+8. Reduce duplicate logic where appropriate
+9. Improve maintainability where needed
+10. Verify that the app is more stable after the fixes
+
+Crash / bug requirements:
+- Find and fix any crash you detect
+- Find and fix obvious runtime bugs
+- Find and fix broken flows
+- Find and fix broken navigation
+- Find and fix broken onPress / button actions
+- Find and fix issues caused by previous edits
+- Check for hidden regressions
+
+Important:
+- Do not redesign anything
+- Do not make unnecessary UI changes
+- Focus on bugs, crashes, stability, broken flows, and code cleanup only
+
+Final required actions:
+After the inspection and fixes, do:
+- full code cleanup
+- final bug recheck
+- final crash recheck
+- final navigation recheck
+- final flow recheck
+
+Final response format:
+Provide a real final report including:
+- what bugs were found
+- what crashes were found
+- what was fixed
+- what was cleaned
+- what files/areas were affected
+- whether code cleanup was completed
+- whether the app was checked for crashes
+- whether any issue still remains
