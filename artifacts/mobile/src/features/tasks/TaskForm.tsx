@@ -9,7 +9,7 @@ import {
   PrioritySelector, CategorySelector,
 } from '../../components/ui/FormModal';
 import { FormDatePicker } from '../../components/ui/FormDatePicker';
-import { Task, Priority, TaskStatus } from '../../types';
+import { Task, Priority, TaskStatus, Language } from '../../types';
 import { useTasksStore } from '../../store/tasksStore';
 import { useCategoriesStore } from '../../store/categoriesStore';
 import { useSettingsStore } from '../../store/settingsStore';
@@ -199,7 +199,7 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
 }
 
 // ── Inline Time Picker ────────────────────────────────────────────────────────
-function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: { value?: string; onChange: (v: string) => void; is12h: boolean; C: ColorScheme; onDone: () => void; lang: string }) {
+function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: { value?: string; onChange: (v: string) => void; is12h: boolean; C: ColorScheme; onDone: () => void; lang: Language }) {
   const currentHour = value ? parseInt(value.split(':')[0]) : new Date().getHours();
   const currentMin = value ? parseInt(value.split(':')[1]) : 0;
 

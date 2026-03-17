@@ -76,7 +76,6 @@ export default function HomeScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: (isWeb ? 34 : 0) + 100 }}
-        delaysContentTouches={false}
       >
         {/* Hero Header */}
         <LinearGradient
@@ -601,7 +600,7 @@ function FunGoalCard({ goal, progress, gradient, C, isRTL }: FunGoalCardProps) {
   );
 }
 
-const MOOD_ICONS: Record<Mood, { icon: string; color: string }> = {
+const MOOD_ICONS: Partial<Record<Mood, { icon: string; color: string }>> = {
   excellent:  { icon: 'happy',                  color: '#4ADE80' },
   veryGood:   { icon: 'happy-outline',          color: '#4CAF82' },
   good:       { icon: 'thumbs-up-outline',      color: PRIMARY },

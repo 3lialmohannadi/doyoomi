@@ -2,7 +2,7 @@ export type Priority = 'low' | 'medium' | 'high';
 export type TaskStatus = 'pending' | 'completed' | 'overdue' | 'postponed' | 'cancelled';
 export type GoalType = 'monthly' | 'yearly';
 export type Mood =
-  | 'happy' | 'excited' | 'energetic' | 'grateful' | 'optimistic' | 'proud'
+  | 'excellent' | 'veryGood' | 'happy' | 'excited' | 'energetic' | 'grateful' | 'optimistic' | 'proud'
   | 'satisfied' | 'good' | 'reassured' | 'comfortable' | 'calm' | 'surprised'
   | 'neutral' | 'hesitant' | 'distracted' | 'bored' | 'lazy'
   | 'tired' | 'exhausted' | 'anxious' | 'stressed' | 'scared' | 'lonely'

@@ -21,7 +21,7 @@ import { Toast } from '../src/components/ui/Toast';
 import { ConfirmDialog } from '../src/components/ui/ConfirmDialog';
 import { JournalEntry, Mood } from '../src/types';
 
-const MOOD_CONFIG: Record<Mood, { icon: string; color: string }> = {
+const MOOD_CONFIG: Partial<Record<Mood, { icon: string; color: string }>> = {
   happy:       { icon: 'happy',                   color: '#4ADE80' },
   excited:     { icon: 'rocket-outline',           color: PRIMARY },
   energetic:   { icon: 'flash-outline',            color: '#FF9500' },
