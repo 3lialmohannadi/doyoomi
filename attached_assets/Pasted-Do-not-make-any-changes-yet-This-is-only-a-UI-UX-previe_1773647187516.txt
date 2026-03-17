@@ -1,0 +1,146 @@
+Do not make any changes yet.
+
+This is only a UI/UX preview request for review purposes.
+
+I want you to imagine that I asked for a full UI/UX redesign and improvement of the entire app, but without changing any app features, logic, flows, data, or functionality.
+
+Important:
+- Do NOT implement anything yet
+- Do NOT apply changes
+- Do NOT overwrite current screens
+- Do NOT update code
+- Do NOT change navigation logic
+- Do NOT change app behavior
+- Do NOT remove or add features
+- Do NOT publish or finalize anything
+
+I only want you to SHOW ME what UI/UX changes you would make if I asked for a full UI/UX improvement of the whole app.
+
+This includes EVERYTHING visually and experientially in the app, including:
+- all main pages
+- all internal pages
+- all sub-pages
+- all modals
+- all popups
+- all sheets
+- all forms
+- all input screens
+- all create/edit screens
+- all cards
+- all sections
+- all tabs
+- all empty states
+- all feedback messages
+- all settings UI
+- all profile UI
+- all calendar UI
+- all task/habit/goal/journal UI
+- typography
+- colors
+- spacing
+- paddings
+- margins
+- iconography
+- card design
+- button design
+- field/input design
+- visual hierarchy
+- layout rhythm
+- consistency
+- polish
+- light mode
+- dark mode
+- micro-interactions
+- user-facing text presentation
+- overall design system
+
+Very important:
+This is not only about the main screens.
+I want the preview proposal to cover the full app from top to bottom, including internal screens and small details.
+
+Your task:
+Review the current app UI/UX and prepare a complete visual/UX proposal of what you would improve if I approved a full UI/UX redesign.
+
+Rules:
+- Keep all features exactly the same
+- Keep all app functionality exactly the same
+- Keep all app flows exactly the same
+- Keep all navigation destinations exactly the same unless the change is purely presentation/UX-related
+- This is UI/UX only
+- No feature changes
+- No business logic changes
+- No data/model changes
+- No structural app behavior changes unless purely visual/UX presentation-related
+
+I want you to show me what you would improve in all of the following:
+
+1. Dashboard / Home
+2. More page
+3. Tasks pages
+4. Habits pages
+5. Goals pages
+6. Daily Journal pages
+7. Settings pages
+8. Profile page
+9. Calendar page
+10. Support / Contact page
+11. Categories pages
+12. All create/edit forms
+13. All internal sub-pages
+14. All modals / sheets / popups
+15. All empty states
+16. All messages / alerts / feedback states
+17. Light mode
+18. Dark mode
+19. Typography system
+20. Color system
+21. Button system
+22. Card system
+23. Input / form field system
+24. Icons and icon consistency
+25. Layout spacing and sizing
+26. Interaction polish and micro-interactions
+27. Overall visual identity consistency
+
+For each area/screen, I want you to explain:
+- what is currently weak or inconsistent
+- what exact UI/UX improvement you would make
+- why it would be better
+- whether it is high impact, medium impact, or minor polish
+
+Also include:
+- recommended font improvements
+- recommended color usage improvements
+- recommended design-system improvements
+- recommended spacing and sizing improvements
+- recommended improvements to visual hierarchy
+- recommended improvements to forms and data-entry experience
+- recommended improvements to internal/detail screens
+- recommended improvements to dark mode and light mode consistency
+
+Output format:
+Give me a structured preview proposal with sections like this:
+
+- Screen / Area name
+- Current issue
+- Suggested UI/UX improvement
+- Why it would be better
+- Priority: High / Medium / Minor
+
+Then at the end, include:
+1. High-impact improvements
+2. Medium-impact improvements
+3. Minor polish improvements
+4. Design system improvements
+5. Typography improvements
+6. Color improvements
+7. Form/input improvements
+8. Internal pages improvements
+9. Light mode / dark mode improvements
+10. Final summary of what the redesigned experience would feel like
+
+Again:
+Do NOT implement anything now.
+Do NOT change the app.
+Do NOT update code.
+This is only a preview proposal for me to review first.
