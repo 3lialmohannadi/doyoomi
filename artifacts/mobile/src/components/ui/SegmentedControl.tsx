@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, Pressable, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Radius, Spacing, Typography, GRADIENT_PRIMARY } from '../../theme';
+import { Radius, Spacing, Typography, GRADIENT_PRIMARY, F, PRIMARY } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import * as Haptics from 'expo-haptics';
 
@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     ...{
-      shadowColor: '#7C5CFC',
+      shadowColor: PRIMARY,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.3,
       shadowRadius: 6,
@@ -75,6 +75,6 @@ const styles = StyleSheet.create({
   },
   label: {
     ...Typography.captionMedium,
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: F.med,
   },
 });

@@ -13,14 +13,14 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSettingsStore } from '../src/store/settingsStore';
 import { useAppTheme } from '../src/hooks/useAppTheme';
 import { t } from '../src/utils/i18n';
-import { Spacing, Radius, Shadow } from '../src/theme';
+import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H } from '../src/theme';
 
 const SUPPORT_EMAIL = 'admin@doyoomi.com';
 
 const CATEGORIES = [
   { key: 'suggestion',     icon: 'bulb-outline',         color: '#FFB800' },
-  { key: 'technicalIssue', icon: 'bug-outline',           color: '#FF4D6A' },
-  { key: 'other',          icon: 'help-circle-outline',   color: '#7C5CFC' },
+  { key: 'technicalIssue', icon: 'bug-outline',           color: '#F87171' },
+  { key: 'other',          icon: 'help-circle-outline',   color: PRIMARY },
 ];
 
 export default function SupportScreen() {
@@ -81,9 +81,9 @@ export default function SupportScreen() {
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
       <LinearGradient
-        colors={['#7C5CFC', '#A855F7']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        colors={[...GRADIENT_H]}
+        start={{ x: 1, y: 0 }}
+        end={{ x: 0, y: 1 }}
         style={[styles.header, { paddingTop: topPad + Spacing.sm }]}
       >
         <View style={styles.headerDecor1} />
@@ -102,27 +102,27 @@ export default function SupportScreen() {
 
       {sent ? (
         <View style={styles.centerState}>
-          <View style={[styles.stateIconBox, { backgroundColor: '#00C48C18' }]}>
-            <Ionicons name="checkmark-circle" size={64} color="#00C48C" />
+          <View style={[styles.stateIconBox, { backgroundColor: '#4ADE8018' }]}>
+            <Ionicons name="checkmark-circle" size={64} color="#4ADE80" />
           </View>
           <Text style={[styles.stateTitle, { color: C.text }]}>{tFunc('messagePrepared')}</Text>
           <Text style={[styles.stateSub, { color: C.textSecondary }]}>{tFunc('messagePreparedDesc')}</Text>
           <Pressable onPress={handleReset} style={styles.stateBtn}>
-            <LinearGradient colors={['#7C5CFC', '#A855F7']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]} />
+            <LinearGradient colors={[...GRADIENT_H]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]} />
             <Ionicons name="create-outline" size={18} color="#fff" />
             <Text style={styles.stateBtnText}>{tFunc('sendAnother')}</Text>
           </Pressable>
         </View>
       ) : mailError ? (
         <View style={styles.centerState}>
-          <View style={[styles.stateIconBox, { backgroundColor: '#FF4D6A18' }]}>
-            <Ionicons name="alert-circle" size={64} color="#FF4D6A" />
+          <View style={[styles.stateIconBox, { backgroundColor: '#F8717118' }]}>
+            <Ionicons name="alert-circle" size={64} color="#F87171" />
           </View>
           <Text style={[styles.stateTitle, { color: C.text }]}>{tFunc('mailFailed')}</Text>
           <Text style={[styles.stateSub, { color: C.textSecondary }]}>{tFunc('mailFailedDesc')}</Text>
           <Text style={[styles.emailHint, { color: C.tint, marginTop: 4 }]}>{SUPPORT_EMAIL}</Text>
           <Pressable onPress={() => setMailError(false)} style={[styles.stateBtn, { marginTop: Spacing.xl }]}>
-            <LinearGradient colors={['#7C5CFC', '#A855F7']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]} />
+            <LinearGradient colors={[...GRADIENT_H]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]} />
             <Ionicons name="refresh" size={18} color="#fff" />
             <Text style={styles.stateBtnText}>{tFunc('tryAgain')}</Text>
           </Pressable>
@@ -178,7 +178,7 @@ export default function SupportScreen() {
                 styles.input,
                 {
                   backgroundColor: C.inputBg,
-                  borderColor: subjectError ? '#FF4D6A' : C.border,
+                  borderColor: subjectError ? '#F87171' : C.border,
                   color: C.text,
                   textAlign: isRTL ? 'right' : 'left',
                 },
@@ -207,7 +207,7 @@ export default function SupportScreen() {
                 styles.messageInput,
                 {
                   backgroundColor: C.inputBg,
-                  borderColor: messageError ? '#FF4D6A' : C.border,
+                  borderColor: messageError ? '#F87171' : C.border,
                   color: C.text,
                   textAlign: isRTL ? 'right' : 'left',
                   textAlignVertical: 'top',
@@ -223,7 +223,7 @@ export default function SupportScreen() {
 
           <Pressable onPress={handleSend} disabled={loading} style={[styles.sendBtn, { opacity: loading ? 0.7 : 1 }]}>
             <LinearGradient
-              colors={[selectedCat.color, '#7C5CFC']}
+              colors={[selectedCat.color, PRIMARY]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
@@ -245,6 +245,8 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xxl,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -269,8 +271,8 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     backgroundColor: 'rgba(255,255,255,0.15)',
   },
-  headerTitle: { fontSize: 22, fontFamily: 'Inter_700Bold', color: '#fff' },
-  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: 'Inter_400Regular', marginTop: 2 },
+  headerTitle: { fontSize: 22, fontFamily: F.bold, color: '#fff' },
+  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: F.reg, marginTop: 2 },
 
   centerState: {
     flex: 1, alignItems: 'center', justifyContent: 'center',
@@ -281,20 +283,20 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     marginBottom: Spacing.md,
   },
-  stateTitle: { fontSize: 22, fontFamily: 'Inter_700Bold', textAlign: 'center' },
-  stateSub: { fontSize: 15, fontFamily: 'Inter_400Regular', textAlign: 'center', lineHeight: 22 },
-  emailHint: { fontSize: 13, fontFamily: 'Inter_500Medium', textAlign: 'center' },
+  stateTitle: { fontSize: 22, fontFamily: F.bold, textAlign: 'center' },
+  stateSub: { fontSize: 15, fontFamily: F.reg, textAlign: 'center', lineHeight: 22 },
+  emailHint: { fontSize: 13, fontFamily: F.med, textAlign: 'center' },
   stateBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     borderRadius: Radius.xl, height: 52,
     paddingHorizontal: Spacing.xxl,
     overflow: 'hidden', marginTop: Spacing.lg,
   },
-  stateBtnText: { fontSize: 16, fontFamily: 'Inter_600SemiBold', color: '#fff' },
+  stateBtnText: { fontSize: 16, fontFamily: F.med, color: '#fff' },
 
   fieldGroup: { gap: Spacing.sm },
   fieldLabel: {
-    fontSize: 13, fontFamily: 'Inter_600SemiBold',
+    fontSize: 13, fontFamily: F.med,
     textTransform: 'uppercase', letterSpacing: 0.5,
   },
   categoryRow: { flexDirection: 'row', gap: Spacing.sm },
@@ -303,17 +305,17 @@ const styles = StyleSheet.create({
     gap: 5, borderRadius: Radius.lg,
     paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm,
   },
-  chipText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  chipText: { fontSize: 12, fontFamily: F.med },
   input: {
     borderRadius: Radius.lg, borderWidth: 1,
     paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md,
-    fontSize: 16, fontFamily: 'Inter_400Regular', height: 52,
+    fontSize: 16, fontFamily: F.reg, height: 52,
   },
   messageInput: {
     height: 130, paddingTop: Spacing.md,
   },
   errorText: {
-    fontSize: 12, fontFamily: 'Inter_500Medium', color: '#FF4D6A',
+    fontSize: 12, fontFamily: F.med, color: '#F87171',
   },
   sendBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
@@ -321,5 +323,5 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     ...Shadow.md,
   },
-  sendBtnText: { fontSize: 17, fontFamily: 'Inter_700Bold', color: '#fff' },
+  sendBtnText: { fontSize: 17, fontFamily: F.bold, color: '#fff' },
 });

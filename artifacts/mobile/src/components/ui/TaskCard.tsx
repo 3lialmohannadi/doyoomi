@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { Task } from '../../types';
-import { Radius, Shadow, Spacing, Typography } from '../../theme';
+import { Radius, Shadow, Spacing, Typography, F } from '../../theme';
 import { PriorityBadge } from './PriorityBadge';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useSettingsStore } from '../../store/settingsStore';
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...Typography.bodyMedium,
-    fontFamily: 'Inter_500Medium',
+    fontFamily: F.med,
   },
   strikethrough: {
     textDecorationLine: 'line-through',
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   },
   catText: {
     ...Typography.label,
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: F.med,
   },
   timeRow: {
     alignItems: 'center',

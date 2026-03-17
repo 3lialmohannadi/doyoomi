@@ -8,7 +8,7 @@ import { useGoalsStore } from '../../store/goalsStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { t } from '../../utils/i18n';
-import { Spacing } from '../../theme';
+import { Spacing, F } from '../../theme';
 import { SHARED_COLORS } from '../../constants/pickerOptions';
 
 interface GoalFormProps {
@@ -146,6 +146,6 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    fontFamily: 'Inter_500Medium',
+    fontFamily: F.med,
   },
 });

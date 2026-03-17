@@ -12,7 +12,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-na
 import { router, useLocalSearchParams } from 'expo-router';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, Shadow } from '../../src/theme';
+import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -57,9 +57,9 @@ export default function HabitsScreen() {
     <View style={[styles.container, { backgroundColor: C.background }]}>
       {/* Header */}
       <LinearGradient
-        colors={['#A855F7', '#7C5CFC']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        colors={[...GRADIENT_H]}
+        start={{ x: 1, y: 0 }}
+        end={{ x: 0, y: 1 }}
         style={[styles.header, { paddingTop: topPad + Spacing.md }]}
       >
         <View style={styles.headerDecor1} />
@@ -93,7 +93,7 @@ export default function HabitsScreen() {
             accessibilityLabel={tFunc('addHabit')}
           >
             <View style={styles.addBtnInner}>
-              <Ionicons name="add" size={26} color="#A855F7" />
+              <Ionicons name="add" size={26} color={PRIMARY} />
             </View>
           </Pressable>
         </View>
@@ -238,7 +238,7 @@ function HabitCard({
     >
       {/* Gradient accent bar */}
       <LinearGradient
-        colors={isDoneToday ? [item.color, item.color + 'AA'] : ['#7C5CFC', '#FF6B9D']}
+        colors={isDoneToday ? [item.color, item.color + 'AA'] : [...GRADIENT_H]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={styles.habitAccent}
@@ -279,8 +279,8 @@ function HabitCard({
           </Text>
 
           <View style={[styles.habitMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <View style={[styles.streakBadge, { backgroundColor: '#FF6B35' + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <Ionicons name="flame" size={12} color="#FF6B35" />
+            <View style={[styles.streakBadge, { backgroundColor: '#FB923C' + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <Ionicons name="flame" size={12} color="#FB923C" />
               <Text style={styles.streakText}>{item.streak_days} {tFunc('days')}</Text>
             </View>
 
@@ -312,7 +312,7 @@ function HabitCard({
           >
             {isDoneToday && (
               <LinearGradient
-                colors={['#7C5CFC', '#FF6B9D']}
+                colors={[...GRADIENT_H]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
@@ -362,6 +362,8 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xxl,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -378,8 +380,8 @@ const styles = StyleSheet.create({
   headerRow: {
     alignItems: 'center', justifyContent: 'space-between',
   },
-  headerTitle: { fontSize: 28, fontFamily: 'Inter_700Bold', color: '#fff' },
-  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: 'Inter_500Medium', marginTop: 2 },
+  headerTitle: { fontSize: 28, fontFamily: F.bold, color: '#fff' },
+  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: F.med, marginTop: 2 },
   backBtn: {
     width: 40, height: 40, borderRadius: 20,
     backgroundColor: 'rgba(255,255,255,0.2)',
@@ -400,7 +402,7 @@ const styles = StyleSheet.create({
   },
   progressFill: { height: '100%', borderRadius: 3 },
   progressLabel: {
-    fontSize: 13, fontFamily: 'Inter_700Bold', color: '#fff', minWidth: 40, textAlign: 'center',
+    fontSize: 13, fontFamily: F.bold, color: '#fff', minWidth: 40, textAlign: 'center',
   },
 
   habitCard: {
@@ -423,18 +425,18 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 5,
   },
-  habitName: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
+  habitName: { fontSize: 16, fontFamily: F.med },
   habitMeta: { alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   streakBadge: {
     alignItems: 'center', gap: 3,
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,
   },
-  streakText: { fontSize: 11, fontFamily: 'Inter_600SemiBold', color: '#FF6B35' },
+  streakText: { fontSize: 11, fontFamily: F.med, color: '#FB923C' },
   doneBadge: {
     alignItems: 'center', gap: 3,
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,
   },
-  doneBadgeText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
+  doneBadgeText: { fontSize: 11, fontFamily: F.med },
 
   habitActions: { alignItems: 'center', gap: 6 },
   completeBtn: {

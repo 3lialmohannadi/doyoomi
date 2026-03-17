@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { Spacing, Typography, Radius } from '../../theme';
+import { Spacing, Typography, Radius, F, PRIMARY, SECONDARY, GRADIENT_H } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
 
 interface EmptyStateProps {
@@ -15,7 +15,7 @@ interface EmptyStateProps {
   gradient?: [string, string];
 }
 
-export function EmptyState({ icon, title, subtitle, actionLabel, onAction, gradient = ['#7C5CFC', '#A855F7'] }: EmptyStateProps) {
+export function EmptyState({ icon, title, subtitle, actionLabel, onAction, gradient = [PRIMARY, '#A78BFA'] }: EmptyStateProps) {
   const { C } = useAppTheme();
 
   return (
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
   title: {
     ...Typography.subtitle,
     textAlign: 'center',
-    fontFamily: 'Inter_700Bold',
+    fontFamily: F.bold,
   },
   subtitle: {
     ...Typography.caption,
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontSize: 15,
-    fontFamily: 'Inter_700Bold',
+    fontFamily: F.bold,
     color: '#fff',
   },
 });

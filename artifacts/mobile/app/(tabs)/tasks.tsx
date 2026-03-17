@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { formatDate, formatTime, getTodayString, isOverdue } from '../../src/utils/date';
@@ -24,11 +24,11 @@ import * as Haptics from 'expo-haptics';
 type FilterKey = 'all' | 'today' | 'done' | 'overdue' | 'high' | 'postponed' | 'nodate';
 
 const FILTER_GRADIENTS: Record<FilterKey, [string, string]> = {
-  all:       ['#7C5CFC', '#A855F7'],
-  today:     ['#FF6B9D', '#FF9DB3'],
-  done:      ['#00C48C', '#00E5A0'],
-  overdue:   ['#FF4D6A', '#FF8E53'],
-  high:      ['#FF6B35', '#FFB347'],
+  all:       [PRIMARY, '#A78BFA'],
+  today:     [SECONDARY, '#FF9DB3'],
+  done:      ['#4ADE80', '#00E5A0'],
+  overdue:   ['#F87171', '#FF8E53'],
+  high:      ['#FB923C', '#FFB347'],
   postponed: ['#6B7280', '#9CA3AF'],
   nodate:    ['#5CC2C2', '#00B8A9'],
 };
@@ -147,7 +147,7 @@ export default function TasksScreen() {
             accessibilityRole="button"
             accessibilityLabel={tFunc('addTask')}
           >
-            <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.addGrad}>
+            <LinearGradient colors={[...GRADIENT_H]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.addGrad}>
               <Ionicons name="add" size={24} color="#fff" />
             </LinearGradient>
           </Pressable>
@@ -345,8 +345,8 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg, paddingBottom: Spacing.md,
   },
-  headerTitle: { fontSize: 28, fontFamily: 'Inter_700Bold' },
-  headerSub: { fontSize: 13, fontFamily: 'Inter_500Medium', marginTop: 1 },
+  headerTitle: { fontSize: 28, fontFamily: F.bold },
+  headerSub: { fontSize: 13, fontFamily: F.med, marginTop: 1 },
   headerActions: { alignItems: 'center', gap: Spacing.sm },
 
   filterBtn: {
@@ -354,7 +354,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full, borderWidth: 1,
     paddingHorizontal: Spacing.md, paddingVertical: 9,
   },
-  filterBtnLabel: { fontSize: 13, fontFamily: 'Inter_600SemiBold' },
+  filterBtnLabel: { fontSize: 13, fontFamily: F.med },
 
   addBtn: { borderRadius: 24, overflow: 'hidden' },
   addGrad: { width: 46, height: 46, borderRadius: 23, alignItems: 'center', justifyContent: 'center' },
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg, marginBottom: Spacing.sm,
     gap: Spacing.sm,
   },
-  searchInput: { flex: 1, fontSize: 15, fontFamily: 'Inter_400Regular', padding: 0 },
+  searchInput: { flex: 1, fontSize: 15, fontFamily: F.reg, padding: 0 },
 
   activeFilterRow: {
     alignItems: 'center', gap: Spacing.sm,
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full, borderWidth: 1,
     paddingHorizontal: 12, paddingVertical: 5,
   },
-  activeFilterText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  activeFilterText: { fontSize: 12, fontFamily: F.med },
   clearFilterBtn: {
     width: 26, height: 26, borderRadius: 13, borderWidth: 1,
     alignItems: 'center', justifyContent: 'center',
@@ -387,9 +387,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     marginTop: Spacing.lg, marginBottom: Spacing.sm,
   },
-  sectionHeaderText: { fontSize: 15, fontFamily: 'Inter_700Bold', flex: 1 },
+  sectionHeaderText: { fontSize: 15, fontFamily: F.bold, flex: 1 },
   sectionCount: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
-  sectionCountText: { fontSize: 11, fontFamily: 'Inter_700Bold' },
+  sectionCountText: { fontSize: 11, fontFamily: F.bold },
 
   // Modal / Sheet
   overlay: {
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md,
     borderBottomWidth: 1,
   },
-  sheetTitle: { fontSize: 17, fontFamily: 'Inter_700Bold' },
+  sheetTitle: { fontSize: 17, fontFamily: F.bold },
   sheetClose: {
     width: 32, height: 32, borderRadius: 16,
     alignItems: 'center', justifyContent: 'center',
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
     width: 36, height: 36, borderRadius: 10,
     alignItems: 'center', justifyContent: 'center',
   },
-  filterOptionText: { flex: 1, fontSize: 15, fontFamily: 'Inter_500Medium' },
+  filterOptionText: { flex: 1, fontSize: 15, fontFamily: F.med },
   filterCheck: {
     width: 20, height: 20, borderRadius: 10,
     alignItems: 'center', justifyContent: 'center',

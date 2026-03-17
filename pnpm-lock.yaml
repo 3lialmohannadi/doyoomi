@@ -207,6 +207,12 @@ importers:
 
   artifacts/mobile:
     dependencies:
+      '@expo-google-fonts/cairo':
+        specifier: ^0.4.2
+        version: 0.4.2
+      '@expo-google-fonts/comfortaa':
+        specifier: ^0.4.2
+        version: 0.4.2
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.71.2(react@19.1.0))
@@ -1125,6 +1131,12 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [linux]
+
+  '@expo-google-fonts/cairo@0.4.2':
+    resolution: {integrity: sha512-iWXHgE4MH6BfFqs8IxhbjNphAboUsb8NSEVIf1kWVGkiwCkAXDHxotgASabuPhhM1SQQXrgOPdmjT9VyeakM3Q==}
+
+  '@expo-google-fonts/comfortaa@0.4.2':
+    resolution: {integrity: sha512-eGz3aw5gQ4NA/saaiMv5CH709vB5tG+puP9vy+rFX3XXc20JQ0A/qeBiCH+J8enPvXDi0rXyG3EgqbJ4Er2htg==}
 
   '@expo-google-fonts/inter@0.4.2':
     resolution: {integrity: sha512-syfiImMaDmq7cFi0of+waE2M4uSCyd16zgyWxdPOY7fN2VBmSLKEzkfbZgeOjJq61kSqPBNNtXjggiQiSD6gMQ==}
@@ -6248,6 +6260,10 @@ snapshots:
 
   '@esbuild/linux-x64@0.27.3':
     optional: true
+
+  '@expo-google-fonts/cairo@0.4.2': {}
+
+  '@expo-google-fonts/comfortaa@0.4.2': {}
 
   '@expo-google-fonts/inter@0.4.2': {}
 

@@ -6,7 +6,7 @@ import {
   addMonths, subMonths, addYears, subYears, format,
 } from 'date-fns';
 import * as Haptics from 'expo-haptics';
-import { Radius, Spacing } from '../../theme';
+import { Radius, Spacing, F } from '../../theme';
 import { getTodayString, formatDateKey } from '../../utils/date';
 
 const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
@@ -122,7 +122,7 @@ export function FormDatePicker({ selected, onSelect, C, lang, startOfWeek = 'sun
                 <Text style={[
                   fpStyles.dayText,
                   { color: isSelected ? '#fff' : isToday ? C.tint : C.text },
-                  isToday && !isSelected && { fontFamily: 'Inter_700Bold' },
+                  isToday && !isSelected && { fontFamily: F.bold },
                 ]}>
                   {day}
                 </Text>
@@ -156,16 +156,16 @@ const fpStyles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 4,
   },
-  yearLabel: { fontSize: 15, fontFamily: 'Inter_700Bold' },
+  yearLabel: { fontSize: 15, fontFamily: F.bold },
   monthNav: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.sm,
   },
-  monthLabel: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
+  monthLabel: { fontSize: 14, fontFamily: F.med },
   headerRow: { flexDirection: 'row', marginBottom: Spacing.xs },
-  headerDay: { flex: 1, textAlign: 'center', fontSize: 11, fontFamily: 'Inter_600SemiBold' },
+  headerDay: { flex: 1, textAlign: 'center', fontSize: 11, fontFamily: F.med },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   cell: {
     width: `${100 / 7}%` as any,
@@ -180,5 +180,5 @@ const fpStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dayText: { fontSize: 13, fontFamily: 'Inter_500Medium' },
+  dayText: { fontSize: 13, fontFamily: F.med },
 });

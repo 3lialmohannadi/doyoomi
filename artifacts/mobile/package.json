@@ -56,6 +56,8 @@
     "zod-validation-error": "^3.4.0"
   },
   "dependencies": {
+    "@expo-google-fonts/cairo": "^0.4.2",
+    "@expo-google-fonts/comfortaa": "^0.4.2",
     "@hookform/resolvers": "^3.10.0",
     "date-fns": "^3.6.0",
     "expo-video": "^3.0.16",

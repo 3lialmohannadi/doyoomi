@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Pressable, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { Radius, Spacing } from '../../theme';
+import { Radius, Spacing, F, PRIMARY, SECONDARY, GRADIENT_H } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useSettingsStore } from '../../store/settingsStore';
 import { t } from '../../utils/i18n';
@@ -18,7 +18,7 @@ interface IconColorPickerProps {
 
 export function IconPicker({ selectedIcon, selectedColor, onIconChange, iconSuffix = '-outline' }: Omit<IconColorPickerProps, 'onColorChange' | 'selectedColor'> & { selectedColor?: string }) {
   const { C } = useAppTheme();
-  const color = selectedColor ?? '#7C5CFC';
+  const color = selectedColor ?? PRIMARY;
 
   return (
     <View style={styles.iconGrid}>
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   section: { gap: Spacing.sm },
   sectionLabel: {
     fontSize: 11,
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: F.med,
     letterSpacing: 0.5,
   },
   iconGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },

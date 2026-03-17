@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Radius, Typography } from '../../theme';
+import { Radius, Typography, F } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useSettingsStore } from '../../store/settingsStore';
 import { Priority } from '../../types';
@@ -46,6 +46,6 @@ const styles = StyleSheet.create({
   },
   text: {
     ...Typography.label,
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: F.med,
   },
 });

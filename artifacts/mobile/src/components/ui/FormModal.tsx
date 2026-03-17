@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Radius, Spacing } from '../../theme';
+import { Radius, Spacing, F, PRIMARY, SECONDARY, GRADIENT_H } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useSettingsStore } from '../../store/settingsStore';
 
@@ -86,7 +86,7 @@ export function FormModal({
               accessibilityLabel={saveLabel}
             >
               <LinearGradient
-                colors={['#7C5CFC', '#FF6B9D']}
+                colors={[...GRADIENT_H]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
@@ -274,7 +274,7 @@ export function PrioritySelector({ value, onChange, options }: PrioritySelectorP
             <View style={[styles.priorityDot, { backgroundColor: color }]} />
             <Text style={[
               styles.priorityText,
-              { color: isActive ? color : C.textSecondary, fontFamily: isActive ? 'Inter_600SemiBold' : 'Inter_400Regular' },
+              { color: isActive ? color : C.textSecondary, fontFamily: isActive ? F.med : F.reg },
             ]}>
               {opt.label}
             </Text>
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontFamily: 'Inter_700Bold',
+    fontFamily: F.bold,
   },
   scroll: { flex: 1 },
   scrollContent: {
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
   },
   fieldLabel: {
     fontSize: 13,
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: F.med,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     fontSize: 17,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: F.reg,
   },
   selectRow: {
     flexDirection: 'row',
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   },
   selectText: {
     fontSize: 15,
-    fontFamily: 'Inter_500Medium',
+    fontFamily: F.med,
   },
   pressableInput: {
     alignItems: 'center',
@@ -403,7 +403,7 @@ const styles = StyleSheet.create({
   pressableInputText: {
     flex: 1,
     fontSize: 17,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: F.reg,
   },
   priorityRow: {
     flexDirection: 'row',
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 15,
-    fontFamily: 'Inter_500Medium',
+    fontFamily: F.med,
   },
   bottomBar: {
     flexDirection: 'row',
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
   },
   bottomBtnText: {
     fontSize: 17,
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: F.med,
   },
   bottomBtnSave: {
     flex: 2,
@@ -474,7 +474,7 @@ const styles = StyleSheet.create({
   },
   bottomBtnSaveText: {
     fontSize: 17,
-    fontFamily: 'Inter_700Bold',
+    fontFamily: F.bold,
     color: '#fff',
   },
 });

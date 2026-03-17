@@ -37,7 +37,7 @@ export default function TabLayout() {
           ) : isWeb ? (
             <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? "#0D0A1E" : "#F5F3FF" }]} />
           ) : null,
-        tabBarLabelStyle: { fontFamily: 'Inter_600SemiBold', fontSize: 10 },
+        tabBarLabelStyle: { fontFamily: 'Cairo_600SemiBold', fontSize: 10 },
       }}
     >
       <Tabs.Screen

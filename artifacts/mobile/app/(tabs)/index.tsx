@@ -16,7 +16,7 @@ import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useJournalStore } from '../../src/store/journalStore';
-import { Spacing, Typography, Radius, Shadow } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_PRIMARY, cardShadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, getGreeting } from '../../src/utils/i18n';
 import { getTodayString, getWeekDays, getDayLabel, formatDateKey, formatTime, isOverdue, formatShortDate } from '../../src/utils/date';
@@ -80,9 +80,9 @@ export default function HomeScreen() {
       >
         {/* Hero Header */}
         <LinearGradient
-          colors={['#7C5CFC', '#A855F7', '#FF6B9D']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+          colors={[...GRADIENT_D]}
+          start={{ x: 1, y: 0 }}
+          end={{ x: 0, y: 1 }}
           style={[styles.hero, { paddingTop: topPad + Spacing.md }]}
         >
           {/* Decorative circles */}
@@ -103,10 +103,10 @@ export default function HomeScreen() {
 
         {/* Stats Cards */}
         <View style={[styles.statsRow, { backgroundColor: C.card, borderColor: C.border }]}>
-          <HeroStat icon="checkmark-circle" value={completedToday} label={tFunc('completed')} color="#00C48C" C={C} />
-          <HeroStat icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color="#FF4D6A" C={C} />
+          <HeroStat icon="checkmark-circle" value={completedToday} label={tFunc('completed')} color="#4ADE80" C={C} />
+          <HeroStat icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color="#F87171" C={C} />
           <HeroStat icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color={C.tint} C={C} />
-          <HeroStat icon="flame" value={maxStreak} label={tFunc('streak')} color="#FF6B35" C={C} />
+          <HeroStat icon="flame" value={maxStreak} label={tFunc('streak')} color="#FB923C" C={C} />
         </View>
 
         {/* Week Strip */}
@@ -131,7 +131,7 @@ export default function HomeScreen() {
               >
                 {isSelected && (
                   <LinearGradient
-                    colors={['#7C5CFC', '#FF6B9D']}
+                    colors={[...GRADIENT_H]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 0, y: 1 }}
                     style={[StyleSheet.absoluteFill, { borderRadius: Radius.lg }]}
@@ -143,7 +143,7 @@ export default function HomeScreen() {
                 <Text style={[
                   styles.dayNum,
                   { color: isSelected ? '#fff' : isToday ? C.tint : C.text },
-                  isToday && !isSelected && { fontFamily: 'Inter_700Bold' },
+                  isToday && !isSelected && { fontFamily: F.bold },
                 ]}>
                   {format(day, 'd')}
                 </Text>
@@ -159,7 +159,7 @@ export default function HomeScreen() {
         {allDone && (
           <View style={{ paddingHorizontal: Spacing.lg, marginBottom: Spacing.md }}>
             <LinearGradient
-              colors={['#00C48C', '#00E5A0']}
+              colors={['#4ADE80', '#00E5A0']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={[styles.allDoneBanner, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
@@ -269,8 +269,8 @@ export default function HomeScreen() {
               style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.8 : 1 }]}
               accessibilityRole="button"
             >
-              <View style={[styles.habitsEmptyIcon, { backgroundColor: '#FF6B9D15' }]}>
-                <Ionicons name="trophy-outline" size={28} color="#FF6B9D" />
+              <View style={[styles.habitsEmptyIcon, { backgroundColor: SECONDARY + '15' }]}>
+                <Ionicons name="trophy-outline" size={28} color={SECONDARY} />
               </View>
               <View style={{ flex: 1, alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
                 <Text style={[styles.habitsEmptyTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('noGoalsYet')}</Text>
@@ -283,10 +283,10 @@ export default function HomeScreen() {
               {topGoals.map((g, i) => {
                 const pct = g.target_value > 0 ? g.current_value / g.target_value : 0;
                 const goalGradients: [string, string][] = [
-                  ['#7C5CFC', '#FF6B9D'],
-                  ['#FF6B35', '#FFB347'],
-                  ['#00C48C', '#00B8A9'],
-                  ['#FF4D6A', '#FF8E53'],
+                  [PRIMARY, SECONDARY],
+                  ['#FB923C', '#FFB347'],
+                  ['#4ADE80', '#00B8A9'],
+                  ['#F87171', '#FF8E53'],
                 ];
                 const grad = goalGradients[i % goalGradients.length];
                 return (
@@ -353,7 +353,7 @@ function AddBtn({ onPress, label }: { onPress: () => void; label: string }) {
       accessibilityLabel={label}
     >
       <LinearGradient
-        colors={['#9B6EF5', '#FF6B9D']}
+        colors={[...GRADIENT_H]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}
@@ -366,10 +366,10 @@ function AddBtn({ onPress, label }: { onPress: () => void; label: string }) {
 function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, isRTL, lang, C, insets }: any) {
   const tFunc = (key: string) => t(key, lang);
   const items = [
-    { label: tFunc('addTask'), sublabel: tFunc('quickAddTask'), icon: 'checkmark-circle-outline', colors: ['#7C5CFC', '#A855F7'] as [string,string], onPress: onTask },
-    { label: tFunc('addHabit'), sublabel: tFunc('quickAddHabit'), icon: 'leaf-outline', colors: ['#00C48C', '#00B8A9'] as [string,string], onPress: onHabit },
-    { label: tFunc('addGoal'), sublabel: tFunc('quickAddGoal'), icon: 'trophy-outline', colors: ['#FF6B35', '#FFB347'] as [string,string], onPress: onGoal },
-    { label: tFunc('addEntry'), sublabel: tFunc('quickAddJournal'), icon: 'book-outline', colors: ['#FF6B9D', '#A855F7'] as [string,string], onPress: onJournal },
+    { label: tFunc('addTask'), sublabel: tFunc('quickAddTask'), icon: 'checkmark-circle-outline', colors: [PRIMARY, '#A78BFA'] as [string,string], onPress: onTask },
+    { label: tFunc('addHabit'), sublabel: tFunc('quickAddHabit'), icon: 'leaf-outline', colors: ['#4ADE80', '#00B8A9'] as [string,string], onPress: onHabit },
+    { label: tFunc('addGoal'), sublabel: tFunc('quickAddGoal'), icon: 'trophy-outline', colors: ['#FB923C', '#FFB347'] as [string,string], onPress: onGoal },
+    { label: tFunc('addEntry'), sublabel: tFunc('quickAddJournal'), icon: 'book-outline', colors: [SECONDARY, '#A78BFA'] as [string,string], onPress: onJournal },
   ];
 
   return (
@@ -459,9 +459,9 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
   const priorityGrad: Record<string, [string, string]> = {
-    high: ['#FF4D6A', '#FF8E53'],
-    medium: ['#FFB800', '#FFD700'],
-    low: ['#00C48C', '#00E5A0'],
+    high: ['#F87171', '#FF8E53'],
+    medium: ['#FB923C', '#FFD700'],
+    low: ['#4ADE80', '#00E5A0'],
   };
   const grad = priorityGrad[task.priority];
 
@@ -581,14 +581,14 @@ function FunGoalCard({ goal, progress, gradient, C, isRTL }: any) {
 }
 
 const MOOD_ICONS: Record<Mood, { icon: string; color: string }> = {
-  excellent:  { icon: 'happy',                  color: '#00C48C' },
+  excellent:  { icon: 'happy',                  color: '#4ADE80' },
   veryGood:   { icon: 'happy-outline',          color: '#4CAF82' },
-  good:       { icon: 'thumbs-up-outline',      color: '#7C5CFC' },
-  neutral:    { icon: 'remove-circle-outline',  color: '#FFB800' },
+  good:       { icon: 'thumbs-up-outline',      color: PRIMARY },
+  neutral:    { icon: 'remove-circle-outline',  color: '#FB923C' },
   tired:      { icon: 'bed-outline',            color: '#FF8A50' },
-  stressed:   { icon: 'flash-outline',          color: '#FF6B35' },
-  sad:        { icon: 'rainy-outline',          color: '#A855F7' },
-  bad:        { icon: 'sad-outline',            color: '#FF4D6A' },
+  stressed:   { icon: 'flash-outline',          color: '#FB923C' },
+  sad:        { icon: 'rainy-outline',          color: '#A78BFA' },
+  bad:        { icon: 'sad-outline',            color: '#F87171' },
 };
 
 function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: JournalEntry; onWrite: () => void; onOpen: () => void; C: any; tFunc: (k: string) => string; isRTL?: boolean }) {
@@ -672,13 +672,13 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: any) {
   });
 
   const barColors: [string, string][] = [
-    ['#7C5CFC', '#A855F7'],
-    ['#FF6B9D', '#FF9DB3'],
-    ['#00C48C', '#00E5A0'],
-    ['#FFB800', '#FFD700'],
-    ['#FF6B35', '#FFB347'],
-    ['#7C5CFC', '#A855F7'],
-    ['#FF6B9D', '#FF9DB3'],
+    [PRIMARY, '#A78BFA'],
+    [SECONDARY, '#FF9DB3'],
+    ['#4ADE80', '#00E5A0'],
+    ['#FB923C', '#FFD700'],
+    ['#FB923C', '#FFB347'],
+    [PRIMARY, '#A78BFA'],
+    [SECONDARY, '#FF9DB3'],
   ];
 
   return (
@@ -706,7 +706,7 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: any) {
       </View>
       <View style={[styles.chartLegend, isRTL && { flexDirection: 'row-reverse' }]}>
         <View style={[styles.legendItem, isRTL && { flexDirection: 'row-reverse' }]}>
-          <LinearGradient colors={['#7C5CFC', '#A855F7']} style={styles.legendDot} />
+          <LinearGradient colors={[PRIMARY, '#A78BFA']} style={styles.legendDot} />
           <Text style={[styles.legendText, { color: C.textSecondary }]}>{tFunc('chartDone')}</Text>
         </View>
         <View style={[styles.legendItem, isRTL && { flexDirection: 'row-reverse' }]}>
@@ -725,6 +725,8 @@ const styles = StyleSheet.create({
   hero: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xxxl + Spacing.md,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -740,14 +742,14 @@ const styles = StyleSheet.create({
   },
   heroContent: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: Spacing.xl },
   heroLeft: { gap: 2 },
-  greeting: { fontSize: 14, color: 'rgba(255,255,255,0.75)', fontFamily: 'Inter_500Medium' },
-  heroTitle: { fontSize: 32, color: '#fff', fontFamily: 'Inter_700Bold', lineHeight: 36 },
-  heroSub: { fontSize: 16, color: 'rgba(255,255,255,0.65)', fontFamily: 'Inter_500Medium' },
+  greeting: { fontSize: 14, color: 'rgba(255,255,255,0.75)', fontFamily: F.med },
+  heroTitle: { fontSize: 32, color: '#fff', fontFamily: F.bold, lineHeight: 36 },
+  heroSub: { fontSize: 16, color: 'rgba(255,255,255,0.65)', fontFamily: F.med },
   addBtn: {
     width: 50, height: 50, borderRadius: 25,
     alignItems: 'center', justifyContent: 'center',
     overflow: 'hidden',
-    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8,
+    shadowColor: PRIMARY, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8,
   },
   statsRow: {
     flexDirection: 'row',
@@ -759,7 +761,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
     gap: Spacing.xs,
-    shadowColor: '#7C5CFC',
+    shadowColor: PRIMARY,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
@@ -770,8 +772,8 @@ const styles = StyleSheet.create({
     width: 36, height: 36, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center',
   },
-  heroStatNum: { fontSize: 18, fontFamily: 'Inter_700Bold' },
-  heroStatLabel: { fontSize: 11, fontFamily: 'Inter_500Medium', textAlign: 'center' },
+  heroStatNum: { fontSize: 18, fontFamily: F.bold },
+  heroStatLabel: { fontSize: 11, fontFamily: F.med, textAlign: 'center' },
 
   // Week strip
   weekCard: {
@@ -782,8 +784,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   dayPill: { flex: 1, borderRadius: Radius.lg, alignItems: 'center', paddingVertical: 8, gap: 2 },
-  dayLbl: { fontSize: 10, fontFamily: 'Inter_600SemiBold' },
-  dayNum: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
+  dayLbl: { fontSize: 10, fontFamily: F.med },
+  dayNum: { fontSize: 16, fontFamily: F.med },
   dot: { width: 4, height: 4, borderRadius: 2, marginTop: 1 },
 
   // All done
@@ -796,69 +798,69 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   allDoneEmoji: { fontSize: 28 },
-  allDoneTitle: { fontSize: 15, fontFamily: 'Inter_700Bold', color: '#fff' },
-  allDoneSub: { fontSize: 12, color: 'rgba(255,255,255,0.85)', fontFamily: 'Inter_400Regular', marginTop: 2 },
+  allDoneTitle: { fontSize: 15, fontFamily: F.bold, color: '#fff' },
+  allDoneSub: { fontSize: 12, color: 'rgba(255,255,255,0.85)', fontFamily: F.reg, marginTop: 2 },
 
   // Section
   section: { paddingHorizontal: Spacing.lg, marginBottom: Spacing.xl },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.md },
   sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  sectionTitle: { fontSize: 20, fontFamily: 'Inter_700Bold' },
+  sectionTitle: { fontSize: 20, fontFamily: F.bold },
   sectionAction: { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 5 },
-  sectionActionText: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
+  sectionActionText: { fontSize: 12, fontFamily: F.med },
 
   // Task row
   taskRow: {
     flexDirection: 'row', alignItems: 'center',
     borderRadius: Radius.lg, borderWidth: 1,
     overflow: 'hidden',
-    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2,
+    shadowColor: PRIMARY, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2,
   },
   taskAccent: { width: 4, alignSelf: 'stretch' },
   taskCheck: { padding: Spacing.md, paddingRight: Spacing.sm },
   checkCircle: { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
   taskInfo: { flex: 1, paddingVertical: Spacing.md, paddingRight: Spacing.sm },
-  taskTitle: { fontSize: 15, fontFamily: 'Inter_500Medium' },
-  taskTime: { fontSize: 12, fontFamily: 'Inter_400Regular' },
+  taskTitle: { fontSize: 15, fontFamily: F.med },
+  taskTime: { fontSize: 12, fontFamily: F.reg },
   catPill: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
-  catPillText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
+  catPillText: { fontSize: 11, fontFamily: F.med },
 
   // Habit card
-  habitCard: { width: 140, borderRadius: Radius.xl, overflow: 'hidden', shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 10, elevation: 4 },
+  habitCard: { width: 140, borderRadius: Radius.xl, overflow: 'hidden', shadowColor: PRIMARY, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 10, elevation: 4 },
   habitCardInner: { padding: Spacing.md, gap: Spacing.sm, minHeight: 130 },
   habitTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   habitIconBox: { width: 40, height: 40, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
-  habitName: { fontSize: 14, fontFamily: 'Inter_600SemiBold', lineHeight: 19 },
+  habitName: { fontSize: 14, fontFamily: F.med, lineHeight: 19 },
   streakRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 'auto' as any },
-  streakNum: { fontSize: 14, fontFamily: 'Inter_700Bold' },
+  streakNum: { fontSize: 14, fontFamily: F.bold },
 
   // Goal card
   goalCard: {
     borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg,
-    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 10, elevation: 3,
+    shadowColor: PRIMARY, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 10, elevation: 3,
   },
   goalIcon: { width: 40, height: 40, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
-  goalTitle: { fontSize: 15, fontFamily: 'Inter_700Bold' },
-  goalSub: { fontSize: 12, fontFamily: 'Inter_400Regular', marginTop: 1 },
-  goalPct: { fontSize: 18, fontFamily: 'Inter_700Bold' },
+  goalTitle: { fontSize: 15, fontFamily: F.bold },
+  goalSub: { fontSize: 12, fontFamily: F.reg, marginTop: 1 },
+  goalPct: { fontSize: 18, fontFamily: F.bold },
   goalTrack: { height: 8, borderRadius: 4, overflow: 'hidden' },
   goalFill: { height: '100%', borderRadius: 4 },
 
   // Chart
   chartCard: {
     borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg,
-    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 10, elevation: 2,
+    shadowColor: PRIMARY, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 10, elevation: 2,
   },
   chartBars: { flexDirection: 'row', alignItems: 'flex-end', height: 80, gap: 6, marginBottom: Spacing.sm },
   chartCol: { flex: 1, alignItems: 'center', gap: 4 },
   chartBar: { width: '100%', height: 70, justifyContent: 'flex-end' },
   chartBarBg: { width: '100%', justifyContent: 'flex-end', overflow: 'hidden' },
   chartBarFill: { width: '100%', borderRadius: 8 },
-  chartDay: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
+  chartDay: { fontSize: 11, fontFamily: F.med },
   chartLegend: { flexDirection: 'row', gap: Spacing.md, marginTop: 4 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   legendDot: { width: 10, height: 10, borderRadius: 5 },
-  legendText: { fontSize: 11, fontFamily: 'Inter_500Medium' },
+  legendText: { fontSize: 11, fontFamily: F.med },
 
   // Habits empty state
   habitsEmpty: {
@@ -868,7 +870,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     borderWidth: 1,
     padding: Spacing.lg,
-    shadowColor: '#7C5CFC',
+    shadowColor: PRIMARY,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.07,
     shadowRadius: 8,
@@ -878,30 +880,30 @@ const styles = StyleSheet.create({
     width: 52, height: 52, borderRadius: 26,
     alignItems: 'center', justifyContent: 'center',
   },
-  habitsEmptyTitle: { fontSize: 15, fontFamily: 'Inter_600SemiBold' },
-  habitsEmptySubtitle: { fontSize: 12, fontFamily: 'Inter_400Regular', marginTop: 2 },
+  habitsEmptyTitle: { fontSize: 15, fontFamily: F.med },
+  habitsEmptySubtitle: { fontSize: 12, fontFamily: F.reg, marginTop: 2 },
 
   // Journal card
   journalCard: {
     borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg,
     gap: Spacing.sm,
-    shadowColor: '#7C5CFC', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 10, elevation: 3,
+    shadowColor: PRIMARY, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 10, elevation: 3,
   },
   journalCardHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md },
   journalIconBox: { width: 40, height: 40, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
-  journalCardTitle: { fontSize: 15, fontFamily: 'Inter_700Bold' },
+  journalCardTitle: { fontSize: 15, fontFamily: F.bold },
   journalMoodBadge: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2,
     alignSelf: 'flex-start', marginTop: 4,
   },
-  journalMoodText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
-  journalPreview: { fontSize: 13, fontFamily: 'Inter_400Regular', lineHeight: 18 },
+  journalMoodText: { fontSize: 11, fontFamily: F.med },
+  journalPreview: { fontSize: 13, fontFamily: F.reg, lineHeight: 18 },
   journalWriteBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
     borderRadius: Radius.lg, paddingVertical: Spacing.sm + 2, marginTop: Spacing.xs,
   },
-  journalWriteText: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
+  journalWriteText: { fontSize: 14, fontFamily: F.med },
 });
 
 const qaStyles = StyleSheet.create({
@@ -927,7 +929,7 @@ const qaStyles = StyleSheet.create({
     alignSelf: 'center', marginBottom: Spacing.lg,
   },
   sheetTitle: {
-    fontSize: 20, fontFamily: 'Inter_700Bold',
+    fontSize: 20, fontFamily: F.bold,
     marginBottom: Spacing.lg,
   },
   itemGrid: {
@@ -950,12 +952,12 @@ const qaStyles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center', justifyContent: 'center',
   },
-  itemLabel: { fontSize: 15, fontFamily: 'Inter_700Bold', color: '#fff' },
-  itemSub: { fontSize: 12, fontFamily: 'Inter_400Regular', color: 'rgba(255,255,255,0.75)' },
+  itemLabel: { fontSize: 15, fontFamily: F.bold, color: '#fff' },
+  itemSub: { fontSize: 12, fontFamily: F.reg, color: 'rgba(255,255,255,0.75)' },
   cancelBtn: {
     borderRadius: Radius.xl, borderWidth: 1,
     paddingVertical: Spacing.md + 2,
     alignItems: 'center',
   },
-  cancelText: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
+  cancelText: { fontSize: 16, fontFamily: F.med },
 });

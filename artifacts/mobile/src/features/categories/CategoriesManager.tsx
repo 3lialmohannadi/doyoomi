@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { useCategoriesStore } from '../../store/categoriesStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
-import { Spacing, Radius, Shadow } from '../../theme';
+import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H } from '../../theme';
 import { t } from '../../utils/i18n';
 import { Category } from '../../types';
 
@@ -87,7 +87,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
           </Pressable>
           <Text style={[styles.headerTitle, { color: C.text }]}>{tFunc('categories')}</Text>
           <Pressable onPress={openAdd}>
-            <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.addBtn}>
+            <LinearGradient colors={[...GRADIENT_H]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.addBtn}>
               <Ionicons name="add" size={18} color="#fff" />
             </LinearGradient>
           </Pressable>
@@ -105,7 +105,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                 {lang === 'ar' ? 'أضف فئة لتنظيم مهامك' : 'Add a category to organize your tasks'}
               </Text>
               <Pressable onPress={openAdd} style={styles.emptyAddBtn}>
-                <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]} />
+                <LinearGradient colors={[...GRADIENT_H]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]} />
                 <Ionicons name="add" size={18} color="#fff" />
                 <Text style={styles.emptyAddText}>{tFunc('addNew')}</Text>
               </Pressable>
@@ -269,7 +269,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               </Pressable>
               <Pressable onPress={handleSave} style={styles.formSaveBtn}>
                 <LinearGradient
-                  colors={['#7C5CFC', '#FF6B9D']}
+                  colors={[...GRADIENT_H]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     width: 36, height: 36, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center',
   },
-  headerTitle: { fontSize: 19, fontFamily: 'Inter_700Bold' },
+  headerTitle: { fontSize: 19, fontFamily: F.bold },
   addBtn: {
     width: 36, height: 36, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center',
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   catInfo: { flex: 1 },
-  catName: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
+  catName: { fontSize: 16, fontFamily: F.med },
   catActions: { flexDirection: 'row', gap: 6 },
   catActionBtn: {
     width: 34, height: 34, borderRadius: 10,
@@ -326,15 +326,15 @@ const styles = StyleSheet.create({
     width: 80, height: 80, borderRadius: 40,
     alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.sm,
   },
-  emptyTitle: { fontSize: 18, fontFamily: 'Inter_700Bold' },
-  emptySub: { fontSize: 14, fontFamily: 'Inter_400Regular', textAlign: 'center' },
+  emptyTitle: { fontSize: 18, fontFamily: F.bold },
+  emptySub: { fontSize: 14, fontFamily: F.reg, textAlign: 'center' },
   emptyAddBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     borderRadius: Radius.xl, height: 48,
     paddingHorizontal: Spacing.xxl,
     overflow: 'hidden', marginTop: Spacing.md,
   },
-  emptyAddText: { fontSize: 15, fontFamily: 'Inter_600SemiBold', color: '#fff' },
+  emptyAddText: { fontSize: 15, fontFamily: F.med, color: '#fff' },
 
   formContainer: { flex: 1 },
   formHeader: {
@@ -358,13 +358,13 @@ const styles = StyleSheet.create({
 
   formField: { gap: Spacing.sm },
   formLabel: {
-    fontSize: 13, fontFamily: 'Inter_600SemiBold',
+    fontSize: 13, fontFamily: F.med,
     textTransform: 'uppercase', letterSpacing: 0.5,
   },
   formInput: {
     borderRadius: Radius.lg, borderWidth: 1,
     paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md,
-    fontSize: 17, fontFamily: 'Inter_400Regular', height: 52,
+    fontSize: 17, fontFamily: F.reg, height: 52,
   },
 
   iconGrid: {
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
     width: 36, height: 36, borderRadius: Radius.sm,
     alignItems: 'center', justifyContent: 'center',
   },
-  previewText: { fontSize: 16, fontFamily: 'Inter_600SemiBold', flex: 1 },
+  previewText: { fontSize: 16, fontFamily: F.med, flex: 1 },
 
   formBottomBar: {
     gap: Spacing.md,
@@ -407,10 +407,10 @@ const styles = StyleSheet.create({
     flex: 1, borderRadius: Radius.xl, height: 54,
     alignItems: 'center', justifyContent: 'center', borderWidth: 1,
   },
-  formCancelText: { fontSize: 17, fontFamily: 'Inter_600SemiBold' },
+  formCancelText: { fontSize: 17, fontFamily: F.med },
   formSaveBtn: {
     flex: 2, flexDirection: 'row', borderRadius: Radius.xl, height: 54,
     alignItems: 'center', justifyContent: 'center', gap: 8, overflow: 'hidden',
   },
-  formSaveText: { fontSize: 17, fontFamily: 'Inter_700Bold', color: '#fff' },
+  formSaveText: { fontSize: 17, fontFamily: F.bold, color: '#fff' },
 });

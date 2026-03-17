@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useSettingsStore } from '../../store/settingsStore';
-import { Radius, Spacing } from '../../theme';
+import { Radius, Spacing, F, PRIMARY, SECONDARY, GRADIENT_H } from '../../theme';
 
 export type ConfirmDialogType = 'danger' | 'warning' | 'default';
 
@@ -21,9 +21,9 @@ interface ConfirmDialogProps {
 }
 
 const TYPE_CONFIG: Record<ConfirmDialogType, { color: string; icon: string; gradient: [string, string] }> = {
-  danger:  { color: '#FF4D6A', icon: 'trash-outline',        gradient: ['#FF4D6A', '#FF8E53'] },
-  warning: { color: '#FFB800', icon: 'warning-outline',      gradient: ['#FFB800', '#FF6B35'] },
-  default: { color: '#7C5CFC', icon: 'help-circle-outline',  gradient: ['#7C5CFC', '#A855F7'] },
+  danger:  { color: '#F87171', icon: 'trash-outline',        gradient: ['#F87171', '#FF8E53'] },
+  warning: { color: '#FFB800', icon: 'warning-outline',      gradient: ['#FFB800', '#FB923C'] },
+  default: { color: PRIMARY, icon: 'help-circle-outline',  gradient: [PRIMARY, '#A78BFA'] },
 };
 
 export function ConfirmDialog({
@@ -99,12 +99,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontFamily: 'Inter_700Bold',
+    fontFamily: F.bold,
     width: '100%',
   },
   message: {
     fontSize: 14,
-    fontFamily: 'Inter_400Regular',
+    fontFamily: F.reg,
     lineHeight: 20,
     width: '100%',
   },
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     fontSize: 15,
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: F.med,
   },
   confirmBtn: {
     flex: 1,
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
   },
   confirmText: {
     fontSize: 15,
-    fontFamily: 'Inter_700Bold',
+    fontFamily: F.bold,
     color: '#fff',
   },
 });

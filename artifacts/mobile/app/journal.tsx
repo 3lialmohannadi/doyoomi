@@ -11,7 +11,7 @@ import * as Haptics from 'expo-haptics';
 
 import { useJournalStore } from '../src/store/journalStore';
 import { useSettingsStore } from '../src/store/settingsStore';
-import { Spacing, Radius, Shadow } from '../src/theme';
+import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, cardShadow } from '../src/theme';
 import { useAppTheme } from '../src/hooks/useAppTheme';
 import { t } from '../src/utils/i18n';
 import { formatDate } from '../src/utils/date';
@@ -22,10 +22,10 @@ import { ConfirmDialog } from '../src/components/ui/ConfirmDialog';
 import { JournalEntry, Mood } from '../src/types';
 
 const MOOD_CONFIG: Record<Mood, { icon: string; color: string }> = {
-  happy:       { icon: 'happy',                   color: '#00C48C' },
-  excited:     { icon: 'rocket-outline',           color: '#7C5CFC' },
+  happy:       { icon: 'happy',                   color: '#4ADE80' },
+  excited:     { icon: 'rocket-outline',           color: PRIMARY },
   energetic:   { icon: 'flash-outline',            color: '#FF9500' },
-  grateful:    { icon: 'heart-outline',            color: '#FF6B9D' },
+  grateful:    { icon: 'heart-outline',            color: SECONDARY },
   optimistic:  { icon: 'sunny-outline',            color: '#FFB800' },
   proud:       { icon: 'ribbon-outline',           color: '#5E5CE6' },
   satisfied:   { icon: 'thumbs-up-outline',        color: '#4CAF82' },
@@ -40,14 +40,14 @@ const MOOD_CONFIG: Record<Mood, { icon: string; color: string }> = {
   bored:       { icon: 'time-outline',             color: '#A0A0A0' },
   lazy:        { icon: 'bed-outline',              color: '#B0A0D0' },
   tired:       { icon: 'battery-half-outline',     color: '#FF8A50' },
-  exhausted:   { icon: 'battery-dead-outline',     color: '#FF6B35' },
+  exhausted:   { icon: 'battery-dead-outline',     color: '#FB923C' },
   anxious:     { icon: 'alert-circle-outline',     color: '#FF9F0A' },
-  stressed:    { icon: 'thunderstorm-outline',     color: '#FF6B35' },
+  stressed:    { icon: 'thunderstorm-outline',     color: '#FB923C' },
   scared:      { icon: 'warning-outline',          color: '#C0664A' },
   lonely:      { icon: 'person-outline',           color: '#9B59B6' },
   frustrated:  { icon: 'close-circle-outline',     color: '#E67E22' },
-  sad:         { icon: 'rainy-outline',            color: '#A855F7' },
-  bad:         { icon: 'sad-outline',              color: '#FF4D6A' },
+  sad:         { icon: 'rainy-outline',            color: '#A78BFA' },
+  bad:         { icon: 'sad-outline',              color: '#F87171' },
   sick:        { icon: 'medkit-outline',           color: '#E74C3C' },
   depressed:   { icon: 'cloud-outline',            color: '#7F8C8D' },
   angry:       { icon: 'flame-outline',            color: '#FF3B30' },
@@ -90,9 +90,9 @@ export default function JournalScreen() {
     <View style={[styles.container, { backgroundColor: C.background }]}>
       {/* Header */}
       <LinearGradient
-        colors={['#9B6EF5', '#7C5CFC', '#FF6B9D']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        colors={[...GRADIENT_H]}
+        start={{ x: 1, y: 0 }}
+        end={{ x: 0, y: 1 }}
         style={[styles.hero, { paddingTop: topPad + Spacing.md }]}
       >
         <View style={styles.heroDecor1} />
@@ -115,7 +115,7 @@ export default function JournalScreen() {
             style={styles.addBtn}
           >
             <View style={styles.addBtnInner}>
-              <Ionicons name="add" size={26} color="#7C5CFC" />
+              <Ionicons name="add" size={26} color={PRIMARY} />
             </View>
           </Pressable>
         </View>
@@ -258,6 +258,8 @@ const styles = StyleSheet.create({
   hero: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xxl,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -277,8 +279,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.15)',
     alignItems: 'center', justifyContent: 'center',
   },
-  heroTitle: { fontSize: 28, fontFamily: 'Inter_700Bold', color: '#fff' },
-  heroSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: 'Inter_500Medium', marginTop: 2 },
+  heroTitle: { fontSize: 28, fontFamily: F.bold, color: '#fff' },
+  heroSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: F.med, marginTop: 2 },
   addBtn: {},
   addBtnInner: {
     width: 46, height: 46, borderRadius: 23,
@@ -293,7 +295,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.lg, marginVertical: Spacing.md,
     gap: Spacing.sm,
   },
-  searchInput: { flex: 1, fontSize: 15, fontFamily: 'Inter_400Regular', padding: 0 },
+  searchInput: { flex: 1, fontSize: 15, fontFamily: F.reg, padding: 0 },
 
   entryCard: {
     borderRadius: Radius.xl, borderWidth: 1,
@@ -304,21 +306,21 @@ const styles = StyleSheet.create({
   entryHeader: {
     alignItems: 'center', justifyContent: 'space-between',
   },
-  entryDate: { fontSize: 13, fontFamily: 'Inter_500Medium' },
+  entryDate: { fontSize: 13, fontFamily: F.med },
   moodBadge: {
     alignItems: 'center', gap: 4,
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,
   },
-  moodText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
-  entryTitle: { fontSize: 17, fontFamily: 'Inter_700Bold' },
-  entryContent: { fontSize: 14, fontFamily: 'Inter_400Regular', lineHeight: 20 },
+  moodText: { fontSize: 11, fontFamily: F.med },
+  entryTitle: { fontSize: 17, fontFamily: F.bold },
+  entryContent: { fontSize: 14, fontFamily: F.reg, lineHeight: 20 },
   entryFooter: {
     alignItems: 'center', justifyContent: 'space-between',
     marginTop: Spacing.xs,
   },
   tagsRow: { gap: 6, flex: 1 },
   tagPill: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
-  tagText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
+  tagText: { fontSize: 11, fontFamily: F.med },
   entryActions: { gap: 6 },
   actionBtn: {
     width: 30, height: 30, borderRadius: 8,

@@ -18,7 +18,7 @@ import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useJournalStore } from '../../src/store/journalStore';
-import { Spacing, Radius } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, cardShadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
@@ -82,7 +82,7 @@ export default function MoreScreen() {
 
         {/* ── Hero ── */}
         <LinearGradient
-          colors={['#7C5CFC', '#A855F7', '#FF6B9D']}
+          colors={[...GRADIENT_D]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.hero, { paddingTop: topPad + Spacing.md }]}
@@ -100,7 +100,7 @@ export default function MoreScreen() {
             accessibilityRole="button"
           >
             <LinearGradient
-              colors={['#7C5CFC', '#FF6B9D']}
+              colors={[...GRADIENT_H]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.avatarGrad}
@@ -120,7 +120,7 @@ export default function MoreScreen() {
             </View>
 
             <View style={styles.editBadge}>
-              <Ionicons name="pencil" size={13} color="#7C5CFC" />
+              <Ionicons name="pencil" size={13} color={PRIMARY} />
             </View>
           </Pressable>
         </LinearGradient>
@@ -137,7 +137,7 @@ export default function MoreScreen() {
               icon="leaf"
               label={tFunc('habits')}
               sub={`${habitsCount} ${isRTL ? 'عادة' : 'habits'}`}
-              colors={['#A855F7', '#7C5CFC']}
+              colors={[PRIMARY, '#A78BFA']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.navigate('/habits'); }}
               isRTL={isRTL}
               C={C}
@@ -148,7 +148,7 @@ export default function MoreScreen() {
               icon="trophy"
               label={tFunc('goals')}
               sub={`${goalsCount} ${isRTL ? 'هدف' : 'goals'}`}
-              colors={['#FF6B9D', '#A855F7']}
+              colors={[SECONDARY, '#A78BFA']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.navigate('/goals'); }}
               isRTL={isRTL}
               C={C}
@@ -159,7 +159,7 @@ export default function MoreScreen() {
               icon="book"
               label={tFunc('journal')}
               sub={`${journalCount} ${isRTL ? 'إدخال' : 'entries'}`}
-              colors={['#9B6EF5', '#FF6B9D']}
+              colors={[PRIMARY, SECONDARY]}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/journal'); }}
               isRTL={isRTL}
               C={C}
@@ -170,7 +170,7 @@ export default function MoreScreen() {
               icon="folder-open"
               label={tFunc('categories')}
               sub={`${categories.length} ${isRTL ? 'تصنيف' : 'categories'}`}
-              colors={['#FF6B35', '#FFB347']}
+              colors={['#FB923C', '#FFB347']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowCategories(true); }}
               isRTL={isRTL}
               C={C}
@@ -183,7 +183,7 @@ export default function MoreScreen() {
             <View style={[styles.settingGridRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <SettingCard
                 icon="language-outline"
-                iconColor="#7C5CFC"
+                iconColor={PRIMARY}
                 title={tFunc('language')}
                 options={['English', 'عربي']}
                 activeIndex={profile.language === 'en' ? 0 : 1}
@@ -193,7 +193,7 @@ export default function MoreScreen() {
               />
               <SettingCard
                 icon="moon-outline"
-                iconColor="#A855F7"
+                iconColor="#A78BFA"
                 title={tFunc('theme')}
                 options={isRTL ? ['فاتح', 'داكن'] : ['Light', 'Dark']}
                 activeIndex={profile.theme === 'light' ? 0 : 1}
@@ -205,7 +205,7 @@ export default function MoreScreen() {
             <View style={[styles.settingGridRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <SettingCard
                 icon="time-outline"
-                iconColor="#FF6B9D"
+                iconColor={SECONDARY}
                 title={tFunc('timeFormat')}
                 options={['12h', '24h']}
                 activeIndex={profile.time_format === '12h' ? 0 : 1}
@@ -215,7 +215,7 @@ export default function MoreScreen() {
               />
               <SettingCard
                 icon="calendar-outline"
-                iconColor="#00C48C"
+                iconColor="#4ADE80"
                 title={tFunc('startOfWeek')}
                 options={isRTL ? ['الأحد', 'الإثنين'] : ['Sun', 'Mon']}
                 activeIndex={profile.start_of_week === 'sunday' ? 0 : 1}
@@ -234,7 +234,7 @@ export default function MoreScreen() {
             accessibilityRole="button"
           >
             <LinearGradient
-              colors={['#A855F7', '#7C5CFC']}
+              colors={[...GRADIENT_H]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={[StyleSheet.absoluteFill]}
@@ -242,7 +242,7 @@ export default function MoreScreen() {
             <View style={styles.supportDecoCircle} />
             <View style={[styles.wideCardRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <View style={styles.supportIconWrap}>
-                <Ionicons name="chatbubble-ellipses" size={22} color="#A855F7" />
+                <Ionicons name="chatbubble-ellipses" size={22} color={PRIMARY} />
               </View>
               <View style={[styles.wideCardText, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
                 <Text style={[styles.wideCardTitle, { color: '#fff', textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('supportAndContact')}</Text>
@@ -294,7 +294,7 @@ export default function MoreScreen() {
             <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.modalContent} keyboardShouldPersistTaps="handled">
               <View style={styles.modalAvatarSection}>
                 <LinearGradient
-                  colors={['#7C5CFC', '#FF6B9D']}
+                  colors={[...GRADIENT_H]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={styles.modalAvatar}
@@ -307,8 +307,8 @@ export default function MoreScreen() {
 
               <View style={styles.formSection}>
                 <View style={[styles.formSectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  <View style={[styles.formSectionIcon, { backgroundColor: '#7C5CFC20' }]}>
-                    <Ionicons name="person-outline" size={14} color="#7C5CFC" />
+                  <View style={[styles.formSectionIcon, { backgroundColor: PRIMARY + '20' }]}>
+                    <Ionicons name="person-outline" size={14} color={PRIMARY} />
                   </View>
                   <Text style={[styles.formSectionTitle, { color: C.textSecondary }]}>{tFunc('personalInfo')}</Text>
                 </View>
@@ -351,8 +351,8 @@ export default function MoreScreen() {
 
               <View style={styles.formSection}>
                 <View style={[styles.formSectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  <View style={[styles.formSectionIcon, { backgroundColor: '#FF6B9D20' }]}>
-                    <Ionicons name="mail-outline" size={14} color="#FF6B9D" />
+                  <View style={[styles.formSectionIcon, { backgroundColor: SECONDARY + '20' }]}>
+                    <Ionicons name="mail-outline" size={14} color={SECONDARY} />
                   </View>
                   <Text style={[styles.formSectionTitle, { color: C.textSecondary }]}>{tFunc('contactInfo')}</Text>
                 </View>
@@ -393,7 +393,7 @@ export default function MoreScreen() {
                 <Text style={[styles.modalCancelText, { color: C.textSecondary }]}>{tFunc('cancel')}</Text>
               </Pressable>
               <Pressable onPress={saveProfile} style={styles.modalSaveBtn}>
-                <LinearGradient colors={['#7C5CFC', '#FF6B9D']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]} />
+                <LinearGradient colors={[...GRADIENT_H]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]} />
                 <Ionicons name="checkmark" size={20} color="#fff" />
                 <Text style={styles.modalSaveText}>{tFunc('save')}</Text>
               </Pressable>
@@ -480,7 +480,7 @@ function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C
           >
             <Text style={[
               styles.settingCardOptionText,
-              { color: i === activeIndex ? iconColor : C.textMuted, fontFamily: i === activeIndex ? 'Inter_700Bold' : 'Inter_400Regular' },
+              { color: i === activeIndex ? iconColor : C.textMuted, fontFamily: i === activeIndex ? F.bold : F.reg },
             ]}>
               {opt}
             </Text>
@@ -620,15 +620,15 @@ const dobStyles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center',
     borderRadius: Radius.sm, paddingHorizontal: 6, paddingVertical: 4,
   },
-  yearLabel: { fontSize: 15, fontFamily: 'Inter_700Bold' },
+  yearLabel: { fontSize: 15, fontFamily: F.bold },
   nav: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.sm },
-  navLabel: { fontSize: 14, fontFamily: 'Inter_600SemiBold' },
+  navLabel: { fontSize: 14, fontFamily: F.med },
   headerRow: { flexDirection: 'row', marginBottom: Spacing.xs },
-  headerDay: { flex: 1, textAlign: 'center', fontSize: 11, fontFamily: 'Inter_600SemiBold' },
+  headerDay: { flex: 1, textAlign: 'center', fontSize: 11, fontFamily: F.med },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   cell: { width: `${100 / 7}%` as any, alignItems: 'center', justifyContent: 'center', paddingVertical: 2 },
   dayCircle: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  dayText: { fontSize: 13, fontFamily: 'Inter_500Medium' },
+  dayText: { fontSize: 13, fontFamily: F.med },
 });
 
 const styles = StyleSheet.create({
@@ -638,6 +638,8 @@ const styles = StyleSheet.create({
   hero: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: 36,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
     position: 'relative',
     overflow: 'hidden',
     minHeight: 200,
@@ -658,7 +660,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.06)',
   },
   heroLabel: {
-    fontSize: 32, fontFamily: 'Inter_700Bold', color: '#fff',
+    fontSize: 32, fontFamily: F.bold, color: '#fff',
     marginBottom: Spacing.lg,
   },
 
@@ -679,13 +681,13 @@ const styles = StyleSheet.create({
     width: 58, height: 58, borderRadius: 29,
     alignItems: 'center', justifyContent: 'center',
   },
-  avatarText: { fontSize: 26, fontFamily: 'Inter_700Bold', color: '#fff' },
+  avatarText: { fontSize: 26, fontFamily: F.bold, color: '#fff' },
   profileInfo: { flex: 1, gap: 3 },
-  profileName: { fontSize: 17, fontFamily: 'Inter_700Bold', color: '#1A0A4A' },
-  profileEmail: { fontSize: 13, fontFamily: 'Inter_400Regular', color: '#6B5C9E' },
+  profileName: { fontSize: 17, fontFamily: F.bold, color: '#1A0A4A' },
+  profileEmail: { fontSize: 13, fontFamily: F.reg, color: '#6B5C9E' },
   editBadge: {
     width: 32, height: 32, borderRadius: 16,
-    backgroundColor: 'rgba(124,92,252,0.1)',
+    backgroundColor: PRIMARY + '1A',
     alignItems: 'center', justifyContent: 'center',
   },
 
@@ -693,7 +695,7 @@ const styles = StyleSheet.create({
   pageContent: { paddingTop: Spacing.xxl, gap: Spacing.md },
 
   sectionHeader: {
-    fontSize: 12, fontFamily: 'Inter_700Bold',
+    fontSize: 12, fontFamily: F.bold,
     textTransform: 'uppercase', letterSpacing: 1,
     marginBottom: Spacing.xs, marginTop: Spacing.sm,
   },
@@ -713,8 +715,8 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   contentCardText: { flex: 1, gap: 2 },
-  contentCardLabel: { fontSize: 16, fontFamily: 'Inter_600SemiBold' },
-  contentCardSub: { fontSize: 12, fontFamily: 'Inter_400Regular' },
+  contentCardLabel: { fontSize: 16, fontFamily: F.med },
+  contentCardSub: { fontSize: 12, fontFamily: F.reg },
 
   // Wide cards
   wideCard: {
@@ -732,8 +734,8 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   wideCardText: { flex: 1, gap: 3 },
-  wideCardTitle: { fontSize: 16, fontFamily: 'Inter_700Bold' },
-  wideCardSub: { fontSize: 12, fontFamily: 'Inter_400Regular' },
+  wideCardTitle: { fontSize: 16, fontFamily: F.bold },
+  wideCardSub: { fontSize: 12, fontFamily: F.reg },
 
   // Support card extras
   supportDecoCircle: {
@@ -758,11 +760,11 @@ const styles = StyleSheet.create({
     width: 96, height: 96,
     marginBottom: Spacing.md,
   },
-  aboutName: { fontSize: 24, fontFamily: 'Inter_700Bold', marginBottom: 2 },
-  aboutAr: { fontSize: 17, fontFamily: 'Inter_700Bold', marginBottom: Spacing.sm },
-  aboutTagline: { fontSize: 14, fontFamily: 'Inter_400Regular', marginBottom: Spacing.md },
+  aboutName: { fontSize: 24, fontFamily: F.brand, marginBottom: 2 },
+  aboutAr: { fontSize: 17, fontFamily: F.bold, marginBottom: Spacing.sm },
+  aboutTagline: { fontSize: 14, fontFamily: F.reg, marginBottom: Spacing.md },
   versionPill: { borderRadius: Radius.full, paddingHorizontal: 16, paddingVertical: 6 },
-  versionText: { fontSize: 13, fontFamily: 'Inter_600SemiBold' },
+  versionText: { fontSize: 13, fontFamily: F.med },
 
   // Modals
   modal: { flex: 1 },
@@ -775,14 +777,14 @@ const styles = StyleSheet.create({
     width: 36, height: 36, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center',
   },
-  modalTitle: { fontSize: 17, fontFamily: 'Inter_700Bold' },
+  modalTitle: { fontSize: 17, fontFamily: F.bold },
   modalContent: { padding: Spacing.lg, gap: Spacing.lg, paddingBottom: 40 },
   modalAvatarSection: { alignItems: 'center', marginBottom: Spacing.md },
   modalAvatar: {
     width: 80, height: 80, borderRadius: 40,
     alignItems: 'center', justifyContent: 'center',
   },
-  modalAvatarText: { fontSize: 36, fontFamily: 'Inter_700Bold', color: '#fff' },
+  modalAvatarText: { fontSize: 36, fontFamily: F.bold, color: '#fff' },
   modalBottomBar: {
     alignItems: 'center', gap: Spacing.md,
     paddingHorizontal: Spacing.lg, paddingTop: Spacing.md,
@@ -792,25 +794,25 @@ const styles = StyleSheet.create({
     flex: 1, height: 48, borderRadius: Radius.xl, borderWidth: 1,
     alignItems: 'center', justifyContent: 'center',
   },
-  modalCancelText: { fontSize: 15, fontFamily: 'Inter_600SemiBold' },
+  modalCancelText: { fontSize: 15, fontFamily: F.med },
   modalSaveBtn: {
     flex: 2, height: 48, borderRadius: Radius.xl, overflow: 'hidden',
     alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6,
-    backgroundColor: '#7C5CFC',
+    backgroundColor: PRIMARY,
   },
-  modalSaveText: { fontSize: 15, fontFamily: 'Inter_700Bold', color: '#fff' },
+  modalSaveText: { fontSize: 15, fontFamily: F.bold, color: '#fff' },
 
   // Profile form
   formSection: { gap: Spacing.sm },
   formSectionHeader: { alignItems: 'center', gap: 6, marginBottom: 2 },
   formSectionIcon: { width: 24, height: 24, borderRadius: 7, alignItems: 'center', justifyContent: 'center' },
-  formSectionTitle: { fontSize: 12, fontFamily: 'Inter_700Bold', textTransform: 'uppercase', letterSpacing: 0.6 },
+  formSectionTitle: { fontSize: 12, fontFamily: F.bold, textTransform: 'uppercase', letterSpacing: 0.6 },
   formCard: { borderRadius: Radius.xl, borderWidth: 1, overflow: 'hidden' },
   profileField: { alignItems: 'center', paddingHorizontal: Spacing.md, paddingVertical: Spacing.md, gap: Spacing.sm },
   profileFieldLeft: { alignItems: 'center', gap: 6, minWidth: 80 },
-  profileFieldLabel: { fontSize: 13, fontFamily: 'Inter_500Medium' },
+  profileFieldLabel: { fontSize: 13, fontFamily: F.med },
   profileFieldValue: { flex: 1 },
-  formInputInline: { flex: 1, fontSize: 15, fontFamily: 'Inter_400Regular', padding: 0 },
+  formInputInline: { flex: 1, fontSize: 15, fontFamily: F.reg, padding: 0 },
   dobPressable: { flex: 1, alignItems: 'center', gap: 4 },
 
   // Settings 2×2 grid
@@ -826,7 +828,7 @@ const styles = StyleSheet.create({
     width: 32, height: 32, borderRadius: 9,
     alignItems: 'center', justifyContent: 'center',
   },
-  settingCardTitle: { flex: 1, fontSize: 12, fontFamily: 'Inter_600SemiBold', letterSpacing: 0.1 },
+  settingCardTitle: { flex: 1, fontSize: 12, fontFamily: F.med, letterSpacing: 0.1 },
   settingCardOptions: { flexDirection: 'row', gap: 5 },
   settingCardOption: {
     flex: 1, borderRadius: Radius.md, borderWidth: 1.5,

@@ -11,7 +11,7 @@ import * as Haptics from 'expo-haptics';
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Typography, Radius, Shadow } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { formatTime, formatDateKey, getTodayString, formatDate } from '../../src/utils/date';
@@ -286,7 +286,7 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
               ]}>
                 {isSelected && (
                   <LinearGradient
-                    colors={['#7C5CFC', '#FF6B9D']}
+                    colors={[...GRADIENT_H]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={[StyleSheet.absoluteFill, { borderRadius: 999 }]}
@@ -295,7 +295,7 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
                 <Text style={[
                   styles.calDay,
                   { color: isSelected ? '#fff' : isToday ? C.tint : C.text },
-                  isToday && !isSelected && { fontFamily: 'Inter_700Bold' },
+                  isToday && !isSelected && { fontFamily: F.bold },
                 ]}>
                   {day}
                 </Text>
@@ -346,7 +346,7 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
             >
               {isSelected && (
                 <LinearGradient
-                  colors={['#7C5CFC', '#FF6B9D']}
+                  colors={[...GRADIENT_H]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 1 }}
                   style={[StyleSheet.absoluteFill, { borderRadius: Radius.md }]}
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.sm,
   },
-  headerTitle: { ...Typography.heading2 },
+  headerTitle: { ...Typography.heading2, fontFamily: F.bold },
   segmentContainer: { paddingHorizontal: Spacing.lg, marginBottom: Spacing.md },
   navRow: {
     flexDirection: 'row',
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
   },
   navBtn: { padding: Spacing.sm },
-  navLabel: { ...Typography.subtitle, fontFamily: 'Inter_600SemiBold' },
+  navLabel: { ...Typography.subtitle, fontFamily: F.med },
 
   // Month calendar card
   calCard: {
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
     ...Shadow.sm,
   },
   dayHeadersRow: { flexDirection: 'row', marginBottom: Spacing.sm },
-  dayHeader: { flex: 1, textAlign: 'center', fontSize: 13, fontFamily: 'Inter_600SemiBold' },
+  dayHeader: { flex: 1, textAlign: 'center', fontSize: 13, fontFamily: F.med },
   calGrid: { flexDirection: 'row', flexWrap: 'wrap' },
   calCell: {
     width: `${100 / 7}%`,
@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
   calDayCircleSelected: {
     overflow: 'hidden',
   },
-  calDay: { fontSize: 15, fontFamily: 'Inter_500Medium' },
+  calDay: { fontSize: 15, fontFamily: F.med },
   calDot: { width: 4, height: 4, borderRadius: 2, marginTop: 2 },
 
   // Week view
@@ -480,8 +480,8 @@ const styles = StyleSheet.create({
   weekCellSelected: {
     overflow: 'hidden',
   },
-  weekDayLabel: { fontSize: 12, fontFamily: 'Inter_600SemiBold' },
-  weekDayNum: { fontSize: 18, fontFamily: 'Inter_700Bold' },
+  weekDayLabel: { fontSize: 12, fontFamily: F.med },
+  weekDayNum: { fontSize: 18, fontFamily: F.bold },
   weekDot: { width: 4, height: 4, borderRadius: 2, marginTop: 1 },
 
   // Tasks section
@@ -492,8 +492,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.xs,
   },
-  selectedDateLabel: { fontSize: 19, fontFamily: 'Inter_700Bold' },
-  taskCount: { fontSize: 14, fontFamily: 'Inter_500Medium' },
+  selectedDateLabel: { fontSize: 19, fontFamily: F.bold },
+  taskCount: { fontSize: 14, fontFamily: F.med },
 
   // Day view
   dayViewContainer: { paddingHorizontal: Spacing.lg, gap: Spacing.sm, marginTop: Spacing.sm },
@@ -503,8 +503,8 @@ const styles = StyleSheet.create({
   },
   dayTaskAccent: { width: 4, alignSelf: 'stretch' },
   dayTaskContent: { flex: 1, padding: Spacing.md, gap: 4 },
-  dayTaskTitle: { fontSize: 17, fontFamily: 'Inter_600SemiBold' },
-  dayTaskTime: { fontSize: 14, fontFamily: 'Inter_400Regular' },
+  dayTaskTitle: { fontSize: 17, fontFamily: F.med },
+  dayTaskTime: { fontSize: 14, fontFamily: F.reg },
   dayTaskCat: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, alignSelf: 'flex-start', marginTop: 2 },
-  dayTaskCatText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
+  dayTaskCatText: { fontSize: 11, fontFamily: F.med },
 });

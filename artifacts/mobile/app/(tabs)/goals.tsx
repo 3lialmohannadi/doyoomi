@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -20,12 +20,12 @@ import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 import { Goal } from '../../src/types';
 
 const GOAL_GRADIENTS: [string, string][] = [
-  ['#7C5CFC', '#FF6B9D'],
-  ['#FF6B35', '#FFB347'],
-  ['#00C48C', '#00B8A9'],
-  ['#FF4D6A', '#FF8E53'],
-  ['#A855F7', '#7C5CFC'],
-  ['#FFB800', '#FF6B35'],
+  [PRIMARY, SECONDARY],
+  ['#FB923C', '#FFB347'],
+  ['#4ADE80', '#00B8A9'],
+  ['#F87171', '#FF8E53'],
+  ['#A78BFA', PRIMARY],
+  ['#FFB800', '#FB923C'],
 ];
 
 export default function GoalsScreen() {
@@ -55,9 +55,9 @@ export default function GoalsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
       <LinearGradient
-        colors={['#7C5CFC', '#A855F7']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+        colors={[...GRADIENT_H]}
+        start={{ x: 1, y: 0 }}
+        end={{ x: 0, y: 1 }}
         style={[styles.header, { paddingTop: topPad + Spacing.md }]}
       >
         <View style={styles.headerDecor1} />
@@ -84,7 +84,7 @@ export default function GoalsScreen() {
             accessibilityLabel={tFunc('addGoal')}
           >
             <View style={styles.addBtnInner}>
-              <Ionicons name="add" size={26} color="#7C5CFC" />
+              <Ionicons name="add" size={26} color={PRIMARY} />
             </View>
           </Pressable>
         </View>
@@ -225,6 +225,8 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xxl,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -239,8 +241,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.07)',
   },
   headerRow: { alignItems: 'center', justifyContent: 'space-between' },
-  headerTitle: { fontSize: 28, fontFamily: 'Inter_700Bold', color: '#fff' },
-  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: 'Inter_500Medium', marginTop: 2 },
+  headerTitle: { fontSize: 28, fontFamily: F.bold, color: '#fff' },
+  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: F.med, marginTop: 2 },
   backBtn: {
     width: 40, height: 40, borderRadius: 20,
     backgroundColor: 'rgba(255,255,255,0.2)',
@@ -257,7 +259,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     borderWidth: 1,
     overflow: 'hidden',
-    shadowColor: '#7C5CFC',
+    shadowColor: PRIMARY,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
@@ -270,13 +272,13 @@ const styles = StyleSheet.create({
     width: 44, height: 44, borderRadius: Radius.md,
     alignItems: 'center', justifyContent: 'center',
   },
-  goalTitle: { fontSize: 16, fontFamily: 'Inter_700Bold', marginBottom: 4 },
+  goalTitle: { fontSize: 16, fontFamily: F.bold, marginBottom: 4 },
   typeBadge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
-  typeText: { fontSize: 11, fontFamily: 'Inter_600SemiBold' },
-  goalDesc: { fontSize: 13, fontFamily: 'Inter_400Regular', lineHeight: 18 },
+  typeText: { fontSize: 11, fontFamily: F.med },
+  goalDesc: { fontSize: 13, fontFamily: F.reg, lineHeight: 18 },
   progressRow: { justifyContent: 'space-between', alignItems: 'center' },
-  progressLabel: { fontSize: 12, fontFamily: 'Inter_500Medium' },
-  progressPct: { fontSize: 20, fontFamily: 'Inter_700Bold' },
+  progressLabel: { fontSize: 12, fontFamily: F.med },
+  progressPct: { fontSize: 20, fontFamily: F.bold },
   track: { height: 8, borderRadius: 4, overflow: 'hidden' },
   trackFill: { height: '100%', borderRadius: 4 },
   actions: { gap: Spacing.sm },
@@ -289,5 +291,5 @@ const styles = StyleSheet.create({
     width: 40, alignItems: 'center', justifyContent: 'center',
     borderRadius: Radius.md, borderWidth: 1,
   },
-  actionText: { fontSize: 13, fontFamily: 'Inter_600SemiBold' },
+  actionText: { fontSize: 13, fontFamily: F.med },
 });

@@ -16,7 +16,7 @@ import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { t } from '../../utils/i18n';
 import { getTodayString } from '../../utils/date';
-import { Radius, Spacing } from '../../theme';
+import { Radius, Spacing, F, PRIMARY, SECONDARY, GRADIENT_H } from '../../theme';
 
 interface TaskFormProps {
   visible: boolean;
@@ -238,7 +238,7 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
                 }}
                 style={[timeStyles.option, hour === h && { backgroundColor: C.tint + '20' }]}
               >
-                <Text style={[timeStyles.optionText, { color: hour === h ? C.tint : C.text, fontFamily: hour === h ? 'Inter_700Bold' : 'Inter_400Regular' }]}>
+                <Text style={[timeStyles.optionText, { color: hour === h ? C.tint : C.text, fontFamily: hour === h ? F.bold : F.reg }]}>
                   {formatHour(h)}
                 </Text>
               </Pressable>
@@ -261,7 +261,7 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
                 }}
                 style={[timeStyles.option, minute === m && { backgroundColor: C.tint + '20' }]}
               >
-                <Text style={[timeStyles.optionText, { color: minute === m ? C.tint : C.text, fontFamily: minute === m ? 'Inter_700Bold' : 'Inter_400Regular' }]}>
+                <Text style={[timeStyles.optionText, { color: minute === m ? C.tint : C.text, fontFamily: minute === m ? F.bold : F.reg }]}>
                   {m.toString().padStart(2, '0')}
                 </Text>
               </Pressable>
@@ -272,7 +272,7 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
 
       <Pressable onPress={onDone} style={timeStyles.doneBtn}>
         <LinearGradient
-          colors={['#7C5CFC', '#FF6B9D']}
+          colors={[...GRADIENT_H]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[StyleSheet.absoluteFill, { borderRadius: Radius.md }]}
@@ -293,11 +293,11 @@ const timeStyles = StyleSheet.create({
   },
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.sm },
   col: { flex: 1 },
-  label: { fontSize: 11, fontFamily: 'Inter_600SemiBold', textAlign: 'center', marginBottom: Spacing.xs, textTransform: 'uppercase' },
+  label: { fontSize: 11, fontFamily: F.med, textAlign: 'center', marginBottom: Spacing.xs, textTransform: 'uppercase' },
   scroll: { height: 160 },
   option: { paddingVertical: 8, borderRadius: Radius.sm, alignItems: 'center' },
   optionText: { fontSize: 16 },
-  colon: { fontSize: 24, fontFamily: 'Inter_700Bold', marginTop: 30 },
+  colon: { fontSize: 24, fontFamily: F.bold, marginTop: 30 },
   doneBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -308,5 +308,5 @@ const timeStyles = StyleSheet.create({
     marginTop: Spacing.sm,
     overflow: 'hidden',
   },
-  doneBtnText: { color: '#fff', fontSize: 14, fontFamily: 'Inter_600SemiBold' },
+  doneBtnText: { color: '#fff', fontSize: 14, fontFamily: F.med },
 });

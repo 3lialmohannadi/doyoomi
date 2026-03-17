@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { Radius, Spacing, Typography } from '../../theme';
+import { Radius, Spacing, Typography, F, PRIMARY, SECONDARY, GRADIENT_H } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useSettingsStore } from '../../store/settingsStore';
 import * as Haptics from 'expo-haptics';
@@ -42,7 +42,7 @@ export function ToggleRow({ label, options, value, onChange }: ToggleRowProps) {
             >
               {isActive && (
                 <LinearGradient
-                  colors={['#7C5CFC', '#FF6B9D']}
+                  colors={[...GRADIENT_H]}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={StyleSheet.absoluteFill}
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontFamily: 'Inter_500Medium',
+    fontFamily: F.med,
     flex: 1,
   },
   toggle: {
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   activeOption: {
-    shadowColor: '#7C5CFC',
+    shadowColor: PRIMARY,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -91,6 +91,6 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 14,
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: F.med,
   },
 });
