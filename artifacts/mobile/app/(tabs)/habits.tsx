@@ -12,7 +12,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-na
 import { router, useLocalSearchParams } from 'expo-router';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow } from '../../src/theme';
+import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -106,7 +106,7 @@ export default function HabitsScreen() {
                   styles.progressFill,
                   {
                     backgroundColor: '#fff',
-                    width: `${Math.round((doneToday / habits.length) * 100)}%` as any,
+                    width: `${Math.round((doneToday / habits.length) * 100)}%`,
                     alignSelf: isRTL ? 'flex-end' : 'flex-start',
                   },
                 ]}
@@ -208,7 +208,7 @@ function HabitCard({
   item: Habit;
   isDoneToday: boolean;
   isRTL: boolean;
-  C: any;
+  C: ColorScheme;
   tFunc: (k: string) => string;
   onToggle: () => void;
   onEdit: () => void;
@@ -256,7 +256,7 @@ function HabitCard({
           },
         ]}>
           <Ionicons
-            name={(item.icon + (isDoneToday ? '' : '-outline')) as any}
+            name={(item.icon + (isDoneToday ? '' : '-outline')) as React.ComponentProps<typeof Ionicons>['name']}
             size={24}
             color={item.color}
           />

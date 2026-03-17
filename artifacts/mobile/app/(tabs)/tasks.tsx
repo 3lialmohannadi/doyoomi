@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { formatDate, formatTime, getTodayString, isOverdue } from '../../src/utils/date';
@@ -176,7 +176,7 @@ export default function TasksScreen() {
       {hasActiveFilter && (
         <View style={[styles.activeFilterRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={[styles.activeFilterPill, { backgroundColor: activeGrad[0] + '15', borderColor: activeGrad[0] + '40', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Ionicons name={activeOption.icon as any} size={13} color={activeGrad[0]} />
+            <Ionicons name={activeOption.icon as React.ComponentProps<typeof Ionicons>['name']} size={13} color={activeGrad[0]} />
             <Text style={[styles.activeFilterText, { color: activeGrad[0] }]}>{activeOption.label}</Text>
           </View>
           <Pressable
@@ -292,7 +292,7 @@ export default function TasksScreen() {
                     accessibilityLabel={opt.label}
                   >
                     <View style={[styles.filterOptionIcon, { backgroundColor: isActive ? grad[0] + '25' : C.background }]}>
-                      <Ionicons name={opt.icon as any} size={18} color={isActive ? grad[0] : C.textMuted} />
+                      <Ionicons name={opt.icon as React.ComponentProps<typeof Ionicons>['name']} size={18} color={isActive ? grad[0] : C.textMuted} />
                     </View>
                     <Text style={[styles.filterOptionText, { color: isActive ? grad[0] : C.text }]}>{opt.label}</Text>
                     {isActive && (

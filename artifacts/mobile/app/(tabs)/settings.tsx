@@ -18,7 +18,7 @@ import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useJournalStore } from '../../src/store/journalStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, cardShadow } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
@@ -407,7 +407,7 @@ export default function MoreScreen() {
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
-function SectionHeader({ title, isRTL, C }: { title: string; isRTL: boolean; C: any }) {
+function SectionHeader({ title, isRTL, C }: { title: string; isRTL: boolean; C: ColorScheme }) {
   return (
     <Text style={[styles.sectionHeader, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>
       {title}
@@ -415,10 +415,12 @@ function SectionHeader({ title, isRTL, C }: { title: string; isRTL: boolean; C: 
   );
 }
 
+type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
+
 function ContentCard({ icon, label, sub, colors, onPress, isRTL, C }: {
-  icon: any; label: string; sub: string;
+  icon: IoniconsName; label: string; sub: string;
   colors: [string, string]; onPress: () => void;
-  isRTL: boolean; C: any;
+  isRTL: boolean; C: ColorScheme;
 }) {
   return (
     <Pressable
@@ -449,9 +451,9 @@ function ContentCard({ icon, label, sub, colors, onPress, isRTL, C }: {
 }
 
 function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C, isRTL }: {
-  icon: any; iconColor: string; title: string;
+  icon: IoniconsName; iconColor: string; title: string;
   options: string[]; activeIndex: number;
-  onSelect: (index: number) => void; C: any; isRTL?: boolean;
+  onSelect: (index: number) => void; C: ColorScheme; isRTL?: boolean;
 }) {
   return (
     <View style={[styles.settingCard, { backgroundColor: C.card, borderColor: C.border }]}>
@@ -491,7 +493,7 @@ function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C
   );
 }
 
-function ProfileField({ label, icon, C, isRTL, children }: any) {
+function ProfileField({ label, icon, C, isRTL, children }: { label: string; icon: IoniconsName; C: ColorScheme; isRTL: boolean; children: React.ReactNode }) {
   return (
     <View style={[styles.profileField, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       <View style={[styles.profileFieldLeft, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -507,7 +509,7 @@ const DOB_AR_MONTHS = ['يناير','فبراير','مارس','أبريل','ما
 const DOB_AR_DAYS = ['أح','إث','ثل','أر','خم','جم','سب'];
 const DOB_EN_DAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
-function DobCalendar({ selected, onSelect, C, isRTL, lang }: any) {
+function DobCalendar({ selected, onSelect, C, isRTL, lang }: { selected?: string; onSelect: (d: string) => void; C: ColorScheme; isRTL: boolean; lang: string }) {
   const [viewDate, setViewDate] = useState(() => {
     if (selected) return parseISO(selected);
     const d = new Date();
@@ -626,7 +628,7 @@ const dobStyles = StyleSheet.create({
   headerRow: { flexDirection: 'row', marginBottom: Spacing.xs },
   headerDay: { flex: 1, textAlign: 'center', fontSize: 11, fontFamily: F.med },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
-  cell: { width: `${100 / 7}%` as any, alignItems: 'center', justifyContent: 'center', paddingVertical: 2 },
+  cell: { width: `${100 / 7}%`, alignItems: 'center' as const, justifyContent: 'center' as const, paddingVertical: 2 },
   dayCircle: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
   dayText: { fontSize: 13, fontFamily: F.med },
 });

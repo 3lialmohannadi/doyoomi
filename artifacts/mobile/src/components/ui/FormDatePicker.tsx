@@ -6,7 +6,7 @@ import {
   addMonths, subMonths, addYears, subYears, format,
 } from 'date-fns';
 import * as Haptics from 'expo-haptics';
-import { Radius, Spacing, F } from '../../theme';
+import { Radius, Spacing, F, ColorScheme } from '../../theme';
 import { getTodayString, formatDateKey } from '../../utils/date';
 
 const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
@@ -18,7 +18,7 @@ const EN_DAYS_MON = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 interface FormDatePickerProps {
   selected: string;
   onSelect: (date: string) => void;
-  C: any;
+  C: ColorScheme;
   lang: 'en' | 'ar';
   startOfWeek?: 'sunday' | 'monday';
 }
@@ -168,7 +168,7 @@ const fpStyles = StyleSheet.create({
   headerDay: { flex: 1, textAlign: 'center', fontSize: 11, fontFamily: F.med },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
   cell: {
-    width: `${100 / 7}%` as any,
+    width: `${100 / 7}%`,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 2,

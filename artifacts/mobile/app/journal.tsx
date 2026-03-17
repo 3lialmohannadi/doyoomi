@@ -160,7 +160,7 @@ export default function JournalScreen() {
                   </Text>
                   {moodCfg && (
                     <View style={[styles.moodBadge, { backgroundColor: moodCfg.color + '18', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                      <Ionicons name={moodCfg.icon as any} size={14} color={moodCfg.color} />
+                      <Ionicons name={moodCfg.icon as React.ComponentProps<typeof Ionicons>['name']} size={14} color={moodCfg.color} />
                       <Text style={[styles.moodText, { color: moodCfg.color }]}>
                         {tFunc(`mood${item.mood!.charAt(0).toUpperCase() + item.mood!.slice(1)}`)}
                       </Text>

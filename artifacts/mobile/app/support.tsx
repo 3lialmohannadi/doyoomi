@@ -155,7 +155,7 @@ export default function SupportScreen() {
                       },
                     ]}
                   >
-                    <Ionicons name={cat.icon as any} size={17} color={isActive ? cat.color : C.textMuted} />
+                    <Ionicons name={cat.icon as React.ComponentProps<typeof Ionicons>['name']} size={17} color={isActive ? cat.color : C.textMuted} />
                     <Text style={[styles.chipText, { color: isActive ? cat.color : C.textSecondary }]} numberOfLines={1}>
                       {tFunc(cat.key)}
                     </Text>

@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -98,7 +98,7 @@ export default function GoalsScreen() {
         renderItem={({ item, index }) => {
           const grad = GOAL_GRADIENTS[index % GOAL_GRADIENTS.length];
           const pct = item.target_value > 0 ? item.current_value / item.target_value : 0;
-          const iconName = (item.icon + '-outline') as any;
+          const iconName = (item.icon + '-outline') as React.ComponentProps<typeof Ionicons>['name'];
 
           return (
             <View style={[styles.goalCard, { backgroundColor: C.card, borderColor: C.border }]}>

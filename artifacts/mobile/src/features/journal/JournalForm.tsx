@@ -185,7 +185,7 @@ export function JournalForm({ visible, onClose, editEntry }: JournalFormProps) {
                     },
                   ]}
                 >
-                  <Ionicons name={m.icon as any} size={22} color={isActive ? m.color : C.textMuted} />
+                  <Ionicons name={m.icon as React.ComponentProps<typeof Ionicons>['name']} size={22} color={isActive ? m.color : C.textMuted} />
                   <Text style={[styles.moodLabel, { color: isActive ? m.color : C.textSecondary }]} numberOfLines={1}>
                     {t(m.labelKey, lang)}
                   </Text>

@@ -42,7 +42,7 @@ export function IconPicker({ selectedIcon, selectedColor, onIconChange, iconSuff
             accessibilityState={{ selected: isActive }}
           >
             <Ionicons
-              name={((ic + iconSuffix) as any)}
+              name={((ic + iconSuffix) as React.ComponentProps<typeof Ionicons>['name'])}
               size={22}
               color={isActive ? color : C.textMuted}
             />

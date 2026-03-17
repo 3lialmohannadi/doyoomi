@@ -40,7 +40,7 @@ export function ConfirmDialog({
       <Pressable style={styles.overlay} onPress={onCancel}>
         <Pressable style={[styles.card, { backgroundColor: C.card }]} onPress={() => {}}>
           <View style={[styles.iconCircle, { backgroundColor: cfg.color + '15' }]}>
-            <Ionicons name={cfg.icon as any} size={32} color={cfg.color} />
+            <Ionicons name={cfg.icon as React.ComponentProps<typeof Ionicons>['name']} size={32} color={cfg.color} />
           </View>
           <Text style={[styles.title, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{title}</Text>
           {message ? (

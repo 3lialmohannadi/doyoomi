@@ -76,6 +76,8 @@ export const Colors = {
   },
 };
 
+export type ColorScheme = typeof Colors.light;
+
 export const F = {
   reg:       'Cairo_400Regular',
   med:       'Cairo_600SemiBold',

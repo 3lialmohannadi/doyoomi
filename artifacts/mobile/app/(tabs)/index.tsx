@@ -16,7 +16,8 @@ import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useJournalStore } from '../../src/store/journalStore';
-import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_PRIMARY, cardShadow } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_PRIMARY, cardShadow, ColorScheme } from '../../src/theme';
+import type { Task, Habit, Goal, JournalEntry, Mood, Category, Language } from '../../src/types';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, getGreeting } from '../../src/utils/i18n';
 import { getTodayString, getWeekDays, getDayLabel, formatDateKey, formatTime, isOverdue, formatShortDate } from '../../src/utils/date';
@@ -24,7 +25,6 @@ import { HabitForm } from '../../src/features/habits/HabitForm';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
 import { JournalForm } from '../../src/features/journal/JournalForm';
 import { GoalForm } from '../../src/features/goals/GoalForm';
-import { Task, Habit, Mood, JournalEntry } from '../../src/types';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -363,7 +363,14 @@ function AddBtn({ onPress, label }: { onPress: () => void; label: string }) {
   );
 }
 
-function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, isRTL, lang, C, insets }: any) {
+type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
+
+interface QuickAddMenuProps {
+  visible: boolean; onClose: () => void; onTask: () => void; onHabit: () => void;
+  onGoal: () => void; onJournal: () => void; isRTL: boolean; lang: Language; C: ColorScheme; insets: { bottom: number };
+}
+
+function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, isRTL, lang, C, insets }: QuickAddMenuProps) {
   const tFunc = (key: string) => t(key, lang);
   const items = [
     { label: tFunc('addTask'), sublabel: tFunc('quickAddTask'), icon: 'checkmark-circle-outline', colors: [PRIMARY, '#A78BFA'] as [string,string], onPress: onTask },
@@ -390,7 +397,7 @@ function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, is
               >
                 <LinearGradient colors={item.colors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={qaStyles.itemGrad}>
                   <View style={qaStyles.itemIconWrap}>
-                    <Ionicons name={item.icon as any} size={26} color="#fff" />
+                    <Ionicons name={item.icon as IoniconsName} size={26} color="#fff" />
                   </View>
                   <Text style={[qaStyles.itemLabel, { textAlign: isRTL ? 'right' : 'left' }]}>{item.label}</Text>
                   <Text style={[qaStyles.itemSub, { textAlign: isRTL ? 'right' : 'left' }]}>{item.sublabel}</Text>
@@ -410,7 +417,7 @@ function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, is
   );
 }
 
-function HeroStat({ icon, value, label, color, C }: { icon: any; value: number; label: string; color: string; C: any }) {
+function HeroStat({ icon, value, label, color, C }: { icon: IoniconsName; value: number; label: string; color: string; C: ColorScheme }) {
   return (
     <View style={styles.heroStat}>
       <View style={[styles.heroStatIcon, { backgroundColor: color + '18' }]}>
@@ -422,7 +429,12 @@ function HeroStat({ icon, value, label, color, C }: { icon: any; value: number; 
   );
 }
 
-function Section({ title, children, C, action, onAction, onTitlePress, isRTL }: any) {
+interface SectionProps {
+  title: string; children: React.ReactNode; C: ColorScheme;
+  action?: string; onAction?: () => void; onTitlePress?: () => void; isRTL?: boolean;
+}
+
+function Section({ title, children, C, action, onAction, onTitlePress, isRTL }: SectionProps) {
   return (
     <View style={styles.section}>
       <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -453,7 +465,12 @@ function Section({ title, children, C, action, onAction, onTitlePress, isRTL }: 
   );
 }
 
-function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C, isRTL }: any) {
+interface FunTaskRowProps {
+  task: Task; catName?: string; catColor?: string; timeStr?: string;
+  onToggle: () => void; onLongPress?: () => void; C: ColorScheme; isRTL?: boolean;
+}
+
+function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C, isRTL }: FunTaskRowProps) {
   const isCompleted = task.status === 'completed';
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
@@ -505,10 +522,10 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C
 function FunHabitCard({
   habit, onComplete, onUncomplete, C,
 }: {
-  habit: any;
+  habit: Habit;
   onComplete: (id: string) => void;
   onUncomplete: (id: string) => void;
-  C: any;
+  C: ColorScheme;
 }) {
   const today = format(new Date(), 'yyyy-MM-dd');
   const lastDate = habit.last_completed_at ? format(new Date(habit.last_completed_at), 'yyyy-MM-dd') : null;
@@ -537,7 +554,7 @@ function FunHabitCard({
       >
         <View style={styles.habitTopRow}>
           <View style={[styles.habitIconBox, { backgroundColor: isDone ? 'rgba(255,255,255,0.25)' : habit.color + '20' }]}>
-            <Ionicons name={(habit.icon + (isDone ? '' : '-outline')) as any} size={22} color={isDone ? '#fff' : habit.color} />
+            <Ionicons name={(habit.icon + (isDone ? '' : '-outline')) as IoniconsName} size={22} color={isDone ? '#fff' : habit.color} />
           </View>
           {isDone && <Ionicons name="checkmark-circle" size={20} color="#FFD700" />}
         </View>
@@ -551,14 +568,18 @@ function FunHabitCard({
   );
 }
 
-function FunGoalCard({ goal, progress, gradient, C, isRTL }: any) {
+interface FunGoalCardProps {
+  goal: Goal; progress: number; gradient: [string, string]; C: ColorScheme; isRTL?: boolean;
+}
+
+function FunGoalCard({ goal, progress, gradient, C, isRTL }: FunGoalCardProps) {
   const pct = Math.round(progress * 100);
 
   return (
     <View style={[styles.goalCard, { backgroundColor: C.card, borderColor: C.border }]}>
       <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md }}>
         <LinearGradient colors={gradient} style={styles.goalIcon}>
-          <Ionicons name={((goal.icon ?? 'star') + '-outline') as any} size={18} color="#fff" />
+          <Ionicons name={((goal.icon ?? 'star') + '-outline') as IoniconsName} size={18} color="#fff" />
         </LinearGradient>
         <View style={{ flex: 1 }}>
           <Text style={[styles.goalTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{goal.title}</Text>
@@ -591,7 +612,7 @@ const MOOD_ICONS: Record<Mood, { icon: string; color: string }> = {
   bad:        { icon: 'sad-outline',            color: '#F87171' },
 };
 
-function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: JournalEntry; onWrite: () => void; onOpen: () => void; C: any; tFunc: (k: string) => string; isRTL?: boolean }) {
+function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: JournalEntry; onWrite: () => void; onOpen: () => void; C: ColorScheme; tFunc: (k: string) => string; isRTL?: boolean }) {
   if (entry) {
     const moodCfg = entry.mood ? MOOD_ICONS[entry.mood] : null;
     return (
@@ -612,7 +633,7 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
               </Text>
               {moodCfg && (
                 <View style={[styles.journalMoodBadge, { backgroundColor: moodCfg.color + '18', flexDirection: isRTL ? 'row-reverse' : 'row', alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}>
-                  <Ionicons name={moodCfg.icon as any} size={12} color={moodCfg.color} />
+                  <Ionicons name={moodCfg.icon as IoniconsName} size={12} color={moodCfg.color} />
                   <Text style={[styles.journalMoodText, { color: moodCfg.color }]}>
                     {tFunc(`mood${entry.mood!.charAt(0).toUpperCase() + entry.mood!.slice(1)}`)}
                   </Text>
@@ -661,13 +682,17 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
   );
 }
 
-function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: any) {
+interface FunWeekChartProps {
+  weekDays: Date[]; tasks: Task[]; C: ColorScheme; tFunc: (k: string) => string; lang: Language;
+}
+
+function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: FunWeekChartProps) {
   const isRTL = lang === 'ar';
   const maxVal = 8;
   const data = weekDays.map((d: Date) => {
     const key = formatDateKey(d);
-    const count = tasks.filter((task: any) => task.due_date === key).length;
-    const done = tasks.filter((task: any) => task.due_date === key && task.status === 'completed').length;
+    const count = tasks.filter((task) => task.due_date === key).length;
+    const done = tasks.filter((task) => task.due_date === key && task.status === 'completed').length;
     return { day: getDayLabel(d, lang).slice(0, 1), count, done };
   });
 
@@ -684,7 +709,7 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: any) {
   return (
     <View style={[styles.chartCard, { backgroundColor: C.card, borderColor: C.border }]}>
       <View style={styles.chartBars}>
-        {data.map((d: any, i: number) => {
+        {data.map((d, i) => {
           const h = d.count > 0 ? Math.max((d.count / maxVal) * 64, 8) : 6;
           const doneH = d.done > 0 ? Math.max((d.done / maxVal) * 64, 6) : 0;
           return (
@@ -831,7 +856,7 @@ const styles = StyleSheet.create({
   habitTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   habitIconBox: { width: 40, height: 40, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
   habitName: { fontSize: 14, fontFamily: F.med, lineHeight: 19 },
-  streakRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 'auto' as any },
+  streakRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 4, marginTop: 'auto' },
   streakNum: { fontSize: 14, fontFamily: F.bold },
 
   // Goal card

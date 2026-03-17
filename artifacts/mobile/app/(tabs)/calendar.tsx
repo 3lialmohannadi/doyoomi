@@ -11,7 +11,7 @@ import * as Haptics from 'expo-haptics';
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { formatTime, formatDateKey, getTodayString, formatDate } from '../../src/utils/date';
@@ -20,7 +20,7 @@ import { AddButton } from '../../src/components/ui/AddButton';
 import { TaskCard } from '../../src/components/ui/TaskCard';
 import { EmptyState } from '../../src/components/ui/EmptyState';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
-import { Task } from '../../src/types';
+import type { Task, Category, Language, StartOfWeek } from '../../src/types';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
@@ -219,7 +219,12 @@ export default function CalendarScreen() {
   );
 }
 
-function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, lang, C }: any) {
+interface CalendarViewProps {
+  date: Date; selectedDate: string; onSelectDate: (d: string) => void;
+  taskDates: Set<string>; startOfWeek: StartOfWeek; lang: Language; C: ColorScheme;
+}
+
+function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, lang, C }: CalendarViewProps) {
   const isRTL = lang === 'ar';
   const weekStart = startDay === 'sunday' ? 0 : 1;
 
@@ -311,7 +316,7 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
   );
 }
 
-function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, lang, C }: any) {
+function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, lang, C }: CalendarViewProps) {
   const isRTL = lang === 'ar';
   const weekStart = startDay === 'sunday' ? 0 : 1;
   const start = startOfWeek(date, { weekStartsOn: weekStart });
@@ -369,17 +374,21 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
   );
 }
 
-function DayView({ date, tasks, categories, C, tFunc, isRTL }: any) {
+interface DayViewProps {
+  date: Date; tasks: Task[]; categories: Category[]; C: ColorScheme; tFunc: (k: string) => string; isRTL: boolean;
+}
+
+function DayView({ date, tasks, categories, C, tFunc, isRTL }: DayViewProps) {
   const key = formatDateKey(date);
-  const dayTasks = tasks.filter((t: any) => t.due_date === key);
+  const dayTasks = tasks.filter((t) => t.due_date === key);
 
   return (
     <View style={styles.dayViewContainer}>
       {dayTasks.length === 0 ? (
         <EmptyState icon="calendar-outline" title={tFunc('noTasksThisDay')} />
       ) : (
-        dayTasks.map((task: any) => {
-          const cat = categories.find((c: any) => c.id === task.category_id);
+        dayTasks.map((task) => {
+          const cat = categories.find((c) => c.id === task.category_id);
           const accentColor = task.priority === 'high' ? C.priorityHigh : task.priority === 'medium' ? C.priorityMedium : C.priorityLow;
           return (
             <View key={task.id} style={[styles.dayTaskCard, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>

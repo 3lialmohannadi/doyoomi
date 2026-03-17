@@ -126,7 +126,7 @@ interface InputProps {
   onChangeText: (t: string) => void;
   placeholder?: string;
   multiline?: boolean;
-  keyboardType?: any;
+  keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad' | 'number-pad' | 'decimal-pad';
   error?: boolean;
 }
 
@@ -324,7 +324,7 @@ export function CategorySelector({ value, onChange, options }: CategorySelectorP
             accessibilityLabel={opt.label}
           >
             {opt.icon ? (
-              <Ionicons name={(opt.icon + '-outline') as any} size={16} color={isActive ? color : C.textMuted} />
+              <Ionicons name={(opt.icon + '-outline') as React.ComponentProps<typeof Ionicons>['name']} size={16} color={isActive ? color : C.textMuted} />
             ) : null}
             <Text style={[styles.categoryText, { color: isActive ? color : C.textSecondary }]} numberOfLines={1}>
               {opt.label}

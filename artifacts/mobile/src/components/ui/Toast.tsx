@@ -50,7 +50,7 @@ export function Toast({ message, type = 'success', duration = 2500, onHide }: To
       styles.toast,
       { backgroundColor: C.card, borderColor: cfg.border, opacity, transform: [{ translateY }], flexDirection: isRTL ? 'row-reverse' : 'row' },
     ]}>
-      <Ionicons name={cfg.icon as any} size={20} color={cfg.color} />
+      <Ionicons name={cfg.icon as React.ComponentProps<typeof Ionicons>['name']} size={20} color={cfg.color} />
       <Text style={[styles.text, { color: cfg.color, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>{message}</Text>
     </Animated.View>
   );

@@ -119,7 +119,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               ]}>
                 <View style={[styles.catAccent, { backgroundColor: cat.color }]} />
                 <View style={[styles.catIcon, { backgroundColor: cat.color + '18' }]}>
-                  <Ionicons name={(cat.icon + '-outline') as any} size={22} color={cat.color} />
+                  <Ionicons name={(cat.icon + '-outline') as React.ComponentProps<typeof Ionicons>['name']} size={22} color={cat.color} />
                 </View>
                 <View style={styles.catInfo}>
                   <Text style={[styles.catName, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{cat.name}</Text>
@@ -169,7 +169,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               {/* Preview icon */}
               <View style={styles.formPreviewSection}>
                 <View style={[styles.formPreviewIcon, { backgroundColor: color + '18' }]}>
-                  <Ionicons name={(icon + '-outline') as any} size={32} color={color} />
+                  <Ionicons name={(icon + '-outline') as React.ComponentProps<typeof Ionicons>['name']} size={32} color={color} />
                 </View>
               </View>
 
@@ -199,7 +199,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                 ]}>
                   <View style={[styles.previewAccent, { backgroundColor: color }]} />
                   <View style={[styles.previewIconBox, { backgroundColor: color + '18' }]}>
-                    <Ionicons name={(icon + '-outline') as any} size={20} color={color} />
+                    <Ionicons name={(icon + '-outline') as React.ComponentProps<typeof Ionicons>['name']} size={20} color={color} />
                   </View>
                   <Text style={[styles.previewText, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{name || '...'}</Text>
                 </View>
@@ -224,7 +224,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                           },
                         ]}
                       >
-                        <Ionicons name={(ic + '-outline') as any} size={20} color={isActive ? color : C.textMuted} />
+                        <Ionicons name={(ic + '-outline') as React.ComponentProps<typeof Ionicons>['name']} size={20} color={isActive ? color : C.textMuted} />
                       </Pressable>
                     );
                   })}

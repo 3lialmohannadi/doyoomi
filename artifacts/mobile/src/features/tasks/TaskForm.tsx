@@ -16,7 +16,7 @@ import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { t } from '../../utils/i18n';
 import { getTodayString } from '../../utils/date';
-import { Radius, Spacing, F, PRIMARY, SECONDARY, GRADIENT_H } from '../../theme';
+import { Radius, Spacing, F, PRIMARY, SECONDARY, GRADIENT_H, ColorScheme } from '../../theme';
 
 interface TaskFormProps {
   visible: boolean;
@@ -199,7 +199,7 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
 }
 
 // ── Inline Time Picker ────────────────────────────────────────────────────────
-function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: any) {
+function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: { value?: string; onChange: (v: string) => void; is12h: boolean; C: ColorScheme; onDone: () => void; lang: string }) {
   const currentHour = value ? parseInt(value.split(':')[0]) : new Date().getHours();
   const currentMin = value ? parseInt(value.split(':')[1]) : 0;
 
