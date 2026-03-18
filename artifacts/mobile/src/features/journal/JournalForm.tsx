@@ -21,7 +21,7 @@ interface JournalFormProps {
 
 const MOODS: { key: Mood; icon: string; color: string; labelKey: string }[] = [
   // ── Positive ──
-  { key: 'happy',       icon: 'happy',                   color: '#4ADE80', labelKey: 'moodHappy' },
+  { key: 'happy',       icon: 'happy',                   color: '#6BAF8A', labelKey: 'moodHappy' },
   { key: 'excited',     icon: 'rocket-outline',           color: PRIMARY, labelKey: 'moodExcited' },
   { key: 'energetic',   icon: 'flash-outline',            color: '#FF9500', labelKey: 'moodEnergetic' },
   { key: 'grateful',    icon: 'heart-outline',            color: SECONDARY, labelKey: 'moodGrateful' },

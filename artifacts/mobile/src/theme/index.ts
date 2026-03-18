@@ -20,14 +20,14 @@ export const Colors = {
     card2: '#FBF7F3',
     shadow: 'rgba(201,122,91,0.14)',
     shadowMedium: 'rgba(201,122,91,0.22)',
-    success: '#4ADE80',
-    warning: '#FB923C',
-    error: '#F87171',
-    overdue: '#F87171',
-    priorityHigh: '#F87171',
-    priorityMedium: '#FB923C',
-    priorityLow: '#4ADE80',
-    streak: '#FB923C',
+    success: '#6BAF8A',
+    warning: '#D48E6E',
+    error: '#C96B6B',
+    overdue: '#C96B6B',
+    priorityHigh: '#C96B6B',
+    priorityMedium: '#D48E6E',
+    priorityLow: '#6BAF8A',
+    streak: '#D48E6E',
     habit: '#7BAE9E',
     goal: PRIMARY,
     gradientStart: PRIMARY,
@@ -55,14 +55,14 @@ export const Colors = {
     card2: '#362415',
     shadow: 'rgba(0,0,0,0.4)',
     shadowMedium: 'rgba(0,0,0,0.6)',
-    success: '#4ADE80',
-    warning: '#FB923C',
-    error: '#FF6B6B',
-    overdue: '#FF6B6B',
-    priorityHigh: '#FF6B6B',
-    priorityMedium: '#FB923C',
-    priorityLow: '#4ADE80',
-    streak: '#FB923C',
+    success: '#6BAF8A',
+    warning: '#D48E6E',
+    error: '#C96B6B',
+    overdue: '#C96B6B',
+    priorityHigh: '#C96B6B',
+    priorityMedium: '#D48E6E',
+    priorityLow: '#6BAF8A',
+    streak: '#D48E6E',
     habit: '#8DBFB0',
     goal: '#D9956F',
     gradientStart: '#D9956F',
@@ -170,10 +170,10 @@ export const Typography = {
 export const GRADIENT_PRIMARY: [string, string] = [PRIMARY, SECONDARY];
 export const GRADIENT_H: readonly [string, string] = [PRIMARY, '#E8A87C'];
 export const GRADIENT_D: readonly [string, string, string] = [PRIMARY, '#D48E6E', SECONDARY];
-export const GRADIENT_PURPLE: [string, string] = [PRIMARY, SECONDARY];
+export const GRADIENT_PURPLE: [string, string] = [PRIMARY, '#D48E6E'];
 export const GRADIENT_WARM: [string, string] = [SECONDARY, '#A8D5C8'];
-export const GRADIENT_GREEN: [string, string] = ['#4ADE80', '#00E5A0'];
-export const GRADIENT_ORANGE: [string, string] = ['#FB923C', '#FFB347'];
+export const GRADIENT_GREEN: [string, string] = ['#6BAF8A', '#4CAF82'];
+export const GRADIENT_ORANGE: [string, string] = ['#D48E6E', '#E8A87C'];
 
 function shadowHelper(color = '#000', strength = 4) {
   return Platform.select({

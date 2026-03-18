@@ -102,8 +102,8 @@ export default function SupportScreen() {
 
       {sent ? (
         <View style={styles.centerState}>
-          <View style={[styles.stateIconBox, { backgroundColor: '#4ADE8018' }]}>
-            <Ionicons name="checkmark-circle" size={64} color="#4ADE80" />
+          <View style={[styles.stateIconBox, { backgroundColor: '#6BAF8A18' }]}>
+            <Ionicons name="checkmark-circle" size={64} color="#6BAF8A" />
           </View>
           <Text style={[styles.stateTitle, { color: C.text }]}>{tFunc('messagePrepared')}</Text>
           <Text style={[styles.stateSub, { color: C.textSecondary }]}>{tFunc('messagePreparedDesc')}</Text>

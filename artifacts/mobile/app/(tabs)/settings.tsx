@@ -170,7 +170,7 @@ export default function MoreScreen() {
               icon="folder-open"
               label={tFunc('categories')}
               sub={`${categories.length} ${isRTL ? 'تصنيف' : 'categories'}`}
-              colors={['#FB923C', '#FFB347']}
+              colors={['#D48E6E', '#E8A87C']}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowCategories(true); }}
               isRTL={isRTL}
               C={C}
@@ -193,7 +193,7 @@ export default function MoreScreen() {
               />
               <SettingCard
                 icon="moon-outline"
-                iconColor="#A78BFA"
+                iconColor={SECONDARY}
                 title={tFunc('theme')}
                 options={isRTL ? ['فاتح', 'داكن'] : ['Light', 'Dark']}
                 activeIndex={profile.theme === 'light' ? 0 : 1}
@@ -215,7 +215,7 @@ export default function MoreScreen() {
               />
               <SettingCard
                 icon="calendar-outline"
-                iconColor="#4ADE80"
+                iconColor="#6BAF8A"
                 title={tFunc('startOfWeek')}
                 options={isRTL ? ['الأحد', 'الإثنين'] : ['Sun', 'Mon']}
                 activeIndex={profile.start_of_week === 'sunday' ? 0 : 1}

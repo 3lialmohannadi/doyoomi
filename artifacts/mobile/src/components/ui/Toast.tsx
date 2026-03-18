@@ -15,8 +15,8 @@ interface ToastProps {
 }
 
 const CONFIG: Record<ToastType, { color: string; icon: string; border: string }> = {
-  success: { color: '#4ADE80', icon: 'checkmark-circle',   border: '#4ADE8030' },
-  error:   { color: '#F87171', icon: 'alert-circle',       border: '#F8717130' },
+  success: { color: '#6BAF8A', icon: 'checkmark-circle',   border: '#6BAF8A30' },
+  error:   { color: '#C96B6B', icon: 'alert-circle',       border: '#C96B6B30' },
   info:    { color: PRIMARY,   icon: 'information-circle', border: PRIMARY + '30' },
 };
 

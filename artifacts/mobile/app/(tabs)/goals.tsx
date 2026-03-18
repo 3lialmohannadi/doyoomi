@@ -20,12 +20,12 @@ import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 import { Goal } from '../../src/types';
 
 const GOAL_GRADIENTS: [string, string][] = [
+  [PRIMARY, '#E8A87C'],
+  ['#D48E6E', '#E8A87C'],
+  ['#6BAF8A', '#4CAF82'],
+  ['#C96B6B', '#D48E6E'],
+  [SECONDARY, '#A8D5C8'],
   [PRIMARY, SECONDARY],
-  ['#FB923C', '#FFB347'],
-  ['#4ADE80', '#00B8A9'],
-  ['#F87171', '#FF8E53'],
-  [SECONDARY, PRIMARY],
-  ['#FFB800', '#FB923C'],
 ];
 
 export default function GoalsScreen() {

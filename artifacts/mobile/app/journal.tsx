@@ -22,7 +22,7 @@ import { ConfirmDialog } from '../src/components/ui/ConfirmDialog';
 import { JournalEntry, Mood } from '../src/types';
 
 const MOOD_CONFIG: Partial<Record<Mood, { icon: string; color: string }>> = {
-  happy:       { icon: 'happy',                   color: '#4ADE80' },
+  happy:       { icon: 'happy',                   color: '#6BAF8A' },
   excited:     { icon: 'rocket-outline',           color: '#E8A87C' },
   energetic:   { icon: 'flash-outline',            color: '#FF9500' },
   grateful:    { icon: 'heart-outline',            color: SECONDARY },

@@ -279,8 +279,8 @@ function HabitCard({
           </Text>
 
           <View style={[styles.habitMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <View style={[styles.streakBadge, { backgroundColor: '#FB923C' + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <Ionicons name="flame" size={12} color="#FB923C" />
+            <View style={[styles.streakBadge, { backgroundColor: '#D48E6E' + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <Ionicons name="flame" size={12} color="#D48E6E" />
               <Text style={styles.streakText}>{item.streak_days} {tFunc('days')}</Text>
             </View>
 
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', gap: 3,
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,
   },
-  streakText: { fontSize: 11, fontFamily: F.med, color: '#FB923C' },
+  streakText: { fontSize: 11, fontFamily: F.med, color: '#D48E6E' },
   doneBadge: {
     alignItems: 'center', gap: 3,
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,

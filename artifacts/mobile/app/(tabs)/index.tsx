@@ -102,10 +102,10 @@ export default function HomeScreen() {
 
         {/* Stats Cards */}
         <View style={[styles.statsRow, { backgroundColor: C.card, borderColor: C.border }]}>
-          <HeroStat icon="checkmark-circle" value={completedToday} label={tFunc('completed')} color="#4ADE80" C={C} />
-          <HeroStat icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color="#F87171" C={C} />
+          <HeroStat icon="checkmark-circle" value={completedToday} label={tFunc('completed')} color="#6BAF8A" C={C} />
+          <HeroStat icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color="#C96B6B" C={C} />
           <HeroStat icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color={C.tint} C={C} />
-          <HeroStat icon="flame" value={maxStreak} label={tFunc('streak')} color="#FB923C" C={C} />
+          <HeroStat icon="flame" value={maxStreak} label={tFunc('streak')} color="#D48E6E" C={C} />
         </View>
 
         {/* Week Strip */}
@@ -158,7 +158,7 @@ export default function HomeScreen() {
         {allDone && (
           <View style={{ paddingHorizontal: Spacing.lg, marginBottom: Spacing.md }}>
             <LinearGradient
-              colors={['#4ADE80', '#00E5A0']}
+              colors={['#6BAF8A', '#4CAF82']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={[styles.allDoneBanner, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
@@ -284,8 +284,8 @@ export default function HomeScreen() {
                 const goalGradients: [string, string][] = [
                   [PRIMARY, '#E8A87C'],
                   [SECONDARY, '#A8D5C8'],
-                  ['#4ADE80', '#00B8A9'],
-                  ['#FB923C', '#FFB347'],
+                  ['#6BAF8A', '#4CAF82'],
+                  ['#D48E6E', '#E8A87C'],
                 ];
                 const grad = goalGradients[i % goalGradients.length];
                 return (
@@ -373,8 +373,8 @@ function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, is
   const tFunc = (key: string) => t(key, lang);
   const items = [
     { label: tFunc('addTask'), sublabel: tFunc('quickAddTask'), icon: 'checkmark-circle-outline', colors: [PRIMARY, '#E8A87C'] as [string,string], onPress: onTask },
-    { label: tFunc('addHabit'), sublabel: tFunc('quickAddHabit'), icon: 'leaf-outline', colors: ['#4ADE80', '#00B8A9'] as [string,string], onPress: onHabit },
-    { label: tFunc('addGoal'), sublabel: tFunc('quickAddGoal'), icon: 'trophy-outline', colors: ['#FB923C', '#FFB347'] as [string,string], onPress: onGoal },
+    { label: tFunc('addHabit'), sublabel: tFunc('quickAddHabit'), icon: 'leaf-outline', colors: ['#6BAF8A', SECONDARY] as [string,string], onPress: onHabit },
+    { label: tFunc('addGoal'), sublabel: tFunc('quickAddGoal'), icon: 'trophy-outline', colors: ['#D48E6E', '#E8A87C'] as [string,string], onPress: onGoal },
     { label: tFunc('addEntry'), sublabel: tFunc('quickAddJournal'), icon: 'book-outline', colors: [SECONDARY, '#A8D5C8'] as [string,string], onPress: onJournal },
   ];
 
@@ -475,9 +475,9 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
   const priorityGrad: Record<string, [string, string]> = {
-    high: ['#F87171', '#FF8E53'],
-    medium: ['#FB923C', '#FFD700'],
-    low: ['#4ADE80', '#00E5A0'],
+    high: ['#C96B6B', '#D48E6E'],
+    medium: ['#D48E6E', '#E8A87C'],
+    low: ['#6BAF8A', '#4CAF82'],
   };
   const grad = priorityGrad[task.priority];
 
@@ -555,12 +555,12 @@ function FunHabitCard({
           <View style={[styles.habitIconBox, { backgroundColor: isDone ? 'rgba(255,255,255,0.25)' : habit.color + '20' }]}>
             <Ionicons name={(habit.icon + (isDone ? '' : '-outline')) as IoniconsName} size={22} color={isDone ? '#fff' : habit.color} />
           </View>
-          {isDone && <Ionicons name="checkmark-circle" size={20} color="#FFD700" />}
+          {isDone && <Ionicons name="checkmark-circle" size={20} color="#6BAF8A" />}
         </View>
         <Text style={[styles.habitName, { color: isDone ? '#fff' : C.text }]} numberOfLines={2}>{habit.name}</Text>
         <View style={styles.streakRow}>
-          <Ionicons name="flame" size={14} color={isDone ? '#FFD700' : C.streak} />
-          <Text style={[styles.streakNum, { color: isDone ? '#FFD700' : C.streak }]}>{habit.streak_days}</Text>
+          <Ionicons name="flame" size={14} color={isDone ? '#6BAF8A' : C.streak} />
+          <Text style={[styles.streakNum, { color: isDone ? '#6BAF8A' : C.streak }]}>{habit.streak_days}</Text>
         </View>
       </LinearGradient>
     </Pressable>
@@ -601,7 +601,7 @@ function FunGoalCard({ goal, progress, gradient, C, isRTL }: FunGoalCardProps) {
 }
 
 const MOOD_ICONS: Partial<Record<Mood, { icon: string; color: string }>> = {
-  excellent:  { icon: 'happy',                  color: '#4ADE80' },
+  excellent:  { icon: 'happy',                  color: '#6BAF8A' },
   veryGood:   { icon: 'happy-outline',          color: '#4CAF82' },
   good:       { icon: 'thumbs-up-outline',      color: PRIMARY },
   neutral:    { icon: 'remove-circle-outline',  color: '#FB923C' },
@@ -698,9 +698,9 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: FunWeekChartProps) {
   const barColors: [string, string][] = [
     [PRIMARY, '#E8A87C'],
     [SECONDARY, '#A8D5C8'],
-    ['#4ADE80', '#00E5A0'],
-    ['#FB923C', '#FFD700'],
-    ['#FB923C', '#FFB347'],
+    ['#6BAF8A', '#4CAF82'],
+    ['#D48E6E', '#E8A87C'],
+    [PRIMARY, '#E8A87C'],
     [PRIMARY, '#E8A87C'],
     [SECONDARY, '#A8D5C8'],
   ];

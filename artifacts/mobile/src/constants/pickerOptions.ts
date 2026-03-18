@@ -10,10 +10,10 @@ export const SHARED_ICONS = [
 ];
 
 export const SHARED_COLORS = [
-  PRIMARY, SECONDARY, '#6C8EF5', '#3B82F6', '#0EA5E9',
-  '#5CC2C2', '#4ADE80', '#4CAF82', '#84CC16', '#22C55E',
-  '#F5A623', '#FFB800', '#FF8A50', '#F97316', '#EF4444',
-  '#F87171', '#E8A87C', '#F0A4C8', '#EC4899', '#E05E5E',
-  '#8B5CF6', '#6366F1', '#14B8A6', '#64748B', '#78716C',
-  '#D48E6E', '#FB923C', '#00B8A9', '#FFB347', '#C084FC',
+  PRIMARY,    SECONDARY,  '#D48E6E', '#E8A87C', '#C0664A',
+  '#6BAF8A',  '#4CAF82',  '#5BA89E', '#3A8F85', '#2E7A6E',
+  '#F5A623',  '#D4A847',  '#C8873A', '#B5714E', '#9B5B3A',
+  '#C96B6B',  '#B55A5A',  '#E05E5E', '#CC7A4A', '#7A6352',
+  '#9B8072',  '#87655A',  '#73524A', '#5F4040', '#4A3030',
+  '#A8C5BC',  '#C4A48A',  '#B5957E', '#9B8072', '#7A6352',
 ];
