@@ -11,7 +11,7 @@ import * as Haptics from 'expo-haptics';
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_SAGE, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, resolveDisplayName } from '../../src/utils/i18n';
 import { formatTime, formatDateKey, getTodayString, formatDate } from '../../src/utils/date';
@@ -101,7 +101,7 @@ export default function CalendarScreen() {
     <View style={[styles.container, { backgroundColor: C.background }]}>
       {/* Header */}
       <LinearGradient
-        colors={[...GRADIENT_H]}
+        colors={[...GRADIENT_SAGE]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={[styles.header, { paddingTop: topPad + Spacing.md }]}
@@ -121,7 +121,7 @@ export default function CalendarScreen() {
             accessibilityLabel={tFunc('addTask')}
           >
             <View style={styles.addBtnInner}>
-              <Ionicons name="add" size={26} color={PRIMARY} />
+              <Ionicons name="add" size={26} color={SECONDARY} />
             </View>
           </Pressable>
         </View>
