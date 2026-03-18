@@ -22,11 +22,11 @@ export function IconPicker({ selectedIcon, selectedColor, onIconChange, iconSuff
 
   return (
     <View style={styles.iconGrid}>
-      {SHARED_ICONS.map(ic => {
+      {SHARED_ICONS.map((ic, ii) => {
         const isActive = ic === selectedIcon;
         return (
           <Pressable
-            key={ic}
+            key={`${ic}-${ii}`}
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onIconChange(ic); }}
             style={({ pressed }) => [
               styles.iconBtn,
@@ -56,11 +56,11 @@ export function IconPicker({ selectedIcon, selectedColor, onIconChange, iconSuff
 export function ColorPicker({ selectedColor, onColorChange }: Pick<IconColorPickerProps, 'selectedColor' | 'onColorChange'>) {
   return (
     <View style={styles.colorGrid}>
-      {SHARED_COLORS.map(cl => {
+      {SHARED_COLORS.map((cl, ci) => {
         const isActive = cl === selectedColor;
         return (
           <Pressable
-            key={cl}
+            key={`${cl}-${ci}`}
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onColorChange(cl); }}
             style={({ pressed }) => [
               styles.colorBtn,
