@@ -1,87 +1,158 @@
 import React from "react";
 
-/* ─── Clean fresh logo — built from scratch ─── */
+/* ══════════════════════════════════════════════════════════
+   DO.YOOMI  —  LOGO  v4
+   Concept: clean geometric mark built on pure SVG primitives
+   • Proper cubic-bezier D  (no hacky quadratics)
+   • Hollow D (badge bg shows through the counter)
+   • Bold checkmark inside the D counter
+   • Two glossy dots below
+   • High-contrast colours for readability at any size
+   ══════════════════════════════════════════════════════════ */
 
-const DARK   = "#1A0A04";
-const TERRA  = "#C97A5B";
-const AMBER  = "#E8A87C";
-const SAGE   = "#7BAE9E";
-const CREAM  = "#FFF9F5";
-const SAND   = "#F0E0D0";
+/* ── tokens ── */
+const BG_A = "#3A0E06";
+const BG_B = "#7B3020";
+const BG_C = "#C47558";
+const WHITE = "rgba(255,255,255,0.95)";
+const AMBER = "#F5C070";
+const SAGE  = "#68B09F";
+const DARK  = "#2C1208";
+const CREAM = "#FFF9F5";
+const TERRA = "#C97A5B";
 
-/* ══════════════════════════════════════════════
-   ICON MARK v3
-   Approach: filled D letter + checkmark + dots
-   Using SVG text for the D (crisp font rendering)
-   ══════════════════════════════════════════════ */
-function Mark({ px = 100 }: { px?: number }) {
+/* ─────────────────────────────────────────────────────────
+   THE MARK
+   ViewBox: 300 × 300
+   D: cubic-bezier, stroke only, thick, white
+   Checkmark: inside D counter, bold gradient
+   ي arc: extends below D
+   Two 3D pearl dots
+   ───────────────────────────────────────────────────────── */
+function Mark({ px = 110 }: { px?: number }) {
   return (
-    <svg width={px} height={px} viewBox="0 0 100 100" fill="none">
+    <svg width={px} height={px} viewBox="0 0 300 300" fill="none">
       <defs>
-        <linearGradient id="g-badge" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor="#3D100A" />
-          <stop offset="55%"  stopColor="#8C3822" />
-          <stop offset="100%" stopColor="#C97A5B" />
+
+        {/* badge — 3-stop rich gradient */}
+        <linearGradient id="m-bg" x1="0" y1="0" x2="300" y2="300" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor={BG_A}/>
+          <stop offset="45%"  stopColor={BG_B}/>
+          <stop offset="100%" stopColor={BG_C}/>
         </linearGradient>
-        <radialGradient id="g-shine" cx="40%" cy="22%" r="60%">
-          <stop offset="0%"   stopColor="rgba(255,255,255,0.22)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+
+        {/* inner radial pop at centre */}
+        <radialGradient id="m-inner" cx="55%" cy="45%" r="48%">
+          <stop offset="0%"   stopColor="rgba(220,120,70,0.28)"/>
+          <stop offset="100%" stopColor="rgba(0,0,0,0)"/>
         </radialGradient>
-        <linearGradient id="g-chk" x1="76" y1="22" x2="20" y2="72" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor="#F0C070" />
-          <stop offset="50%"  stopColor={SAGE} />
-          <stop offset="100%" stopColor="#3D9080" />
+
+        {/* glass top shine */}
+        <radialGradient id="m-shine" cx="38%" cy="20%" r="52%">
+          <stop offset="0%"   stopColor="rgba(255,255,255,0.24)"/>
+          <stop offset="100%" stopColor="rgba(255,255,255,0)"/>
+        </radialGradient>
+
+        {/* checkmark — amber→sage */}
+        <linearGradient id="m-chk" x1="220" y1="42" x2="52" y2="216" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor={AMBER}/>
+          <stop offset="55%"  stopColor={SAGE}/>
+          <stop offset="100%" stopColor="#3A8870"/>
         </linearGradient>
-        <radialGradient id="g-dot" cx="33%" cy="28%" r="70%">
-          <stop offset="0%"   stopColor="#ffffff" />
-          <stop offset="100%" stopColor="rgba(255,240,230,0.50)" />
+
+        {/* pearl dot */}
+        <radialGradient id="m-dot" cx="34%" cy="26%" r="66%">
+          <stop offset="0%"   stopColor="#ffffff"/>
+          <stop offset="50%"  stopColor="rgba(255,249,245,0.82)"/>
+          <stop offset="100%" stopColor="rgba(230,200,180,0.35)"/>
         </radialGradient>
-        <filter id="f-glow">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="1.4" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+
+        {/* soft glow on checkmark */}
+        <filter id="m-glow" x="-15%" y="-15%" width="130%" height="130%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="b"/>
+          <feMerge>
+            <feMergeNode in="b"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
         </filter>
-        <filter id="f-shadow">
-          <feDropShadow dx="0" dy="3" stdDeviation="5" floodColor="#3D100A" floodOpacity="0.50"/>
+
+        {/* dot drop shadow */}
+        <filter id="m-dshadow">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#2C0A00" floodOpacity="0.45"/>
         </filter>
+
+        {/* badge outer shadow */}
+        <filter id="m-badge-shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor={BG_A} floodOpacity="0.60"/>
+        </filter>
+
+        <clipPath id="m-clip">
+          <rect x="0" y="0" width="300" height="300" rx="64"/>
+        </clipPath>
+
       </defs>
 
-      {/* badge */}
-      <rect width="100" height="100" rx="22" fill="url(#g-badge)" filter="url(#f-shadow)"/>
-      <rect width="100" height="100" rx="22" fill="url(#g-shine)"/>
+      {/* ── BADGE ── */}
+      <rect x="0" y="0" width="300" height="300" rx="64"
+        fill="url(#m-bg)" filter="url(#m-badge-shadow)"/>
+      <rect x="0" y="0" width="300" height="300" rx="64"
+        fill="url(#m-inner)" clipPath="url(#m-clip)"/>
+      <rect x="0" y="0" width="300" height="300" rx="64"
+        fill="url(#m-shine)" clipPath="url(#m-clip)"/>
 
-      {/* D letter — filled white (gives solid readable D) */}
-      <text
-        x="14" y="74"
-        fontSize="78"
-        fontFamily="'Arial Black','Arial Bold',Arial,sans-serif"
-        fontWeight="900"
-        fill={CREAM}
-        opacity="0.95"
-      >D</text>
+      {/* ─────────────────────────────────────────
+          D  —  cubic-bezier letterform
+          Stem: x=38, left vertical
+          Belly: cubic bezier max width x≈252
+          Stroke only (hollow) — badge bg shows through
+          ───────────────────────────────────────── */}
+      {/* D letterform — cubic bezier, hollow, shortened to leave room for arc+dots */}
+      <path
+        d="M 38,28  L 108,28  C 260,28 260,238 108,238  L 38,238  Z"
+        stroke={WHITE}
+        strokeWidth="24"
+        strokeLinejoin="round"
+        fill="none"
+        clipPath="url(#m-clip)"
+      />
 
-      {/* two arc dots at bottom (ي) — inside D counter using ي reference */}
-      <circle cx="32" cy="88" r="5.2" fill={CREAM} opacity="0.90"/>
-      <circle cx="48" cy="88" r="5.2" fill={CREAM} opacity="0.90"/>
+      {/* ─────────────────────────────────────────
+          ي  ARC — stays inside badge bounds
+          ───────────────────────────────────────── */}
+      <path
+        d="M 38,248  Q 30,284 130,288  Q 238,292 260,248"
+        stroke={WHITE}
+        strokeWidth="23"
+        strokeLinecap="round"
+        fill="none"
+        opacity="0.82"
+        clipPath="url(#m-clip)"
+      />
 
-      {/* checkmark — large, spans from upper-right into D */}
+      {/* ─────────────────────────────────────────
+          CHECKMARK — inside D counter, dramatic
+          ───────────────────────────────────────── */}
       <polyline
-        points="19,58  36,76  78,24"
-        stroke="url(#g-chk)"
-        strokeWidth="8.5"
+        points="55,155  104,212  226,52"
+        stroke="url(#m-chk)"
+        strokeWidth="32"
         strokeLinecap="round"
         strokeLinejoin="round"
-        filter="url(#f-glow)"
+        filter="url(#m-glow)"
+        clipPath="url(#m-clip)"
       />
+
+      {/* ─────────────────────────────────────────
+          TWO  3D  DOTS
+          ───────────────────────────────────────── */}
+      <circle cx="112" cy="258" r="15"
+        fill="url(#m-dot)" filter="url(#m-dshadow)"/>
+      <circle cx="154" cy="258" r="15"
+        fill="url(#m-dot)" filter="url(#m-dshadow)"/>
+
     </svg>
   );
 }
-
-/* ── sub label ── */
-const SUB: React.CSSProperties = {
-  fontFamily: "'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif",
-  fontSize: 10, fontWeight: 700, letterSpacing: 3.5,
-  color: SAGE, textTransform: "uppercase",
-};
 
 /* ── wordmark ── */
 function Word({ light = false, size = 52 }: { light?: boolean; size?: number }) {
@@ -89,95 +160,85 @@ function Word({ light = false, size = 52 }: { light?: boolean; size?: number }) 
   return (
     <div style={{ display:"flex", alignItems:"baseline", lineHeight:1, gap:0 }}>
       <span style={{
-        fontFamily:"'Plus Jakarta Sans','Arial Black',system-ui,sans-serif",
+        fontFamily:"'Plus Jakarta Sans','Arial Black',Arial,sans-serif",
         fontSize:size, fontWeight:900, letterSpacing:-1.5, color:base,
       }}>Do</span>
-      <span style={{ fontSize:size, fontWeight:900, color:light ? AMBER : TERRA, margin:"0 1px" }}>.</span>
       <span style={{
-        fontFamily:"'Plus Jakarta Sans','Arial Black',system-ui,sans-serif",
+        fontSize:size, fontWeight:900, lineHeight:1,
+        color: light ? AMBER : TERRA,
+        margin:"0 1px",
+      }}>.</span>
+      <span style={{
+        fontFamily:"'Plus Jakarta Sans','Arial Black',Arial,sans-serif",
         fontSize:size, fontWeight:900, letterSpacing:-1.5,
         background: light
-          ? `linear-gradient(90deg,${AMBER},#F5C890)`
-          : `linear-gradient(90deg,${TERRA},${AMBER})`,
-        WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
+          ? `linear-gradient(90deg,${AMBER},#F5D090)`
+          : `linear-gradient(90deg,${TERRA},#E8A87C)`,
+        WebkitBackgroundClip:"text",
+        WebkitTextFillColor:"transparent",
       }}>Yoomi</span>
     </div>
   );
 }
 
-/* ═══════════════════════ PAGE ═══════════════════════ */
+const CARD: React.CSSProperties = {
+  background: CREAM,
+  borderRadius: 28,
+  boxShadow: "0 20px 64px rgba(44,18,8,0.15)",
+  display: "flex",
+  alignItems: "center",
+  gap: 28,
+  padding: "30px 48px",
+  minWidth: 520,
+};
+const SUB: React.CSSProperties = {
+  fontFamily:"'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif",
+  fontSize: 10.5, fontWeight: 700,
+  letterSpacing: 3.5, textTransform: "uppercase",
+  color: "#7BAE9E",
+};
+
 export default function DoYoomiLogo() {
   return (
     <div style={{
       minHeight:"100vh",
-      background:`linear-gradient(150deg,#E2CFC0,#C8AE9A)`,
+      background:"linear-gradient(148deg,#DCCABB 0%,#C4A890 100%)",
       display:"flex", flexDirection:"column",
       alignItems:"center", justifyContent:"center",
-      gap:36, padding:48,
+      gap:38, padding:48,
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&display=swap');
-        * { box-sizing:border-box; margin:0; padding:0; }
+        *{box-sizing:border-box;margin:0;padding:0}
       `}</style>
 
-      {/* ── A: Horizontal — primary logo ── */}
-      <div style={{
-        background:CREAM,
-        borderRadius:26, padding:"28px 44px",
-        display:"flex", alignItems:"center", gap:24,
-        boxShadow:"0 16px 56px rgba(26,10,4,0.14)",
-      }}>
-        <Mark px={96}/>
-        <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-          <Word size={52}/>
-          <div style={{ display:"flex", alignItems:"center", gap:9 }}>
-            <div style={{ width:24, height:2, background:SAGE, borderRadius:1, opacity:0.7 }}/>
+      {/* ── A  Horizontal ── */}
+      <div style={CARD}>
+        <Mark px={108}/>
+        <div style={{display:"flex",flexDirection:"column",gap:11}}>
+          <Word size={54}/>
+          <div style={{display:"flex",alignItems:"center",gap:9}}>
+            <div style={{width:26,height:2.5,background:"#7BAE9E",borderRadius:2,opacity:0.7}}/>
             <span style={SUB}>Daily Productivity</span>
           </div>
         </div>
       </div>
 
-      {/* ── B: Stacked — for app / square use ── */}
-      <div style={{
-        background:CREAM,
-        borderRadius:26, padding:"36px 56px",
-        display:"flex", flexDirection:"column", alignItems:"center", gap:18,
-        boxShadow:"0 16px 56px rgba(26,10,4,0.14)",
-      }}>
-        <Mark px={114}/>
-        <Word size={48}/>
-        <span style={{ ...SUB, letterSpacing:4, marginTop:2 }}>يومي · Daily</span>
+      {/* ── B  Stacked ── */}
+      <div style={{...CARD, flexDirection:"column", padding:"38px 60px", gap:20}}>
+        <Mark px={122}/>
+        <Word size={50}/>
+        <span style={{...SUB, letterSpacing:4, marginTop:2}}>يومي · Daily</span>
       </div>
 
-      {/* ── C: Dark — for splash / dark bg ── */}
-      <div style={{
-        background:`linear-gradient(135deg,${DARK},#2E1008)`,
-        borderRadius:26, padding:"28px 44px",
-        display:"flex", alignItems:"center", gap:24,
-        boxShadow:"0 20px 64px rgba(26,10,4,0.60)",
-      }}>
-        <Mark px={96}/>
-        <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-          <Word size={52} light/>
+      {/* ── C  Dark ── */}
+      <div style={{...CARD, background:`linear-gradient(135deg,${DARK},#2E1008)`,
+        boxShadow:"0 24px 72px rgba(44,18,8,0.65)"}}>
+        <Mark px={108}/>
+        <div style={{display:"flex",flexDirection:"column",gap:11}}>
+          <Word size={54} light/>
           <span style={SUB}>Daily Productivity App</span>
         </div>
-      </div>
-
-      {/* ── D: Minimal icon only ── */}
-      <div style={{
-        display:"flex", alignItems:"center", gap:20,
-        background:SAND, borderRadius:20,
-        padding:"20px 36px",
-        boxShadow:"0 8px 32px rgba(26,10,4,0.10)",
-      }}>
-        {[72, 56, 44].map((sz, i) => (
-          <div key={i} style={{
-            display:"flex", flexDirection:"column", alignItems:"center", gap:8,
-          }}>
-            <Mark px={sz}/>
-            <span style={{ ...SUB, fontSize:9 }}>{sz}px</span>
-          </div>
-        ))}
       </div>
 
     </div>
