@@ -1,4 +1,4 @@
-import { PRIMARY, SECONDARY } from '../theme';
+import { PRIMARY, SECONDARY, WARM_CORAL, WARM_AMBER, WARM_AMBER2, WARM_ERROR, WARM_TEAL } from '../theme';
 
 export const SHARED_ICONS = [
   'leaf', 'water', 'fitness', 'book', 'heart',
@@ -10,10 +10,10 @@ export const SHARED_ICONS = [
 ];
 
 export const SHARED_COLORS = [
-  PRIMARY,    SECONDARY,  '#D48E6E', '#E8A87C', '#C0664A',
-  '#6BAF8A',  '#4CAF82',  '#5BA89E', '#3A8F85', '#2E7A6E',
-  '#F5A623',  '#D4A847',  '#C8873A', '#B5714E', '#9B5B3A',
-  '#C96B6B',  '#B55A5A',  '#E05E5E', '#CC7A4A', '#7A6352',
-  '#9B8072',  '#87655A',  '#73524A', '#5F4040', '#4A3030',
-  '#A8C5BC',  '#C4A48A',  '#B5957E', '#9B8072', '#7A6352',
+  PRIMARY,      SECONDARY,    WARM_CORAL,   WARM_AMBER,   '#C0664A',
+  SECONDARY,    '#9ECCC0',    WARM_TEAL,    '#3A8F85',    '#2E7A6E',
+  WARM_AMBER2,  '#D4A847',    '#C8873A',    '#B5714E',    '#9B5B3A',
+  WARM_ERROR,   '#B55A5A',    '#E05E5E',    '#CC7A4A',    '#7A6352',
+  '#9B8072',    '#87655A',    '#73524A',    '#5F4040',    '#4A3030',
+  '#A8C5BC',    '#C4AA96',    '#B09B87',    '#9B8072',    '#7A6352',
 ];

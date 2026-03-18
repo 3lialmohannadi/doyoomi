@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Radius, Spacing, F, PRIMARY, SECONDARY, GRADIENT_H } from '../../theme';
+import { Radius, Spacing, F, PRIMARY, SECONDARY, WARM_ERROR, GRADIENT_H } from '../../theme';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
 
@@ -15,8 +15,8 @@ interface ToastProps {
 }
 
 const CONFIG: Record<ToastType, { color: string; icon: string; border: string }> = {
-  success: { color: '#6BAF8A', icon: 'checkmark-circle',   border: '#6BAF8A30' },
-  error:   { color: '#C96B6B', icon: 'alert-circle',       border: '#C96B6B30' },
+  success: { color: SECONDARY,   icon: 'checkmark-circle',   border: SECONDARY + '30' },
+  error:   { color: WARM_ERROR,  icon: 'alert-circle',       border: WARM_ERROR + '30' },
   info:    { color: PRIMARY,   icon: 'information-circle', border: PRIMARY + '30' },
 };
 

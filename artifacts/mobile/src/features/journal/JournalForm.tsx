@@ -11,7 +11,7 @@ import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { t } from '../../utils/i18n';
 import { getTodayString } from '../../utils/date';
-import { Radius, Spacing, F, PRIMARY, SECONDARY, GRADIENT_H } from '../../theme';
+import { Radius, Spacing, F, PRIMARY, SECONDARY, WARM_ERROR, WARM_AMBER, WARM_CORAL, GRADIENT_H } from '../../theme';
 
 interface JournalFormProps {
   visible: boolean;
@@ -21,37 +21,37 @@ interface JournalFormProps {
 
 const MOODS: { key: Mood; icon: string; color: string; labelKey: string }[] = [
   // ── Positive ──
-  { key: 'happy',       icon: 'happy',                   color: '#6BAF8A', labelKey: 'moodHappy' },
-  { key: 'excited',     icon: 'rocket-outline',           color: PRIMARY, labelKey: 'moodExcited' },
-  { key: 'energetic',   icon: 'flash-outline',            color: '#D48E6E', labelKey: 'moodEnergetic' },
-  { key: 'grateful',    icon: 'heart-outline',            color: SECONDARY, labelKey: 'moodGrateful' },
-  { key: 'optimistic',  icon: 'sunny-outline',            color: '#E8A87C', labelKey: 'moodOptimistic' },
-  { key: 'proud',       icon: 'ribbon-outline',           color: PRIMARY,   labelKey: 'moodProud' },
-  { key: 'satisfied',   icon: 'thumbs-up-outline',        color: '#6BAF8A', labelKey: 'moodSatisfied' },
-  { key: 'good',        icon: 'happy-outline',            color: '#4CAF82', labelKey: 'moodGood' },
-  { key: 'reassured',   icon: 'shield-checkmark-outline', color: SECONDARY, labelKey: 'moodReassured' },
-  { key: 'comfortable', icon: 'leaf-outline',             color: '#6BAF8A', labelKey: 'moodComfortable' },
-  { key: 'calm',        icon: 'water-outline',            color: '#5BA89E', labelKey: 'moodCalm' },
-  { key: 'surprised',   icon: 'star-outline',             color: '#E8A87C', labelKey: 'moodSurprised' },
+  { key: 'happy',       icon: 'happy',                   color: SECONDARY,  labelKey: 'moodHappy' },
+  { key: 'excited',     icon: 'rocket-outline',           color: PRIMARY,    labelKey: 'moodExcited' },
+  { key: 'energetic',   icon: 'flash-outline',            color: WARM_CORAL, labelKey: 'moodEnergetic' },
+  { key: 'grateful',    icon: 'heart-outline',            color: SECONDARY,  labelKey: 'moodGrateful' },
+  { key: 'optimistic',  icon: 'sunny-outline',            color: WARM_AMBER, labelKey: 'moodOptimistic' },
+  { key: 'proud',       icon: 'ribbon-outline',           color: PRIMARY,    labelKey: 'moodProud' },
+  { key: 'satisfied',   icon: 'thumbs-up-outline',        color: SECONDARY,  labelKey: 'moodSatisfied' },
+  { key: 'good',        icon: 'happy-outline',            color: SECONDARY,  labelKey: 'moodGood' },
+  { key: 'reassured',   icon: 'shield-checkmark-outline', color: SECONDARY,  labelKey: 'moodReassured' },
+  { key: 'comfortable', icon: 'leaf-outline',             color: SECONDARY,  labelKey: 'moodComfortable' },
+  { key: 'calm',        icon: 'water-outline',            color: SECONDARY,  labelKey: 'moodCalm' },
+  { key: 'surprised',   icon: 'star-outline',             color: WARM_AMBER, labelKey: 'moodSurprised' },
   // ── Neutral ──
-  { key: 'neutral',     icon: 'remove-circle-outline',   color: '#9B8072', labelKey: 'moodNeutral' },
-  { key: 'hesitant',    icon: 'help-circle-outline',      color: '#B5957E', labelKey: 'moodHesitant' },
-  { key: 'distracted',  icon: 'git-branch-outline',       color: '#C4A48A', labelKey: 'moodDistracted' },
-  { key: 'bored',       icon: 'time-outline',             color: '#A8C5BC', labelKey: 'moodBored' },
-  { key: 'lazy',        icon: 'bed-outline',              color: '#B5957E', labelKey: 'moodLazy' },
+  { key: 'neutral',     icon: 'remove-circle-outline',   color: '#9B8072',   labelKey: 'moodNeutral' },
+  { key: 'hesitant',    icon: 'help-circle-outline',      color: '#B09B87',  labelKey: 'moodHesitant' },
+  { key: 'distracted',  icon: 'git-branch-outline',       color: '#B09B87',  labelKey: 'moodDistracted' },
+  { key: 'bored',       icon: 'time-outline',             color: SECONDARY,  labelKey: 'moodBored' },
+  { key: 'lazy',        icon: 'bed-outline',              color: '#B09B87',  labelKey: 'moodLazy' },
   // ── Negative ──
-  { key: 'tired',       icon: 'battery-half-outline',     color: '#D48E6E', labelKey: 'moodTired' },
-  { key: 'exhausted',   icon: 'battery-dead-outline',     color: '#C97A5B', labelKey: 'moodExhausted' },
-  { key: 'anxious',     icon: 'alert-circle-outline',     color: '#D48E6E', labelKey: 'moodAnxious' },
-  { key: 'stressed',    icon: 'thunderstorm-outline',     color: '#C97A5B', labelKey: 'moodStressed' },
-  { key: 'scared',      icon: 'warning-outline',          color: '#C0664A', labelKey: 'moodScared' },
-  { key: 'lonely',      icon: 'person-outline',           color: '#9B8072', labelKey: 'moodLonely' },
-  { key: 'frustrated',  icon: 'close-circle-outline',     color: '#C0664A', labelKey: 'moodFrustrated' },
-  { key: 'sad',         icon: 'rainy-outline',            color: SECONDARY, labelKey: 'moodSad' },
-  { key: 'bad',         icon: 'sad-outline',              color: '#C96B6B', labelKey: 'moodBad' },
-  { key: 'sick',        icon: 'medkit-outline',           color: '#C96B6B', labelKey: 'moodSick' },
-  { key: 'depressed',   icon: 'cloud-outline',            color: '#9B8072', labelKey: 'moodDepressed' },
-  { key: 'angry',       icon: 'flame-outline',            color: '#C96B6B', labelKey: 'moodAngry' },
+  { key: 'tired',       icon: 'battery-half-outline',     color: WARM_CORAL, labelKey: 'moodTired' },
+  { key: 'exhausted',   icon: 'battery-dead-outline',     color: PRIMARY,    labelKey: 'moodExhausted' },
+  { key: 'anxious',     icon: 'alert-circle-outline',     color: WARM_CORAL, labelKey: 'moodAnxious' },
+  { key: 'stressed',    icon: 'thunderstorm-outline',     color: PRIMARY,    labelKey: 'moodStressed' },
+  { key: 'scared',      icon: 'warning-outline',          color: WARM_CORAL, labelKey: 'moodScared' },
+  { key: 'lonely',      icon: 'person-outline',           color: '#9B8072',  labelKey: 'moodLonely' },
+  { key: 'frustrated',  icon: 'close-circle-outline',     color: WARM_CORAL, labelKey: 'moodFrustrated' },
+  { key: 'sad',         icon: 'rainy-outline',            color: SECONDARY,  labelKey: 'moodSad' },
+  { key: 'bad',         icon: 'sad-outline',              color: WARM_ERROR, labelKey: 'moodBad' },
+  { key: 'sick',        icon: 'medkit-outline',           color: WARM_ERROR, labelKey: 'moodSick' },
+  { key: 'depressed',   icon: 'cloud-outline',            color: '#9B8072',  labelKey: 'moodDepressed' },
+  { key: 'angry',       icon: 'flame-outline',            color: WARM_ERROR, labelKey: 'moodAngry' },
 ];
 
 const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];

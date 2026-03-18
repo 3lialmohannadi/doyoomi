@@ -5,7 +5,7 @@ import { Category } from '../types';
 const MOCK_CATEGORIES: Category[] = [
   { id: 'cat-1', user_id: 'user-1', name: 'Work', color: '#5BA89E', icon: 'briefcase', created_at: new Date().toISOString() },
   { id: 'cat-2', user_id: 'user-1', name: 'Personal', color: '#C97A5B', icon: 'person', created_at: new Date().toISOString() },
-  { id: 'cat-3', user_id: 'user-1', name: 'Health', color: '#4CAF82', icon: 'fitness', created_at: new Date().toISOString() },
+  { id: 'cat-3', user_id: 'user-1', name: 'Health', color: '#7BAE9E', icon: 'fitness', created_at: new Date().toISOString() },
   { id: 'cat-4', user_id: 'user-1', name: 'Learning', color: '#7BAE9E', icon: 'book', created_at: new Date().toISOString() },
   { id: 'cat-5', user_id: 'user-1', name: 'Finance', color: '#F5A623', icon: 'card', created_at: new Date().toISOString() },
 ];

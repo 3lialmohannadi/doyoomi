@@ -22,7 +22,7 @@ const MOCK_GOALS: Goal[] = [
     target_value: 20,
     current_value: 12,
     icon: 'fitness',
-    color: '#4CAF82',
+    color: '#7BAE9E',
     created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
   },
   {

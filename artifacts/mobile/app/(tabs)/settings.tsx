@@ -215,7 +215,7 @@ export default function MoreScreen() {
               />
               <SettingCard
                 icon="calendar-outline"
-                iconColor="#6BAF8A"
+                iconColor={SECONDARY}
                 title={tFunc('startOfWeek')}
                 options={isRTL ? ['الأحد', 'الإثنين'] : ['Sun', 'Mon']}
                 activeIndex={profile.start_of_week === 'sunday' ? 0 : 1}

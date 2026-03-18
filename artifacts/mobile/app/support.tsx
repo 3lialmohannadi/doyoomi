@@ -19,7 +19,7 @@ const SUPPORT_EMAIL = 'admin@doyoomi.com';
 
 const CATEGORIES = [
   { key: 'suggestion',     icon: 'bulb-outline',         color: '#FFB800' },
-  { key: 'technicalIssue', icon: 'bug-outline',           color: '#C96B6B' },
+  { key: 'technicalIssue', icon: 'bug-outline',           color: WARM_ERROR },
   { key: 'other',          icon: 'help-circle-outline',   color: PRIMARY },
 ];
 

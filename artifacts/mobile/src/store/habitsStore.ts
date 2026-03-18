@@ -8,7 +8,7 @@ const MOCK_HABITS: Habit[] = [
     id: 'h-1', user_id: 'user-1',
     name: 'Morning meditation',
     icon: 'leaf',
-    color: '#4CAF82',
+    color: '#7BAE9E',
     streak_days: 14,
     last_completed_at: new Date().toISOString(),
     created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
