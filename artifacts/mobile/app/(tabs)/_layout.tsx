@@ -132,24 +132,10 @@ export default function TabLayout() {
         }}
       />
 
-      {/* 4 — الأهداف */}
-      <Tabs.Screen
-        name="goals"
-        options={{
-          title: tFunc("goals"),
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} label={tFunc("goals")} color={color}>
-              {isIOS ? (
-                <SymbolView name="trophy" tintColor={focused ? "#fff" : color} size={21} />
-              ) : (
-                <Ionicons name={focused ? "trophy" : "trophy-outline"} size={21} color={focused ? "#fff" : color} />
-              )}
-            </TabIcon>
-          ),
-        }}
-      />
+      {/* 4 — الأهداف (مخفية — متاحة من المزيد) */}
+      <Tabs.Screen name="goals" options={{ href: null }} />
 
-      {/* 5 — المزيد */}
+      {/* 4 — المزيد */}
       <Tabs.Screen
         name="settings"
         options={{
