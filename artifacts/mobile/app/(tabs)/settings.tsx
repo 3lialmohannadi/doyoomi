@@ -19,7 +19,8 @@ import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useJournalStore } from '../../src/store/journalStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_SAGE, GRADIENT_AMBER, cardShadow, ColorScheme } from '../../src/theme';
+import { useTasksStore } from '../../src/store/tasksStore';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_SAGE, GRADIENT_AMBER, GRADIENT_CORAL, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
@@ -35,6 +36,7 @@ export default function MoreScreen() {
   const { goals } = useGoalsStore();
   const { habits } = useHabitsStore();
   const { entries: journalEntries } = useJournalStore();
+  const { tasks } = useTasksStore();
   const lang = profile.language;
   const isRTL = lang === 'ar';
 
@@ -77,6 +79,7 @@ export default function MoreScreen() {
       : format(parseISO(profileDob), 'MMM d, yyyy')
     : '';
 
+  const tasksCount = tasks.length;
   const goalsCount = goals.length;
   const habitsCount = habits.length;
   const journalCount = journalEntries.length;
@@ -136,6 +139,17 @@ export default function MoreScreen() {
           {/* Section: Content */}
           <SectionHeader title={tFunc('content')} isRTL={isRTL} C={C} />
           <View style={styles.contentCards}>
+
+            {/* Tasks card */}
+            <ContentCard
+              icon="checkmark-done"
+              label={tFunc('tasks')}
+              sub={`${tasksCount} ${isRTL ? 'مهمة' : 'tasks'}`}
+              colors={[...GRADIENT_CORAL]}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/tasks'); }}
+              isRTL={isRTL}
+              C={C}
+            />
 
             {/* Habits card */}
             <ContentCard
