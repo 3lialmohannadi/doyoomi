@@ -16,7 +16,6 @@ import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, resolveDisplayName } from '../../src/utils/i18n';
 import { formatTime, formatDateKey, getTodayString, formatDate } from '../../src/utils/date';
 import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
-import { AddButton } from '../../src/components/ui/AddButton';
 import { TaskCard } from '../../src/components/ui/TaskCard';
 import { EmptyState } from '../../src/components/ui/EmptyState';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
@@ -101,10 +100,32 @@ export default function CalendarScreen() {
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: topPad + Spacing.sm, backgroundColor: C.background, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <Text style={[styles.headerTitle, { color: C.text }]}>{tFunc('calendar')}</Text>
-        <AddButton onPress={() => { setEditTask(null); setShowTaskForm(true); }} size={40} />
-      </View>
+      <LinearGradient
+        colors={[...GRADIENT_H]}
+        start={{ x: 1, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={[styles.header, { paddingTop: topPad + Spacing.md }]}
+      >
+        <View style={styles.headerDecor1} />
+        <View style={styles.headerDecor2} />
+        <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          <View style={{ width: 46 }} />
+          <View style={{ flex: 1, alignItems: 'center' }}>
+            <Text style={styles.headerTitle}>{tFunc('calendar')}</Text>
+            <Text style={styles.headerSub}>{headerLabel}</Text>
+          </View>
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditTask(null); setShowTaskForm(true); }}
+            style={({ pressed }) => [styles.addBtn, { opacity: pressed ? 0.8 : 1 }]}
+            accessibilityRole="button"
+            accessibilityLabel={tFunc('addTask')}
+          >
+            <View style={styles.addBtnInner}>
+              <Ionicons name="add" size={26} color={PRIMARY} />
+            </View>
+          </Pressable>
+        </View>
+      </LinearGradient>
 
       <View style={styles.segmentContainer}>
         <SegmentedControl
@@ -415,14 +436,34 @@ const DAY_CIRCLE_SIZE = 38;
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.sm,
+    paddingBottom: Spacing.xl,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    position: 'relative',
+    overflow: 'hidden',
   },
-  headerTitle: { ...Typography.heading2, fontFamily: F.bold },
-  segmentContainer: { paddingHorizontal: Spacing.lg, marginBottom: Spacing.md },
+  headerDecor1: {
+    position: 'absolute', right: -30, top: -30,
+    width: 160, height: 160, borderRadius: 80,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  headerDecor2: {
+    position: 'absolute', left: 20, bottom: -10,
+    width: 90, height: 90, borderRadius: 45,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+  },
+  headerRow: { alignItems: 'center', justifyContent: 'space-between' },
+  headerTitle: { fontSize: 28, fontFamily: F.bold, color: '#fff', textAlign: 'center' },
+  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: F.med, marginTop: 2, textAlign: 'center' },
+  addBtn: {},
+  addBtnInner: {
+    width: 46, height: 46, borderRadius: 23,
+    backgroundColor: '#fff',
+    alignItems: 'center', justifyContent: 'center',
+    shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 3,
+  },
+  segmentContainer: { paddingHorizontal: Spacing.lg, marginTop: Spacing.md, marginBottom: Spacing.sm },
   navRow: {
     flexDirection: 'row',
     alignItems: 'center',
