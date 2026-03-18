@@ -81,6 +81,7 @@ export default function TabLayout() {
           ) : null,
       }}
     >
+      {/* 1 — الرئيسية */}
       <Tabs.Screen
         name="index"
         options={{
@@ -96,36 +97,8 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="tasks"
-        options={{
-          title: tFunc("tasks"),
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} label={tFunc("tasks")} color={color}>
-              {isIOS ? (
-                <SymbolView name="checklist" tintColor={focused ? "#fff" : color} size={21} />
-              ) : (
-                <Ionicons name={focused ? "checkmark-circle" : "checkmark-circle-outline"} size={21} color={focused ? "#fff" : color} />
-              )}
-            </TabIcon>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="habits"
-        options={{
-          title: tFunc("habits"),
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} label={tFunc("habits")} color={color}>
-              {isIOS ? (
-                <SymbolView name="sparkles" tintColor={focused ? "#fff" : color} size={21} />
-              ) : (
-                <Ionicons name={focused ? "leaf" : "leaf-outline"} size={21} color={focused ? "#fff" : color} />
-              )}
-            </TabIcon>
-          ),
-        }}
-      />
+
+      {/* 2 — التقويم */}
       <Tabs.Screen
         name="calendar"
         options={{
@@ -141,6 +114,42 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      {/* 3 — العادات */}
+      <Tabs.Screen
+        name="habits"
+        options={{
+          title: tFunc("habits"),
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon focused={focused} label={tFunc("habits")} color={color}>
+              {isIOS ? (
+                <SymbolView name="sparkles" tintColor={focused ? "#fff" : color} size={21} />
+              ) : (
+                <Ionicons name={focused ? "leaf" : "leaf-outline"} size={21} color={focused ? "#fff" : color} />
+              )}
+            </TabIcon>
+          ),
+        }}
+      />
+
+      {/* 4 — الأهداف */}
+      <Tabs.Screen
+        name="goals"
+        options={{
+          title: tFunc("goals"),
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon focused={focused} label={tFunc("goals")} color={color}>
+              {isIOS ? (
+                <SymbolView name="trophy" tintColor={focused ? "#fff" : color} size={21} />
+              ) : (
+                <Ionicons name={focused ? "trophy" : "trophy-outline"} size={21} color={focused ? "#fff" : color} />
+              )}
+            </TabIcon>
+          ),
+        }}
+      />
+
+      {/* 5 — المزيد */}
       <Tabs.Screen
         name="settings"
         options={{
@@ -156,7 +165,9 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen name="goals" options={{ href: null }} />
+
+      {/* مخفية — Tasks لا تزال موجودة لكن غير مباشرة */}
+      <Tabs.Screen name="tasks" options={{ href: null }} />
     </Tabs>
   );
 }
