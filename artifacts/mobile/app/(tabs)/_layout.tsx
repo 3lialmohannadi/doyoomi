@@ -201,5 +201,7 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     fontSize: 10,
+    textAlign: 'center',
+    width: 70,
   },
 });
