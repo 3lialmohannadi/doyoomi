@@ -94,7 +94,7 @@ export default function HomeScreen() {
           <View style={[styles.heroContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={[styles.heroLeft, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
               <Text style={[styles.greeting, { textAlign: isRTL ? 'right' : 'left' }]}>{getGreeting(lang)}</Text>
-              <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+              <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
                 {profile.name || (isRTL ? 'يومي' : 'Do.Yoomi')}
               </Text>
               <Text style={[styles.heroDate, { textAlign: isRTL ? 'right' : 'left' }]}>
@@ -897,7 +897,7 @@ const styles = StyleSheet.create({
   heroContent: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: Spacing.md },
   heroLeft: { gap: 2, flex: 1 },
   greeting: { fontSize: 14, color: 'rgba(255,255,255,0.75)', fontFamily: F.med },
-  heroTitle: { fontSize: 32, color: '#fff', fontFamily: F.bold, lineHeight: 36 },
+  heroTitle: { fontSize: 32, color: '#fff', fontFamily: F.bold, lineHeight: 40 },
   heroDate: { fontSize: 13, color: 'rgba(255,255,255,0.65)', fontFamily: F.med, marginTop: 4 },
   heroSub: { fontSize: 16, color: 'rgba(255,255,255,0.65)', fontFamily: F.med },
   heroProgress: { gap: 6, marginTop: Spacing.md },
