@@ -3,5 +3,6 @@ type ModuleMap = Record<string, () => Promise<Record<string, unknown>>>;
 export const modules: ModuleMap = {
   "./components/mockups/Logo/AppIconExplorer.tsx": () => import("../components/mockups/Logo/AppIconExplorer.tsx"),
   "./components/mockups/Logo/DRingExplorer.tsx": () => import("../components/mockups/Logo/DRingExplorer.tsx"),
-  "./components/mockups/Logo/DoYoomiLogo.tsx": () => import("../components/mockups/Logo/DoYoomiLogo.tsx")
+  "./components/mockups/Logo/DoYoomiLogo.tsx": () => import("../components/mockups/Logo/DoYoomiLogo.tsx"),
+  "./components/mockups/Logo/ProIconExplorer.tsx": () => import("../components/mockups/Logo/ProIconExplorer.tsx")
 };
