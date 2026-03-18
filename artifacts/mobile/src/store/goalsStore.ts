@@ -44,7 +44,7 @@ const MOCK_GOALS: Goal[] = [
     target_value: 365,
     current_value: 84,
     icon: 'language',
-    color: '#F0A4C8',
+    color: '#D48E6E',
     created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
   },
 ];

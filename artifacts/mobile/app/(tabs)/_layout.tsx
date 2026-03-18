@@ -7,6 +7,22 @@ import { Platform, StyleSheet, View } from "react-native";
 import { useSettingsStore } from "../../src/store/settingsStore";
 import { useAppTheme } from "../../src/hooks/useAppTheme";
 import { t } from "../../src/utils/i18n";
+import { PRIMARY } from "../../src/theme";
+
+function TabIcon({ children, focused, color }: { children: React.ReactNode; focused: boolean; color: string }) {
+  return (
+    <View style={{ alignItems: 'center', gap: 3 }}>
+      {children}
+      <View style={{
+        width: focused ? 20 : 0,
+        height: 3,
+        borderRadius: 2,
+        backgroundColor: focused ? PRIMARY : 'transparent',
+        opacity: focused ? 1 : 0,
+      }} />
+    </View>
+  );
+}
 
 export default function TabLayout() {
   const { profile } = useSettingsStore();
@@ -44,32 +60,44 @@ export default function TabLayout() {
         name="index"
         options={{
           title: tFunc('home'),
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="house" tintColor={color} size={24} /> : <Ionicons name="home-outline" size={22} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon focused={focused} color={color}>
+              {isIOS ? <SymbolView name="house" tintColor={color} size={24} /> : <Ionicons name="home-outline" size={22} color={color} />}
+            </TabIcon>
+          ),
         }}
       />
       <Tabs.Screen
         name="calendar"
         options={{
           title: tFunc('calendar'),
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="calendar" tintColor={color} size={24} /> : <Ionicons name="calendar-outline" size={22} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon focused={focused} color={color}>
+              {isIOS ? <SymbolView name="calendar" tintColor={color} size={24} /> : <Ionicons name="calendar-outline" size={22} color={color} />}
+            </TabIcon>
+          ),
         }}
       />
       <Tabs.Screen
         name="tasks"
         options={{
           title: tFunc('tasks'),
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="checklist" tintColor={color} size={24} /> : <Ionicons name="checkmark-circle-outline" size={22} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon focused={focused} color={color}>
+              {isIOS ? <SymbolView name="checklist" tintColor={color} size={24} /> : <Ionicons name="checkmark-circle-outline" size={22} color={color} />}
+            </TabIcon>
+          ),
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: tFunc('more'),
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="ellipsis.circle" tintColor={color} size={24} /> : <Ionicons name="grid-outline" size={22} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon focused={focused} color={color}>
+              {isIOS ? <SymbolView name="ellipsis.circle" tintColor={color} size={24} /> : <Ionicons name="grid-outline" size={22} color={color} />}
+            </TabIcon>
+          ),
         }}
       />
       <Tabs.Screen name="habits" options={{ href: null }} />

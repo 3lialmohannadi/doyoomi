@@ -685,8 +685,8 @@ const styles = StyleSheet.create({
   },
   avatarText: { fontSize: 26, fontFamily: F.bold, color: '#fff' },
   profileInfo: { flex: 1, gap: 3 },
-  profileName: { fontSize: 17, fontFamily: F.bold, color: '#1A0A4A' },
-  profileEmail: { fontSize: 13, fontFamily: F.reg, color: '#6B5C9E' },
+  profileName: { fontSize: 17, fontFamily: F.bold, color: '#2D1A0E' },
+  profileEmail: { fontSize: 13, fontFamily: F.reg, color: '#7A5C48' },
   editBadge: {
     width: 32, height: 32, borderRadius: 16,
     backgroundColor: PRIMARY + '1A',
