@@ -7,7 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_SAGE, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_AMBER, cardShadow, ColorScheme } from '../../src/theme';
@@ -32,8 +32,6 @@ export default function GoalsScreen() {
   const { C } = useAppTheme();
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
-  const { from } = useLocalSearchParams<{ from?: string }>();
-
   const { goals, deleteGoal, incrementProgress } = useGoalsStore();
   const { profile } = useSettingsStore();
   const lang = profile.language;
@@ -48,6 +46,11 @@ export default function GoalsScreen() {
   const topPad = isWeb ? 67 : insets.top;
   const bottomPad = isWeb ? 34 : 0;
 
+  const avgProgress = goals.length > 0
+    ? goals.reduce((sum, g) => sum + (g.target_value > 0 ? Math.min(g.current_value / g.target_value, 1) : 0), 0) / goals.length
+    : 0;
+  const pctDone = Math.round(avgProgress * 100);
+
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setToast({ message, type });
   };
@@ -55,7 +58,7 @@ export default function GoalsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
       <LinearGradient
-        colors={[...GRADIENT_H]}
+        colors={['#5B9A8B', '#7BAE9E', '#9ECCC0']}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={[styles.header, { paddingTop: topPad + Spacing.md }]}
@@ -75,10 +78,18 @@ export default function GoalsScreen() {
             accessibilityLabel={tFunc('addGoal')}
           >
             <View style={styles.addBtnInner}>
-              <Ionicons name="add" size={26} color={PRIMARY} />
+              <Ionicons name="add" size={26} color={SECONDARY} />
             </View>
           </Pressable>
         </View>
+        {goals.length > 0 && (
+          <View style={styles.headerProgress}>
+            <View style={[styles.headerProgressTrack, { backgroundColor: 'rgba(255,255,255,0.22)' }]}>
+              <View style={[styles.headerProgressFill, { width: `${pctDone}%` as any }]} />
+            </View>
+            <Text style={styles.headerProgressLabel}>{pctDone}% {tFunc('completed')}</Text>
+          </View>
+        )}
       </LinearGradient>
 
       <FlatList
@@ -234,6 +245,10 @@ const styles = StyleSheet.create({
   headerRow: { alignItems: 'center', justifyContent: 'space-between' },
   headerTitle: { fontSize: 28, fontFamily: F.bold, color: '#fff' },
   headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: F.med, marginTop: 2 },
+  headerProgress: { marginTop: Spacing.md, gap: 6 },
+  headerProgressTrack: { height: 6, borderRadius: 4, overflow: 'hidden' },
+  headerProgressFill: { height: '100%', borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.88)' },
+  headerProgressLabel: { fontSize: 11, color: 'rgba(255,255,255,0.75)', fontFamily: F.med, textAlign: 'center' },
   backBtn: {
     width: 40, height: 40, borderRadius: 20,
     backgroundColor: 'rgba(255,255,255,0.2)',
@@ -270,8 +285,8 @@ const styles = StyleSheet.create({
   progressRow: { justifyContent: 'space-between', alignItems: 'center' },
   progressLabel: { fontSize: 12, fontFamily: F.med },
   progressPct: { fontSize: 20, fontFamily: F.bold },
-  track: { height: 8, borderRadius: 4, overflow: 'hidden' },
-  trackFill: { height: '100%', borderRadius: 4 },
+  track: { height: 10, borderRadius: 6, overflow: 'hidden' },
+  trackFill: { height: '100%', borderRadius: 6 },
   actions: { gap: Spacing.sm },
   actionBtn: {
     flex: 1, alignItems: 'center', justifyContent: 'center',

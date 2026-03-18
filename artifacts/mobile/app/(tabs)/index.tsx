@@ -108,28 +108,39 @@ export default function HomeScreen() {
           {/* Today progress bar */}
           {todayTasks.length > 0 && (
             <View style={styles.heroProgress}>
-              <View style={[styles.heroProgressBar, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
-                <View style={[
-                  styles.heroProgressFill,
-                  { width: `${Math.round((completedToday / todayTasks.length) * 100)}%` as any },
-                ]} />
+              <View style={[styles.heroProgressBar, { backgroundColor: 'rgba(255,255,255,0.18)' }]}>
+                <LinearGradient
+                  colors={['rgba(255,255,255,0.95)', 'rgba(255,255,255,0.65)']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={[
+                    styles.heroProgressFill,
+                    { width: `${Math.round((completedToday / todayTasks.length) * 100)}%` as any },
+                  ]}
+                />
               </View>
-              <Text style={[styles.heroProgressText, { textAlign: isRTL ? 'right' : 'left' }]}>
-                {completedToday}/{todayTasks.length} {tFunc('completed')}
-              </Text>
+              <View style={[styles.heroProgressLabelRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <Text style={styles.heroProgressText}>
+                  {completedToday}/{todayTasks.length} {tFunc('completed')}
+                </Text>
+                {completedToday > 0 && (
+                  <View style={styles.heroProgressPct}>
+                    <Text style={styles.heroProgressPctText}>
+                      {Math.round((completedToday / todayTasks.length) * 100)}%
+                    </Text>
+                  </View>
+                )}
+              </View>
             </View>
           )}
         </LinearGradient>
 
         {/* Stats Cards */}
-        <View style={[styles.statsRow, { backgroundColor: C.card, borderColor: C.border }]}>
-          <HeroStat icon="checkmark-circle" value={completedToday} label={tFunc('completed')} color={WARM_SAGE} C={C} />
-          <View style={[styles.statDivider, { backgroundColor: C.border }]} />
-          <HeroStat icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color={WARM_ERROR} C={C} />
-          <View style={[styles.statDivider, { backgroundColor: C.border }]} />
-          <HeroStat icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color={C.tint} C={C} />
-          <View style={[styles.statDivider, { backgroundColor: C.border }]} />
-          <HeroStat icon="flame" value={maxStreak} label={tFunc('streak')} color={WARM_CORAL} C={C} />
+        <View style={styles.statsGrid}>
+          <StatCard icon="checkmark-done" value={completedToday} label={tFunc('completed')} gradient={GRADIENT_GREEN} />
+          <StatCard icon="alert-circle" value={overdueCount} label={tFunc('overdue')} gradient={GRADIENT_CORAL} />
+          <StatCard icon="calendar" value={thisWeek} label={tFunc('thisWeek')} gradient={GRADIENT_SAGE} />
+          <StatCard icon="flame" value={maxStreak} label={tFunc('streak')} gradient={GRADIENT_AMBER} />
         </View>
 
         {/* Week Strip */}
@@ -457,14 +468,21 @@ function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, is
   );
 }
 
-function HeroStat({ icon, value, label, color, C }: { icon: IoniconsName; value: number; label: string; color: string; C: ColorScheme }) {
+function StatCard({ icon, value, label, gradient }: { icon: IoniconsName; value: number; label: string; gradient: readonly [string, string] }) {
   return (
-    <View style={styles.heroStat}>
-      <View style={[styles.heroStatIcon, { backgroundColor: color + '18' }]}>
-        <Ionicons name={icon} size={18} color={color} />
-      </View>
-      <Text style={[styles.heroStatNum, { color: C.text }]}>{value}</Text>
-      <Text style={[styles.heroStatLabel, { color: C.textSecondary }]} numberOfLines={1}>{label}</Text>
+    <View style={styles.statCard}>
+      <LinearGradient
+        colors={[...gradient]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.statCardGrad}
+      >
+        <View style={styles.statCardIconWrap}>
+          <Ionicons name={icon} size={17} color="rgba(255,255,255,0.9)" />
+        </View>
+        <Text style={styles.statCardNum}>{value}</Text>
+        <Text style={styles.statCardLabel} numberOfLines={1}>{label}</Text>
+      </LinearGradient>
     </View>
   );
 }
@@ -489,6 +507,7 @@ function Section({ title, children, C, action, onAction, onTitlePress, isRTL, ba
           accessibilityRole={onTitlePress ? 'button' : 'text'}
           hitSlop={8}
         >
+          <View style={[styles.sectionAccent, { backgroundColor: C.tint, marginRight: isRTL ? 0 : 7, marginLeft: isRTL ? 7 : 0 }]} />
           <Text style={[styles.sectionTitle, { color: C.text }]}>{title}</Text>
           {showProgress && (
             <View style={[styles.sectionBadge, { backgroundColor: allDone ? WARM_SAGE + '20' : C.tint + '15' }]}>
@@ -832,16 +851,26 @@ const styles = StyleSheet.create({
   heroTitle: { fontSize: 32, color: '#fff', fontFamily: F.bold, lineHeight: 36 },
   heroDate: { fontSize: 13, color: 'rgba(255,255,255,0.65)', fontFamily: F.med, marginTop: 4 },
   heroSub: { fontSize: 16, color: 'rgba(255,255,255,0.65)', fontFamily: F.med },
-  heroProgress: { gap: 6, marginTop: Spacing.sm },
+  heroProgress: { gap: 6, marginTop: Spacing.md },
   heroProgressBar: {
-    height: 5, borderRadius: 3, overflow: 'hidden',
+    height: 6, borderRadius: 4, overflow: 'hidden',
   },
   heroProgressFill: {
-    height: '100%', borderRadius: 3,
-    backgroundColor: 'rgba(255,255,255,0.75)',
+    height: '100%', borderRadius: 4,
+  },
+  heroProgressLabelRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
   },
   heroProgressText: {
-    fontSize: 11, color: 'rgba(255,255,255,0.7)', fontFamily: F.med,
+    fontSize: 11, color: 'rgba(255,255,255,0.75)', fontFamily: F.med,
+  },
+  heroProgressPct: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: Radius.full,
+    paddingHorizontal: 8, paddingVertical: 2,
+  },
+  heroProgressPctText: {
+    fontSize: 11, color: 'rgba(255,255,255,0.9)', fontFamily: F.bold,
   },
   addBtn: {
     width: 50, height: 50, borderRadius: 25,
@@ -849,30 +878,42 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     shadowColor: PRIMARY, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8,
   },
-  statsRow: {
+  statsGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
     marginHorizontal: Spacing.lg,
-    marginTop: -Spacing.xxl,
+    marginTop: -Spacing.xl,
     marginBottom: Spacing.md,
+  },
+  statCard: {
+    width: '47.5%',
     borderRadius: Radius.xl,
-    borderWidth: 1,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.sm,
-    gap: Spacing.xs,
-    shadowColor: PRIMARY,
+    overflow: 'hidden',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.15,
     shadowRadius: 12,
-    elevation: 4,
+    elevation: 6,
   },
-  statDivider: { width: 1, alignSelf: 'stretch', marginVertical: Spacing.sm },
-  heroStat: { flex: 1, alignItems: 'center', gap: Spacing.xs },
-  heroStatIcon: {
-    width: 36, height: 36, borderRadius: 18,
+  statCardGrad: {
+    padding: Spacing.lg,
+    gap: 2,
+    minHeight: 92,
+    justifyContent: 'flex-end',
+  },
+  statCardIconWrap: {
+    width: 30, height: 30, borderRadius: 15,
     alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    marginBottom: Spacing.sm,
   },
-  heroStatNum: { fontSize: 18, fontFamily: F.bold },
-  heroStatLabel: { fontSize: 11, fontFamily: F.med, textAlign: 'center' },
+  statCardNum: {
+    fontSize: 28, fontFamily: F.bold, color: '#fff',
+  },
+  statCardLabel: {
+    fontSize: 11, fontFamily: F.med, color: 'rgba(255,255,255,0.88)',
+  },
 
   // Week strip
   weekCard: {
@@ -904,6 +945,7 @@ const styles = StyleSheet.create({
   section: { paddingHorizontal: Spacing.lg, marginBottom: Spacing.xl },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.md },
   sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  sectionAccent: { width: 4, height: 22, borderRadius: 3 },
   sectionTitle: { fontSize: 20, fontFamily: F.bold },
   sectionBadge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
   sectionBadgeText: { fontSize: 12, fontFamily: F.bold },
@@ -935,8 +977,8 @@ const styles = StyleSheet.create({
   catPillText: { fontSize: 11, fontFamily: F.med },
 
   // Habit card
-  habitCard: { width: 140, borderRadius: Radius.xl, overflow: 'hidden', shadowColor: PRIMARY, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 10, elevation: 4 },
-  habitCardInner: { padding: Spacing.md, gap: Spacing.sm, minHeight: 130 },
+  habitCard: { width: 152, borderRadius: Radius.xl, overflow: 'hidden', shadowColor: PRIMARY, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.14, shadowRadius: 12, elevation: 5 },
+  habitCardInner: { padding: Spacing.lg, gap: Spacing.sm, minHeight: 140 },
   habitTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   habitIconBox: { width: 40, height: 40, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
   habitName: { fontSize: 14, fontFamily: F.med, lineHeight: 19 },
@@ -946,14 +988,14 @@ const styles = StyleSheet.create({
   // Goal card
   goalCard: {
     borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg,
-    shadowColor: PRIMARY, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.08, shadowRadius: 10, elevation: 3,
+    shadowColor: PRIMARY, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.10, shadowRadius: 14, elevation: 4,
   },
-  goalIcon: { width: 40, height: 40, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
+  goalIcon: { width: 44, height: 44, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
   goalTitle: { fontSize: 15, fontFamily: F.bold },
   goalSub: { fontSize: 12, fontFamily: F.reg, marginTop: 1 },
-  goalPct: { fontSize: 18, fontFamily: F.bold },
-  goalTrack: { height: 8, borderRadius: 4, overflow: 'hidden' },
-  goalFill: { height: '100%', borderRadius: 4 },
+  goalPct: { fontSize: 22, fontFamily: F.bold },
+  goalTrack: { height: 10, borderRadius: 6, overflow: 'hidden', marginTop: 4 },
+  goalFill: { height: '100%', borderRadius: 6 },
 
   // Chart
   chartCard: {
