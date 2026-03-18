@@ -12,7 +12,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-na
 import { router, useLocalSearchParams } from 'expo-router';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_GREEN, GRADIENT_SAGE, cardShadow, ColorScheme, WARM_CORAL } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -279,8 +279,8 @@ function HabitCard({
           </Text>
 
           <View style={[styles.habitMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <View style={[styles.streakBadge, { backgroundColor: '#D48E6E' + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <Ionicons name="flame" size={12} color="#D48E6E" />
+            <View style={[styles.streakBadge, { backgroundColor: WARM_CORAL + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <Ionicons name="flame" size={12} color={WARM_CORAL} />
               <Text style={styles.streakText}>{item.streak_days} {tFunc('days')}</Text>
             </View>
 
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', gap: 3,
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,
   },
-  streakText: { fontSize: 11, fontFamily: F.med, color: '#D48E6E' },
+  streakText: { fontSize: 11, fontFamily: F.med, color: WARM_CORAL },
   doneBadge: {
     alignItems: 'center', gap: 3,
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,

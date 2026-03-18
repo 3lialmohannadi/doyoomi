@@ -11,7 +11,7 @@ import * as Haptics from 'expo-haptics';
 
 import { useJournalStore } from '../src/store/journalStore';
 import { useSettingsStore } from '../src/store/settingsStore';
-import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, cardShadow } from '../src/theme';
+import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, cardShadow, WARM_SAGE, WARM_CORAL, WARM_ERROR, WARM_AMBER, WARM_TEAL } from '../src/theme';
 import { useAppTheme } from '../src/hooks/useAppTheme';
 import { t } from '../src/utils/i18n';
 import { formatDate } from '../src/utils/date';
@@ -22,35 +22,35 @@ import { ConfirmDialog } from '../src/components/ui/ConfirmDialog';
 import { JournalEntry, Mood } from '../src/types';
 
 const MOOD_CONFIG: Partial<Record<Mood, { icon: string; color: string }>> = {
-  happy:       { icon: 'happy',                   color: '#6BAF8A' },
-  excited:     { icon: 'rocket-outline',           color: '#E8A87C' },
-  energetic:   { icon: 'flash-outline',            color: '#FF9500' },
+  happy:       { icon: 'happy',                   color: WARM_SAGE },
+  excited:     { icon: 'rocket-outline',           color: WARM_AMBER },
+  energetic:   { icon: 'flash-outline',            color: WARM_CORAL },
   grateful:    { icon: 'heart-outline',            color: SECONDARY },
-  optimistic:  { icon: 'sunny-outline',            color: '#FFB800' },
+  optimistic:  { icon: 'sunny-outline',            color: WARM_AMBER },
   proud:       { icon: 'ribbon-outline',           color: PRIMARY },
-  satisfied:   { icon: 'thumbs-up-outline',        color: '#6BAF8A' },
-  good:        { icon: 'happy-outline',            color: '#4CAF82' },
+  satisfied:   { icon: 'thumbs-up-outline',        color: WARM_SAGE },
+  good:        { icon: 'happy-outline',            color: WARM_SAGE },
   reassured:   { icon: 'shield-checkmark-outline', color: SECONDARY },
-  comfortable: { icon: 'leaf-outline',             color: '#6BAF8A' },
-  calm:        { icon: 'water-outline',            color: '#5BA89E' },
-  surprised:   { icon: 'star-outline',             color: '#E8A87C' },
+  comfortable: { icon: 'leaf-outline',             color: WARM_SAGE },
+  calm:        { icon: 'water-outline',            color: WARM_TEAL },
+  surprised:   { icon: 'star-outline',             color: WARM_AMBER },
   neutral:     { icon: 'remove-circle-outline',    color: '#9B8072' },
   hesitant:    { icon: 'help-circle-outline',      color: '#B5957E' },
   distracted:  { icon: 'git-branch-outline',       color: '#C4A48A' },
-  bored:       { icon: 'time-outline',             color: '#A8C5BC' },
+  bored:       { icon: 'time-outline',             color: SECONDARY },
   lazy:        { icon: 'bed-outline',              color: '#B5957E' },
-  tired:       { icon: 'battery-half-outline',     color: '#D48E6E' },
-  exhausted:   { icon: 'battery-dead-outline',     color: '#C97A5B' },
-  anxious:     { icon: 'alert-circle-outline',     color: '#D48E6E' },
-  stressed:    { icon: 'thunderstorm-outline',     color: '#C97A5B' },
-  scared:      { icon: 'warning-outline',          color: '#C0664A' },
+  tired:       { icon: 'battery-half-outline',     color: WARM_CORAL },
+  exhausted:   { icon: 'battery-dead-outline',     color: PRIMARY },
+  anxious:     { icon: 'alert-circle-outline',     color: WARM_CORAL },
+  stressed:    { icon: 'thunderstorm-outline',     color: PRIMARY },
+  scared:      { icon: 'warning-outline',          color: WARM_ERROR },
   lonely:      { icon: 'person-outline',           color: '#9B8072' },
-  frustrated:  { icon: 'close-circle-outline',     color: '#C0664A' },
+  frustrated:  { icon: 'close-circle-outline',     color: WARM_ERROR },
   sad:         { icon: 'rainy-outline',            color: SECONDARY },
-  bad:         { icon: 'sad-outline',              color: '#C96B6B' },
-  sick:        { icon: 'medkit-outline',           color: '#C96B6B' },
+  bad:         { icon: 'sad-outline',              color: WARM_ERROR },
+  sick:        { icon: 'medkit-outline',           color: WARM_ERROR },
   depressed:   { icon: 'cloud-outline',            color: '#9B8072' },
-  angry:       { icon: 'flame-outline',            color: '#C96B6B' },
+  angry:       { icon: 'flame-outline',            color: WARM_ERROR },
 };
 
 export default function JournalScreen() {

@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_SAGE, GRADIENT_AMBER, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { formatDate, formatTime, getTodayString, isOverdue } from '../../src/utils/date';
@@ -23,14 +23,14 @@ import * as Haptics from 'expo-haptics';
 
 type FilterKey = 'all' | 'today' | 'done' | 'overdue' | 'high' | 'postponed' | 'nodate';
 
-const FILTER_GRADIENTS: Record<FilterKey, [string, string]> = {
-  all:       [PRIMARY, '#E8A87C'],
-  today:     [SECONDARY, '#A8D5C8'],
-  done:      ['#6BAF8A', '#4CAF82'],
-  overdue:   ['#C96B6B', '#D48E6E'],
-  high:      ['#D48E6E', '#E8A87C'],
+const FILTER_GRADIENTS: Record<FilterKey, readonly [string, string]> = {
+  all:       GRADIENT_H,
+  today:     GRADIENT_SAGE,
+  done:      GRADIENT_GREEN,
+  overdue:   GRADIENT_CORAL,
+  high:      GRADIENT_AMBER,
   postponed: ['#9B8072', '#B5957E'],
-  nodate:    [SECONDARY, '#A8D5C8'],
+  nodate:    GRADIENT_SAGE,
 };
 
 export default function TasksScreen() {

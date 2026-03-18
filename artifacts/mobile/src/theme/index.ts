@@ -3,6 +3,12 @@ import { Platform } from 'react-native';
 export const PRIMARY   = '#C97A5B';
 export const SECONDARY = '#7BAE9E';
 
+export const WARM_AMBER  = '#E8A87C';
+export const WARM_CORAL  = '#D48E6E';
+export const WARM_SAGE   = '#6BAF8A';
+export const WARM_TEAL   = '#5BA89E';
+export const WARM_ERROR  = '#C96B6B';
+
 export const Colors = {
   light: {
     background: '#FBF7F3',
@@ -20,19 +26,19 @@ export const Colors = {
     card2: '#FBF7F3',
     shadow: 'rgba(201,122,91,0.14)',
     shadowMedium: 'rgba(201,122,91,0.22)',
-    success: '#6BAF8A',
-    warning: '#D48E6E',
-    error: '#C96B6B',
-    overdue: '#C96B6B',
-    priorityHigh: '#C96B6B',
-    priorityMedium: '#D48E6E',
-    priorityLow: '#6BAF8A',
-    streak: '#D48E6E',
-    habit: '#7BAE9E',
+    success: WARM_SAGE,
+    warning: WARM_CORAL,
+    error: WARM_ERROR,
+    overdue: WARM_ERROR,
+    priorityHigh: WARM_ERROR,
+    priorityMedium: WARM_CORAL,
+    priorityLow: WARM_SAGE,
+    streak: WARM_CORAL,
+    habit: SECONDARY,
     goal: PRIMARY,
     gradientStart: PRIMARY,
     gradientEnd: SECONDARY,
-    gradientMid: '#D48E6E',
+    gradientMid: WARM_CORAL,
     pillActive: PRIMARY,
     pillInactive: '#F5EFE9',
     segmentBg: '#EFE5DB',
@@ -53,16 +59,16 @@ export const Colors = {
     tabBar: 'rgba(28,19,12,0.97)',
     card: '#2A1D13',
     card2: '#362415',
-    shadow: 'rgba(0,0,0,0.4)',
-    shadowMedium: 'rgba(0,0,0,0.6)',
-    success: '#6BAF8A',
-    warning: '#D48E6E',
-    error: '#C96B6B',
-    overdue: '#C96B6B',
-    priorityHigh: '#C96B6B',
-    priorityMedium: '#D48E6E',
-    priorityLow: '#6BAF8A',
-    streak: '#D48E6E',
+    shadow: 'rgba(45,26,14,0.3)',
+    shadowMedium: 'rgba(45,26,14,0.45)',
+    success: WARM_SAGE,
+    warning: WARM_CORAL,
+    error: WARM_ERROR,
+    overdue: WARM_ERROR,
+    priorityHigh: WARM_ERROR,
+    priorityMedium: WARM_CORAL,
+    priorityLow: WARM_SAGE,
+    streak: WARM_CORAL,
     habit: '#8DBFB0',
     goal: '#D9956F',
     gradientStart: '#D9956F',
@@ -133,23 +139,23 @@ export const Shadow = {
 
 export const ShadowDark = {
   sm: {
-    shadowColor: '#000000',
+    shadowColor: '#2D1A0E',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
   },
   md: {
-    shadowColor: '#000000',
+    shadowColor: '#2D1A0E',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.12,
     shadowRadius: 16,
     elevation: 6,
   },
   lg: {
-    shadowColor: '#000000',
+    shadowColor: '#2D1A0E',
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.18,
     shadowRadius: 24,
     elevation: 10,
   },
@@ -167,20 +173,19 @@ export const Typography = {
   label: { fontSize: 13, fontFamily: F.med, lineHeight: 18 },
 };
 
-export const GRADIENT_PRIMARY: [string, string] = [PRIMARY, SECONDARY];
-export const GRADIENT_H: readonly [string, string] = [PRIMARY, '#E8A87C'];
-export const GRADIENT_D: readonly [string, string, string] = [PRIMARY, '#D48E6E', SECONDARY];
-export const GRADIENT_PURPLE: [string, string] = [PRIMARY, '#D48E6E'];
-export const GRADIENT_WARM: [string, string] = [SECONDARY, '#A8D5C8'];
-export const GRADIENT_GREEN: [string, string] = ['#6BAF8A', '#4CAF82'];
-export const GRADIENT_ORANGE: [string, string] = ['#D48E6E', '#E8A87C'];
+export const GRADIENT_H: readonly [string, string] = [PRIMARY, WARM_AMBER];
+export const GRADIENT_D: readonly [string, string, string] = [PRIMARY, WARM_CORAL, SECONDARY];
+export const GRADIENT_SAGE: readonly [string, string] = [SECONDARY, '#A8D5C8'];
+export const GRADIENT_AMBER: readonly [string, string] = [WARM_CORAL, WARM_AMBER];
+export const GRADIENT_CORAL: readonly [string, string] = [WARM_ERROR, WARM_CORAL];
+export const GRADIENT_GREEN: readonly [string, string] = [WARM_SAGE, '#4CAF82'];
 
-function shadowHelper(color = '#000', strength = 4) {
+function shadowHelper(color = '#2D1A0E', strength = 4) {
   return Platform.select({
     ios: {
       shadowColor:    color,
       shadowOffset:   { width: 0, height: strength / 2 },
-      shadowOpacity:  0.12,
+      shadowOpacity:  0.10,
       shadowRadius:   strength,
     },
     android: { elevation: strength },

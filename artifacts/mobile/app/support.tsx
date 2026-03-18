@@ -13,13 +13,13 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useSettingsStore } from '../src/store/settingsStore';
 import { useAppTheme } from '../src/hooks/useAppTheme';
 import { t } from '../src/utils/i18n';
-import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H } from '../src/theme';
+import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, WARM_SAGE, WARM_ERROR } from '../src/theme';
 
 const SUPPORT_EMAIL = 'admin@doyoomi.com';
 
 const CATEGORIES = [
   { key: 'suggestion',     icon: 'bulb-outline',         color: '#FFB800' },
-  { key: 'technicalIssue', icon: 'bug-outline',           color: '#F87171' },
+  { key: 'technicalIssue', icon: 'bug-outline',           color: '#C96B6B' },
   { key: 'other',          icon: 'help-circle-outline',   color: PRIMARY },
 ];
 
@@ -102,8 +102,8 @@ export default function SupportScreen() {
 
       {sent ? (
         <View style={styles.centerState}>
-          <View style={[styles.stateIconBox, { backgroundColor: '#6BAF8A18' }]}>
-            <Ionicons name="checkmark-circle" size={64} color="#6BAF8A" />
+          <View style={[styles.stateIconBox, { backgroundColor: WARM_SAGE + '18' }]}>
+            <Ionicons name="checkmark-circle" size={64} color={WARM_SAGE} />
           </View>
           <Text style={[styles.stateTitle, { color: C.text }]}>{tFunc('messagePrepared')}</Text>
           <Text style={[styles.stateSub, { color: C.textSecondary }]}>{tFunc('messagePreparedDesc')}</Text>
@@ -115,8 +115,8 @@ export default function SupportScreen() {
         </View>
       ) : mailError ? (
         <View style={styles.centerState}>
-          <View style={[styles.stateIconBox, { backgroundColor: '#F8717118' }]}>
-            <Ionicons name="alert-circle" size={64} color="#F87171" />
+          <View style={[styles.stateIconBox, { backgroundColor: WARM_ERROR + '18' }]}>
+            <Ionicons name="alert-circle" size={64} color={WARM_ERROR} />
           </View>
           <Text style={[styles.stateTitle, { color: C.text }]}>{tFunc('mailFailed')}</Text>
           <Text style={[styles.stateSub, { color: C.textSecondary }]}>{tFunc('mailFailedDesc')}</Text>
@@ -178,7 +178,7 @@ export default function SupportScreen() {
                 styles.input,
                 {
                   backgroundColor: C.inputBg,
-                  borderColor: subjectError ? '#F87171' : C.border,
+                  borderColor: subjectError ? WARM_ERROR : C.border,
                   color: C.text,
                   textAlign: isRTL ? 'right' : 'left',
                 },
@@ -207,7 +207,7 @@ export default function SupportScreen() {
                 styles.messageInput,
                 {
                   backgroundColor: C.inputBg,
-                  borderColor: messageError ? '#F87171' : C.border,
+                  borderColor: messageError ? WARM_ERROR : C.border,
                   color: C.text,
                   textAlign: isRTL ? 'right' : 'left',
                   textAlignVertical: 'top',
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
     height: 130, paddingTop: Spacing.md,
   },
   errorText: {
-    fontSize: 12, fontFamily: F.med, color: '#F87171',
+    fontSize: 12, fontFamily: F.med, color: WARM_ERROR,
   },
   sendBtn: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center',

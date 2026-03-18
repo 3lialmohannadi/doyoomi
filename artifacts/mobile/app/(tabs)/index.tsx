@@ -16,7 +16,7 @@ import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useJournalStore } from '../../src/store/journalStore';
-import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_PRIMARY, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_AMBER, GRADIENT_SAGE, cardShadow, ColorScheme, WARM_SAGE, WARM_CORAL, WARM_ERROR } from '../../src/theme';
 import type { Task, Habit, Goal, JournalEntry, Mood, Category, Language } from '../../src/types';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, getGreeting } from '../../src/utils/i18n';
@@ -102,10 +102,10 @@ export default function HomeScreen() {
 
         {/* Stats Cards */}
         <View style={[styles.statsRow, { backgroundColor: C.card, borderColor: C.border }]}>
-          <HeroStat icon="checkmark-circle" value={completedToday} label={tFunc('completed')} color="#6BAF8A" C={C} />
-          <HeroStat icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color="#C96B6B" C={C} />
+          <HeroStat icon="checkmark-circle" value={completedToday} label={tFunc('completed')} color={WARM_SAGE} C={C} />
+          <HeroStat icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color={WARM_ERROR} C={C} />
           <HeroStat icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color={C.tint} C={C} />
-          <HeroStat icon="flame" value={maxStreak} label={tFunc('streak')} color="#D48E6E" C={C} />
+          <HeroStat icon="flame" value={maxStreak} label={tFunc('streak')} color={WARM_CORAL} C={C} />
         </View>
 
         {/* Week Strip */}
@@ -158,7 +158,7 @@ export default function HomeScreen() {
         {allDone && (
           <View style={{ paddingHorizontal: Spacing.lg, marginBottom: Spacing.md }}>
             <LinearGradient
-              colors={['#6BAF8A', '#4CAF82']}
+              colors={GRADIENT_GREEN}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={[styles.allDoneBanner, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
@@ -281,13 +281,10 @@ export default function HomeScreen() {
             <View style={{ gap: Spacing.md }}>
               {topGoals.map((g, i) => {
                 const pct = g.target_value > 0 ? g.current_value / g.target_value : 0;
-                const goalGradients: [string, string][] = [
-                  [PRIMARY, '#E8A87C'],
-                  [SECONDARY, '#A8D5C8'],
-                  ['#6BAF8A', '#4CAF82'],
-                  ['#D48E6E', '#E8A87C'],
+                const goalGradients: readonly (readonly [string, string])[] = [
+                  GRADIENT_H, GRADIENT_SAGE, GRADIENT_GREEN, GRADIENT_AMBER,
                 ];
-                const grad = goalGradients[i % goalGradients.length];
+                const grad = goalGradients[i % goalGradients.length] as [string, string];
                 return (
                   <Pressable key={g.id} onPress={() => router.push('/goals')}>
                     <FunGoalCard goal={g} progress={pct} gradient={grad} C={C} isRTL={isRTL} />
@@ -372,10 +369,10 @@ interface QuickAddMenuProps {
 function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, isRTL, lang, C, insets }: QuickAddMenuProps) {
   const tFunc = (key: string) => t(key, lang);
   const items = [
-    { label: tFunc('addTask'), sublabel: tFunc('quickAddTask'), icon: 'checkmark-circle-outline', colors: [PRIMARY, '#E8A87C'] as [string,string], onPress: onTask },
-    { label: tFunc('addHabit'), sublabel: tFunc('quickAddHabit'), icon: 'leaf-outline', colors: ['#6BAF8A', SECONDARY] as [string,string], onPress: onHabit },
-    { label: tFunc('addGoal'), sublabel: tFunc('quickAddGoal'), icon: 'trophy-outline', colors: ['#D48E6E', '#E8A87C'] as [string,string], onPress: onGoal },
-    { label: tFunc('addEntry'), sublabel: tFunc('quickAddJournal'), icon: 'book-outline', colors: [SECONDARY, '#A8D5C8'] as [string,string], onPress: onJournal },
+    { label: tFunc('addTask'), sublabel: tFunc('quickAddTask'), icon: 'checkmark-circle-outline', colors: GRADIENT_H as [string,string], onPress: onTask },
+    { label: tFunc('addHabit'), sublabel: tFunc('quickAddHabit'), icon: 'leaf-outline', colors: GRADIENT_GREEN as [string,string], onPress: onHabit },
+    { label: tFunc('addGoal'), sublabel: tFunc('quickAddGoal'), icon: 'trophy-outline', colors: GRADIENT_AMBER as [string,string], onPress: onGoal },
+    { label: tFunc('addEntry'), sublabel: tFunc('quickAddJournal'), icon: 'book-outline', colors: GRADIENT_SAGE as [string,string], onPress: onJournal },
   ];
 
   return (
@@ -474,10 +471,10 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
-  const priorityGrad: Record<string, [string, string]> = {
-    high: ['#C96B6B', '#D48E6E'],
-    medium: ['#D48E6E', '#E8A87C'],
-    low: ['#6BAF8A', '#4CAF82'],
+  const priorityGrad: Record<string, readonly [string, string]> = {
+    high: GRADIENT_CORAL,
+    medium: GRADIENT_AMBER,
+    low: GRADIENT_GREEN,
   };
   const grad = priorityGrad[task.priority];
 
@@ -555,12 +552,12 @@ function FunHabitCard({
           <View style={[styles.habitIconBox, { backgroundColor: isDone ? 'rgba(255,255,255,0.25)' : habit.color + '20' }]}>
             <Ionicons name={(habit.icon + (isDone ? '' : '-outline')) as IoniconsName} size={22} color={isDone ? '#fff' : habit.color} />
           </View>
-          {isDone && <Ionicons name="checkmark-circle" size={20} color="#6BAF8A" />}
+          {isDone && <Ionicons name="checkmark-circle" size={20} color={WARM_SAGE} />}
         </View>
         <Text style={[styles.habitName, { color: isDone ? '#fff' : C.text }]} numberOfLines={2}>{habit.name}</Text>
         <View style={styles.streakRow}>
-          <Ionicons name="flame" size={14} color={isDone ? '#6BAF8A' : C.streak} />
-          <Text style={[styles.streakNum, { color: isDone ? '#6BAF8A' : C.streak }]}>{habit.streak_days}</Text>
+          <Ionicons name="flame" size={14} color={isDone ? WARM_SAGE : C.streak} />
+          <Text style={[styles.streakNum, { color: isDone ? WARM_SAGE : C.streak }]}>{habit.streak_days}</Text>
         </View>
       </LinearGradient>
     </Pressable>
@@ -601,14 +598,14 @@ function FunGoalCard({ goal, progress, gradient, C, isRTL }: FunGoalCardProps) {
 }
 
 const MOOD_ICONS: Partial<Record<Mood, { icon: string; color: string }>> = {
-  excellent:  { icon: 'happy',                  color: '#6BAF8A' },
-  veryGood:   { icon: 'happy-outline',          color: '#4CAF82' },
+  excellent:  { icon: 'happy',                  color: WARM_SAGE },
+  veryGood:   { icon: 'happy-outline',          color: WARM_SAGE },
   good:       { icon: 'thumbs-up-outline',      color: PRIMARY },
-  neutral:    { icon: 'remove-circle-outline',  color: '#FB923C' },
-  tired:      { icon: 'bed-outline',            color: '#FF8A50' },
-  stressed:   { icon: 'flash-outline',          color: '#FB923C' },
+  neutral:    { icon: 'remove-circle-outline',  color: WARM_CORAL },
+  tired:      { icon: 'bed-outline',            color: WARM_CORAL },
+  stressed:   { icon: 'flash-outline',          color: WARM_CORAL },
   sad:        { icon: 'rainy-outline',          color: SECONDARY },
-  bad:        { icon: 'sad-outline',            color: '#F87171' },
+  bad:        { icon: 'sad-outline',            color: WARM_ERROR },
 };
 
 function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: JournalEntry; onWrite: () => void; onOpen: () => void; C: ColorScheme; tFunc: (k: string) => string; isRTL?: boolean }) {
@@ -695,14 +692,14 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: FunWeekChartProps) {
     return { day: getDayLabel(d, lang).slice(0, 1), count, done };
   });
 
-  const barColors: [string, string][] = [
-    [PRIMARY, '#E8A87C'],
-    [SECONDARY, '#A8D5C8'],
-    ['#6BAF8A', '#4CAF82'],
-    ['#D48E6E', '#E8A87C'],
-    [PRIMARY, '#E8A87C'],
-    [PRIMARY, '#E8A87C'],
-    [SECONDARY, '#A8D5C8'],
+  const barColors: readonly (readonly [string, string])[] = [
+    GRADIENT_H,
+    GRADIENT_SAGE,
+    GRADIENT_GREEN,
+    GRADIENT_AMBER,
+    GRADIENT_H,
+    GRADIENT_H,
+    GRADIENT_SAGE,
   ];
 
   return (
@@ -730,7 +727,7 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: FunWeekChartProps) {
       </View>
       <View style={[styles.chartLegend, isRTL && { flexDirection: 'row-reverse' }]}>
         <View style={[styles.legendItem, isRTL && { flexDirection: 'row-reverse' }]}>
-          <LinearGradient colors={[PRIMARY, '#E8A87C']} style={styles.legendDot} />
+          <LinearGradient colors={[...GRADIENT_H]} style={styles.legendDot} />
           <Text style={[styles.legendText, { color: C.textSecondary }]}>{tFunc('chartDone')}</Text>
         </View>
         <View style={[styles.legendItem, isRTL && { flexDirection: 'row-reverse' }]}>

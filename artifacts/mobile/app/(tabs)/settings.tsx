@@ -18,7 +18,7 @@ import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useJournalStore } from '../../src/store/journalStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_SAGE, GRADIENT_AMBER, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
@@ -137,7 +137,7 @@ export default function MoreScreen() {
               icon="leaf"
               label={tFunc('habits')}
               sub={`${habitsCount} ${isRTL ? 'عادة' : 'habits'}`}
-              colors={[PRIMARY, '#E8A87C']}
+              colors={[...GRADIENT_H]}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.navigate('/habits'); }}
               isRTL={isRTL}
               C={C}
@@ -148,7 +148,7 @@ export default function MoreScreen() {
               icon="trophy"
               label={tFunc('goals')}
               sub={`${goalsCount} ${isRTL ? 'هدف' : 'goals'}`}
-              colors={[SECONDARY, '#A8D5C8']}
+              colors={[...GRADIENT_SAGE]}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.navigate('/goals'); }}
               isRTL={isRTL}
               C={C}
@@ -170,7 +170,7 @@ export default function MoreScreen() {
               icon="folder-open"
               label={tFunc('categories')}
               sub={`${categories.length} ${isRTL ? 'تصنيف' : 'categories'}`}
-              colors={['#D48E6E', '#E8A87C']}
+              colors={[...GRADIENT_AMBER]}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowCategories(true); }}
               isRTL={isRTL}
               C={C}

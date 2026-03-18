@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_SAGE, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_AMBER, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -19,13 +19,13 @@ import { Toast } from '../../src/components/ui/Toast';
 import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 import { Goal } from '../../src/types';
 
-const GOAL_GRADIENTS: [string, string][] = [
-  [PRIMARY, '#E8A87C'],
-  ['#D48E6E', '#E8A87C'],
-  ['#6BAF8A', '#4CAF82'],
-  ['#C96B6B', '#D48E6E'],
-  [SECONDARY, '#A8D5C8'],
-  [PRIMARY, SECONDARY],
+const GOAL_GRADIENTS: readonly (readonly [string, string])[] = [
+  GRADIENT_H,
+  GRADIENT_AMBER,
+  GRADIENT_GREEN,
+  GRADIENT_CORAL,
+  GRADIENT_SAGE,
+  GRADIENT_H,
 ];
 
 export default function GoalsScreen() {
