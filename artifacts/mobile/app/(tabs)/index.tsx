@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
-  ScrollView, StyleSheet, Text, View, Pressable, Platform, Modal, Alert,
+  ScrollView, StyleSheet, Text, View, Pressable, Platform, Modal, Alert, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -93,9 +93,15 @@ export default function HomeScreen() {
 
           <View style={[styles.heroContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={[styles.heroLeft, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+              <Image
+                source={require('../../assets/images/logo-wordmark-transparent.png')}
+                style={styles.heroLogo}
+                resizeMode="contain"
+                tintColor="#fff"
+              />
               <Text style={[styles.greeting, { textAlign: isRTL ? 'right' : 'left' }]}>{getGreeting(lang)}</Text>
               <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left', width: '100%' }]} numberOfLines={2}>
-                {profile.name || (isRTL ? 'يومي' : 'Do.Yoomi')}
+                {profile.name || ''}
               </Text>
               <Text style={[styles.heroDate, { textAlign: isRTL ? 'right' : 'left' }]}>
                 {isRTL
@@ -897,6 +903,7 @@ const styles = StyleSheet.create({
   heroContent: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: Spacing.md },
   heroLeft: { gap: 2, flex: 1 },
   greeting: { fontSize: 14, color: 'rgba(255,255,255,0.75)', fontFamily: F.med },
+  heroLogo: { width: 160, height: 40, marginBottom: 8 },
   heroTitle: { fontSize: 32, color: '#fff', fontFamily: F.bold, lineHeight: 40 },
   heroDate: { fontSize: 13, color: 'rgba(255,255,255,0.65)', fontFamily: F.med, marginTop: 4 },
   heroSub: { fontSize: 16, color: 'rgba(255,255,255,0.65)', fontFamily: F.med },

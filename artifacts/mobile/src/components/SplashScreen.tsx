@@ -167,19 +167,16 @@ export default function SplashScreen({ onFinish, duration = 3000 }: Props) {
           </Animated.View>
         </View>
 
-        <Text style={styles.appName}>
-          Do<Text style={styles.dot}>.</Text>Yoomi
-        </Text>
-
         <Animated.View style={{
           opacity: subOpacity,
           transform: [{ translateY: subTranslateY }],
-          marginTop: 8,
+          marginTop: 24,
         }}>
           <Image
-            source={require("../../assets/images/yoomi-ar.png")}
-            style={styles.arLogo}
+            source={require("../../assets/images/logo-wordmark-transparent.png")}
+            style={styles.wordmark}
             resizeMode="contain"
+            tintColor="#FFF9F5"
           />
         </Animated.View>
 
@@ -258,21 +255,10 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 34,
   },
-  appName: {
-    marginTop: 32,
-    fontSize: 42,
-    fontWeight: "800",
-    letterSpacing: -1.5,
-    color: "#FFF9F5",
-  },
-  dot: {
-    color: "#E8A87C",
-    fontWeight: "900",
-  },
-  arLogo: {
-    width: 130,
-    height: 44,
-    opacity: 0.88,
+  wordmark: {
+    width: 220,
+    height: 55,
+    opacity: 0.95,
   },
   chipsRow: {
     flexDirection: "row",
