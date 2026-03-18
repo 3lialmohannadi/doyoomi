@@ -203,6 +203,41 @@ export default function DoYoomiLogo() {
         <VariantC />
       </div>
 
+      <div style={{
+        background: "#1C130C",
+        borderRadius: 16,
+        padding: "20px 28px",
+        display: "flex",
+        gap: 24,
+        flexWrap: "wrap",
+        justifyContent: "center",
+        alignItems: "center",
+      }}>
+        <span style={{ fontSize: 11, fontFamily: "'Inter',sans-serif", color: "#7BAE9E", fontWeight: 600, letterSpacing: 1.5, textTransform: "uppercase" as const }}>Dark bg</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <IconSquircle size={48} />
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <span style={{ ...textDo, fontSize: 28, color: PRIMARY }}>Do.</span>
+            <span style={{ ...textYoomi, fontSize: 28, color: WHITE }}>Yoomi</span>
+          </div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+          <IconCircle size={48} />
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <span style={{ ...textDo, fontSize: 18, color: PRIMARY }}>Do.</span>
+            <span style={{ ...textYoomi, fontSize: 18, color: WHITE }}>Yoomi</span>
+          </div>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ ...textDo, fontSize: 32, letterSpacing: -1, color: AMBER }}>Do.</span>
+          <svg width={22} height={22} viewBox="0 0 26 26">
+            <circle cx="13" cy="13" r="12" fill={SAGE} opacity="0.2" />
+            <polyline points="6,13 11,18 20,8" stroke={SAGE} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          </svg>
+          <span style={{ fontSize: 18, fontWeight: 300, fontFamily: "'Inter',sans-serif", color: WHITE, letterSpacing: 2 }}>Yoomi</span>
+        </div>
+      </div>
+
       <p style={{
         fontSize: 13,
         fontFamily: "'Inter',sans-serif",
