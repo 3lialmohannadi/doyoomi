@@ -601,41 +601,69 @@ function FunHabitCard({
   const today = format(new Date(), 'yyyy-MM-dd');
   const lastDate = habit.last_completed_at ? format(new Date(habit.last_completed_at), 'yyyy-MM-dd') : null;
   const isDone = lastDate === today;
+  const scale = useSharedValue(1);
+  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
   const handlePress = () => {
+    scale.value = withSpring(0.92, { damping: 10 });
+    setTimeout(() => { scale.value = withSpring(1, { damping: 12 }); }, 120);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    if (isDone) {
-      onUncomplete(habit.id);
-    } else {
-      onComplete(habit.id);
-    }
+    if (isDone) onUncomplete(habit.id);
+    else onComplete(habit.id);
   };
 
   return (
-    <Pressable
+    <AnimatedPressable
       onPress={handlePress}
-      style={({ pressed }) => [styles.habitCard, { borderWidth: 1, borderColor: isDone ? habit.color : C.border, opacity: pressed ? 0.8 : 1 }]}
+      style={[
+        animStyle,
+        styles.habitCard,
+        {
+          backgroundColor: isDone ? habit.color + '12' : C.card,
+          borderColor: isDone ? habit.color + '55' : C.border,
+        },
+      ]}
       accessibilityRole="button"
       accessibilityState={{ checked: isDone }}
       accessibilityLabel={habit.name}
     >
-      <LinearGradient
-        colors={isDone ? [habit.color, habit.color + 'CC'] : [C.card, C.card]}
-        style={styles.habitCardInner}
-      >
-        <View style={styles.habitTopRow}>
-          <View style={[styles.habitIconBox, { backgroundColor: isDone ? 'rgba(255,255,255,0.25)' : habit.color + '20' }]}>
-            <Ionicons name={(habit.icon + (isDone ? '' : '-outline')) as IoniconsName} size={22} color={isDone ? '#fff' : habit.color} />
+      {/* Top colour line */}
+      <View style={[styles.habitTopLine, { backgroundColor: habit.color }]} />
+
+      <View style={styles.habitCardInner}>
+        {/* Icon area with optional done ring */}
+        <View style={styles.habitIconWrap}>
+          <View style={[
+            styles.habitIconBox,
+            { backgroundColor: isDone ? habit.color : habit.color + '1E' },
+          ]}>
+            <Ionicons
+              name={(habit.icon + (isDone ? '' : '-outline')) as IoniconsName}
+              size={24}
+              color={isDone ? '#fff' : habit.color}
+            />
           </View>
-          {isDone && <Ionicons name="checkmark-circle" size={20} color={WARM_SAGE} />}
+          {isDone && (
+            <View style={styles.habitDoneBadge}>
+              <Ionicons name="checkmark" size={9} color="#fff" />
+            </View>
+          )}
         </View>
-        <Text style={[styles.habitName, { color: isDone ? '#fff' : C.text }]} numberOfLines={2}>{habit.name}</Text>
+
+        {/* Name */}
+        <Text style={[styles.habitName, { color: isDone ? habit.color : C.text }]} numberOfLines={2}>
+          {habit.name}
+        </Text>
+
+        {/* Streak */}
         <View style={styles.streakRow}>
-          <Ionicons name="flame" size={14} color={isDone ? WARM_SAGE : C.streak} />
-          <Text style={[styles.streakNum, { color: isDone ? WARM_SAGE : C.streak }]}>{habit.streak_days}</Text>
+          <Ionicons name="flame-outline" size={12} color={isDone ? habit.color : C.textMuted} />
+          <Text style={[styles.streakNum, { color: isDone ? habit.color : C.textMuted }]}>
+            {habit.streak_days}
+          </Text>
         </View>
-      </LinearGradient>
-    </Pressable>
+      </View>
+    </AnimatedPressable>
   );
 }
 
@@ -960,13 +988,24 @@ const styles = StyleSheet.create({
   catPillText: { fontSize: 11, fontFamily: F.med },
 
   // Habit card
-  habitCard: { width: 152, borderRadius: Radius.xl, overflow: 'hidden', shadowColor: PRIMARY, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.14, shadowRadius: 12, elevation: 5 },
-  habitCardInner: { padding: Spacing.lg, gap: Spacing.sm, minHeight: 140 },
-  habitTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  habitIconBox: { width: 40, height: 40, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
-  habitName: { fontSize: 14, fontFamily: F.med, lineHeight: 19 },
-  streakRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 4, marginTop: 'auto' },
-  streakNum: { fontSize: 14, fontFamily: F.bold },
+  habitCard: {
+    width: 128, borderRadius: Radius.xl, borderWidth: 1, overflow: 'hidden',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 3,
+  },
+  habitTopLine: { height: 4, width: '100%' },
+  habitCardInner: { padding: Spacing.md, gap: Spacing.sm },
+  habitIconWrap: { position: 'relative' as const, alignSelf: 'flex-start' as const },
+  habitIconBox: { width: 44, height: 44, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
+  habitDoneBadge: {
+    position: 'absolute' as const, top: -4, right: -4,
+    width: 18, height: 18, borderRadius: 9,
+    backgroundColor: WARM_SAGE,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 2, borderColor: '#fff',
+  },
+  habitName: { fontSize: 13, fontFamily: F.med, lineHeight: 18 },
+  streakRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 3 },
+  streakNum: { fontSize: 12, fontFamily: F.med },
 
   // Goal card
   goalCard: {
