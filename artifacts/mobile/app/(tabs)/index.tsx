@@ -282,10 +282,10 @@ export default function HomeScreen() {
               {topGoals.map((g, i) => {
                 const pct = g.target_value > 0 ? g.current_value / g.target_value : 0;
                 const goalGradients: [string, string][] = [
-                  [PRIMARY, SECONDARY],
-                  ['#FB923C', '#FFB347'],
+                  [PRIMARY, '#E8A87C'],
+                  [SECONDARY, '#A8D5C8'],
                   ['#4ADE80', '#00B8A9'],
-                  ['#F87171', '#FF8E53'],
+                  ['#FB923C', '#FFB347'],
                 ];
                 const grad = goalGradients[i % goalGradients.length];
                 return (
@@ -372,10 +372,10 @@ interface QuickAddMenuProps {
 function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, isRTL, lang, C, insets }: QuickAddMenuProps) {
   const tFunc = (key: string) => t(key, lang);
   const items = [
-    { label: tFunc('addTask'), sublabel: tFunc('quickAddTask'), icon: 'checkmark-circle-outline', colors: [PRIMARY, '#A78BFA'] as [string,string], onPress: onTask },
+    { label: tFunc('addTask'), sublabel: tFunc('quickAddTask'), icon: 'checkmark-circle-outline', colors: [PRIMARY, '#E8A87C'] as [string,string], onPress: onTask },
     { label: tFunc('addHabit'), sublabel: tFunc('quickAddHabit'), icon: 'leaf-outline', colors: ['#4ADE80', '#00B8A9'] as [string,string], onPress: onHabit },
     { label: tFunc('addGoal'), sublabel: tFunc('quickAddGoal'), icon: 'trophy-outline', colors: ['#FB923C', '#FFB347'] as [string,string], onPress: onGoal },
-    { label: tFunc('addEntry'), sublabel: tFunc('quickAddJournal'), icon: 'book-outline', colors: [SECONDARY, '#A78BFA'] as [string,string], onPress: onJournal },
+    { label: tFunc('addEntry'), sublabel: tFunc('quickAddJournal'), icon: 'book-outline', colors: [SECONDARY, '#A8D5C8'] as [string,string], onPress: onJournal },
   ];
 
   return (
@@ -607,7 +607,7 @@ const MOOD_ICONS: Partial<Record<Mood, { icon: string; color: string }>> = {
   neutral:    { icon: 'remove-circle-outline',  color: '#FB923C' },
   tired:      { icon: 'bed-outline',            color: '#FF8A50' },
   stressed:   { icon: 'flash-outline',          color: '#FB923C' },
-  sad:        { icon: 'rainy-outline',          color: '#A78BFA' },
+  sad:        { icon: 'rainy-outline',          color: SECONDARY },
   bad:        { icon: 'sad-outline',            color: '#F87171' },
 };
 
@@ -623,8 +623,8 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
       >
         <View style={[styles.journalCard, { backgroundColor: C.card, borderColor: C.border }]}>
           <View style={[styles.journalCardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <View style={[styles.journalIconBox, { backgroundColor: '#9B6EF5' + '18' }]}>
-              <Ionicons name="book-outline" size={20} color="#9B6EF5" />
+            <View style={[styles.journalIconBox, { backgroundColor: SECONDARY + '18' }]}>
+              <Ionicons name="book-outline" size={20} color={SECONDARY} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={[styles.journalCardTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>
@@ -658,8 +658,8 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
     >
       <View style={[styles.journalCard, { backgroundColor: C.card, borderColor: C.border }]}>
         <View style={[styles.journalCardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View style={[styles.journalIconBox, { backgroundColor: '#9B6EF5' + '18' }]}>
-            <Ionicons name="book-outline" size={20} color="#9B6EF5" />
+          <View style={[styles.journalIconBox, { backgroundColor: SECONDARY + '18' }]}>
+            <Ionicons name="book-outline" size={20} color={SECONDARY} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={[styles.journalCardTitle, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>
@@ -669,12 +669,12 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
         </View>
         <Pressable
           onPress={onWrite}
-          style={({ pressed }) => [styles.journalWriteBtn, { backgroundColor: '#9B6EF5' + '15', flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.7 : 1 }]}
+          style={({ pressed }) => [styles.journalWriteBtn, { backgroundColor: SECONDARY + '15', flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.7 : 1 }]}
           accessibilityRole="button"
           accessibilityLabel={tFunc('startWriting')}
         >
-          <Ionicons name="create-outline" size={16} color="#9B6EF5" />
-          <Text style={[styles.journalWriteText, { color: '#9B6EF5' }]}>{tFunc('startWriting')}</Text>
+          <Ionicons name="create-outline" size={16} color={SECONDARY} />
+          <Text style={[styles.journalWriteText, { color: SECONDARY }]}>{tFunc('startWriting')}</Text>
         </Pressable>
       </View>
     </Pressable>
@@ -696,13 +696,13 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: FunWeekChartProps) {
   });
 
   const barColors: [string, string][] = [
-    [PRIMARY, '#A78BFA'],
-    [SECONDARY, '#FF9DB3'],
+    [PRIMARY, '#E8A87C'],
+    [SECONDARY, '#A8D5C8'],
     ['#4ADE80', '#00E5A0'],
     ['#FB923C', '#FFD700'],
     ['#FB923C', '#FFB347'],
-    [PRIMARY, '#A78BFA'],
-    [SECONDARY, '#FF9DB3'],
+    [PRIMARY, '#E8A87C'],
+    [SECONDARY, '#A8D5C8'],
   ];
 
   return (
@@ -730,7 +730,7 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: FunWeekChartProps) {
       </View>
       <View style={[styles.chartLegend, isRTL && { flexDirection: 'row-reverse' }]}>
         <View style={[styles.legendItem, isRTL && { flexDirection: 'row-reverse' }]}>
-          <LinearGradient colors={[PRIMARY, '#A78BFA']} style={styles.legendDot} />
+          <LinearGradient colors={[PRIMARY, '#E8A87C']} style={styles.legendDot} />
           <Text style={[styles.legendText, { color: C.textSecondary }]}>{tFunc('chartDone')}</Text>
         </View>
         <View style={[styles.legendItem, isRTL && { flexDirection: 'row-reverse' }]}>

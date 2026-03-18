@@ -23,7 +23,7 @@ interface ConfirmDialogProps {
 const TYPE_CONFIG: Record<ConfirmDialogType, { color: string; icon: string; gradient: [string, string] }> = {
   danger:  { color: '#F87171', icon: 'trash-outline',        gradient: ['#F87171', '#FF8E53'] },
   warning: { color: '#FFB800', icon: 'warning-outline',      gradient: ['#FFB800', '#FB923C'] },
-  default: { color: PRIMARY, icon: 'help-circle-outline',  gradient: [PRIMARY, '#A78BFA'] },
+  default: { color: PRIMARY, icon: 'help-circle-outline',  gradient: [PRIMARY, '#E8A87C'] },
 };
 
 export function ConfirmDialog({

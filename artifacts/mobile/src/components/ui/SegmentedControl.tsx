@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, Pressable, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Radius, Spacing, Typography, GRADIENT_PRIMARY, F, PRIMARY } from '../../theme';
+import { Radius, Spacing, Typography, GRADIENT_H, F, PRIMARY } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import * as Haptics from 'expo-haptics';
 
@@ -34,7 +34,7 @@ export function SegmentedControl({ options, selected, onSelect }: SegmentedContr
           >
             {isActive ? (
               <LinearGradient
-                colors={GRADIENT_PRIMARY}
+                colors={[...GRADIENT_H]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={StyleSheet.absoluteFill}
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     ...{
       shadowColor: PRIMARY,
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.3,
+      shadowOpacity: 0.2,
       shadowRadius: 6,
       elevation: 4,
     },

@@ -47,7 +47,7 @@ const MOODS: { key: Mood; icon: string; color: string; labelKey: string }[] = [
   { key: 'scared',      icon: 'warning-outline',          color: '#C0664A', labelKey: 'moodScared' },
   { key: 'lonely',      icon: 'person-outline',           color: '#9B59B6', labelKey: 'moodLonely' },
   { key: 'frustrated',  icon: 'close-circle-outline',     color: '#E67E22', labelKey: 'moodFrustrated' },
-  { key: 'sad',         icon: 'rainy-outline',            color: '#A78BFA', labelKey: 'moodSad' },
+  { key: 'sad',         icon: 'rainy-outline',            color: '#7BAE9E', labelKey: 'moodSad' },
   { key: 'bad',         icon: 'sad-outline',              color: '#F87171', labelKey: 'moodBad' },
   { key: 'sick',        icon: 'medkit-outline',           color: '#E74C3C', labelKey: 'moodSick' },
   { key: 'depressed',   icon: 'cloud-outline',            color: '#7F8C8D', labelKey: 'moodDepressed' },

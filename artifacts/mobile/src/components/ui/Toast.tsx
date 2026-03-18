@@ -17,7 +17,7 @@ interface ToastProps {
 const CONFIG: Record<ToastType, { color: string; icon: string; border: string }> = {
   success: { color: '#4ADE80', icon: 'checkmark-circle',   border: '#4ADE8030' },
   error:   { color: '#F87171', icon: 'alert-circle',       border: '#F8717130' },
-  info:    { color: PRIMARY, icon: 'information-circle', border: PRIMARY + '30' },
+  info:    { color: PRIMARY,   icon: 'information-circle', border: PRIMARY + '30' },
 };
 
 export function Toast({ message, type = 'success', duration = 2500, onHide }: ToastProps) {

@@ -15,7 +15,7 @@ interface EmptyStateProps {
   gradient?: [string, string];
 }
 
-export function EmptyState({ icon, title, subtitle, actionLabel, onAction, gradient = [PRIMARY, '#A78BFA'] }: EmptyStateProps) {
+export function EmptyState({ icon, title, subtitle, actionLabel, onAction, gradient = [PRIMARY, SECONDARY] }: EmptyStateProps) {
   const { C } = useAppTheme();
 
   return (

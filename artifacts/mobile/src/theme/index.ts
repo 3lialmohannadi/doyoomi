@@ -1,25 +1,25 @@
 import { Platform } from 'react-native';
 
-export const PRIMARY   = '#6C47FF';
-export const SECONDARY = '#FF6B8A';
+export const PRIMARY   = '#C97A5B';
+export const SECONDARY = '#7BAE9E';
 
 export const Colors = {
   light: {
-    background: '#F0EDFF',
-    surface: '#F8F5FF',
+    background: '#FBF7F3',
+    surface: '#F5EFE9',
     surfaceElevated: '#FFFFFF',
-    border: 'rgba(108,71,255,0.12)',
-    borderLight: 'rgba(108,71,255,0.08)',
-    text: '#1A1A2E',
-    textSecondary: '#8B8B9E',
-    textMuted: '#B0B0C0',
+    border: 'rgba(201,122,91,0.14)',
+    borderLight: 'rgba(201,122,91,0.08)',
+    text: '#2D1A0E',
+    textSecondary: '#7A5C48',
+    textMuted: '#B5957E',
     tint: PRIMARY,
     tintSecondary: SECONDARY,
-    tabBar: 'rgba(240,237,255,0.97)',
+    tabBar: 'rgba(251,247,243,0.97)',
     card: '#FFFFFF',
-    card2: '#F8F5FF',
-    shadow: 'rgba(108,71,255,0.14)',
-    shadowMedium: 'rgba(108,71,255,0.22)',
+    card2: '#FBF7F3',
+    shadow: 'rgba(201,122,91,0.14)',
+    shadowMedium: 'rgba(201,122,91,0.22)',
     success: '#4ADE80',
     warning: '#FB923C',
     error: '#F87171',
@@ -28,51 +28,51 @@ export const Colors = {
     priorityMedium: '#FB923C',
     priorityLow: '#4ADE80',
     streak: '#FB923C',
-    habit: '#A78BFA',
+    habit: '#7BAE9E',
     goal: PRIMARY,
     gradientStart: PRIMARY,
     gradientEnd: SECONDARY,
-    gradientMid: '#9B5DE5',
+    gradientMid: '#D48E6E',
     pillActive: PRIMARY,
-    pillInactive: '#EDE9FF',
-    segmentBg: '#EDE9FF',
-    inputBg: '#F8F5FF',
-    dim: '#B0B0C0',
+    pillInactive: '#F5EFE9',
+    segmentBg: '#EFE5DB',
+    inputBg: '#F5EFE9',
+    dim: '#B5957E',
   },
   dark: {
-    background: '#0D0D1A',
-    surface: '#1A1A30',
-    surfaceElevated: '#22223A',
+    background: '#1C130C',
+    surface: '#2A1D13',
+    surfaceElevated: '#362415',
     border: 'rgba(255,255,255,0.08)',
     borderLight: 'rgba(255,255,255,0.05)',
-    text: '#EEEEFF',
-    textSecondary: '#9B9BB8',
-    textMuted: '#6B6B88',
-    tint: '#9B7FFF',
-    tintSecondary: SECONDARY,
-    tabBar: 'rgba(13,13,26,0.97)',
-    card: '#1A1A30',
-    card2: '#22223A',
+    text: '#F5EDE4',
+    textSecondary: '#C4A48A',
+    textMuted: '#8A6A52',
+    tint: '#D9956F',
+    tintSecondary: '#8DBFB0',
+    tabBar: 'rgba(28,19,12,0.97)',
+    card: '#2A1D13',
+    card2: '#362415',
     shadow: 'rgba(0,0,0,0.4)',
     shadowMedium: 'rgba(0,0,0,0.6)',
     success: '#4ADE80',
     warning: '#FB923C',
-    error: '#FF5A78',
-    overdue: '#FF5A78',
-    priorityHigh: '#FF5A78',
+    error: '#FF6B6B',
+    overdue: '#FF6B6B',
+    priorityHigh: '#FF6B6B',
     priorityMedium: '#FB923C',
     priorityLow: '#4ADE80',
     streak: '#FB923C',
-    habit: '#B87FFF',
-    goal: '#9B7FFF',
-    gradientStart: '#9B7FFF',
-    gradientEnd: SECONDARY,
-    gradientMid: '#B07FFF',
-    pillActive: '#9B7FFF',
-    pillInactive: '#22223A',
-    segmentBg: '#1E1838',
-    inputBg: '#1E1838',
-    dim: '#6B6B88',
+    habit: '#8DBFB0',
+    goal: '#D9956F',
+    gradientStart: '#D9956F',
+    gradientEnd: '#8DBFB0',
+    gradientMid: '#C48058',
+    pillActive: '#D9956F',
+    pillInactive: '#2A1D13',
+    segmentBg: '#2A1D13',
+    inputBg: '#2A1D13',
+    dim: '#8A6A52',
   },
 };
 
@@ -99,11 +99,11 @@ export const Spacing = {
 };
 
 export const Radius = {
-  sm: 8,
-  md: 14,
-  lg: 20,
+  sm: 10,
+  md: 16,
+  lg: 22,
   xl: 28,
-  xxl: 28,
+  xxl: 34,
   full: 9999,
 };
 
@@ -111,21 +111,21 @@ export const Shadow = {
   sm: {
     shadowColor: PRIMARY,
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
   },
   md: {
     shadowColor: PRIMARY,
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.12,
     shadowRadius: 16,
     elevation: 6,
   },
   lg: {
     shadowColor: PRIMARY,
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.18,
     shadowRadius: 24,
     elevation: 10,
   },
@@ -168,10 +168,10 @@ export const Typography = {
 };
 
 export const GRADIENT_PRIMARY: [string, string] = [PRIMARY, SECONDARY];
-export const GRADIENT_H: readonly [string, string] = [PRIMARY, SECONDARY];
-export const GRADIENT_D: readonly [string, string, string] = [PRIMARY, '#9B5DE5', SECONDARY];
-export const GRADIENT_PURPLE: [string, string] = [PRIMARY, '#A78BFA'];
-export const GRADIENT_WARM: [string, string] = [SECONDARY, '#FFB347'];
+export const GRADIENT_H: readonly [string, string] = [PRIMARY, '#E8A87C'];
+export const GRADIENT_D: readonly [string, string, string] = [PRIMARY, '#D48E6E', SECONDARY];
+export const GRADIENT_PURPLE: [string, string] = [PRIMARY, SECONDARY];
+export const GRADIENT_WARM: [string, string] = [SECONDARY, '#A8D5C8'];
 export const GRADIENT_GREEN: [string, string] = ['#4ADE80', '#00E5A0'];
 export const GRADIENT_ORANGE: [string, string] = ['#FB923C', '#FFB347'];
 
@@ -180,13 +180,13 @@ function shadowHelper(color = '#000', strength = 4) {
     ios: {
       shadowColor:    color,
       shadowOffset:   { width: 0, height: strength / 2 },
-      shadowOpacity:  0.15,
+      shadowOpacity:  0.12,
       shadowRadius:   strength,
     },
     android: { elevation: strength },
   }) ?? {};
 }
 
-export const cardShadow    = shadowHelper('#1A1A2E', 3);
+export const cardShadow    = shadowHelper('#2D1A0E', 3);
 export const primaryShadow = shadowHelper(PRIMARY, 8);
 export const softShadow    = shadowHelper(PRIMARY, 4);

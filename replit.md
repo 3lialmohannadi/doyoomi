@@ -97,6 +97,13 @@ Expo/React Native productivity app — Do.Yoomi (يومي). Offline-first with Z
 
 **Features:** Home, Calendar, Tasks, Habits, Goals, Journal, More (Profile/Goals/Categories/App Settings/Support)
 
+**Design System (Soft & Warm — ناعم ودافئ):**
+- PRIMARY `#C97A5B` (terracotta), SECONDARY `#7BAE9E` (sage teal)
+- Light BG `#FBF7F3` (warm cream), Dark BG `#1C130C` (deep warm brown)
+- GRADIENT_H: `[#C97A5B, #E8A87C]`, GRADIENT_D: `[#C97A5B, #D48E6E, #7BAE9E]`
+- Radius: sm=10, md=16, lg=22, xl=28, xxl=34, full=9999
+- Shadow opacities: sm=0.08, md=0.12, lg=0.18 (terracotta color)
+
 **Architecture:**
 - `app/(tabs)/` — Tab screens (index, calendar, tasks, habits, goals, settings/More)
 - `app/support.tsx` — Support/Contact stack screen (accessible from More page)

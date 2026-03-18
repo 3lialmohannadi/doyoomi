@@ -26,7 +26,7 @@ const MOCK_HABITS: Habit[] = [
     id: 'h-3', user_id: 'user-1',
     name: 'Journal writing',
     icon: 'journal',
-    color: '#9B6EF5',
+    color: '#7BAE9E',
     streak_days: 21,
     last_completed_at: new Date().toISOString(),
     created_at: new Date().toISOString(), updated_at: new Date().toISOString(),

@@ -24,7 +24,7 @@ const GOAL_GRADIENTS: [string, string][] = [
   ['#FB923C', '#FFB347'],
   ['#4ADE80', '#00B8A9'],
   ['#F87171', '#FF8E53'],
-  ['#A78BFA', PRIMARY],
+  [SECONDARY, PRIMARY],
   ['#FFB800', '#FB923C'],
 ];
 

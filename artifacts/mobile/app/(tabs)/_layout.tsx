@@ -25,9 +25,9 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: {
           position: "absolute",
-          backgroundColor: isIOS ? "transparent" : isDark ? "#0D0A1E" : "#F5F3FF",
+          backgroundColor: isIOS ? "transparent" : isDark ? "#1C130C" : "#FBF7F3",
           borderTopWidth: isWeb ? 1 : 0,
-          borderTopColor: isDark ? "#2E2650" : "#E4DEFF",
+          borderTopColor: isDark ? "#362415" : "#EFE5DB",
           elevation: 0,
           ...(isWeb ? { height: 84 } : {}),
         },
@@ -35,7 +35,7 @@ export default function TabLayout() {
           isIOS ? (
             <BlurView intensity={80} tint={isDark ? "dark" : "light"} style={StyleSheet.absoluteFill} />
           ) : isWeb ? (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? "#0D0A1E" : "#F5F3FF" }]} />
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? "#1C130C" : "#FBF7F3" }]} />
           ) : null,
         tabBarLabelStyle: { fontFamily: 'Cairo_600SemiBold', fontSize: 10 },
       }}

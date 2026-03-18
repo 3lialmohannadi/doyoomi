@@ -24,8 +24,8 @@ import * as Haptics from 'expo-haptics';
 type FilterKey = 'all' | 'today' | 'done' | 'overdue' | 'high' | 'postponed' | 'nodate';
 
 const FILTER_GRADIENTS: Record<FilterKey, [string, string]> = {
-  all:       [PRIMARY, '#A78BFA'],
-  today:     [SECONDARY, '#FF9DB3'],
+  all:       [PRIMARY, '#E8A87C'],
+  today:     [SECONDARY, '#A8D5C8'],
   done:      ['#4ADE80', '#00E5A0'],
   overdue:   ['#F87171', '#FF8E53'],
   high:      ['#FB923C', '#FFB347'],

@@ -23,7 +23,7 @@ import { JournalEntry, Mood } from '../src/types';
 
 const MOOD_CONFIG: Partial<Record<Mood, { icon: string; color: string }>> = {
   happy:       { icon: 'happy',                   color: '#4ADE80' },
-  excited:     { icon: 'rocket-outline',           color: PRIMARY },
+  excited:     { icon: 'rocket-outline',           color: '#E8A87C' },
   energetic:   { icon: 'flash-outline',            color: '#FF9500' },
   grateful:    { icon: 'heart-outline',            color: SECONDARY },
   optimistic:  { icon: 'sunny-outline',            color: '#FFB800' },
@@ -46,7 +46,7 @@ const MOOD_CONFIG: Partial<Record<Mood, { icon: string; color: string }>> = {
   scared:      { icon: 'warning-outline',          color: '#C0664A' },
   lonely:      { icon: 'person-outline',           color: '#9B59B6' },
   frustrated:  { icon: 'close-circle-outline',     color: '#E67E22' },
-  sad:         { icon: 'rainy-outline',            color: '#A78BFA' },
+  sad:         { icon: 'rainy-outline',            color: SECONDARY },
   bad:         { icon: 'sad-outline',              color: '#F87171' },
   sick:        { icon: 'medkit-outline',           color: '#E74C3C' },
   depressed:   { icon: 'cloud-outline',            color: '#7F8C8D' },
