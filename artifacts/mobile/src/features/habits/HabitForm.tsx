@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { FormModal, FormField, FormInput } from '../../components/ui/FormModal';
+import { View } from 'react-native';
+import { FormModal, FormField } from '../../components/ui/FormModal';
+import { BilingualNameField } from '../../components/ui/BilingualNameField';
 import { IconColorPicker } from '../../components/ui/IconColorPicker';
 import { Habit } from '../../types';
 import { useHabitsStore } from '../../store/habitsStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
-import { t } from '../../utils/i18n';
-import { Spacing, F } from '../../theme';
+import { t, resolveDisplayName } from '../../utils/i18n';
 import { SHARED_ICONS, SHARED_COLORS } from '../../constants/pickerOptions';
 
 interface HabitFormProps {
@@ -20,11 +19,10 @@ interface HabitFormProps {
 export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
   const { addHabit, updateHabit } = useHabitsStore();
   const { profile } = useSettingsStore();
-  const { C } = useAppTheme();
   const lang = profile.language;
-  const isRTL = lang === 'ar';
 
-  const [name, setName] = useState('');
+  const [nameAr, setNameAr] = useState('');
+  const [nameEn, setNameEn] = useState('');
   const [icon, setIcon] = useState(SHARED_ICONS[0]);
   const [color, setColor] = useState(SHARED_COLORS[0]);
   const [nameError, setNameError] = useState(false);
@@ -32,23 +30,27 @@ export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
   useEffect(() => {
     setNameError(false);
     if (editHabit) {
-      setName(editHabit.name);
+      setNameAr(editHabit.name_ar ?? (editHabit.name && !editHabit.name_en ? editHabit.name : ''));
+      setNameEn(editHabit.name_en ?? '');
       setIcon(editHabit.icon);
       setColor(editHabit.color);
     } else {
-      setName('');
+      setNameAr('');
+      setNameEn('');
       setIcon(SHARED_ICONS[0]);
       setColor(SHARED_COLORS[0]);
     }
   }, [editHabit, visible]);
 
   const handleSave = () => {
-    if (!name.trim()) {
+    if (!nameAr.trim() && !nameEn.trim()) {
       setNameError(true);
       return;
     }
     const data = {
-      name: name.trim(),
+      name: resolveDisplayName(nameAr, nameEn, lang, nameAr || nameEn),
+      name_ar: nameAr.trim() || undefined,
+      name_en: nameEn.trim() || undefined,
       icon,
       color,
       streak_days: editHabit?.streak_days ?? 0,
@@ -72,18 +74,18 @@ export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
       cancelLabel={t('cancel', lang)}
     >
       <FormField label={t('habitName', lang)}>
-        <FormInput
-          value={name}
-          onChangeText={(v) => { setName(v); if (v.trim()) setNameError(false); }}
-          placeholder={t('habitNamePlaceholder', lang)}
+        <BilingualNameField
+          lang={lang}
+          nameAr={nameAr}
+          nameEn={nameEn}
+          onChangeAr={setNameAr}
+          onChangeEn={setNameEn}
           error={nameError}
+          onClearError={() => setNameError(false)}
+          labelKey="name"
+          placeholderAr="مثال: رياضة"
+          placeholderEn="e.g. Workout"
         />
-        {nameError && (
-          <View style={[styles.errorRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Ionicons name="alert-circle-outline" size={14} color={C.error} />
-            <Text style={[styles.errorText, { color: C.error }]}>{t('fieldRequired', lang)}</Text>
-          </View>
-        )}
       </FormField>
 
       <FormField label={`${t('icon', lang)} & ${t('color', lang)}`}>
@@ -97,15 +99,3 @@ export function HabitForm({ visible, onClose, editHabit }: HabitFormProps) {
     </FormModal>
   );
 }
-
-const styles = StyleSheet.create({
-  errorRow: {
-    alignItems: 'center',
-    gap: 4,
-    marginTop: 4,
-  },
-  errorText: {
-    fontSize: 12,
-    fontFamily: F.med,
-  },
-});

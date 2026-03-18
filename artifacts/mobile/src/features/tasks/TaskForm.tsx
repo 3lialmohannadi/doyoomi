@@ -14,7 +14,8 @@ import { useTasksStore } from '../../store/tasksStore';
 import { useCategoriesStore } from '../../store/categoriesStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
-import { t } from '../../utils/i18n';
+import { t, resolveDisplayName } from '../../utils/i18n';
+import { BilingualNameField } from '../../components/ui/BilingualNameField';
 import { getTodayString } from '../../utils/date';
 import { Radius, Spacing, F, PRIMARY, SECONDARY, GRADIENT_H, ColorScheme } from '../../theme';
 
@@ -32,7 +33,8 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
   const lang = profile.language;
   const is12h = profile.time_format === '12h';
 
-  const [title, setTitle] = useState('');
+  const [titleAr, setTitleAr] = useState('');
+  const [titleEn, setTitleEn] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState(getTodayString());
   const [dueTime, setDueTime] = useState('');
@@ -49,7 +51,8 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
     setShowDatePicker(false);
     setShowTimePicker(false);
     if (editTask) {
-      setTitle(editTask.title);
+      setTitleAr(editTask.title_ar ?? (editTask.title && !editTask.title_en ? editTask.title : ''));
+      setTitleEn(editTask.title_en ?? '');
       setDescription(editTask.description ?? '');
       setDueDate(editTask.due_date ?? getTodayString());
       setDueTime(editTask.due_time ?? '');
@@ -57,7 +60,8 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
       setStatus(editTask.status);
       setCategoryId(editTask.category_id ?? '');
     } else {
-      setTitle('');
+      setTitleAr('');
+      setTitleEn('');
       setDescription('');
       setDueDate(getTodayString());
       setDueTime('');
@@ -68,12 +72,14 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
   }, [editTask, visible]);
 
   const handleSave = () => {
-    if (!title.trim()) {
+    if (!titleAr.trim() && !titleEn.trim()) {
       setTitleError(true);
       return;
     }
     const taskData = {
-      title: title.trim(),
+      title: resolveDisplayName(titleAr, titleEn, lang, titleAr || titleEn),
+      title_ar: titleAr.trim() || undefined,
+      title_en: titleEn.trim() || undefined,
       description: description.trim() || undefined,
       due_date: dueDate || undefined,
       due_time: dueTime || undefined,
@@ -125,11 +131,17 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
       cancelLabel={t('cancel', lang)}
     >
       <FormField label={t('title', lang)}>
-        <FormInput
-          value={title}
-          onChangeText={(v) => { setTitle(v); if (v.trim()) setTitleError(false); }}
-          placeholder={t('taskTitlePlaceholder', lang)}
+        <BilingualNameField
+          lang={lang}
+          nameAr={titleAr}
+          nameEn={titleEn}
+          onChangeAr={setTitleAr}
+          onChangeEn={setTitleEn}
           error={titleError}
+          onClearError={() => setTitleError(false)}
+          labelKey="title"
+          placeholderAr="مثال: مراجعة التقرير"
+          placeholderEn="e.g. Review the report"
         />
       </FormField>
 

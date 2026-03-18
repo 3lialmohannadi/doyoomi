@@ -94,6 +94,13 @@ const translations: Record<Language, Record<string, string>> = {
     noHabits: 'No habits yet',
     noHabitsSubtitle: 'Build a habit to track your streak',
     habitName: 'Habit name',
+    nameInArabic: 'Arabic name',
+    nameInEnglish: 'English name',
+    titleInArabic: 'Arabic title',
+    titleInEnglish: 'English title',
+    atLeastOneName: 'Enter at least one name',
+    atLeastOneTitle: 'Enter at least one title',
+    optional: 'optional',
     completeHabit: 'Mark done',
     activeHabits: 'active habits',
     doneToday: 'Done today',
@@ -363,6 +370,13 @@ const translations: Record<Language, Record<string, string>> = {
     noHabits: 'لا توجد عادات بعد',
     noHabitsSubtitle: 'أنشئ عادة لتتبع تسلسلك',
     habitName: 'اسم العادة',
+    nameInArabic: 'الاسم بالعربية',
+    nameInEnglish: 'الاسم بالإنجليزية',
+    titleInArabic: 'العنوان بالعربية',
+    titleInEnglish: 'العنوان بالإنجليزية',
+    atLeastOneName: 'أدخل اسماً على الأقل',
+    atLeastOneTitle: 'أدخل عنواناً على الأقل',
+    optional: 'اختياري',
     completeHabit: 'تعيين منجز',
     activeHabits: 'عادات نشطة',
     doneToday: 'أُنجز اليوم',
@@ -542,6 +556,16 @@ const translations: Record<Language, Record<string, string>> = {
 
 export function t(key: string, lang: Language): string {
   return translations[lang][key] ?? translations['en'][key] ?? key;
+}
+
+export function resolveDisplayName(
+  nameAr: string | undefined | null,
+  nameEn: string | undefined | null,
+  lang: Language,
+  fallback?: string,
+): string {
+  if (lang === 'ar') return nameAr?.trim() || nameEn?.trim() || fallback || '';
+  return nameEn?.trim() || nameAr?.trim() || fallback || '';
 }
 
 export function getGreeting(lang: Language): string {

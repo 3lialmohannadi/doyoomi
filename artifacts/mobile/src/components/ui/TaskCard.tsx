@@ -8,6 +8,7 @@ import { Radius, Shadow, Spacing, Typography, F } from '../../theme';
 import { PriorityBadge } from './PriorityBadge';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useSettingsStore } from '../../store/settingsStore';
+import { resolveDisplayName } from '../../utils/i18n';
 
 interface TaskCardProps {
   task: Task;
@@ -111,7 +112,7 @@ export function TaskCard({
               isCompleted && styles.strikethrough,
             ]}
           >
-            {task.title}
+            {resolveDisplayName(task.title_ar, task.title_en, profile.language, task.title)}
           </Text>
 
           {task.description ? (

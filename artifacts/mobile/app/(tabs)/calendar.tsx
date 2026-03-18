@@ -13,7 +13,7 @@ import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
-import { t } from '../../src/utils/i18n';
+import { t, resolveDisplayName } from '../../src/utils/i18n';
 import { formatTime, formatDateKey, getTodayString, formatDate } from '../../src/utils/date';
 import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
 import { AddButton } from '../../src/components/ui/AddButton';
@@ -394,11 +394,11 @@ function DayView({ date, tasks, categories, C, tFunc, isRTL }: DayViewProps) {
             <View key={task.id} style={[styles.dayTaskCard, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <View style={[styles.dayTaskAccent, { backgroundColor: accentColor }]} />
               <View style={[styles.dayTaskContent, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
-                <Text style={[styles.dayTaskTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{task.title}</Text>
+                <Text style={[styles.dayTaskTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{resolveDisplayName(task.title_ar, task.title_en, lang, task.title)}</Text>
                 {task.due_time && <Text style={[styles.dayTaskTime, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>{task.due_time}</Text>}
                 {cat && (
                   <View style={[styles.dayTaskCat, { backgroundColor: cat.color + '20', alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}>
-                    <Text style={[styles.dayTaskCatText, { color: cat.color }]}>{cat.name}</Text>
+                    <Text style={[styles.dayTaskCatText, { color: cat.color }]}>{resolveDisplayName(cat.name_ar, cat.name_en, lang, cat.name)}</Text>
                   </View>
                 )}
               </View>

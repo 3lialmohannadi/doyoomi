@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { FormModal, FormField, FormInput, FormSelect } from '../../components/ui/FormModal';
+import { BilingualNameField } from '../../components/ui/BilingualNameField';
 import { IconColorPicker } from '../../components/ui/IconColorPicker';
 import { Goal, GoalType } from '../../types';
 import { useGoalsStore } from '../../store/goalsStore';
 import { useSettingsStore } from '../../store/settingsStore';
-import { useAppTheme } from '../../hooks/useAppTheme';
-import { t } from '../../utils/i18n';
-import { Spacing, F } from '../../theme';
+import { t, resolveDisplayName } from '../../utils/i18n';
 import { SHARED_COLORS } from '../../constants/pickerOptions';
 
 interface GoalFormProps {
@@ -20,11 +17,10 @@ interface GoalFormProps {
 export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
   const { addGoal, updateGoal } = useGoalsStore();
   const { profile } = useSettingsStore();
-  const { C } = useAppTheme();
   const lang = profile.language;
-  const isRTL = lang === 'ar';
 
-  const [title, setTitle] = useState('');
+  const [titleAr, setTitleAr] = useState('');
+  const [titleEn, setTitleEn] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<GoalType>('monthly');
   const [targetValue, setTargetValue] = useState('10');
@@ -36,7 +32,8 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
   useEffect(() => {
     setTitleError(false);
     if (editGoal) {
-      setTitle(editGoal.title);
+      setTitleAr(editGoal.title_ar ?? (editGoal.title && !editGoal.title_en ? editGoal.title : ''));
+      setTitleEn(editGoal.title_en ?? '');
       setDescription(editGoal.description ?? '');
       setType(editGoal.type);
       setTargetValue(String(editGoal.target_value));
@@ -44,7 +41,8 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
       setIcon(editGoal.icon);
       setColor(editGoal.color);
     } else {
-      setTitle('');
+      setTitleAr('');
+      setTitleEn('');
       setDescription('');
       setType('monthly');
       setTargetValue('10');
@@ -55,12 +53,14 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
   }, [editGoal, visible]);
 
   const handleSave = () => {
-    if (!title.trim()) {
+    if (!titleAr.trim() && !titleEn.trim()) {
       setTitleError(true);
       return;
     }
     const data = {
-      title: title.trim(),
+      title: resolveDisplayName(titleAr, titleEn, lang, titleAr || titleEn),
+      title_ar: titleAr.trim() || undefined,
+      title_en: titleEn.trim() || undefined,
       description: description.trim() || undefined,
       type,
       target_value: Number(targetValue) || 10,
@@ -91,18 +91,18 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
       cancelLabel={t('cancel', lang)}
     >
       <FormField label={t('title', lang)}>
-        <FormInput
-          value={title}
-          onChangeText={(v) => { setTitle(v); if (v.trim()) setTitleError(false); }}
-          placeholder={t('goalTitlePlaceholder', lang)}
+        <BilingualNameField
+          lang={lang}
+          nameAr={titleAr}
+          nameEn={titleEn}
+          onChangeAr={setTitleAr}
+          onChangeEn={setTitleEn}
           error={titleError}
+          onClearError={() => setTitleError(false)}
+          labelKey="title"
+          placeholderAr="مثال: حفظ القرآن"
+          placeholderEn="e.g. Learn a new skill"
         />
-        {titleError && (
-          <View style={[styles.errorRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Ionicons name="alert-circle-outline" size={14} color={C.error} />
-            <Text style={[styles.errorText, { color: C.error }]}>{t('fieldRequired', lang)}</Text>
-          </View>
-        )}
       </FormField>
 
       <FormField label={t('description', lang)}>
@@ -137,15 +137,3 @@ export function GoalForm({ visible, onClose, editGoal }: GoalFormProps) {
     </FormModal>
   );
 }
-
-const styles = StyleSheet.create({
-  errorRow: {
-    alignItems: 'center',
-    gap: 4,
-    marginTop: 4,
-  },
-  errorText: {
-    fontSize: 12,
-    fontFamily: F.med,
-  },
-});

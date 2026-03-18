@@ -31,6 +31,8 @@ export interface Category {
   id: string;
   user_id: string;
   name: string;
+  name_ar?: string;
+  name_en?: string;
   color: string;
   icon: string;
   created_at: string;
@@ -40,6 +42,8 @@ export interface Task {
   id: string;
   user_id: string;
   title: string;
+  title_ar?: string;
+  title_en?: string;
   description?: string;
   due_date?: string;
   due_time?: string;
@@ -57,6 +61,8 @@ export interface Goal {
   id: string;
   user_id: string;
   title: string;
+  title_ar?: string;
+  title_en?: string;
   description?: string;
   type: GoalType;
   target_value: number;
@@ -71,6 +77,8 @@ export interface Habit {
   id: string;
   user_id: string;
   name: string;
+  name_ar?: string;
+  name_en?: string;
   icon: string;
   color: string;
   streak_days: number;

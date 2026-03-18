@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Modal, View, Text, Pressable, ScrollView, TextInput, StyleSheet, Alert,
+  Modal, View, Text, Pressable, ScrollView, StyleSheet, Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,8 +11,9 @@ import { useCategoriesStore } from '../../store/categoriesStore';
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H } from '../../theme';
-import { t } from '../../utils/i18n';
+import { t, resolveDisplayName } from '../../utils/i18n';
 import { Category } from '../../types';
+import { BilingualNameField } from '../../components/ui/BilingualNameField';
 
 import { SHARED_ICONS as CATEGORY_ICONS, SHARED_COLORS as CATEGORY_COLORS } from '../../constants/pickerOptions';
 
@@ -32,14 +33,18 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
 
   const [editingCat, setEditingCat] = useState<Category | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [name, setName] = useState('');
+  const [nameAr, setNameAr] = useState('');
+  const [nameEn, setNameEn] = useState('');
+  const [nameError, setNameError] = useState(false);
   const [color, setColor] = useState(CATEGORY_COLORS[0]);
   const [icon, setIcon] = useState(CATEGORY_ICONS[0]);
 
   const openAdd = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setEditingCat(null);
-    setName('');
+    setNameAr('');
+    setNameEn('');
+    setNameError(false);
     setColor(CATEGORY_COLORS[0]);
     setIcon(CATEGORY_ICONS[0]);
     setShowForm(true);
@@ -48,19 +53,22 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
   const openEdit = (cat: Category) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setEditingCat(cat);
-    setName(cat.name);
+    setNameAr(cat.name_ar ?? (cat.name && !cat.name_en ? cat.name : ''));
+    setNameEn(cat.name_en ?? '');
+    setNameError(false);
     setColor(cat.color);
     setIcon(cat.icon);
     setShowForm(true);
   };
 
   const handleSave = () => {
-    if (!name.trim()) return;
+    if (!nameAr.trim() && !nameEn.trim()) { setNameError(true); return; }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    const resolvedName = resolveDisplayName(nameAr, nameEn, lang, nameAr || nameEn);
     if (editingCat) {
-      updateCategory(editingCat.id, { name: name.trim(), color, icon });
+      updateCategory(editingCat.id, { name: resolvedName, name_ar: nameAr.trim() || undefined, name_en: nameEn.trim() || undefined, color, icon });
     } else {
-      addCategory({ name: name.trim(), color, icon });
+      addCategory({ name: resolvedName, name_ar: nameAr.trim() || undefined, name_en: nameEn.trim() || undefined, color, icon });
     }
     setShowForm(false);
   };
@@ -69,7 +77,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Alert.alert(
       tFunc('delete'),
-      cat.name,
+      resolveDisplayName(cat.name_ar, cat.name_en, lang, cat.name),
       [
         { text: tFunc('cancel'), style: 'cancel' },
         { text: tFunc('delete'), style: 'destructive', onPress: () => deleteCategory(cat.id) },
@@ -122,7 +130,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                   <Ionicons name={(cat.icon + '-outline') as React.ComponentProps<typeof Ionicons>['name']} size={22} color={cat.color} />
                 </View>
                 <View style={styles.catInfo}>
-                  <Text style={[styles.catName, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{cat.name}</Text>
+                  <Text style={[styles.catName, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{resolveDisplayName(cat.name_ar, cat.name_en, lang, cat.name)}</Text>
                 </View>
                 <View style={styles.catActions}>
                   <Pressable
@@ -173,17 +181,20 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                 </View>
               </View>
 
-              {/* Name input */}
+              {/* Name inputs */}
               <View style={styles.formField}>
                 <Text style={[styles.formLabel, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('name')}</Text>
-                <TextInput
-                  value={name}
-                  onChangeText={setName}
-                  placeholder={lang === 'ar' ? 'اسم الفئة' : 'Category name'}
-                  placeholderTextColor={C.textMuted}
-                  textAlign={isRTL ? 'right' : 'left'}
-                  style={[styles.formInput, { backgroundColor: C.inputBg, borderColor: C.border, color: C.text }]}
-                  autoFocus
+                <BilingualNameField
+                  lang={lang}
+                  nameAr={nameAr}
+                  nameEn={nameEn}
+                  onChangeAr={setNameAr}
+                  onChangeEn={setNameEn}
+                  error={nameError}
+                  onClearError={() => setNameError(false)}
+                  labelKey="name"
+                  placeholderAr="مثال: عمل"
+                  placeholderEn="e.g. Work"
                 />
               </View>
 
@@ -201,7 +212,7 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
                   <View style={[styles.previewIconBox, { backgroundColor: color + '18' }]}>
                     <Ionicons name={(icon + '-outline') as React.ComponentProps<typeof Ionicons>['name']} size={20} color={color} />
                   </View>
-                  <Text style={[styles.previewText, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{name || '...'}</Text>
+                  <Text style={[styles.previewText, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{resolveDisplayName(nameAr, nameEn, lang) || '...'}</Text>
                 </View>
               </View>
 

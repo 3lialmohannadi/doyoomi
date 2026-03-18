@@ -15,6 +15,7 @@ import { useTasksStore } from '../../src/store/tasksStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
+import { resolveDisplayName } from '../../src/utils/i18n';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useJournalStore } from '../../src/store/journalStore';
 import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_AMBER, GRADIENT_SAGE, cardShadow, ColorScheme, WARM_SAGE, WARM_CORAL, WARM_ERROR } from '../../src/theme';
@@ -242,20 +243,20 @@ export default function HomeScreen() {
                   <FunTaskRow
                     key={task.id}
                     task={task}
-                    catName={cat?.name}
+                    catName={cat ? resolveDisplayName(cat.name_ar, cat.name_en, lang, cat.name) : undefined}
                     catColor={cat?.color}
                     catIcon={cat?.icon}
                     timeStr={task.due_time ? formatTime(task.due_time, profile.time_format === '12h') : undefined}
                     onToggle={() => toggleComplete(task.id)}
                     onLongPress={() => {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-                      Alert.alert(task.title, undefined, [
+                      Alert.alert(resolveDisplayName(task.title_ar, task.title_en, lang, task.title), undefined, [
                         { text: tFunc('cancel'), style: 'cancel' },
                         { text: tFunc('postpone'), onPress: () => postponeTask(task.id) },
                         { text: tFunc('deleteTask'), style: 'destructive', onPress: () => deleteTask(task.id) },
                       ]);
                     }}
-                    C={C} isRTL={isRTL}
+                    C={C} isRTL={isRTL} lang={lang}
                   />
                 );
               })}
@@ -305,7 +306,7 @@ export default function HomeScreen() {
           ) : (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -Spacing.lg }} contentContainerStyle={{ paddingHorizontal: Spacing.lg, gap: Spacing.md }}>
               {habits.map(h => (
-                <FunHabitCard key={h.id} habit={h} onComplete={completeHabit} onUncomplete={uncompleteHabit} C={C} />
+                <FunHabitCard key={h.id} habit={h} onComplete={completeHabit} onUncomplete={uncompleteHabit} C={C} lang={lang} />
               ))}
             </ScrollView>
           )}
@@ -343,7 +344,7 @@ export default function HomeScreen() {
                 const grad = goalGradients[i % goalGradients.length] as [string, string];
                 return (
                   <Pressable key={g.id} onPress={() => router.push('/goals')}>
-                    <FunGoalCard goal={g} progress={pct} gradient={grad} C={C} isRTL={isRTL} />
+                    <FunGoalCard goal={g} progress={pct} gradient={grad} C={C} isRTL={isRTL} lang={lang} />
                   </Pressable>
                 );
               })}
@@ -539,10 +540,10 @@ function Section({ title, children, C, action, onAction, onTitlePress, isRTL, ba
 
 interface FunTaskRowProps {
   task: Task; catName?: string; catColor?: string; catIcon?: string; timeStr?: string;
-  onToggle: () => void; onLongPress?: () => void; C: ColorScheme; isRTL?: boolean;
+  onToggle: () => void; onLongPress?: () => void; C: ColorScheme; isRTL?: boolean; lang?: Language;
 }
 
-function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLongPress, C, isRTL }: FunTaskRowProps) {
+function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLongPress, C, isRTL, lang }: FunTaskRowProps) {
   const isCompleted = task.status === 'completed';
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
@@ -576,7 +577,7 @@ function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLon
       </Pressable>
       <View style={[styles.taskInfo, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
         <Text style={[styles.taskTitle, { color: isCompleted ? C.textMuted : C.text, textAlign: isRTL ? 'right' : 'left' }, isCompleted && { textDecorationLine: 'line-through' as const }]} numberOfLines={1}>
-          {task.title}
+          {resolveDisplayName(task.title_ar, task.title_en, lang ?? 'en', task.title)}
         </Text>
         <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', gap: 6, alignItems: 'center', marginTop: 2 }}>
           {catName && (
@@ -595,12 +596,13 @@ function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLon
 }
 
 function FunHabitCard({
-  habit, onComplete, onUncomplete, C,
+  habit, onComplete, onUncomplete, C, lang,
 }: {
   habit: Habit;
   onComplete: (id: string) => void;
   onUncomplete: (id: string) => void;
   C: ColorScheme;
+  lang?: Language;
 }) {
   const today = format(new Date(), 'yyyy-MM-dd');
   const lastDate = habit.last_completed_at ? format(new Date(habit.last_completed_at), 'yyyy-MM-dd') : null;
@@ -629,7 +631,7 @@ function FunHabitCard({
       ]}
       accessibilityRole="button"
       accessibilityState={{ checked: isDone }}
-      accessibilityLabel={habit.name}
+      accessibilityLabel={resolveDisplayName(habit.name_ar, habit.name_en, lang ?? 'en', habit.name)}
     >
       {/* Top colour line */}
       <View style={[styles.habitTopLine, { backgroundColor: habit.color }]} />
@@ -656,7 +658,7 @@ function FunHabitCard({
 
         {/* Name */}
         <Text style={[styles.habitName, { color: isDone ? habit.color : C.text }]} numberOfLines={2}>
-          {habit.name}
+          {resolveDisplayName(habit.name_ar, habit.name_en, lang ?? 'en', habit.name)}
         </Text>
 
         {/* Streak */}
@@ -672,10 +674,10 @@ function FunHabitCard({
 }
 
 interface FunGoalCardProps {
-  goal: Goal; progress: number; gradient: [string, string]; C: ColorScheme; isRTL?: boolean;
+  goal: Goal; progress: number; gradient: [string, string]; C: ColorScheme; isRTL?: boolean; lang?: Language;
 }
 
-function FunGoalCard({ goal, progress, gradient, C, isRTL }: FunGoalCardProps) {
+function FunGoalCard({ goal, progress, gradient, C, isRTL, lang }: FunGoalCardProps) {
   const pct = Math.round(progress * 100);
 
   return (
@@ -685,7 +687,7 @@ function FunGoalCard({ goal, progress, gradient, C, isRTL }: FunGoalCardProps) {
           <Ionicons name={((goal.icon ?? 'star') + '-outline') as IoniconsName} size={18} color="#fff" />
         </LinearGradient>
         <View style={{ flex: 1 }}>
-          <Text style={[styles.goalTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{goal.title}</Text>
+          <Text style={[styles.goalTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{resolveDisplayName(goal.title_ar, goal.title_en, lang ?? 'en', goal.title)}</Text>
           <Text style={[styles.goalSub, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
             {goal.current_value} / {goal.target_value}
           </Text>
