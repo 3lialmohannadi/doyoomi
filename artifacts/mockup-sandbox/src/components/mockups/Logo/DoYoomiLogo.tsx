@@ -1,244 +1,238 @@
 import React from "react";
 
-/* ══════════════════════════════════════════════════════════
-   DO.YOOMI  —  LOGO  v4
-   Concept: clean geometric mark built on pure SVG primitives
-   • Proper cubic-bezier D  (no hacky quadratics)
-   • Hollow D (badge bg shows through the counter)
-   • Bold checkmark inside the D counter
-   • Two glossy dots below
-   • High-contrast colours for readability at any size
-   ══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════
+   DO.YOOMI  —  DOODLE STYLE LOGO  v2
+   Caveat handwriting font + clean doodle SVG elements
+   ═══════════════════════════════════════════════════════ */
 
-/* ── tokens ── */
-const BG_A = "#3A0E06";
-const BG_B = "#7B3020";
-const BG_C = "#C47558";
-const WHITE = "rgba(255,255,255,0.95)";
-const AMBER = "#F5C070";
-const SAGE  = "#68B09F";
-const DARK  = "#2C1208";
-const CREAM = "#FFF9F5";
+const INK   = "#2C1208";
 const TERRA = "#C97A5B";
+const SAGE  = "#6BAB99";
+const AMBER = "#F0B060";
+const CREAM = "#FFF8F0";
 
-/* ─────────────────────────────────────────────────────────
-   THE MARK
-   ViewBox: 300 × 300
-   D: cubic-bezier, stroke only, thick, white
-   Checkmark: inside D counter, bold gradient
-   ي arc: extends below D
-   Two 3D pearl dots
-   ───────────────────────────────────────────────────────── */
-function Mark({ px = 110 }: { px?: number }) {
+/* ── 4-point sparkle star ── */
+function Sparkle({ x, y, s = 10, color = AMBER }: { x:number; y:number; s?:number; color?:string }) {
+  const h = s * 0.4;
+  const pts = [
+    `${x},${y-s}`, `${x+h},${y-h}`,
+    `${x+s},${y}`, `${x+h},${y+h}`,
+    `${x},${y+s}`, `${x-h},${y+h}`,
+    `${x-s},${y}`, `${x-h},${y-h}`,
+  ].join(" ");
+  return <polygon points={pts} fill={color} opacity="0.90"/>;
+}
+
+/* ── wavy underline ── */
+function Wave({ x, y, w }: { x:number; y:number; w:number }) {
+  const s = w / 5;
+  const d = `M ${x},${y} Q ${x+s*.5},${y-5} ${x+s},${y} Q ${x+s*1.5},${y+5} ${x+s*2},${y} Q ${x+s*2.5},${y-5} ${x+s*3},${y} Q ${x+s*3.5},${y+5} ${x+s*4},${y} Q ${x+s*4.5},${y-5} ${x+s*5},${y}`;
+  return <path d={d} stroke={SAGE} strokeWidth="2.5" fill="none" strokeLinecap="round"/>;
+}
+
+/* ══════════════════════════════════════════════════════
+   DOODLE ICON MARK
+   Clean terracotta badge + hand-drawn stroke D + checkmark + dots
+   ══════════════════════════════════════════════════════ */
+function DoodleMark({ px = 120 }: { px?: number }) {
   return (
-    <svg width={px} height={px} viewBox="0 0 300 300" fill="none">
+    <svg width={px} height={px} viewBox="0 0 200 200" fill="none">
       <defs>
-
-        {/* badge — 3-stop rich gradient */}
-        <linearGradient id="m-bg" x1="0" y1="0" x2="300" y2="300" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor={BG_A}/>
-          <stop offset="45%"  stopColor={BG_B}/>
-          <stop offset="100%" stopColor={BG_C}/>
+        {/* subtle sketch wobble on strokes only */}
+        <filter id="sk" x="-8%" y="-8%" width="116%" height="116%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="5" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.8"
+            xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+        {/* drop shadow for badge */}
+        <filter id="bs" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="3" dy="4" stdDeviation="5" floodColor={INK} floodOpacity="0.25"/>
+        </filter>
+        {/* badge gradient */}
+        <linearGradient id="bg" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stopColor="#A84830"/>
+          <stop offset="100%" stopColor="#D4886A"/>
         </linearGradient>
-
-        {/* inner radial pop at centre */}
-        <radialGradient id="m-inner" cx="55%" cy="45%" r="48%">
-          <stop offset="0%"   stopColor="rgba(220,120,70,0.28)"/>
-          <stop offset="100%" stopColor="rgba(0,0,0,0)"/>
-        </radialGradient>
-
-        {/* glass top shine */}
-        <radialGradient id="m-shine" cx="38%" cy="20%" r="52%">
-          <stop offset="0%"   stopColor="rgba(255,255,255,0.24)"/>
-          <stop offset="100%" stopColor="rgba(255,255,255,0)"/>
-        </radialGradient>
-
-        {/* checkmark — amber→sage */}
-        <linearGradient id="m-chk" x1="220" y1="42" x2="52" y2="216" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor={AMBER}/>
-          <stop offset="55%"  stopColor={SAGE}/>
-          <stop offset="100%" stopColor="#3A8870"/>
-        </linearGradient>
-
-        {/* pearl dot */}
-        <radialGradient id="m-dot" cx="34%" cy="26%" r="66%">
-          <stop offset="0%"   stopColor="#ffffff"/>
-          <stop offset="50%"  stopColor="rgba(255,249,245,0.82)"/>
-          <stop offset="100%" stopColor="rgba(230,200,180,0.35)"/>
-        </radialGradient>
-
-        {/* soft glow on checkmark */}
-        <filter id="m-glow" x="-15%" y="-15%" width="130%" height="130%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="b"/>
-          <feMerge>
-            <feMergeNode in="b"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-
-        {/* dot drop shadow */}
-        <filter id="m-dshadow">
-          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#2C0A00" floodOpacity="0.45"/>
-        </filter>
-
-        {/* badge outer shadow */}
-        <filter id="m-badge-shadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor={BG_A} floodOpacity="0.60"/>
-        </filter>
-
-        <clipPath id="m-clip">
-          <rect x="0" y="0" width="300" height="300" rx="64"/>
-        </clipPath>
-
       </defs>
 
-      {/* ── BADGE ── */}
-      <rect x="0" y="0" width="300" height="300" rx="64"
-        fill="url(#m-bg)" filter="url(#m-badge-shadow)"/>
-      <rect x="0" y="0" width="300" height="300" rx="64"
-        fill="url(#m-inner)" clipPath="url(#m-clip)"/>
-      <rect x="0" y="0" width="300" height="300" rx="64"
-        fill="url(#m-shine)" clipPath="url(#m-clip)"/>
+      {/* badge background — clean, no filter */}
+      <rect x="4" y="4" width="192" height="192" rx="44"
+        fill="url(#bg)" filter="url(#bs)"/>
 
-      {/* ─────────────────────────────────────────
-          D  —  cubic-bezier letterform
-          Stem: x=38, left vertical
-          Belly: cubic bezier max width x≈252
-          Stroke only (hollow) — badge bg shows through
-          ───────────────────────────────────────── */}
-      {/* D letterform — cubic bezier, hollow, shortened to leave room for arc+dots */}
+      {/* slight inner top highlight */}
+      <rect x="4" y="4" width="192" height="96" rx="44"
+        fill="rgba(255,255,255,0.10)"/>
+
+      {/* ── D letterform — thick wobbly stroke ── */}
       <path
-        d="M 38,28  L 108,28  C 260,28 260,238 108,238  L 38,238  Z"
-        stroke={WHITE}
-        strokeWidth="24"
+        d="M 42,30 L 42,162 M 42,30 L 90,30 C 164,30 164,162 90,162 L 42,162"
+        stroke={CREAM}
+        strokeWidth="13"
+        strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
-        clipPath="url(#m-clip)"
+        filter="url(#sk)"
+        opacity="0.96"
       />
 
-      {/* ─────────────────────────────────────────
-          ي  ARC — stays inside badge bounds
-          ───────────────────────────────────────── */}
-      <path
-        d="M 38,248  Q 30,284 130,288  Q 238,292 260,248"
-        stroke={WHITE}
-        strokeWidth="23"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.82"
-        clipPath="url(#m-clip)"
-      />
-
-      {/* ─────────────────────────────────────────
-          CHECKMARK — inside D counter, dramatic
-          ───────────────────────────────────────── */}
+      {/* ── Checkmark — two-pass for doodle feel ── */}
       <polyline
-        points="55,155  104,212  226,52"
-        stroke="url(#m-chk)"
-        strokeWidth="32"
+        points="54,104 84,136 154,58"
+        stroke={SAGE}
+        strokeWidth="13"
         strokeLinecap="round"
         strokeLinejoin="round"
-        filter="url(#m-glow)"
-        clipPath="url(#m-clip)"
+        filter="url(#sk)"
+      />
+      <polyline
+        points="55,106 85,137 153,60"
+        stroke="#9ACFC0"
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.45"
       />
 
-      {/* ─────────────────────────────────────────
-          TWO  3D  DOTS
-          ───────────────────────────────────────── */}
-      <circle cx="112" cy="258" r="15"
-        fill="url(#m-dot)" filter="url(#m-dshadow)"/>
-      <circle cx="154" cy="258" r="15"
-        fill="url(#m-dot)" filter="url(#m-dshadow)"/>
+      {/* ── Two dots (ي) ── */}
+      <circle cx="78"  cy="180" r="7.5" fill={CREAM} filter="url(#sk)" opacity="0.92"/>
+      <circle cx="104" cy="180" r="7.5" fill={CREAM} filter="url(#sk)" opacity="0.92"/>
 
+      {/* ── Decorative doodle elements ── */}
+      <Sparkle x={168} y={26}  s={9}  color={AMBER}/>
+      <Sparkle x={24}  y={170} s={5.5} color="rgba(255,255,255,0.55)"/>
     </svg>
   );
 }
 
-/* ── wordmark ── */
-function Word({ light = false, size = 52 }: { light?: boolean; size?: number }) {
-  const base = light ? CREAM : DARK;
+/* ── Handwritten wordmark ── */
+function Word({ light = false, size = 60 }: { light?: boolean; size?: number }) {
   return (
-    <div style={{ display:"flex", alignItems:"baseline", lineHeight:1, gap:0 }}>
+    <div style={{ display:"flex", alignItems:"center", lineHeight:1, gap:0 }}>
       <span style={{
-        fontFamily:"'Plus Jakarta Sans','Arial Black',Arial,sans-serif",
-        fontSize:size, fontWeight:900, letterSpacing:-1.5, color:base,
+        fontFamily:"'Caveat', cursive",
+        fontSize:size, fontWeight:700,
+        color: light ? CREAM : INK,
+        letterSpacing:-0.5,
       }}>Do</span>
       <span style={{
-        fontSize:size, fontWeight:900, lineHeight:1,
+        fontFamily:"'Caveat', cursive",
+        fontSize:size, fontWeight:700,
         color: light ? AMBER : TERRA,
-        margin:"0 1px",
       }}>.</span>
       <span style={{
-        fontFamily:"'Plus Jakarta Sans','Arial Black',Arial,sans-serif",
-        fontSize:size, fontWeight:900, letterSpacing:-1.5,
-        background: light
-          ? `linear-gradient(90deg,${AMBER},#F5D090)`
-          : `linear-gradient(90deg,${TERRA},#E8A87C)`,
-        WebkitBackgroundClip:"text",
-        WebkitTextFillColor:"transparent",
+        fontFamily:"'Caveat', cursive",
+        fontSize:size, fontWeight:700,
+        color: light ? AMBER : TERRA,
+        letterSpacing:-0.5,
       }}>Yoomi</span>
     </div>
   );
 }
 
-const CARD: React.CSSProperties = {
-  background: CREAM,
-  borderRadius: 28,
-  boxShadow: "0 20px 64px rgba(44,18,8,0.15)",
-  display: "flex",
-  alignItems: "center",
-  gap: 28,
-  padding: "30px 48px",
-  minWidth: 520,
-};
-const SUB: React.CSSProperties = {
-  fontFamily:"'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif",
-  fontSize: 10.5, fontWeight: 700,
-  letterSpacing: 3.5, textTransform: "uppercase",
-  color: "#7BAE9E",
-};
-
+/* ═══════════════════════════════════════════════════════
+   PAGE
+   ═══════════════════════════════════════════════════════ */
 export default function DoYoomiLogo() {
   return (
     <div style={{
       minHeight:"100vh",
-      background:"linear-gradient(148deg,#DCCABB 0%,#C4A890 100%)",
+      background:"radial-gradient(ellipse at 38% 42%, #F5E8D8 0%, #DBBFA0 100%)",
       display:"flex", flexDirection:"column",
       alignItems:"center", justifyContent:"center",
-      gap:38, padding:48,
+      gap:40, padding:52,
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap');
         *{box-sizing:border-box;margin:0;padding:0}
       `}</style>
 
-      {/* ── A  Horizontal ── */}
-      <div style={CARD}>
-        <Mark px={108}/>
-        <div style={{display:"flex",flexDirection:"column",gap:11}}>
-          <Word size={54}/>
-          <div style={{display:"flex",alignItems:"center",gap:9}}>
-            <div style={{width:26,height:2.5,background:"#7BAE9E",borderRadius:2,opacity:0.7}}/>
-            <span style={SUB}>Daily Productivity</span>
-          </div>
+      {/* ══ A: Horizontal (main) ══ */}
+      <div style={{
+        background:CREAM,
+        borderRadius:26,
+        padding:"26px 42px",
+        display:"flex",
+        alignItems:"center",
+        gap:20,
+        boxShadow:`4px 5px 0px rgba(44,18,8,0.20), 0 12px 40px rgba(44,18,8,0.10)`,
+        border:`2px solid rgba(44,18,8,0.07)`,
+        position:"relative",
+        minWidth:500,
+      }}>
+        <DoodleMark px={96}/>
+
+        <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+          <Word size={62}/>
+          <svg viewBox="0 0 260 16" style={{ width:260, marginTop:0, display:"block" }}>
+            <Wave x={0} y={8} w={260}/>
+          </svg>
+          <span style={{
+            fontFamily:"'Caveat', cursive",
+            fontSize:18, fontWeight:600,
+            color:"#5A9E8C", marginTop:2,
+          }}>Daily Productivity ✨</span>
         </div>
+
+        {/* corner sparkle */}
+        <svg style={{ position:"absolute", top:10, right:14, display:"block" }}
+          width="22" height="22" viewBox="0 0 22 22">
+          <Sparkle x={11} y={11} s={9} color={AMBER}/>
+        </svg>
       </div>
 
-      {/* ── B  Stacked ── */}
-      <div style={{...CARD, flexDirection:"column", padding:"38px 60px", gap:20}}>
-        <Mark px={122}/>
-        <Word size={50}/>
-        <span style={{...SUB, letterSpacing:4, marginTop:2}}>يومي · Daily</span>
+      {/* ══ B: Stacked ══ */}
+      <div style={{
+        background:CREAM,
+        borderRadius:26,
+        padding:"34px 56px",
+        display:"flex", flexDirection:"column",
+        alignItems:"center", gap:12,
+        boxShadow:`4px 5px 0px rgba(44,18,8,0.20), 0 12px 40px rgba(44,18,8,0.10)`,
+        border:`2px solid rgba(44,18,8,0.07)`,
+        minWidth:500,
+      }}>
+        <DoodleMark px={114}/>
+        <Word size={58}/>
+        <span style={{
+          fontFamily:"'Caveat', cursive",
+          fontSize:20, fontWeight:600,
+          color:"#5A9E8C",
+        }}>يومي · Daily ✓</span>
       </div>
 
-      {/* ── C  Dark ── */}
-      <div style={{...CARD, background:`linear-gradient(135deg,${DARK},#2E1008)`,
-        boxShadow:"0 24px 72px rgba(44,18,8,0.65)"}}>
-        <Mark px={108}/>
-        <div style={{display:"flex",flexDirection:"column",gap:11}}>
-          <Word size={54} light/>
-          <span style={SUB}>Daily Productivity App</span>
+      {/* ══ C: Dark ══ */}
+      <div style={{
+        background:`linear-gradient(130deg,${INK} 0%,#3A1008 100%)`,
+        borderRadius:26,
+        padding:"26px 42px",
+        display:"flex", alignItems:"center", gap:20,
+        boxShadow:`4px 6px 0px rgba(0,0,0,0.50), 0 20px 60px rgba(44,18,8,0.60)`,
+        minWidth:500,
+        position:"relative",
+      }}>
+        {/* dot pattern bg */}
+        <svg style={{ position:"absolute", inset:0, width:"100%", height:"100%", opacity:0.06 }} viewBox="0 0 500 130">
+          {Array.from({length:10}, (_,c) =>
+            Array.from({length:4}, (_,r) =>
+              <circle key={`${c}-${r}`} cx={c*56+28} cy={r*40+20} r="2.5" fill="white"/>
+            )
+          )}
+        </svg>
+
+        <DoodleMark px={96}/>
+        <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+          <Word size={62} light/>
+          <span style={{
+            fontFamily:"'Caveat', cursive",
+            fontSize:18, fontWeight:600,
+            color:SAGE,
+          }}>Daily Productivity App ✨</span>
         </div>
+
+        <svg style={{ position:"absolute", top:10, right:14 }}
+          width="22" height="22" viewBox="0 0 22 22">
+          <Sparkle x={11} y={11} s={9} color={AMBER}/>
+        </svg>
       </div>
 
     </div>
