@@ -35,7 +35,7 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
-  const { tasks, toggleComplete, deleteTask, postponeTask } = useTasksStore();
+  const { tasks, toggleComplete, deleteTask, postponeTask, clearCompleted } = useTasksStore();
   const { goals } = useGoalsStore();
   const { habits, completeHabit, uncompleteHabit } = useHabitsStore();
   const { profile } = useSettingsStore();
@@ -138,7 +138,7 @@ export default function HomeScreen() {
 
         {/* Stats Row */}
         <View style={[styles.statsRow, { backgroundColor: C.card, borderColor: C.border }]}>
-          <StatPill icon="checkmark-done" value={completedToday} label={tFunc('completed')} color={WARM_SAGE} C={C} />
+          <StatPill icon="checkmark-done" value={completedToday} label={tFunc('completed')} color={SECONDARY} C={C} />
           <View style={[styles.statDivider, { backgroundColor: C.border }]} />
           <StatPill icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color={WARM_ERROR} C={C} />
           <View style={[styles.statDivider, { backgroundColor: C.border }]} />
@@ -276,6 +276,25 @@ export default function HomeScreen() {
               )}
             </View>
           )}
+          {dayTasks.some(t => t.status === 'completed') && (
+            <Pressable
+              onPress={() => {
+                Alert.alert(
+                  tFunc('clearCompleted'),
+                  tFunc('clearCompletedConfirm'),
+                  [
+                    { text: tFunc('cancel'), style: 'cancel' },
+                    { text: tFunc('clear'), style: 'destructive', onPress: clearCompleted },
+                  ]
+                );
+              }}
+              style={({ pressed }) => [styles.clearCompletedBtn, { opacity: pressed ? 0.7 : 1, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+              accessibilityRole="button"
+            >
+              <Ionicons name="trash-outline" size={13} color={C.textMuted} />
+              <Text style={[styles.clearCompletedText, { color: C.textMuted }]}>{tFunc('clearCompleted')}</Text>
+            </Pressable>
+          )}
         </Section>
 
         {/* Habits */}
@@ -325,8 +344,8 @@ export default function HomeScreen() {
               style={({ pressed }) => [styles.habitsEmpty, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.8 : 1 }]}
               accessibilityRole="button"
             >
-              <View style={[styles.habitsEmptyIcon, { backgroundColor: SECONDARY + '15' }]}>
-                <Ionicons name="trophy-outline" size={28} color={SECONDARY} />
+              <View style={[styles.habitsEmptyIcon, { backgroundColor: C.tint + '15' }]}>
+                <Ionicons name="trophy-outline" size={28} color={C.tint} />
               </View>
               <View style={{ flex: 1, alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
                 <Text style={[styles.habitsEmptyTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('noGoalsYet')}</Text>
@@ -508,8 +527,8 @@ function Section({ title, children, C, action, onAction, onTitlePress, isRTL, ba
           <View style={[styles.sectionAccent, { backgroundColor: C.tint, marginRight: isRTL ? 0 : 7, marginLeft: isRTL ? 7 : 0 }]} />
           <Text style={[styles.sectionTitle, { color: C.text }]}>{title}</Text>
           {showProgress && (
-            <View style={[styles.sectionBadge, { backgroundColor: allDone ? WARM_SAGE + '20' : C.tint + '15' }]}>
-              <Text style={[styles.sectionBadgeText, { color: allDone ? WARM_SAGE : C.tint }]}>
+            <View style={[styles.sectionBadge, { backgroundColor: allDone ? SECONDARY + '20' : C.tint + '15' }]}>
+              <Text style={[styles.sectionBadgeText, { color: allDone ? SECONDARY : C.tint }]}>
                 {badge}/{badgeTotal}
               </Text>
             </View>
@@ -976,6 +995,13 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm + 2, marginTop: 2,
   },
   seeMoreText: { fontSize: 13, fontFamily: F.med },
+
+  // Clear completed
+  clearCompletedBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5,
+    paddingVertical: Spacing.sm, marginTop: 4,
+  },
+  clearCompletedText: { fontSize: 12, fontFamily: F.med },
 
   // Task row
   taskRow: {

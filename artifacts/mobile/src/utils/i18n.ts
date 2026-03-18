@@ -177,6 +177,9 @@ const translations: Record<Language, Record<string, string>> = {
     // Form
     save: 'Save',
     cancel: 'Cancel',
+    clear: 'Clear',
+    clearCompleted: 'Clear completed',
+    clearCompletedConfirm: 'Remove all completed tasks?',
     delete: 'Delete',
     edit: 'Edit',
     name: 'Name',
@@ -453,6 +456,9 @@ const translations: Record<Language, Record<string, string>> = {
     // النماذج
     save: 'حفظ',
     cancel: 'إلغاء',
+    clear: 'مسح',
+    clearCompleted: 'مسح المنجز',
+    clearCompletedConfirm: 'إزالة جميع المهام المكتملة؟',
     delete: 'حذف',
     edit: 'تعديل',
     name: 'الاسم',

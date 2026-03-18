@@ -85,6 +85,7 @@ interface TasksState {
   deleteTask: (id: string) => void;
   toggleComplete: (id: string) => void;
   postponeTask: (id: string) => void;
+  clearCompleted: () => void;
   loadTasks: () => Promise<void>;
 }
 
@@ -133,6 +134,12 @@ export const useTasksStore = create<TasksState>((set, get) => ({
 
   postponeTask: (id) => {
     get().updateTask(id, { status: 'postponed' });
+  },
+
+  clearCompleted: () => {
+    const updated = get().tasks.filter(t => t.status !== 'completed');
+    set({ tasks: updated });
+    AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   },
 
   loadTasks: async () => {

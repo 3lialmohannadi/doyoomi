@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_SAGE, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_AMBER, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_SAGE, GRADIENT_TEAL, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_AMBER, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -58,7 +58,7 @@ export default function GoalsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
       <LinearGradient
-        colors={['#5B9A8B', '#7BAE9E', '#9ECCC0']}
+        colors={[...GRADIENT_TEAL]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={[styles.header, { paddingTop: topPad + Spacing.md }]}

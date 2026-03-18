@@ -212,11 +212,12 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
 
 // ── Inline Time Picker ────────────────────────────────────────────────────────
 function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: { value?: string; onChange: (v: string) => void; is12h: boolean; C: ColorScheme; onDone: () => void; lang: Language }) {
-  const currentHour = value ? parseInt(value.split(':')[0]) : new Date().getHours();
-  const currentMin = value ? parseInt(value.split(':')[1]) : 0;
+  const initHour = value ? parseInt(value.split(':')[0]) : new Date().getHours();
+  const initMin  = value ? Math.round(parseInt(value.split(':')[1]) / 5) * 5 : 0;
 
-  const [hour, setHour] = useState(currentHour);
-  const [minute, setMinute] = useState(currentMin);
+  const [hour24, setHour24] = useState(initHour);
+  const [minute, setMinute] = useState(initMin % 60);
+  const [isPm, setIsPm] = useState(initHour >= 12);
 
   const commit = (h: number, m: number) => {
     const hh = h.toString().padStart(2, '0');
@@ -224,71 +225,90 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: { value?:
     onChange(`${hh}:${mm}`);
   };
 
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-  const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
-
-  const formatHour = (h: number) => {
-    if (!is12h) return h.toString().padStart(2, '0');
-    const period = h >= 12 ? 'PM' : 'AM';
-    const h12 = h % 12 || 12;
-    return `${h12} ${period}`;
+  const stepHour = (delta: number) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (is12h) {
+      const h12 = hour24 % 12 || 12;
+      const newH12 = ((h12 - 1 + delta + 12) % 12) + 1;
+      const newH24 = isPm ? (newH12 === 12 ? 12 : newH12 + 12) : (newH12 === 12 ? 0 : newH12);
+      setHour24(newH24);
+      commit(newH24, minute);
+    } else {
+      const newH = (hour24 + delta + 24) % 24;
+      setHour24(newH);
+      commit(newH, minute);
+    }
   };
+
+  const stepMinute = (delta: number) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const newM = (minute + delta * 5 + 60) % 60;
+    setMinute(newM);
+    commit(hour24, newM);
+  };
+
+  const togglePm = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    const newPm = !isPm;
+    setIsPm(newPm);
+    const h12 = hour24 % 12 || 12;
+    const newH24 = newPm ? (h12 === 12 ? 12 : h12 + 12) : (h12 === 12 ? 0 : h12);
+    setHour24(newH24);
+    commit(newH24, minute);
+  };
+
+  const displayHour = is12h ? (hour24 % 12 || 12).toString().padStart(2, '0') : hour24.toString().padStart(2, '0');
+  const displayMin  = minute.toString().padStart(2, '0');
 
   return (
     <View style={[timeStyles.container, { backgroundColor: C.surface, borderColor: C.border }]}>
       <View style={timeStyles.row}>
+        {/* Hour */}
         <View style={timeStyles.col}>
           <Text style={[timeStyles.label, { color: C.textMuted }]}>{t('hourLabel', lang)}</Text>
-          <ScrollView style={timeStyles.scroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
-            {hours.map(h => (
-              <Pressable
-                key={h}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setHour(h);
-                  commit(h, minute);
-                }}
-                style={[timeStyles.option, hour === h && { backgroundColor: C.tint + '20' }]}
-              >
-                <Text style={[timeStyles.optionText, { color: hour === h ? C.tint : C.text, fontFamily: hour === h ? F.bold : F.reg }]}>
-                  {formatHour(h)}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
+          <Pressable onPress={() => stepHour(1)} style={({ pressed }) => [timeStyles.stepBtn, { backgroundColor: C.tint + '12', opacity: pressed ? 0.7 : 1 }]}>
+            <Ionicons name="chevron-up" size={20} color={C.tint} />
+          </Pressable>
+          <View style={[timeStyles.valueBox, { backgroundColor: C.tint + '10', borderColor: C.tint + '30' }]}>
+            <Text style={[timeStyles.valueText, { color: C.text }]}>{displayHour}</Text>
+          </View>
+          <Pressable onPress={() => stepHour(-1)} style={({ pressed }) => [timeStyles.stepBtn, { backgroundColor: C.tint + '12', opacity: pressed ? 0.7 : 1 }]}>
+            <Ionicons name="chevron-down" size={20} color={C.tint} />
+          </Pressable>
         </View>
 
-        <Text style={[timeStyles.colon, { color: C.text }]}>:</Text>
+        <Text style={[timeStyles.colon, { color: C.textSecondary }]}>:</Text>
 
+        {/* Minute */}
         <View style={timeStyles.col}>
           <Text style={[timeStyles.label, { color: C.textMuted }]}>{t('minLabel', lang)}</Text>
-          <ScrollView style={timeStyles.scroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
-            {minutes.map(m => (
-              <Pressable
-                key={m}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setMinute(m);
-                  commit(hour, m);
-                }}
-                style={[timeStyles.option, minute === m && { backgroundColor: C.tint + '20' }]}
-              >
-                <Text style={[timeStyles.optionText, { color: minute === m ? C.tint : C.text, fontFamily: minute === m ? F.bold : F.reg }]}>
-                  {m.toString().padStart(2, '0')}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
+          <Pressable onPress={() => stepMinute(1)} style={({ pressed }) => [timeStyles.stepBtn, { backgroundColor: C.tint + '12', opacity: pressed ? 0.7 : 1 }]}>
+            <Ionicons name="chevron-up" size={20} color={C.tint} />
+          </Pressable>
+          <View style={[timeStyles.valueBox, { backgroundColor: C.tint + '10', borderColor: C.tint + '30' }]}>
+            <Text style={[timeStyles.valueText, { color: C.text }]}>{displayMin}</Text>
+          </View>
+          <Pressable onPress={() => stepMinute(-1)} style={({ pressed }) => [timeStyles.stepBtn, { backgroundColor: C.tint + '12', opacity: pressed ? 0.7 : 1 }]}>
+            <Ionicons name="chevron-down" size={20} color={C.tint} />
+          </Pressable>
         </View>
+
+        {/* AM/PM (12h only) */}
+        {is12h && (
+          <View style={timeStyles.col}>
+            <Text style={[timeStyles.label, { color: C.textMuted }]}> </Text>
+            <Pressable onPress={togglePm} style={[timeStyles.ampmBtn, { backgroundColor: isPm ? C.tint + '15' : C.tint, borderColor: C.tint }]}>
+              <Text style={[timeStyles.ampmText, { color: isPm ? C.text : '#fff' }]}>AM</Text>
+            </Pressable>
+            <Pressable onPress={togglePm} style={[timeStyles.ampmBtn, { backgroundColor: isPm ? C.tint : C.tint + '15', borderColor: C.tint, marginTop: 6 }]}>
+              <Text style={[timeStyles.ampmText, { color: isPm ? '#fff' : C.text }]}>PM</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
 
       <Pressable onPress={onDone} style={timeStyles.doneBtn}>
-        <LinearGradient
-          colors={[...GRADIENT_H]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={[StyleSheet.absoluteFill, { borderRadius: Radius.md }]}
-        />
+        <LinearGradient colors={[...GRADIENT_H]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[StyleSheet.absoluteFill, { borderRadius: Radius.md }]} />
         <Ionicons name="checkmark" size={16} color="#fff" />
         <Text style={timeStyles.doneBtnText}>{t('save', lang)}</Text>
       </Pressable>
@@ -303,22 +323,18 @@ const timeStyles = StyleSheet.create({
     padding: Spacing.md,
     marginTop: Spacing.sm,
   },
-  row: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.sm },
-  col: { flex: 1 },
-  label: { fontSize: 11, fontFamily: F.med, textAlign: 'center', marginBottom: Spacing.xs, textTransform: 'uppercase' },
-  scroll: { height: 160 },
-  option: { paddingVertical: 8, borderRadius: Radius.sm, alignItems: 'center' },
-  optionText: { fontSize: 16 },
-  colon: { fontSize: 24, fontFamily: F.bold, marginTop: 30 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  col: { flex: 1, alignItems: 'center', gap: 6 },
+  label: { fontSize: 11, fontFamily: F.med, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 0.5 },
+  stepBtn: { width: '100%', height: 36, borderRadius: Radius.sm, alignItems: 'center', justifyContent: 'center' },
+  valueBox: { width: '100%', height: 52, borderRadius: Radius.md, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  valueText: { fontSize: 26, fontFamily: F.bold, letterSpacing: 1 },
+  colon: { fontSize: 28, fontFamily: F.bold, marginTop: 42, marginHorizontal: -4 },
+  ampmBtn: { width: '100%', height: 36, borderRadius: Radius.sm, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  ampmText: { fontSize: 13, fontFamily: F.bold },
   doneBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    borderRadius: Radius.md,
-    paddingVertical: 10,
-    marginTop: Spacing.sm,
-    overflow: 'hidden',
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 6, borderRadius: Radius.md, paddingVertical: 11, marginTop: Spacing.md, overflow: 'hidden',
   },
   doneBtnText: { color: '#fff', fontSize: 14, fontFamily: F.med },
 });

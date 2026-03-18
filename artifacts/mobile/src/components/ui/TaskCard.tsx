@@ -9,6 +9,7 @@ import { PriorityBadge } from './PriorityBadge';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useSettingsStore } from '../../store/settingsStore';
 import { resolveDisplayName } from '../../utils/i18n';
+import { SECONDARY } from '../../theme';
 
 interface TaskCardProps {
   task: Task;
@@ -42,7 +43,7 @@ export function TaskCard({
   const isPostponed = task.status === 'postponed';
 
   const accentColor = isOverdue ? C.error
-    : isCompleted ? C.success
+    : isCompleted ? SECONDARY
     : task.priority === 'high' ? C.priorityHigh
     : task.priority === 'medium' ? C.priorityMedium
     : C.priorityLow;
@@ -95,8 +96,8 @@ export function TaskCard({
           <View style={[
             styles.checkCircle,
             {
-              borderColor: isCompleted ? C.success : C.border,
-              backgroundColor: isCompleted ? C.success : 'transparent',
+              borderColor: isCompleted ? SECONDARY : C.border,
+              backgroundColor: isCompleted ? SECONDARY : 'transparent',
             },
           ]}>
             {isCompleted && <Ionicons name="checkmark" size={12} color="#fff" />}

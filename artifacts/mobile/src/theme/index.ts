@@ -178,6 +178,7 @@ export const GRADIENT_H: readonly [string, string] = ['#C97A5B', '#E8A87C'];
 export const GRADIENT_D: readonly [string, string, string] = ['#C97A5B', '#D48E6E', '#7BAE9E'];
 export const GRADIENT_WARM: readonly [string, string] = ['#E8A87C', '#F5C89A'];
 export const GRADIENT_SAGE: readonly [string, string] = ['#7BAE9E', '#9ECCC0'];
+export const GRADIENT_TEAL: readonly [string, string, string] = ['#5B9A8B', '#7BAE9E', '#9ECCC0'];
 export const GRADIENT_AMBER: readonly [string, string] = ['#E8A650', '#F5C86A'];
 export const GRADIENT_CORAL: readonly [string, string] = ['#C9605B', '#E88078'];
 export const GRADIENT_GREEN: readonly [string, string] = [WARM_SAGE, '#4CAF82'];
