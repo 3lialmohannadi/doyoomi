@@ -1,228 +1,240 @@
 import React from "react";
 
-const P = "#C97A5B";   // terracotta
-const A = "#E8A87C";   // amber
-const S = "#7BAE9E";   // sage
-const D = "#2C1208";   // dark espresso
-const C = "#FFF9F5";   // cream
-
-/* ─── The icon mark — faithfully rebuilt from the reference ─── */
+/* ═══════════════════════════════
+   YOOMI MARK  — SVG Icon Badge
+   Faithful recreation of the ي/D+checkmark+dots concept
+   in warm terracotta palette
+══════════════════════════════════ */
 function YoomiMark({ size = 120 }: { size?: number }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 200 200"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width={size} height={size} viewBox="0 0 300 300" fill="none">
       <defs>
-        {/* badge background */}
-        <linearGradient id="bg" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#9E4A32" />
-          <stop offset="45%" stopColor={P} />
-          <stop offset="100%" stopColor={A} />
+        {/* ── Badge background ─  much darker at top for depth ── */}
+        <linearGradient id="bg" x1="0" y1="0" x2="300" y2="300" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#5C1E0A" />
+          <stop offset="40%"  stopColor="#A04030" />
+          <stop offset="80%"  stopColor="#C97A5B" />
+          <stop offset="100%" stopColor="#D8936A" />
         </linearGradient>
 
-        {/* top-glass highlight */}
-        <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgba(255,255,255,0.30)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-        </linearGradient>
-
-        {/* checkmark gradient */}
-        <linearGradient id="chk" x1="155" y1="30" x2="50" y2="155" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor={A} />
-          <stop offset="55%" stopColor={S} />
-          <stop offset="100%" stopColor="#4E9080" />
-        </linearGradient>
-
-        {/* dot pearl */}
-        <radialGradient id="dot" cx="35%" cy="30%" r="65%">
-          <stop offset="0%" stopColor={C} />
-          <stop offset="100%" stopColor="rgba(255,249,245,0.55)" />
+        {/* ── Badge inner gradient (depth) ── */}
+        <radialGradient id="bgRadial" cx="50%" cy="30%" r="70%">
+          <stop offset="0%"   stopColor="rgba(255,140,80,0.18)" />
+          <stop offset="100%" stopColor="rgba(0,0,0,0)" />
         </radialGradient>
 
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        {/* ── Glass shine ── */}
+        <radialGradient id="shine" cx="38%" cy="22%" r="55%">
+          <stop offset="0%"   stopColor="rgba(255,255,255,0.26)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+        </radialGradient>
+
+        {/* ── Checkmark gradient — warm gold top, sage bottom ── */}
+        <linearGradient id="chk" x1="238" y1="44" x2="56" y2="220"
+          gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor="#F5C880" />
+          <stop offset="48%"  stopColor="#7BAE9E" />
+          <stop offset="100%" stopColor="#4D9082" />
+        </linearGradient>
+
+        {/* ── Checkmark soft glow ── */}
+        <filter id="chkGlow" x="-12%" y="-12%" width="124%" height="124%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b" />
+          <feMerge>
+            <feMergeNode in="b" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+
+        {/* ── Pearl dot ── */}
+        <radialGradient id="pearl" cx="33%" cy="28%" r="65%">
+          <stop offset="0%"   stopColor="rgba(255,255,255,1)" />
+          <stop offset="40%"  stopColor="rgba(255,249,245,0.88)" />
+          <stop offset="100%" stopColor="rgba(240,220,200,0.40)" />
+        </radialGradient>
+
+        {/* ── Dot shadow ── */}
+        <filter id="dotDrop">
+          <feDropShadow dx="0" dy="2" stdDeviation="2"
+            floodColor="rgba(44,18,8,0.40)" />
         </filter>
 
         <clipPath id="badge">
-          <rect x="0" y="0" width="200" height="200" rx="46" />
+          <rect x="0" y="0" width="300" height="300" rx="66" />
         </clipPath>
+
+        {/* ── Outer badge shadow ── */}
+        <filter id="outer" x="-18%" y="-18%" width="136%" height="136%">
+          <feDropShadow dx="0" dy="8" stdDeviation="14"
+            floodColor="rgba(80,20,0,0.55)" />
+        </filter>
       </defs>
 
-      {/* ── badge background ── */}
-      <rect x="0" y="0" width="200" height="200" rx="46" fill="url(#bg)" />
-      {/* glass shine */}
-      <rect x="0" y="0" width="200" height="200" rx="46" fill="url(#shine)" clipPath="url(#badge)" />
+      {/* BADGE */}
+      <rect x="0" y="0" width="300" height="300" rx="66"
+        fill="url(#bg)" filter="url(#outer)" />
+      <rect x="0" y="0" width="300" height="300" rx="66"
+        fill="url(#bgRadial)" clipPath="url(#badge)" />
+      <rect x="0" y="0" width="300" height="300" rx="66"
+        fill="url(#shine)" clipPath="url(#badge)" />
 
-      {/* ── The ي / D combined shape ──
-          Outer: a tall rounded rect + wide bottom arc (the ي scoop)
-          Drawn as stroke-only (thick outline), no fill
-      ── */}
+      {/* ═══════════════════════════════
+          ي / D  SHAPE
+          White thick stroke outline:
+           • D head (top closed portion)
+           • ي tail (open arc below)
+      ════════════════════════════════ */}
+
+      {/* D head — classic D letterform with pronounced belly */}
       <path
-        d="
-          M 38,22
-          L 105,22
-          Q 162,22 162,79
-          Q 162,124 118,132
-          L 38,132
-          Q 30,132 30,124
-          L 30,30
-          Q 30,22 38,22
+        d={`
+          M 46,30
+          L 118,30
+          Q 256,30 256,112
+          Q 256,188 118,188
+          L 46,188
           Z
-        "
-        stroke={C}
-        strokeWidth="14"
-        strokeLinejoin="round"
-        fill="none"
-        opacity="0.95"
-      />
-
-      {/* bottom open arc — the ي tail/scoop */}
-      <path
-        d="
-          M 30,118
-          Q 30,158 82,162
-          Q 140,166 162,132
-        "
-        stroke={C}
-        strokeWidth="14"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.88"
-      />
-
-      {/* ── Big bold checkmark spanning the full mark — like reference ── */}
-      <polyline
-        points="44,105  82,148  162,38"
-        stroke="url(#chk)"
+        `}
+        stroke="rgba(255,255,255,0.96)"
         strokeWidth="22"
-        strokeLinecap="round"
         strokeLinejoin="round"
-        filter="url(#glow)"
+        fill="none"
+        clipPath="url(#badge)"
       />
 
-      {/* ── Two glossy 3D dots ── */}
-      <circle cx="76" cy="178" r="12" fill="url(#dot)" />
-      <circle cx="108" cy="178" r="12" fill="url(#dot)" />
-      {/* dot inner highlights */}
-      <circle cx="72" cy="174" r="4" fill="rgba(255,255,255,0.6)" />
-      <circle cx="104" cy="174" r="4" fill="rgba(255,255,255,0.6)" />
+      {/* ي arc tail — graceful open sweep below the D */}
+      <path
+        d={`
+          M 46,170
+          Q 36,234 120,242
+          Q 214,250 232,184
+        `}
+        stroke="rgba(255,255,255,0.84)"
+        strokeWidth="21"
+        strokeLinecap="round"
+        fill="none"
+        clipPath="url(#badge)"
+      />
+
+      {/* ═══════════════════════════════
+          CHECKMARK — large, dramatic
+          tip exits D at top-right, foot in arc
+      ════════════════════════════════ */}
+      <polyline
+        points="60,150  108,210  240,58"
+        stroke="url(#chk)"
+        strokeWidth="31"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        filter="url(#chkGlow)"
+        clipPath="url(#badge)"
+      />
+
+      {/* ═══════════════════════════════
+          TWO 3D GLOSSY DOTS
+      ════════════════════════════════ */}
+      <circle cx="110" cy="262" r="16" fill="url(#pearl)" filter="url(#dotDrop)" />
+      <circle cx="152" cy="262" r="16" fill="url(#pearl)" filter="url(#dotDrop)" />
     </svg>
   );
 }
 
-/* ─── Wordmark ─── */
-function Wordmark({ color = D, size = 52 }: { color?: string; size?: number }) {
+/* ── Wordmark ── */
+function Wordmark({ light = false, sz = 54 }: { light?: boolean; sz?: number }) {
+  const dark = "#2C1208";
+  const txtCol = light ? "#FFF9F5" : dark;
   return (
-    <div style={{ display: "flex", alignItems: "baseline", gap: 0, lineHeight: 1 }}>
+    <div style={{ display: "flex", alignItems: "baseline", lineHeight: 1, gap: 0 }}>
       <span style={{
-        fontFamily: "'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif",
-        fontSize: size, fontWeight: 900, color, letterSpacing: -1.5,
+        fontFamily: "'Plus Jakarta Sans','Arial Black',system-ui,sans-serif",
+        fontSize: sz, fontWeight: 900, letterSpacing: -1.5, color: txtCol,
       }}>Do</span>
-      <span style={{ fontSize: size, fontWeight: 900, color: P, margin: "0 1px", lineHeight: 1 }}>.</span>
       <span style={{
-        fontFamily: "'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif",
-        fontSize: size, fontWeight: 900, letterSpacing: -1.5,
-        background: `linear-gradient(90deg, ${P} 0%, ${A} 100%)`,
-        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+        fontSize: sz, fontWeight: 900, lineHeight: 1,
+        color: light ? "#E8A87C" : "#C97A5B",
+        margin: "0 1px",
+      }}>.</span>
+      <span style={{
+        fontFamily: "'Plus Jakarta Sans','Arial Black',system-ui,sans-serif",
+        fontSize: sz, fontWeight: 900, letterSpacing: -1.5,
+        background: light
+          ? "linear-gradient(90deg,#E8A87C,#F5C890)"
+          : "linear-gradient(90deg,#C97A5B,#E8A87C)",
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
       }}>Yoomi</span>
     </div>
   );
 }
 
-/* ─── Main export ─── */
+/* ── App ── */
 export default function DoYoomiLogo() {
+  const card: React.CSSProperties = {
+    background: "#FFF9F5",
+    borderRadius: 28,
+    boxShadow: "0 20px 64px rgba(44,18,8,0.14)",
+    display: "flex",
+    padding: "32px 52px",
+    alignItems: "center",
+    gap: 28,
+    minWidth: 500,
+  };
+  const sub: React.CSSProperties = {
+    fontSize: 10.5, fontWeight: 700, letterSpacing: 3.5,
+    color: "#7BAE9E", textTransform: "uppercase",
+  };
+
   return (
     <div style={{
       minHeight: "100vh",
-      background: "#EDE0D4",
+      background: "linear-gradient(155deg, #DCC9B8 0%, #C8B09A 100%)",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
       gap: 40,
       padding: 48,
-      fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800;900&display=swap');
+        * { box-sizing:border-box; margin:0; padding:0; }
       `}</style>
 
-      {/* ── A: Horizontal — icon + wordmark ── */}
-      <div style={{
-        background: C,
-        borderRadius: 28,
-        padding: "32px 48px",
-        display: "flex",
-        alignItems: "center",
-        gap: 24,
-        boxShadow: "0 16px 56px rgba(44,18,8,0.12)",
-      }}>
+      {/* ─── A: Horizontal ─── */}
+      <div style={card}>
         <YoomiMark size={110} />
-        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-          <Wordmark size={54} />
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
-            <div style={{ height: 2, width: 28, background: `linear-gradient(90deg, ${S}, transparent)`, borderRadius: 1 }} />
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3.5, color: S, textTransform: "uppercase" }}>
-              Daily Productivity
-            </span>
+        <div style={{ display:"flex", flexDirection:"column", gap:0 }}>
+          <Wordmark sz={54} />
+          <div style={{ display:"flex", alignItems:"center", gap:10, marginTop:12 }}>
+            <div style={{
+              width:28, height:2.5, borderRadius:2,
+              background:"linear-gradient(90deg,#7BAE9E,transparent)",
+            }} />
+            <span style={sub}>Daily Productivity</span>
           </div>
         </div>
       </div>
 
-      {/* ── B: Stacked — icon above text, centered ── */}
-      <div style={{
-        background: C,
-        borderRadius: 28,
-        padding: "36px 60px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 18,
-        boxShadow: "0 16px 56px rgba(44,18,8,0.12)",
-      }}>
-        <YoomiMark size={88} />
-        <Wordmark size={46} />
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 4, color: S, textTransform: "uppercase", marginTop: 2 }}>
-          يومي · Daily
-        </span>
+      {/* ─── B: Stacked ─── */}
+      <div style={{ ...card, flexDirection:"column", padding:"40px 64px", gap:20 }}>
+        <YoomiMark size={128} />
+        <Wordmark sz={50} />
+        <span style={{ ...sub, letterSpacing:4.5, marginTop:2 }}>يومي · Daily</span>
       </div>
 
-      {/* ── C: Dark background ── */}
+      {/* ─── C: Dark ─── */}
       <div style={{
-        background: `linear-gradient(135deg, ${D} 0%, #4A1F0A 100%)`,
-        borderRadius: 28,
-        padding: "32px 48px",
-        display: "flex",
-        alignItems: "center",
-        gap: 24,
-        boxShadow: "0 20px 60px rgba(44,18,8,0.45)",
+        ...card,
+        background:"linear-gradient(135deg,#2C1208,#3D1508)",
+        boxShadow:"0 24px 72px rgba(44,18,8,0.60)",
       }}>
         <YoomiMark size={110} />
-        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 0, lineHeight: 1 }}>
-            <span style={{
-              fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-              fontSize: 54, fontWeight: 900, color: C, letterSpacing: -1.5,
-            }}>Do</span>
-            <span style={{ fontSize: 54, fontWeight: 900, color: A }}>.</span>
-            <span style={{
-              fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-              fontSize: 54, fontWeight: 900, letterSpacing: -1.5,
-              background: `linear-gradient(90deg, ${A}, #F5C890)`,
-              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-            }}>Yoomi</span>
-          </div>
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3.5, color: S, textTransform: "uppercase", marginTop: 12 }}>
-            Daily Productivity App
-          </span>
+        <div style={{ display:"flex", flexDirection:"column", gap:0 }}>
+          <Wordmark sz={54} light />
+          <span style={{ ...sub, marginTop:12 }}>Daily Productivity App</span>
         </div>
       </div>
+
     </div>
   );
 }
