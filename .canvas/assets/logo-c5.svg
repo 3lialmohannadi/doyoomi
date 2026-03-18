@@ -1,0 +1,17 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='960' height='230' viewBox='0 0 960 230'>
+  <rect width='960' height='230' fill=''/>
+  <text font-family='Helvetica Neue,Arial,sans-serif' font-weight='700' font-size='88' fill='' letter-spacing='2'>
+    <tspan x='50' y='126'>DO.</tspan>
+  </text>
+  <text font-family='Helvetica Neue,Arial,sans-serif' font-weight='700' font-size='88' fill='' letter-spacing='2'>
+    <tspan x='278' y='126'>Y</tspan>
+  </text>
+  <circle cx='388' cy='82' r='38' stroke='' stroke-width='3' fill='none'/>
+  <polyline points='367,82 383,102 411,60' stroke='' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/>
+  <text font-family='Helvetica Neue,Arial,sans-serif' font-weight='700' font-size='88' fill='' letter-spacing='2'>
+    <tspan x='438' y='126'>OMI</tspan>
+  </text>
+  <text font-family='Helvetica Neue,Arial,sans-serif' font-weight='400' font-size='18' fill='' letter-spacing='6' text-anchor='middle'>
+    <tspan x='480' y='180'>DO SOMETHING DAILY</tspan>
+  </text>
+</svg>

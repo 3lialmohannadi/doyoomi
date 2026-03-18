@@ -1,0 +1,21 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='960' height='200' viewBox='0 0 960 200'>
+  <defs>
+    <linearGradient id='g1' x1='0' y1='0' x2='1' y2='0'>
+      <stop offset='0' stop-color=''/>
+      <stop offset='1' stop-color=''/>
+    </linearGradient>
+  </defs>
+  <rect width='960' height='200' fill=''/>
+  <text font-family='Helvetica Neue,Arial,sans-serif' font-weight='800' font-size='98' fill='url(#g1)'>
+    <tspan x='48' y='138'>DO</tspan>
+  </text>
+  <circle cx='254' cy='126' r='7' fill=''/>
+  <text font-family='Helvetica Neue,Arial,sans-serif' font-weight='800' font-size='98' fill='url(#g1)'>
+    <tspan x='276' y='138'>Y</tspan>
+  </text>
+  <circle cx='392' cy='90' r='40' stroke='' stroke-width='3.5' fill='none'/>
+  <polyline points='370,90 387,110 416,68' stroke='' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' fill='none'/>
+  <text font-family='Helvetica Neue,Arial,sans-serif' font-weight='800' font-size='98' fill='url(#g1)'>
+    <tspan x='444' y='138'>OMI</tspan>
+  </text>
+</svg>
