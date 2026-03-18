@@ -119,12 +119,12 @@ const styles = StyleSheet.create({
     fontFamily: F.med,
     letterSpacing: 0.5,
   },
-  iconGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
+  iconGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, justifyContent: 'center' },
   iconBtn: {
     width: 46, height: 46, borderRadius: Radius.md,
     alignItems: 'center', justifyContent: 'center',
   },
-  colorGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm + 2 },
+  colorGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm + 2, justifyContent: 'center' },
   colorBtn: {
     width: 40, height: 40, borderRadius: 20,
     alignItems: 'center', justifyContent: 'center',

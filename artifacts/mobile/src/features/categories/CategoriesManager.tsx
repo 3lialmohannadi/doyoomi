@@ -368,14 +368,14 @@ const styles = StyleSheet.create({
   },
 
   iconGrid: {
-    flexDirection: 'row', flexWrap: 'wrap', gap: 8,
+    flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center',
   },
   iconChoice: {
     width: 44, height: 44, borderRadius: Radius.md,
     alignItems: 'center', justifyContent: 'center',
   },
 
-  colorGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  colorGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'center' },
   colorChoice: {
     width: 38, height: 38, borderRadius: 19,
     alignItems: 'center', justifyContent: 'center',
