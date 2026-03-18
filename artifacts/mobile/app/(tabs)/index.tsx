@@ -244,6 +244,7 @@ export default function HomeScreen() {
                     task={task}
                     catName={cat?.name}
                     catColor={cat?.color}
+                    catIcon={cat?.icon}
                     timeStr={task.due_time ? formatTime(task.due_time, profile.time_format === '12h') : undefined}
                     onToggle={() => toggleComplete(task.id)}
                     onLongPress={() => {
@@ -537,11 +538,11 @@ function Section({ title, children, C, action, onAction, onTitlePress, isRTL, ba
 }
 
 interface FunTaskRowProps {
-  task: Task; catName?: string; catColor?: string; timeStr?: string;
+  task: Task; catName?: string; catColor?: string; catIcon?: string; timeStr?: string;
   onToggle: () => void; onLongPress?: () => void; C: ColorScheme; isRTL?: boolean;
 }
 
-function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C, isRTL }: FunTaskRowProps) {
+function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLongPress, C, isRTL }: FunTaskRowProps) {
   const isCompleted = task.status === 'completed';
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
@@ -579,7 +580,10 @@ function FunTaskRow({ task, catName, catColor, timeStr, onToggle, onLongPress, C
         </Text>
         <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', gap: 6, alignItems: 'center', marginTop: 2 }}>
           {catName && (
-            <View style={[styles.catPill, { backgroundColor: (catColor ?? C.tint) + '20' }]}>
+            <View style={[styles.catPill, { backgroundColor: (catColor ?? C.tint) + '20', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              {catIcon && (
+                <Ionicons name={(catIcon + '-outline') as IoniconsName} size={11} color={catColor ?? C.tint} />
+              )}
               <Text style={[styles.catPillText, { color: catColor ?? C.tint }]}>{catName}</Text>
             </View>
           )}
@@ -984,7 +988,7 @@ const styles = StyleSheet.create({
   taskInfo: { flex: 1, paddingVertical: Spacing.md, paddingRight: Spacing.sm },
   taskTitle: { fontSize: 15, fontFamily: F.med },
   taskTime: { fontSize: 12, fontFamily: F.reg },
-  catPill: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
+  catPill: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, flexDirection: 'row', alignItems: 'center', gap: 3 },
   catPillText: { fontSize: 11, fontFamily: F.med },
 
   // Habit card
