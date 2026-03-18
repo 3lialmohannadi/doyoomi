@@ -7,79 +7,79 @@ export const WARM_AMBER  = '#E8A87C';
 export const WARM_CORAL  = '#D48E6E';
 export const WARM_SAGE   = '#6BAF8A';
 export const WARM_TEAL   = '#5BA89E';
-export const WARM_ERROR  = '#C96B6B';
+export const WARM_ERROR  = '#C9605B';
 export const WARM_AMBER2 = '#E8A650';
 
 export const Colors = {
   light: {
-    background: '#FBF7F3',
-    surface: '#FFF9F5',
+    background:      '#FBF7F3',
+    surface:         '#FFF9F5',
     surfaceElevated: '#FFFFFF',
-    border: 'rgba(201,122,91,0.12)',
-    borderLight: 'rgba(201,122,91,0.07)',
-    text: '#2D1A0E',
-    textSecondary: '#7A5C48',
-    textMuted: '#B5957E',
-    tint: PRIMARY,
-    tintSecondary: SECONDARY,
-    tabBar: 'rgba(251,247,243,0.97)',
-    card: '#FFFFFF',
-    card2: '#FBF7F3',
-    shadow: 'rgba(201,122,91,0.12)',
-    shadowMedium: 'rgba(201,122,91,0.20)',
-    success: SECONDARY,
-    warning: WARM_AMBER2,
-    error: WARM_ERROR,
-    overdue: WARM_ERROR,
-    priorityHigh: WARM_ERROR,
-    priorityMedium: WARM_AMBER2,
-    priorityLow: SECONDARY,
-    streak: WARM_AMBER2,
-    habit: SECONDARY,
-    goal: PRIMARY,
-    gradientStart: PRIMARY,
-    gradientEnd: WARM_AMBER,
-    gradientMid: WARM_CORAL,
-    pillActive: PRIMARY,
-    pillInactive: '#FFF9F5',
-    segmentBg: '#F0E8E0',
-    inputBg: '#FFF9F5',
-    dim: '#B5957E',
+    border:          'rgba(201,122,91,0.12)',
+    borderLight:     'rgba(201,122,91,0.07)',
+    text:            '#2C1D0E',
+    textSecondary:   '#7A6655',
+    textMuted:       '#B09B87',
+    tint:            PRIMARY,
+    tintSecondary:   SECONDARY,
+    tabBar:          'rgba(251,247,243,0.97)',
+    card:            '#FFFFFF',
+    card2:           '#FBF7F3',
+    shadow:          'rgba(201,122,91,0.12)',
+    shadowMedium:    'rgba(201,122,91,0.20)',
+    success:         '#7BAE9E',
+    warning:         '#E8A650',
+    error:           '#C9605B',
+    overdue:         '#C9605B',
+    priorityHigh:    '#C9605B',
+    priorityMedium:  '#E8A650',
+    priorityLow:     '#7BAE9E',
+    streak:          '#E8A650',
+    habit:           '#7BAE9E',
+    goal:            PRIMARY,
+    gradientStart:   PRIMARY,
+    gradientEnd:     '#E8A87C',
+    gradientMid:     '#D48E6E',
+    pillActive:      PRIMARY,
+    pillInactive:    '#F2ECE7',
+    segmentBg:       '#F2ECE7',
+    inputBg:         '#FFF9F5',
+    dim:             '#B09B87',
   },
   dark: {
-    background: '#1C130C',
-    surface: '#251A10',
-    surfaceElevated: '#2E1E12',
-    border: 'rgba(255,255,255,0.08)',
-    borderLight: 'rgba(255,255,255,0.05)',
-    text: '#F5EDE4',
-    textSecondary: '#C4A48A',
-    textMuted: '#8A6A52',
-    tint: '#D9956F',
-    tintSecondary: '#8DBFB0',
-    tabBar: 'rgba(28,19,12,0.97)',
-    card: '#251A10',
-    card2: '#2E1E12',
-    shadow: 'rgba(0,0,0,0.25)',
-    shadowMedium: 'rgba(0,0,0,0.40)',
-    success: '#8DBFB0',
-    warning: WARM_AMBER2,
-    error: WARM_ERROR,
-    overdue: WARM_ERROR,
-    priorityHigh: WARM_ERROR,
-    priorityMedium: WARM_AMBER2,
-    priorityLow: '#8DBFB0',
-    streak: WARM_AMBER2,
-    habit: '#8DBFB0',
-    goal: '#D9956F',
-    gradientStart: '#D9956F',
-    gradientEnd: WARM_AMBER,
-    gradientMid: WARM_CORAL,
-    pillActive: '#D9956F',
-    pillInactive: '#251A10',
-    segmentBg: '#251A10',
-    inputBg: '#251A10',
-    dim: '#8A6A52',
+    background:      '#1C130C',
+    surface:         '#261A12',
+    surfaceElevated: '#30211A',
+    border:          'rgba(255,255,255,0.08)',
+    borderLight:     'rgba(255,255,255,0.05)',
+    text:            '#F5EDE5',
+    textSecondary:   '#C4AA96',
+    textMuted:       '#8A6E5C',
+    tint:            '#E8956E',
+    tintSecondary:   '#8FCABC',
+    tabBar:          'rgba(28,19,12,0.97)',
+    card:            '#261A12',
+    card2:           '#30211A',
+    shadow:          'rgba(0,0,0,0.4)',
+    shadowMedium:    'rgba(0,0,0,0.6)',
+    success:         '#8FCABC',
+    warning:         '#E8A650',
+    error:           '#E07068',
+    overdue:         '#E07068',
+    priorityHigh:    '#E07068',
+    priorityMedium:  '#E8A650',
+    priorityLow:     '#8FCABC',
+    streak:          '#E8A650',
+    habit:           '#8FCABC',
+    goal:            '#E8956E',
+    gradientStart:   '#E8956E',
+    gradientEnd:     '#F0B896',
+    gradientMid:     '#E8A87C',
+    pillActive:      '#E8956E',
+    pillInactive:    '#30211A',
+    segmentBg:       '#261A12',
+    inputBg:         '#30211A',
+    dim:             '#8A6E5C',
   },
 };
 
@@ -142,21 +142,21 @@ export const ShadowDark = {
   sm: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
   },
   md: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.12,
     shadowRadius: 16,
     elevation: 6,
   },
   lg: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.45,
+    shadowOpacity: 0.18,
     shadowRadius: 24,
     elevation: 10,
   },
@@ -174,15 +174,15 @@ export const Typography = {
   label: { fontSize: 13, fontFamily: F.med, lineHeight: 18 },
 };
 
-export const GRADIENT_H: readonly [string, string] = [PRIMARY, WARM_AMBER];
-export const GRADIENT_D: readonly [string, string, string] = [PRIMARY, WARM_CORAL, SECONDARY];
-export const GRADIENT_SAGE: readonly [string, string] = [SECONDARY, '#9ECCC0'];
-export const GRADIENT_AMBER: readonly [string, string] = [WARM_AMBER2, WARM_AMBER];
-export const GRADIENT_CORAL: readonly [string, string] = [WARM_ERROR, WARM_CORAL];
-export const GRADIENT_WARM: readonly [string, string] = [WARM_CORAL, WARM_AMBER];
+export const GRADIENT_H: readonly [string, string] = ['#C97A5B', '#E8A87C'];
+export const GRADIENT_D: readonly [string, string, string] = ['#C97A5B', '#D48E6E', '#7BAE9E'];
+export const GRADIENT_WARM: readonly [string, string] = ['#E8A87C', '#F5C89A'];
+export const GRADIENT_SAGE: readonly [string, string] = ['#7BAE9E', '#9ECCC0'];
+export const GRADIENT_AMBER: readonly [string, string] = ['#E8A650', '#F5C86A'];
+export const GRADIENT_CORAL: readonly [string, string] = ['#C9605B', '#E88078'];
 export const GRADIENT_GREEN: readonly [string, string] = [WARM_SAGE, '#4CAF82'];
 
-function shadowHelper(color = '#2D1A0E', strength = 4) {
+function shadowHelper(color = PRIMARY, strength = 4) {
   return Platform.select({
     ios: {
       shadowColor:    color,
@@ -194,6 +194,6 @@ function shadowHelper(color = '#2D1A0E', strength = 4) {
   }) ?? {};
 }
 
-export const cardShadow    = shadowHelper('#2D1A0E', 3);
+export const cardShadow    = shadowHelper(PRIMARY, 3);
 export const primaryShadow = shadowHelper(PRIMARY, 8);
 export const softShadow    = shadowHelper(PRIMARY, 4);
