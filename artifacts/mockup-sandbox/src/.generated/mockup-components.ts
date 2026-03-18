@@ -5,5 +5,6 @@ export const modules: ModuleMap = {
   "./components/mockups/Logo/DRingExplorer.tsx": () => import("../components/mockups/Logo/DRingExplorer.tsx"),
   "./components/mockups/Logo/DoYoomiLogo.tsx": () => import("../components/mockups/Logo/DoYoomiLogo.tsx"),
   "./components/mockups/Logo/IconFinal3.tsx": () => import("../components/mockups/Logo/IconFinal3.tsx"),
-  "./components/mockups/Logo/ProIconExplorer.tsx": () => import("../components/mockups/Logo/ProIconExplorer.tsx")
+  "./components/mockups/Logo/ProIconExplorer.tsx": () => import("../components/mockups/Logo/ProIconExplorer.tsx"),
+  "./components/mockups/Logo/WordmarkFinal.tsx": () => import("../components/mockups/Logo/WordmarkFinal.tsx")
 };
