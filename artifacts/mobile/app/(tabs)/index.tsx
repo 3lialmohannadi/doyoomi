@@ -94,7 +94,7 @@ export default function HomeScreen() {
           <View style={[styles.heroContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={[styles.heroLeft, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
               <Text style={[styles.greeting, { textAlign: isRTL ? 'right' : 'left' }]}>{getGreeting(lang)}</Text>
-              <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
+              <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left', width: '100%' }]} numberOfLines={2}>
                 {profile.name || (isRTL ? 'يومي' : 'Do.Yoomi')}
               </Text>
               <Text style={[styles.heroDate, { textAlign: isRTL ? 'right' : 'left' }]}>
