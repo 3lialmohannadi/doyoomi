@@ -1,0 +1,16 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='900' height='200' viewBox='0 0 900 200'>
+  <rect width='900' height='200' fill='#FEFCF8'/>
+  <text font-family='Helvetica Neue, Arial, sans-serif' font-weight='200' font-size='96' fill='#8B9299' letter-spacing='6'>
+    <tspan x='55' y='136'>DO</tspan>
+  </text>
+  <circle cx='240' cy='108' r='6' fill='#C97A5B'/>
+  <text font-family='Helvetica Neue, Arial, sans-serif' font-weight='200' font-size='96' fill='#8B9299' letter-spacing='6'>
+    <tspan x='262' y='136'>Y</tspan>
+  </text>
+  <circle cx='376' cy='92' r='38' stroke='#C97A5B' stroke-width='2' fill='none'/>
+  <polyline points='356,92 372,110 400,70' stroke='#C97A5B' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' fill='none'/>
+  <text font-family='Helvetica Neue, Arial, sans-serif' font-weight='200' font-size='96' fill='#8B9299' letter-spacing='6'>
+    <tspan x='428' y='136'>OMI</tspan>
+  </text>
+  <circle cx='762' cy='108' r='6' fill='#C97A5B'/>
+</svg>
