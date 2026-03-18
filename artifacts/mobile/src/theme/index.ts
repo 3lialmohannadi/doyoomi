@@ -15,8 +15,8 @@ export const Colors = {
     background: '#FBF7F3',
     surface: '#FFF9F5',
     surfaceElevated: '#FFFFFF',
-    border: 'rgba(201,122,91,0.14)',
-    borderLight: 'rgba(201,122,91,0.08)',
+    border: 'rgba(201,122,91,0.12)',
+    borderLight: 'rgba(201,122,91,0.07)',
     text: '#2D1A0E',
     textSecondary: '#7A5C48',
     textMuted: '#B5957E',
@@ -27,13 +27,13 @@ export const Colors = {
     card2: '#FBF7F3',
     shadow: 'rgba(201,122,91,0.12)',
     shadowMedium: 'rgba(201,122,91,0.20)',
-    success: WARM_SAGE,
+    success: SECONDARY,
     warning: WARM_AMBER2,
     error: WARM_ERROR,
     overdue: WARM_ERROR,
     priorityHigh: WARM_ERROR,
     priorityMedium: WARM_AMBER2,
-    priorityLow: WARM_SAGE,
+    priorityLow: SECONDARY,
     streak: WARM_AMBER2,
     habit: SECONDARY,
     goal: PRIMARY,
@@ -42,7 +42,7 @@ export const Colors = {
     gradientMid: WARM_CORAL,
     pillActive: PRIMARY,
     pillInactive: '#FFF9F5',
-    segmentBg: '#EFE5DB',
+    segmentBg: '#F0E8E0',
     inputBg: '#FFF9F5',
     dim: '#B5957E',
   },
@@ -62,13 +62,13 @@ export const Colors = {
     card2: '#2E1E12',
     shadow: 'rgba(45,26,14,0.3)',
     shadowMedium: 'rgba(45,26,14,0.45)',
-    success: WARM_SAGE,
+    success: '#8DBFB0',
     warning: WARM_AMBER2,
     error: WARM_ERROR,
     overdue: WARM_ERROR,
     priorityHigh: WARM_ERROR,
     priorityMedium: WARM_AMBER2,
-    priorityLow: WARM_SAGE,
+    priorityLow: '#8DBFB0',
     streak: WARM_AMBER2,
     habit: '#8DBFB0',
     goal: '#D9956F',
@@ -176,9 +176,10 @@ export const Typography = {
 
 export const GRADIENT_H: readonly [string, string] = [PRIMARY, WARM_AMBER];
 export const GRADIENT_D: readonly [string, string, string] = [PRIMARY, WARM_CORAL, SECONDARY];
-export const GRADIENT_SAGE: readonly [string, string] = [SECONDARY, '#A8D5C8'];
-export const GRADIENT_AMBER: readonly [string, string] = [WARM_CORAL, WARM_AMBER];
+export const GRADIENT_SAGE: readonly [string, string] = [SECONDARY, '#9ECCC0'];
+export const GRADIENT_AMBER: readonly [string, string] = [WARM_AMBER2, WARM_AMBER];
 export const GRADIENT_CORAL: readonly [string, string] = [WARM_ERROR, WARM_CORAL];
+export const GRADIENT_WARM: readonly [string, string] = [WARM_CORAL, WARM_AMBER];
 export const GRADIENT_GREEN: readonly [string, string] = [WARM_SAGE, '#4CAF82'];
 
 function shadowHelper(color = '#2D1A0E', strength = 4) {
