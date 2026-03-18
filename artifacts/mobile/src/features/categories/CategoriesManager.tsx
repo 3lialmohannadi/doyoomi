@@ -235,11 +235,11 @@ export function CategoriesManager({ visible, onClose }: CategoriesManagerProps) 
               <View style={styles.formField}>
                 <Text style={[styles.formLabel, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('color')}</Text>
                 <View style={styles.colorGrid}>
-                  {CATEGORY_COLORS.map((cl) => {
+                  {CATEGORY_COLORS.map((cl, ci) => {
                     const isActive = color === cl;
                     return (
                       <Pressable
-                        key={cl}
+                        key={`${cl}-${ci}`}
                         onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setColor(cl); }}
                         style={[
                           styles.colorChoice,
