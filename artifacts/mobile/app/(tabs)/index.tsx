@@ -95,7 +95,7 @@ export default function HomeScreen() {
             <View style={[styles.heroLeft, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
               <Image
                 source={require('../../assets/images/logo-wordmark-transparent.png')}
-                style={styles.heroLogo}
+                style={[styles.heroLogo, { alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}
                 resizeMode="contain"
                 tintColor="#fff"
               />
@@ -903,7 +903,7 @@ const styles = StyleSheet.create({
   heroContent: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: Spacing.md },
   heroLeft: { gap: 2, flex: 1 },
   greeting: { fontSize: 14, color: 'rgba(255,255,255,0.75)', fontFamily: F.med },
-  heroLogo: { width: 160, height: 40, marginBottom: 8 },
+  heroLogo: { height: 36, marginBottom: 8 },
   heroTitle: { fontSize: 32, color: '#fff', fontFamily: F.bold, lineHeight: 40 },
   heroDate: { fontSize: 13, color: 'rgba(255,255,255,0.65)', fontFamily: F.med, marginTop: 4 },
   heroSub: { fontSize: 16, color: 'rgba(255,255,255,0.65)', fontFamily: F.med },
