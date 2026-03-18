@@ -141,8 +141,8 @@ export default function SplashScreen({ onFinish, duration = 3000 }: Props) {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       <LinearGradient
-        colors={["#160328", "#2b0848", "#420e6a", "#641880", "#8a2aa0", "#a83aae", "#c25098", "#d46882", "#de8070"]}
-        locations={[0, 0.16, 0.32, 0.48, 0.62, 0.74, 0.85, 0.95, 1]}
+        colors={["#1C0D06", "#3B1A0F", "#6B2E18", "#A05030", "#C97A5B", "#D48E6E", "#E8A87C", "#F0BC90"]}
+        locations={[0, 0.14, 0.30, 0.46, 0.62, 0.76, 0.88, 1]}
         start={{ x: 0.15, y: 0 }}
         end={{ x: 0.85, y: 1 }}
         style={StyleSheet.absoluteFill}
@@ -150,6 +150,7 @@ export default function SplashScreen({ onFinish, duration = 3000 }: Props) {
 
       <View style={styles.bgGlowTop} />
       <View style={styles.bgGlowBottom} />
+      <View style={styles.bgGlowMid} />
 
       <Animated.View style={[
         styles.content,
@@ -208,25 +209,34 @@ const styles = StyleSheet.create({
     height,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#160328",
+    backgroundColor: "#1C0D06",
   },
   bgGlowTop: {
     position: "absolute",
-    top: "8%",
+    top: "6%",
     alignSelf: "center",
-    width: 340,
-    height: 340,
-    borderRadius: 170,
-    backgroundColor: "rgba(210, 80, 170, 0.22)",
+    width: 320,
+    height: 320,
+    borderRadius: 160,
+    backgroundColor: "rgba(201, 122, 91, 0.22)",
   },
   bgGlowBottom: {
     position: "absolute",
     bottom: "5%",
     alignSelf: "center",
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: "rgba(80, 15, 120, 0.28)",
+    width: 240,
+    height: 240,
+    borderRadius: 120,
+    backgroundColor: "rgba(123, 174, 158, 0.18)",
+  },
+  bgGlowMid: {
+    position: "absolute",
+    top: "45%",
+    right: "-10%",
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: "rgba(232, 168, 124, 0.12)",
   },
   content: {
     alignItems: "center",
@@ -241,7 +251,7 @@ const styles = StyleSheet.create({
     width: 210,
     height: 210,
     borderRadius: 54,
-    backgroundColor: "rgba(210, 80, 165, 0.45)",
+    backgroundColor: "rgba(201, 122, 91, 0.45)",
   },
   icon: {
     width: 150,
@@ -253,10 +263,10 @@ const styles = StyleSheet.create({
     fontSize: 42,
     fontWeight: "800",
     letterSpacing: -1.5,
-    color: "#f4d8ff",
+    color: "#FFF9F5",
   },
   dot: {
-    color: "#d870d0",
+    color: "#E8A87C",
     fontWeight: "900",
   },
   arLogo: {
@@ -279,9 +289,9 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 13,
     borderRadius: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.07)",
+    backgroundColor: "rgba(255, 255, 255, 0.10)",
     borderWidth: 1,
-    borderColor: "rgba(255, 210, 255, 0.14)",
+    borderColor: "rgba(255, 210, 185, 0.22)",
   },
   chipIcon: {
     fontSize: 13,
@@ -289,12 +299,12 @@ const styles = StyleSheet.create({
   chipEn: {
     fontSize: 12,
     fontWeight: "500",
-    color: "rgba(240, 210, 255, 0.82)",
+    color: "rgba(255, 245, 235, 0.88)",
   },
   chipAr: {
     fontSize: 11,
     fontWeight: "700",
-    color: "rgba(220, 180, 255, 0.45)",
+    color: "rgba(232, 168, 124, 0.75)",
   },
   homeIndicator: {
     position: "absolute",

@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { format } from 'date-fns';
+import { ar as arLocale } from 'date-fns/locale';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { router } from 'expo-router';
@@ -87,6 +88,7 @@ export default function HomeScreen() {
           {/* Decorative circles */}
           <View style={[styles.deco1]} />
           <View style={[styles.deco2]} />
+          <View style={[styles.deco3]} />
 
           <View style={[styles.heroContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={[styles.heroLeft, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
@@ -94,17 +96,39 @@ export default function HomeScreen() {
               <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
                 {profile.name || (isRTL ? 'يومي' : 'Do.Yoomi')}
               </Text>
+              <Text style={[styles.heroDate, { textAlign: isRTL ? 'right' : 'left' }]}>
+                {isRTL
+                  ? format(new Date(), 'EEEE، d MMMM', { locale: arLocale })
+                  : format(new Date(), 'EEEE, MMMM d')}
+              </Text>
             </View>
             <AddBtn onPress={() => setShowQuickAdd(true)} label={tFunc('quickAdd')} />
           </View>
 
+          {/* Today progress bar */}
+          {todayTasks.length > 0 && (
+            <View style={styles.heroProgress}>
+              <View style={[styles.heroProgressBar, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                <View style={[
+                  styles.heroProgressFill,
+                  { width: `${Math.round((completedToday / todayTasks.length) * 100)}%` as any },
+                ]} />
+              </View>
+              <Text style={[styles.heroProgressText, { textAlign: isRTL ? 'right' : 'left' }]}>
+                {completedToday}/{todayTasks.length} {tFunc('completed')}
+              </Text>
+            </View>
+          )}
         </LinearGradient>
 
         {/* Stats Cards */}
         <View style={[styles.statsRow, { backgroundColor: C.card, borderColor: C.border }]}>
           <HeroStat icon="checkmark-circle" value={completedToday} label={tFunc('completed')} color={WARM_SAGE} C={C} />
+          <View style={[styles.statDivider, { backgroundColor: C.border }]} />
           <HeroStat icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color={WARM_ERROR} C={C} />
+          <View style={[styles.statDivider, { backgroundColor: C.border }]} />
           <HeroStat icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color={C.tint} C={C} />
+          <View style={[styles.statDivider, { backgroundColor: C.border }]} />
           <HeroStat icon="flame" value={maxStreak} label={tFunc('streak')} color={WARM_CORAL} C={C} />
         </View>
 
@@ -761,11 +785,28 @@ const styles = StyleSheet.create({
     width: 100, height: 100, borderRadius: 50,
     backgroundColor: 'rgba(255,255,255,0.05)',
   },
-  heroContent: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: Spacing.xl },
-  heroLeft: { gap: 2 },
+  deco3: {
+    position: 'absolute', left: -30, bottom: 20,
+    width: 130, height: 130, borderRadius: 65,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  heroContent: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: Spacing.md },
+  heroLeft: { gap: 2, flex: 1 },
   greeting: { fontSize: 14, color: 'rgba(255,255,255,0.75)', fontFamily: F.med },
   heroTitle: { fontSize: 32, color: '#fff', fontFamily: F.bold, lineHeight: 36 },
+  heroDate: { fontSize: 13, color: 'rgba(255,255,255,0.65)', fontFamily: F.med, marginTop: 4 },
   heroSub: { fontSize: 16, color: 'rgba(255,255,255,0.65)', fontFamily: F.med },
+  heroProgress: { gap: 6, marginTop: Spacing.sm },
+  heroProgressBar: {
+    height: 5, borderRadius: 3, overflow: 'hidden',
+  },
+  heroProgressFill: {
+    height: '100%', borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.75)',
+  },
+  heroProgressText: {
+    fontSize: 11, color: 'rgba(255,255,255,0.7)', fontFamily: F.med,
+  },
   addBtn: {
     width: 50, height: 50, borderRadius: 25,
     alignItems: 'center', justifyContent: 'center',
@@ -788,6 +829,7 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 4,
   },
+  statDivider: { width: 1, alignSelf: 'stretch', marginVertical: Spacing.sm },
   heroStat: { flex: 1, alignItems: 'center', gap: Spacing.xs },
   heroStatIcon: {
     width: 36, height: 36, borderRadius: 18,
