@@ -46,7 +46,7 @@ export function ConfirmDialog({
           {message ? (
             <Text style={[styles.message, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{message}</Text>
           ) : null}
-          <View style={styles.btnRow}>
+          <View style={[styles.btnRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Pressable
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onCancel(); }}
               style={[styles.cancelBtn, { backgroundColor: C.surface, borderColor: C.border }]}

@@ -12,6 +12,7 @@ import {
   format, parseISO, startOfMonth, getDaysInMonth, getDay,
   addMonths, subMonths, addYears, subYears,
 } from 'date-fns';
+import { ar } from 'date-fns/locale';
 
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
@@ -70,7 +71,11 @@ export default function MoreScreen() {
     setShowProfileModal(false);
   };
 
-  const displayDob = profileDob ? format(parseISO(profileDob), 'MMM d, yyyy') : '';
+  const displayDob = profileDob
+    ? isRTL
+      ? format(parseISO(profileDob), 'd MMMM yyyy', { locale: ar })
+      : format(parseISO(profileDob), 'MMM d, yyyy')
+    : '';
 
   const goalsCount = goals.length;
   const habitsCount = habits.length;

@@ -66,6 +66,7 @@ export function FormModal({
               paddingBottom: insets.bottom + Spacing.md,
               backgroundColor: C.background,
               borderTopColor: C.border,
+              flexDirection: isRTL ? 'row-reverse' : 'row',
             },
           ]}>
             <Pressable
@@ -81,7 +82,7 @@ export function FormModal({
             </Pressable>
             <Pressable
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onSave(); }}
-              style={({ pressed }) => [styles.bottomBtnSave, { opacity: pressed ? 0.85 : 1 }]}
+              style={({ pressed }) => [styles.bottomBtnSave, { opacity: pressed ? 0.85 : 1, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
               accessibilityRole="button"
               accessibilityLabel={saveLabel}
             >
