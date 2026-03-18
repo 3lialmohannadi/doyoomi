@@ -68,7 +68,7 @@ export default function TabLayout() {
         tabBarStyle: {
           position: "absolute",
           backgroundColor: isIOS ? "transparent" : isDark ? "#1C130C" : "#FBF7F3",
-          borderTopWidth: isDark ? 1 : 1,
+          borderTopWidth: 1,
           borderTopColor: isDark ? "#362415" : "#EFE5DB",
           elevation: 0,
           height: isWeb ? 84 : 74,
@@ -88,24 +88,9 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabIcon focused={focused} label={tFunc("home")} color={color}>
               {isIOS ? (
-                <SymbolView name="house" tintColor={focused ? "#fff" : color} size={22} />
+                <SymbolView name="house" tintColor={focused ? "#fff" : color} size={21} />
               ) : (
-                <Ionicons name={focused ? "home" : "home-outline"} size={22} color={focused ? "#fff" : color} />
-              )}
-            </TabIcon>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="calendar"
-        options={{
-          title: tFunc("calendar"),
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} label={tFunc("calendar")} color={color}>
-              {isIOS ? (
-                <SymbolView name="calendar" tintColor={focused ? "#fff" : color} size={22} />
-              ) : (
-                <Ionicons name={focused ? "calendar" : "calendar-outline"} size={22} color={focused ? "#fff" : color} />
+                <Ionicons name={focused ? "home" : "home-outline"} size={21} color={focused ? "#fff" : color} />
               )}
             </TabIcon>
           ),
@@ -118,9 +103,39 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabIcon focused={focused} label={tFunc("tasks")} color={color}>
               {isIOS ? (
-                <SymbolView name="checklist" tintColor={focused ? "#fff" : color} size={22} />
+                <SymbolView name="checklist" tintColor={focused ? "#fff" : color} size={21} />
               ) : (
-                <Ionicons name={focused ? "checkmark-circle" : "checkmark-circle-outline"} size={22} color={focused ? "#fff" : color} />
+                <Ionicons name={focused ? "checkmark-circle" : "checkmark-circle-outline"} size={21} color={focused ? "#fff" : color} />
+              )}
+            </TabIcon>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="habits"
+        options={{
+          title: tFunc("habits"),
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon focused={focused} label={tFunc("habits")} color={color}>
+              {isIOS ? (
+                <SymbolView name="sparkles" tintColor={focused ? "#fff" : color} size={21} />
+              ) : (
+                <Ionicons name={focused ? "leaf" : "leaf-outline"} size={21} color={focused ? "#fff" : color} />
+              )}
+            </TabIcon>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="calendar"
+        options={{
+          title: tFunc("calendar"),
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon focused={focused} label={tFunc("calendar")} color={color}>
+              {isIOS ? (
+                <SymbolView name="calendar" tintColor={focused ? "#fff" : color} size={21} />
+              ) : (
+                <Ionicons name={focused ? "calendar" : "calendar-outline"} size={21} color={focused ? "#fff" : color} />
               )}
             </TabIcon>
           ),
@@ -133,15 +148,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabIcon focused={focused} label={tFunc("more")} color={color}>
               {isIOS ? (
-                <SymbolView name="ellipsis.circle" tintColor={focused ? "#fff" : color} size={22} />
+                <SymbolView name="ellipsis.circle" tintColor={focused ? "#fff" : color} size={21} />
               ) : (
-                <Ionicons name={focused ? "grid" : "grid-outline"} size={22} color={focused ? "#fff" : color} />
+                <Ionicons name={focused ? "grid" : "grid-outline"} size={21} color={focused ? "#fff" : color} />
               )}
             </TabIcon>
           ),
         }}
       />
-      <Tabs.Screen name="habits" options={{ href: null }} />
       <Tabs.Screen name="goals" options={{ href: null }} />
     </Tabs>
   );
@@ -155,8 +169,8 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   activePill: {
-    width: 52,
-    height: 36,
+    width: 48,
+    height: 34,
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
@@ -168,8 +182,8 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   inactivePill: {
-    width: 52,
-    height: 36,
+    width: 48,
+    height: 34,
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",

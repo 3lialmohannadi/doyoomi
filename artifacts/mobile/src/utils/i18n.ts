@@ -146,6 +146,11 @@ const translations: Record<Language, Record<string, string>> = {
     chartDone: 'Done',
     chartTotal: 'Total',
 
+    // See all
+    seeAllTasks: 'See all tasks',
+    andMore: 'more',
+    habitsProgress: 'habits today',
+
     // Misc
     taskCount: 'tasks',
     noTasksThisDay: 'No tasks this day',
@@ -409,6 +414,11 @@ const translations: Record<Language, Record<string, string>> = {
     // الرسم البياني
     chartDone: 'منجز',
     chartTotal: 'الإجمالي',
+
+    // عرض الكل
+    seeAllTasks: 'عرض كل المهام',
+    andMore: 'أخرى',
+    habitsProgress: 'عادة اليوم',
 
     // متفرقات
     taskCount: 'مهام',

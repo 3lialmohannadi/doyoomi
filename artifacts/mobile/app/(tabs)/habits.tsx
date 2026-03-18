@@ -66,16 +66,7 @@ export default function HabitsScreen() {
         <View style={styles.headerDecor2} />
 
         <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              from === 'more' ? router.navigate('/settings') : router.back();
-            }}
-            style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}
-            accessibilityRole="button"
-          >
-            <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={22} color="#fff" />
-          </Pressable>
+          <View style={{ width: 46 }} />
           <View style={{ flex: 1, alignItems: 'center' }}>
             <Text style={[styles.headerTitle, { textAlign: 'center' }]}>{tFunc('habits')}</Text>
             <Text style={[styles.headerSub, { textAlign: 'center' }]}>

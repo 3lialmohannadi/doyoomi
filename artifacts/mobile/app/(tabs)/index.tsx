@@ -203,6 +203,7 @@ export default function HomeScreen() {
           action={tFunc('addNew')}
           onAction={() => setShowTaskForm(true)}
           onTitlePress={() => router.navigate('/tasks')}
+          badge={dayTasks.length > 0 ? dayTasks.length : undefined}
         >
           {dayTasks.length === 0 ? (
             <Pressable
@@ -243,6 +244,20 @@ export default function HomeScreen() {
                   />
                 );
               })}
+              {dayTasks.length > 4 && (
+                <Pressable
+                  onPress={() => router.navigate('/tasks')}
+                  style={({ pressed }) => [styles.seeMoreBtn, { backgroundColor: C.tint + '10', borderColor: C.tint + '25', opacity: pressed ? 0.7 : 1, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+                  accessibilityRole="button"
+                >
+                  <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={14} color={C.tint} />
+                  <Text style={[styles.seeMoreText, { color: C.tint }]}>
+                    {isRTL
+                      ? `${dayTasks.length - 4} ${tFunc('andMore')}`
+                      : `${dayTasks.length - 4} ${tFunc('andMore')}`}
+                  </Text>
+                </Pressable>
+              )}
             </View>
           )}
         </Section>
@@ -254,6 +269,8 @@ export default function HomeScreen() {
           action={tFunc('addNew')}
           onAction={() => { setEditHabit(null); setShowHabitForm(true); }}
           onTitlePress={() => router.push('/habits')}
+          badge={habits.length > 0 ? habits.filter(h => { const d = h.last_completed_at ? new Date(h.last_completed_at).toISOString().split('T')[0] : null; return d === today; }).length : undefined}
+          badgeTotal={habits.length > 0 ? habits.length : undefined}
         >
           {habits.length === 0 ? (
             <Pressable
@@ -338,6 +355,9 @@ export default function HomeScreen() {
         <Section title={tFunc('weeklyAchievement')} C={C} isRTL={isRTL}>
           <FunWeekChart weekDays={weekDays} tasks={tasks} C={C} tFunc={tFunc} lang={lang} />
         </Section>
+
+        {/* Bottom spacing for tab bar */}
+        <View style={{ height: 8 }} />
       </ScrollView>
 
       <TaskForm visible={showTaskForm} onClose={() => { setShowTaskForm(false); setEditTask(null); }} editTask={editTask} />
@@ -452,9 +472,13 @@ function HeroStat({ icon, value, label, color, C }: { icon: IoniconsName; value:
 interface SectionProps {
   title: string; children: React.ReactNode; C: ColorScheme;
   action?: string; onAction?: () => void; onTitlePress?: () => void; isRTL?: boolean;
+  badge?: number; badgeTotal?: number;
 }
 
-function Section({ title, children, C, action, onAction, onTitlePress, isRTL }: SectionProps) {
+function Section({ title, children, C, action, onAction, onTitlePress, isRTL, badge, badgeTotal }: SectionProps) {
+  const showProgress = badge !== undefined && badgeTotal !== undefined && badgeTotal > 0;
+  const allDone = showProgress && badge === badgeTotal;
+
   return (
     <View style={styles.section}>
       <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -466,6 +490,18 @@ function Section({ title, children, C, action, onAction, onTitlePress, isRTL }: 
           hitSlop={8}
         >
           <Text style={[styles.sectionTitle, { color: C.text }]}>{title}</Text>
+          {showProgress && (
+            <View style={[styles.sectionBadge, { backgroundColor: allDone ? WARM_SAGE + '20' : C.tint + '15' }]}>
+              <Text style={[styles.sectionBadgeText, { color: allDone ? WARM_SAGE : C.tint }]}>
+                {badge}/{badgeTotal}
+              </Text>
+            </View>
+          )}
+          {!showProgress && badge !== undefined && (
+            <View style={[styles.sectionBadge, { backgroundColor: C.tint + '15' }]}>
+              <Text style={[styles.sectionBadgeText, { color: C.tint }]}>{badge}</Text>
+            </View>
+          )}
           {onTitlePress && <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textMuted} />}
         </Pressable>
         {action && (
@@ -867,10 +903,20 @@ const styles = StyleSheet.create({
   // Section
   section: { paddingHorizontal: Spacing.lg, marginBottom: Spacing.xl },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.md },
-  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   sectionTitle: { fontSize: 20, fontFamily: F.bold },
+  sectionBadge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
+  sectionBadgeText: { fontSize: 12, fontFamily: F.bold },
   sectionAction: { flexDirection: 'row', alignItems: 'center', gap: 4, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 5 },
   sectionActionText: { fontSize: 12, fontFamily: F.med },
+
+  // See more button
+  seeMoreBtn: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4,
+    borderRadius: Radius.lg, borderWidth: 1,
+    paddingVertical: Spacing.sm + 2, marginTop: 2,
+  },
+  seeMoreText: { fontSize: 13, fontFamily: F.med },
 
   // Task row
   taskRow: {
