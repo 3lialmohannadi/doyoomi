@@ -135,12 +135,15 @@ export default function HomeScreen() {
           )}
         </LinearGradient>
 
-        {/* Stats Cards */}
-        <View style={styles.statsGrid}>
-          <StatCard icon="checkmark-done" value={completedToday} label={tFunc('completed')} gradient={GRADIENT_GREEN} />
-          <StatCard icon="alert-circle" value={overdueCount} label={tFunc('overdue')} gradient={GRADIENT_CORAL} />
-          <StatCard icon="calendar" value={thisWeek} label={tFunc('thisWeek')} gradient={GRADIENT_SAGE} />
-          <StatCard icon="flame" value={maxStreak} label={tFunc('streak')} gradient={GRADIENT_AMBER} />
+        {/* Stats Row */}
+        <View style={[styles.statsRow, { backgroundColor: C.card, borderColor: C.border }]}>
+          <StatPill icon="checkmark-done" value={completedToday} label={tFunc('completed')} color={WARM_SAGE} C={C} />
+          <View style={[styles.statDivider, { backgroundColor: C.border }]} />
+          <StatPill icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color={WARM_ERROR} C={C} />
+          <View style={[styles.statDivider, { backgroundColor: C.border }]} />
+          <StatPill icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color={C.tint} C={C} />
+          <View style={[styles.statDivider, { backgroundColor: C.border }]} />
+          <StatPill icon="flame" value={maxStreak} label={tFunc('streak')} color={WARM_CORAL} C={C} />
         </View>
 
         {/* Week Strip */}
@@ -468,21 +471,14 @@ function QuickAddMenu({ visible, onClose, onTask, onHabit, onGoal, onJournal, is
   );
 }
 
-function StatCard({ icon, value, label, gradient }: { icon: IoniconsName; value: number; label: string; gradient: readonly [string, string] }) {
+function StatPill({ icon, value, label, color, C }: { icon: IoniconsName; value: number; label: string; color: string; C: ColorScheme }) {
   return (
-    <View style={styles.statCard}>
-      <LinearGradient
-        colors={[...gradient]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.statCardGrad}
-      >
-        <View style={styles.statCardIconWrap}>
-          <Ionicons name={icon} size={17} color="rgba(255,255,255,0.9)" />
-        </View>
-        <Text style={styles.statCardNum}>{value}</Text>
-        <Text style={styles.statCardLabel} numberOfLines={1}>{label}</Text>
-      </LinearGradient>
+    <View style={styles.statPill}>
+      <View style={[styles.statPillIcon, { backgroundColor: color + '1A' }]}>
+        <Ionicons name={icon} size={16} color={color} />
+      </View>
+      <Text style={[styles.statPillNum, { color: C.text }]}>{value}</Text>
+      <Text style={[styles.statPillLabel, { color: C.textMuted }]} numberOfLines={1}>{label}</Text>
     </View>
   );
 }
@@ -878,42 +874,29 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     shadowColor: PRIMARY, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 8,
   },
-  statsGrid: {
+  statsRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
     marginHorizontal: Spacing.lg,
     marginTop: -Spacing.xl,
     marginBottom: Spacing.md,
-  },
-  statCard: {
-    width: '47.5%',
     borderRadius: Radius.xl,
-    overflow: 'hidden',
-    shadowColor: '#000',
+    borderWidth: 1,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+    shadowColor: PRIMARY,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.1,
     shadowRadius: 12,
-    elevation: 6,
+    elevation: 4,
   },
-  statCardGrad: {
-    padding: Spacing.lg,
-    gap: 2,
-    minHeight: 92,
-    justifyContent: 'flex-end',
-  },
-  statCardIconWrap: {
-    width: 30, height: 30, borderRadius: 15,
+  statDivider: { width: 1, alignSelf: 'stretch', marginVertical: 4 },
+  statPill: { flex: 1, alignItems: 'center', gap: 4 },
+  statPillIcon: {
+    width: 34, height: 34, borderRadius: 17,
     alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.22)',
-    marginBottom: Spacing.sm,
   },
-  statCardNum: {
-    fontSize: 28, fontFamily: F.bold, color: '#fff',
-  },
-  statCardLabel: {
-    fontSize: 11, fontFamily: F.med, color: 'rgba(255,255,255,0.88)',
-  },
+  statPillNum: { fontSize: 18, fontFamily: F.bold },
+  statPillLabel: { fontSize: 10, fontFamily: F.med, textAlign: 'center' },
 
   // Week strip
   weekCard: {
