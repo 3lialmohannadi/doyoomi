@@ -450,11 +450,11 @@ export default function DoYoomiLogo() {
         <A3a /><A3b /><A3c /><A3d />
       </Section>
 
-      <Section title="C1 — "Do." bold + ✓ + light Yoomi">
+      <Section title={'C1 — "Do." bold + checkmark + light Yoomi'}>
         <C1a /><C1b /><C1c /><C1d />
       </Section>
 
-      <Section title="C2 — ✓ replaces the period">
+      <Section title="C2 — checkmark replaces the period">
         <C2a /><C2b /><C2c /><C2d />
       </Section>
 
