@@ -1,240 +1,326 @@
 import React from "react";
 
 /* ═══════════════════════════════════════════════════════
-   DO.YOOMI  —  DOODLE STYLE LOGO  v2
-   Caveat handwriting font + clean doodle SVG elements
+   DO.YOOMI — 6 DOODLE LOGO OPTIONS
    ═══════════════════════════════════════════════════════ */
 
 const INK   = "#2C1208";
 const TERRA = "#C97A5B";
-const SAGE  = "#6BAB99";
 const AMBER = "#F0B060";
+const SAGE  = "#6BAB99";
 const CREAM = "#FFF8F0";
+const DARK  = "#3A100A";
+const SAND  = "#F5E6D6";
 
-/* ── 4-point sparkle star ── */
-function Sparkle({ x, y, s = 10, color = AMBER }: { x:number; y:number; s?:number; color?:string }) {
-  const h = s * 0.4;
+const font = "'Caveat','Comic Sans MS',cursive";
+
+/* ── shared doodle wobble ── */
+const WOBBLE_FILTER = (
+  <filter id="sk" x="-8%" y="-8%" width="116%" height="116%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+);
+
+const SHADOW_FILTER = (
+  <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="3" dy="4" stdDeviation="4" floodColor={INK} floodOpacity="0.22"/>
+  </filter>
+);
+
+/* ── sparkle ── */
+function Sp({ x, y, s=8, c=AMBER }: { x:number; y:number; s?:number; c?:string }) {
+  const h = s * 0.42;
   const pts = [
-    `${x},${y-s}`, `${x+h},${y-h}`,
-    `${x+s},${y}`, `${x+h},${y+h}`,
-    `${x},${y+s}`, `${x-h},${y+h}`,
-    `${x-s},${y}`, `${x-h},${y-h}`,
+    `${x},${y-s}`, `${x+h},${y-h}`, `${x+s},${y}`, `${x+h},${y+h}`,
+    `${x},${y+s}`, `${x-h},${y+h}`, `${x-s},${y}`, `${x-h},${y-h}`,
   ].join(" ");
-  return <polygon points={pts} fill={color} opacity="0.90"/>;
+  return <polygon points={pts} fill={c} opacity="0.90"/>;
 }
 
-/* ── wavy underline ── */
-function Wave({ x, y, w }: { x:number; y:number; w:number }) {
-  const s = w / 5;
-  const d = `M ${x},${y} Q ${x+s*.5},${y-5} ${x+s},${y} Q ${x+s*1.5},${y+5} ${x+s*2},${y} Q ${x+s*2.5},${y-5} ${x+s*3},${y} Q ${x+s*3.5},${y+5} ${x+s*4},${y} Q ${x+s*4.5},${y-5} ${x+s*5},${y}`;
-  return <path d={d} stroke={SAGE} strokeWidth="2.5" fill="none" strokeLinecap="round"/>;
-}
-
-/* ══════════════════════════════════════════════════════
-   DOODLE ICON MARK
-   Clean terracotta badge + hand-drawn stroke D + checkmark + dots
-   ══════════════════════════════════════════════════════ */
-function DoodleMark({ px = 120 }: { px?: number }) {
+/* ════════════════════════════════════════════════════════
+   OPTION 1 — Circle + big checkmark (minimal, clean)
+   ════════════════════════════════════════════════════════ */
+function Opt1() {
   return (
-    <svg width={px} height={px} viewBox="0 0 200 200" fill="none">
-      <defs>
-        {/* subtle sketch wobble on strokes only */}
-        <filter id="sk" x="-8%" y="-8%" width="116%" height="116%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="5" result="n"/>
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.8"
-            xChannelSelector="R" yChannelSelector="G"/>
-        </filter>
-        {/* drop shadow for badge */}
-        <filter id="bs" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="3" dy="4" stdDeviation="5" floodColor={INK} floodOpacity="0.25"/>
-        </filter>
-        {/* badge gradient */}
-        <linearGradient id="bg" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"  stopColor="#A84830"/>
-          <stop offset="100%" stopColor="#D4886A"/>
-        </linearGradient>
-      </defs>
-
-      {/* badge background — clean, no filter */}
-      <rect x="4" y="4" width="192" height="192" rx="44"
-        fill="url(#bg)" filter="url(#bs)"/>
-
-      {/* slight inner top highlight */}
-      <rect x="4" y="4" width="192" height="96" rx="44"
-        fill="rgba(255,255,255,0.10)"/>
-
-      {/* ── D letterform — thick wobbly stroke ── */}
-      <path
-        d="M 42,30 L 42,162 M 42,30 L 90,30 C 164,30 164,162 90,162 L 42,162"
-        stroke={CREAM}
-        strokeWidth="13"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-        filter="url(#sk)"
-        opacity="0.96"
-      />
-
-      {/* ── Checkmark — two-pass for doodle feel ── */}
-      <polyline
-        points="54,104 84,136 154,58"
-        stroke={SAGE}
-        strokeWidth="13"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        filter="url(#sk)"
-      />
-      <polyline
-        points="55,106 85,137 153,60"
-        stroke="#9ACFC0"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.45"
-      />
-
-      {/* ── Two dots (ي) ── */}
-      <circle cx="78"  cy="180" r="7.5" fill={CREAM} filter="url(#sk)" opacity="0.92"/>
-      <circle cx="104" cy="180" r="7.5" fill={CREAM} filter="url(#sk)" opacity="0.92"/>
-
-      {/* ── Decorative doodle elements ── */}
-      <Sparkle x={168} y={26}  s={9}  color={AMBER}/>
-      <Sparkle x={24}  y={170} s={5.5} color="rgba(255,255,255,0.55)"/>
-    </svg>
-  );
-}
-
-/* ── Handwritten wordmark ── */
-function Word({ light = false, size = 60 }: { light?: boolean; size?: number }) {
-  return (
-    <div style={{ display:"flex", alignItems:"center", lineHeight:1, gap:0 }}>
-      <span style={{
-        fontFamily:"'Caveat', cursive",
-        fontSize:size, fontWeight:700,
-        color: light ? CREAM : INK,
-        letterSpacing:-0.5,
-      }}>Do</span>
-      <span style={{
-        fontFamily:"'Caveat', cursive",
-        fontSize:size, fontWeight:700,
-        color: light ? AMBER : TERRA,
-      }}>.</span>
-      <span style={{
-        fontFamily:"'Caveat', cursive",
-        fontSize:size, fontWeight:700,
-        color: light ? AMBER : TERRA,
-        letterSpacing:-0.5,
-      }}>Yoomi</span>
+    <div style={card}>
+      <svg width={90} height={90} viewBox="0 0 90 90" fill="none">
+        <defs>{WOBBLE_FILTER}{SHADOW_FILTER}</defs>
+        <circle cx="45" cy="45" r="40" fill={TERRA} filter="url(#sh)"/>
+        <circle cx="45" cy="45" r="40" fill="rgba(255,255,255,0.08)"/>
+        {/* big checkmark */}
+        <polyline points="20,46 38,64 70,24" stroke={CREAM} strokeWidth="8"
+          strokeLinecap="round" strokeLinejoin="round" filter="url(#sk)"/>
+        {/* two dots */}
+        <circle cx="33" cy="76" r="5" fill={CREAM} opacity="0.85" filter="url(#sk)"/>
+        <circle cx="50" cy="76" r="5" fill={CREAM} opacity="0.85" filter="url(#sk)"/>
+      </svg>
+      <div style={wordRow}>
+        <span style={{...w, color:INK}}>Do</span>
+        <span style={{...w, color:TERRA}}>.</span>
+        <span style={{...w, color:TERRA}}>Yoomi</span>
+      </div>
+      <span style={tag}>Circle · دائرة</span>
     </div>
   );
 }
 
+/* ════════════════════════════════════════════════════════
+   OPTION 2 — Organic blob badge
+   ════════════════════════════════════════════════════════ */
+function Opt2() {
+  return (
+    <div style={card}>
+      <svg width={90} height={90} viewBox="0 0 90 90" fill="none">
+        <defs>{WOBBLE_FILTER}{SHADOW_FILTER}</defs>
+        {/* organic blob */}
+        <path d="M 45,4 C 72,4 86,16 86,45 C 86,70 72,86 45,86 C 18,86 4,70 4,45 C 4,16 18,4 45,4 Z"
+          fill={TERRA} filter="url(#sh)"/>
+        {/* D outline */}
+        <path d="M 24,22 L 24,66 M 24,22 L 46,22 C 68,22 68,66 46,66 L 24,66"
+          stroke={CREAM} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round"
+          fill="none" filter="url(#sk)"/>
+        {/* checkmark */}
+        <polyline points="32,48 42,60 62,32" stroke={SAGE} strokeWidth="6"
+          strokeLinecap="round" strokeLinejoin="round"/>
+        <Sp x={76} y={14} s={7} c={AMBER}/>
+      </svg>
+      <div style={wordRow}>
+        <span style={{...w, color:INK}}>Do</span>
+        <span style={{...w, color:TERRA}}>.</span>
+        <span style={{...w, color:TERRA}}>Yoomi</span>
+      </div>
+      <span style={tag}>Blob · شكل عضوي</span>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════
+   OPTION 3 — Text-only wordmark (no icon badge)
+   ════════════════════════════════════════════════════════ */
+function Opt3() {
+  return (
+    <div style={card}>
+      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:2 }}>
+        {/* big "Do." */}
+        <div style={{ display:"flex", alignItems:"baseline", lineHeight:1 }}>
+          <span style={{ fontFamily:font, fontSize:52, fontWeight:700, color:INK }}>Do</span>
+          <span style={{ fontFamily:font, fontSize:52, fontWeight:700, color:TERRA }}>.</span>
+        </div>
+        {/* divider doodle line */}
+        <svg viewBox="0 0 120 10" style={{ width:120, display:"block" }}>
+          <path d="M 0,5 Q 30,0 60,5 Q 90,10 120,5"
+            stroke={SAGE} strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+        </svg>
+        {/* Yoomi */}
+        <span style={{ fontFamily:font, fontSize:42, fontWeight:700, color:TERRA, letterSpacing:-1 }}>
+          Yoomi
+        </span>
+        {/* Arabic */}
+        <span style={{ fontFamily:font, fontSize:17, fontWeight:600, color:SAGE, marginTop:2 }}>يومي</span>
+      </div>
+      <span style={tag}>Wordmark · نص فقط</span>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════
+   OPTION 4 — Sun / daily sunshine motif
+   ════════════════════════════════════════════════════════ */
+function Opt4() {
+  const rays = Array.from({length:8}, (_,i) => {
+    const a = (i*45 * Math.PI)/180;
+    const r1=34, r2=42;
+    return `M ${(45+r1*Math.cos(a)).toFixed(1)},${(45+r1*Math.sin(a)).toFixed(1)} L ${(45+r2*Math.cos(a)).toFixed(1)},${(45+r2*Math.sin(a)).toFixed(1)}`;
+  });
+  return (
+    <div style={card}>
+      <svg width={90} height={90} viewBox="0 0 90 90" fill="none">
+        <defs>{WOBBLE_FILTER}{SHADOW_FILTER}</defs>
+        {/* rays */}
+        {rays.map((d,i) => (
+          <path key={i} d={d} stroke={AMBER} strokeWidth="3.5"
+            strokeLinecap="round" filter="url(#sk)" opacity="0.85"/>
+        ))}
+        {/* sun circle */}
+        <circle cx="45" cy="45" r="30" fill={TERRA} filter="url(#sh)"/>
+        {/* checkmark */}
+        <polyline points="28,46 40,58 62,28" stroke={CREAM} strokeWidth="7"
+          strokeLinecap="round" strokeLinejoin="round" filter="url(#sk)"/>
+        {/* two dots */}
+        <circle cx="34" cy="72" r="3.5" fill={TERRA} opacity="0.90"/>
+        <circle cx="47" cy="72" r="3.5" fill={TERRA} opacity="0.90"/>
+      </svg>
+      <div style={wordRow}>
+        <span style={{...w, color:INK}}>Do</span>
+        <span style={{...w, color:AMBER}}>.</span>
+        <span style={{...w, color:TERRA}}>Yoomi</span>
+      </div>
+      <span style={tag}>Sun · شمس يومية</span>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════
+   OPTION 5 — Pill / horizontal badge
+   ════════════════════════════════════════════════════════ */
+function Opt5() {
+  return (
+    <div style={{...card, minWidth:300}}>
+      <svg width={260} height={72} viewBox="0 0 260 72" fill="none">
+        <defs>{WOBBLE_FILTER}{SHADOW_FILTER}</defs>
+        {/* pill */}
+        <rect x="3" y="3" width="254" height="66" rx="33" fill={TERRA} filter="url(#sh)"/>
+        <rect x="3" y="3" width="254" height="33" rx="33" fill="rgba(255,255,255,0.10)"/>
+        {/* checkmark */}
+        <polyline points="22,38 35,54 58,20" stroke={CREAM} strokeWidth="6"
+          strokeLinecap="round" strokeLinejoin="round" filter="url(#sk)"/>
+        {/* wordmark inside pill */}
+        <text x="76" y="48" fontFamily={font} fontSize="36" fontWeight="700" fill={CREAM}>
+          Do.Yoomi
+        </text>
+        {/* dots */}
+        <circle cx="30" cy="63" r="3.5" fill={CREAM} opacity="0.70"/>
+        <circle cx="43" cy="63" r="3.5" fill={CREAM} opacity="0.70"/>
+        <Sp x={244} y={16} s={8} c={AMBER}/>
+      </svg>
+      <span style={tag}>Pill · بادج أفقي</span>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════
+   OPTION 6 — Sticker style (white stroke border + fill)
+   ════════════════════════════════════════════════════════ */
+function Opt6() {
+  return (
+    <div style={{...card, background:DARK}}>
+      <svg width={90} height={90} viewBox="0 0 90 90" fill="none">
+        <defs>{WOBBLE_FILTER}{SHADOW_FILTER}</defs>
+        {/* sticker white border */}
+        <rect x="4" y="4" width="82" height="82" rx="22"
+          fill="white" filter="url(#sh)" opacity="0.98"/>
+        <rect x="9" y="9" width="72" height="72" rx="18" fill={TERRA}/>
+        {/* D */}
+        <path d="M 22,20 L 22,68 M 22,20 L 46,20 C 68,20 68,68 46,68 L 22,68"
+          stroke={CREAM} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round"
+          fill="none" filter="url(#sk)"/>
+        {/* checkmark */}
+        <polyline points="30,48 42,62 66,28" stroke={AMBER} strokeWidth="7"
+          strokeLinecap="round" strokeLinejoin="round" filter="url(#sk)"/>
+        <circle cx="34" cy="79" r="4" fill="white" opacity="0.90"/>
+        <circle cx="50" cy="79" r="4" fill="white" opacity="0.90"/>
+      </svg>
+      <div style={wordRow}>
+        <span style={{...w, color:CREAM}}>Do</span>
+        <span style={{...w, color:AMBER}}>.</span>
+        <span style={{...w, color:AMBER}}>Yoomi</span>
+      </div>
+      <span style={{...tag, color:SAGE}}>Sticker · ستيكر</span>
+    </div>
+  );
+}
+
+/* ── layout helpers ── */
+const card: React.CSSProperties = {
+  background: CREAM,
+  borderRadius: 22,
+  padding: "22px 28px",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 10,
+  boxShadow: "3px 4px 0px rgba(44,18,8,0.18), 0 8px 28px rgba(44,18,8,0.10)",
+  border: "2px solid rgba(44,18,8,0.06)",
+  minWidth: 200,
+};
+const wordRow: React.CSSProperties = {
+  display:"flex", alignItems:"center", lineHeight:1,
+};
+const w: React.CSSProperties = {
+  fontFamily: font, fontSize: 36, fontWeight: 700, letterSpacing: -0.5,
+};
+const tag: React.CSSProperties = {
+  fontFamily: font, fontSize: 14, fontWeight: 500,
+  color: SAGE, marginTop: 2,
+};
+
 /* ═══════════════════════════════════════════════════════
-   PAGE
+   PAGE — gallery grid
    ═══════════════════════════════════════════════════════ */
 export default function DoYoomiLogo() {
   return (
     <div style={{
-      minHeight:"100vh",
-      background:"radial-gradient(ellipse at 38% 42%, #F5E8D8 0%, #DBBFA0 100%)",
-      display:"flex", flexDirection:"column",
-      alignItems:"center", justifyContent:"center",
-      gap:40, padding:52,
+      minHeight: "100vh",
+      background: "radial-gradient(ellipse at 40% 38%, #F0DCC8, #D4B898)",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 32,
+      padding: 48,
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap');
-        *{box-sizing:border-box;margin:0;padding:0}
+        * { box-sizing:border-box; margin:0; padding:0; }
       `}</style>
 
-      {/* ══ A: Horizontal (main) ══ */}
-      <div style={{
-        background:CREAM,
-        borderRadius:26,
-        padding:"26px 42px",
-        display:"flex",
-        alignItems:"center",
-        gap:20,
-        boxShadow:`4px 5px 0px rgba(44,18,8,0.20), 0 12px 40px rgba(44,18,8,0.10)`,
-        border:`2px solid rgba(44,18,8,0.07)`,
-        position:"relative",
-        minWidth:500,
-      }}>
-        <DoodleMark px={96}/>
+      <p style={{ fontFamily:font, fontSize:22, color:INK, fontWeight:600, letterSpacing:1 }}>
+        اختر الشعار المناسب · Pick your logo
+      </p>
 
-        <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
-          <Word size={62}/>
-          <svg viewBox="0 0 260 16" style={{ width:260, marginTop:0, display:"block" }}>
-            <Wave x={0} y={8} w={260}/>
-          </svg>
-          <span style={{
-            fontFamily:"'Caveat', cursive",
-            fontSize:18, fontWeight:600,
-            color:"#5A9E8C", marginTop:2,
-          }}>Daily Productivity ✨</span>
+      {/* row 1 */}
+      <div style={{ display:"flex", gap:20, flexWrap:"wrap", justifyContent:"center" }}>
+        <div style={{ position:"relative" }}>
+          <div style={badge}>1</div>
+          <Opt1/>
         </div>
-
-        {/* corner sparkle */}
-        <svg style={{ position:"absolute", top:10, right:14, display:"block" }}
-          width="22" height="22" viewBox="0 0 22 22">
-          <Sparkle x={11} y={11} s={9} color={AMBER}/>
-        </svg>
-      </div>
-
-      {/* ══ B: Stacked ══ */}
-      <div style={{
-        background:CREAM,
-        borderRadius:26,
-        padding:"34px 56px",
-        display:"flex", flexDirection:"column",
-        alignItems:"center", gap:12,
-        boxShadow:`4px 5px 0px rgba(44,18,8,0.20), 0 12px 40px rgba(44,18,8,0.10)`,
-        border:`2px solid rgba(44,18,8,0.07)`,
-        minWidth:500,
-      }}>
-        <DoodleMark px={114}/>
-        <Word size={58}/>
-        <span style={{
-          fontFamily:"'Caveat', cursive",
-          fontSize:20, fontWeight:600,
-          color:"#5A9E8C",
-        }}>يومي · Daily ✓</span>
-      </div>
-
-      {/* ══ C: Dark ══ */}
-      <div style={{
-        background:`linear-gradient(130deg,${INK} 0%,#3A1008 100%)`,
-        borderRadius:26,
-        padding:"26px 42px",
-        display:"flex", alignItems:"center", gap:20,
-        boxShadow:`4px 6px 0px rgba(0,0,0,0.50), 0 20px 60px rgba(44,18,8,0.60)`,
-        minWidth:500,
-        position:"relative",
-      }}>
-        {/* dot pattern bg */}
-        <svg style={{ position:"absolute", inset:0, width:"100%", height:"100%", opacity:0.06 }} viewBox="0 0 500 130">
-          {Array.from({length:10}, (_,c) =>
-            Array.from({length:4}, (_,r) =>
-              <circle key={`${c}-${r}`} cx={c*56+28} cy={r*40+20} r="2.5" fill="white"/>
-            )
-          )}
-        </svg>
-
-        <DoodleMark px={96}/>
-        <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-          <Word size={62} light/>
-          <span style={{
-            fontFamily:"'Caveat', cursive",
-            fontSize:18, fontWeight:600,
-            color:SAGE,
-          }}>Daily Productivity App ✨</span>
+        <div style={{ position:"relative" }}>
+          <div style={badge}>2</div>
+          <Opt2/>
         </div>
-
-        <svg style={{ position:"absolute", top:10, right:14 }}
-          width="22" height="22" viewBox="0 0 22 22">
-          <Sparkle x={11} y={11} s={9} color={AMBER}/>
-        </svg>
+        <div style={{ position:"relative" }}>
+          <div style={badge}>3</div>
+          <Opt3/>
+        </div>
       </div>
 
+      {/* row 2 */}
+      <div style={{ display:"flex", gap:20, flexWrap:"wrap", justifyContent:"center" }}>
+        <div style={{ position:"relative" }}>
+          <div style={badge}>4</div>
+          <Opt4/>
+        </div>
+        <div style={{ position:"relative" }}>
+          <div style={badge}>5</div>
+          <Opt5/>
+        </div>
+        <div style={{ position:"relative" }}>
+          <div style={badge}>6</div>
+          <Opt6/>
+        </div>
+      </div>
+
+      <p style={{ fontFamily:font, fontSize:18, color:"#7B5040", fontWeight:500 }}>
+        ✏️ أخبرني رقم الخيار وأطوّره بالكامل
+      </p>
     </div>
   );
 }
+
+const badge: React.CSSProperties = {
+  position: "absolute",
+  top: -10, left: -10,
+  width: 28, height: 28,
+  borderRadius: 14,
+  background: TERRA,
+  color: CREAM,
+  fontFamily: font,
+  fontSize: 16,
+  fontWeight: 700,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 10,
+  boxShadow: "2px 2px 0 rgba(44,18,8,0.25)",
+};
