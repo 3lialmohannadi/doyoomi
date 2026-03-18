@@ -39,3 +39,10 @@ yarn-error.*
 .vercel
 
 .env
+
+# EAS
+service-account.json
+*.keystore
+*.p8
+*.p12
+*.mobileprovision
