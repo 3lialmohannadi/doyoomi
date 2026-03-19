@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Task, TaskStatus, Subtask } from '../types';
+import { Task, TaskStatus, Subtask, RecurrenceType } from '../types';
 import { format, addDays, addWeeks, addMonths, parseISO, getDay } from 'date-fns';
 
-function getNextRecurringDate(dueDate: string, recurrenceType: string): string {
+function getNextRecurringDate(dueDate: string, recurrenceType: RecurrenceType): string {
   const base = parseISO(dueDate);
   if (recurrenceType === 'daily') {
     return format(addDays(base, 1), 'yyyy-MM-dd');

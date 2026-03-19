@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, Pressable, Alert } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Alert, AlertButton } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -72,7 +72,7 @@ export function TaskCard({
 
   const handleLongPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const actions: any[] = [
+    const actions: AlertButton[] = [
       { text: t('postpone'), onPress: () => onPostpone(task.id) },
     ];
     if (onCancel && !isCancelled) {
