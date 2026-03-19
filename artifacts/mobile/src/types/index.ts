@@ -1,6 +1,19 @@
 export type Priority = 'low' | 'medium' | 'high';
 export type TaskStatus = 'pending' | 'completed' | 'overdue' | 'postponed' | 'cancelled';
 export type GoalType = 'monthly' | 'yearly';
+export type RecurrenceType = 'daily' | 'weekdays' | 'weekly' | 'monthly';
+export type HabitFrequency = 'daily' | '3x_week' | '5x_week' | 'weekdays' | 'weekends' | 'weekly';
+
+export interface RecurrenceRule {
+  type: RecurrenceType;
+}
+
+export interface Subtask {
+  id: string;
+  text: string;
+  done: boolean;
+}
+
 export type Mood =
   | 'excellent' | 'veryGood' | 'happy' | 'excited' | 'energetic' | 'grateful' | 'optimistic' | 'proud'
   | 'satisfied' | 'good' | 'reassured' | 'comfortable' | 'calm' | 'surprised'
@@ -57,6 +70,8 @@ export interface Task {
   reminder_at?: string;
   is_all_day: boolean;
   completed_at?: string;
+  recurrence?: RecurrenceRule;
+  subtasks?: Subtask[];
   created_at: string;
   updated_at: string;
 }
@@ -73,6 +88,9 @@ export interface Goal {
   current_value: number;
   icon: string;
   color: string;
+  deadline?: string;
+  is_archived?: boolean;
+  archived_at?: string;
   created_at: string;
   updated_at: string;
 }
@@ -85,8 +103,11 @@ export interface Habit {
   name_en?: string;
   icon: string;
   color: string;
+  frequency: HabitFrequency;
   streak_days: number;
+  best_streak: number;
   last_completed_at?: string;
+  completion_history: string[];
   created_at: string;
   updated_at: string;
 }

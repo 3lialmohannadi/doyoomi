@@ -5,7 +5,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { format } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
@@ -242,6 +242,41 @@ export default function HabitsScreen() {
   );
 }
 
+const FREQ_LABEL_KEY: Record<string, string> = {
+  daily: 'freqDaily',
+  '3x_week': 'freq3xWeek',
+  '5x_week': 'freq5xWeek',
+  weekdays: 'freqWeekdays',
+  weekends: 'freqWeekends',
+  weekly: 'freqWeekly',
+};
+
+function HistoryDots({ history, color, isRTL }: { history: string[]; color: string; isRTL: boolean }) {
+  const today = new Date();
+  const dots = Array.from({ length: 7 }, (_, i) => {
+    const d = subDays(today, 6 - i);
+    const key = format(d, 'yyyy-MM-dd');
+    const done = history.includes(key);
+    return { key, done };
+  });
+  const ordered = isRTL ? [...dots].reverse() : dots;
+  return (
+    <View style={[hStyles.dotsRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      {ordered.map(dot => (
+        <View
+          key={dot.key}
+          style={[hStyles.dot, { backgroundColor: dot.done ? color : color + '25', borderColor: dot.done ? color : color + '40' }]}
+        />
+      ))}
+    </View>
+  );
+}
+
+const hStyles = StyleSheet.create({
+  dotsRow: { gap: 4, alignItems: 'center', marginTop: 4 },
+  dot: { width: 8, height: 8, borderRadius: 4, borderWidth: 1 },
+});
+
 function HabitCard({
   item, isDoneToday, isDark, isRTL, C, tFunc, onToggle, onEdit, onDelete,
 }: {
@@ -266,6 +301,8 @@ function HabitCard({
     }
     prevDone.current = isDoneToday;
   }, [isDoneToday]);
+
+  const freqLabelKey = FREQ_LABEL_KEY[item.frequency ?? 'daily'];
 
   return (
     <AnimatedPressable
@@ -340,11 +377,19 @@ function HabitCard({
           </Text>
 
           <View style={[styles.habitMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            {/* Streak badge in bold orange */}
+            {/* Streak badge */}
             <View style={[styles.streakBadge, { backgroundColor: '#F97316' + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <Ionicons name="flame" size={12} color="#F97316" />
               <Text style={[styles.streakText, { color: '#F97316' }]}>{item.streak_days} {tFunc('days')}</Text>
             </View>
+
+            {/* Frequency badge */}
+            {freqLabelKey && (
+              <View style={[styles.doneBadge, { backgroundColor: C.tint + '12', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <Ionicons name="repeat" size={11} color={C.tint} />
+                <Text style={[styles.doneBadgeText, { color: C.tint }]}>{tFunc(freqLabelKey)}</Text>
+              </View>
+            )}
 
             {isDoneToday && (
               <View style={[styles.doneBadge, { backgroundColor: item.color + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -353,6 +398,15 @@ function HabitCard({
               </View>
             )}
           </View>
+
+          {/* 7-day history dots */}
+          {(item.completion_history?.length ?? 0) > 0 && (
+            <HistoryDots
+              history={item.completion_history ?? []}
+              color={item.color}
+              isRTL={isRTL}
+            />
+          )}
         </View>
 
         {/* Actions */}

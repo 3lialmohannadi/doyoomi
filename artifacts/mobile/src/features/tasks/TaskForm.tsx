@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Pressable, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Pressable, Text, ScrollView, TextInput, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { format, parseISO } from 'date-fns';
@@ -9,7 +9,7 @@ import {
   PrioritySelector, CategorySelector,
 } from '../../components/ui/FormModal';
 import { FormDatePicker } from '../../components/ui/FormDatePicker';
-import { Task, Priority, TaskStatus, Language } from '../../types';
+import { Task, Priority, TaskStatus, Language, RecurrenceRule, RecurrenceType, Subtask } from '../../types';
 import { useTasksStore } from '../../store/tasksStore';
 import { useCategoriesStore } from '../../store/categoriesStore';
 import { useSettingsStore } from '../../store/settingsStore';
@@ -26,6 +26,16 @@ interface TaskFormProps {
   defaultDate?: string;
 }
 
+const RECURRENCE_OPTIONS: { key: RecurrenceType | 'none'; labelKey: string }[] = [
+  { key: 'none',     labelKey: 'repeatNone'     },
+  { key: 'daily',    labelKey: 'repeatDaily'    },
+  { key: 'weekdays', labelKey: 'repeatWeekdays' },
+  { key: 'weekly',   labelKey: 'repeatWeekly'   },
+  { key: 'monthly',  labelKey: 'repeatMonthly'  },
+];
+
+const genSubId = () => Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+
 export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormProps) {
   const { addTask, updateTask } = useTasksStore();
   const { categories } = useCategoriesStore();
@@ -33,6 +43,7 @@ export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormPr
   const { C } = useAppTheme();
   const lang = profile.language;
   const is12h = profile.time_format === '12h';
+  const isRTL = lang === 'ar';
 
   const [titleAr, setTitleAr] = useState('');
   const [titleEn, setTitleEn] = useState('');
@@ -43,14 +54,19 @@ export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormPr
   const [status, setStatus] = useState<TaskStatus>('pending');
   const [categoryId, setCategoryId] = useState('');
   const [titleError, setTitleError] = useState(false);
+  const [recurrenceType, setRecurrenceType] = useState<RecurrenceType | 'none'>('none');
+  const [subtasks, setSubtasks] = useState<Subtask[]>([]);
+  const [subtaskInput, setSubtaskInput] = useState('');
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const subtaskInputRef = useRef<TextInput>(null);
 
   useEffect(() => {
     setTitleError(false);
     setShowDatePicker(false);
     setShowTimePicker(false);
+    setSubtaskInput('');
     if (editTask) {
       setTitleAr(editTask.title_ar ?? (editTask.title && !editTask.title_en ? editTask.title : ''));
       setTitleEn(editTask.title_en ?? '');
@@ -60,6 +76,8 @@ export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormPr
       setPriority(editTask.priority);
       setStatus(editTask.status);
       setCategoryId(editTask.category_id ?? '');
+      setRecurrenceType(editTask.recurrence?.type ?? 'none');
+      setSubtasks(editTask.subtasks ? [...editTask.subtasks] : []);
     } else {
       setTitleAr('');
       setTitleEn('');
@@ -69,8 +87,28 @@ export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormPr
       setPriority('medium');
       setStatus('pending');
       setCategoryId('');
+      setRecurrenceType('none');
+      setSubtasks([]);
     }
   }, [editTask, visible, defaultDate]);
+
+  const handleAddSubtask = () => {
+    const text = subtaskInput.trim();
+    if (!text) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSubtasks(prev => [...prev, { id: genSubId(), text, done: false }]);
+    setSubtaskInput('');
+  };
+
+  const handleToggleSubtask = (id: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSubtasks(prev => prev.map(s => s.id === id ? { ...s, done: !s.done } : s));
+  };
+
+  const handleRemoveSubtask = (id: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSubtasks(prev => prev.filter(s => s.id !== id));
+  };
 
   const handleSave = () => {
     if (!titleAr.trim() && !titleEn.trim()) {
@@ -88,6 +126,8 @@ export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormPr
       status,
       category_id: categoryId || undefined,
       is_all_day: !dueTime,
+      recurrence: recurrenceType !== 'none' ? { type: recurrenceType } as RecurrenceRule : undefined,
+      subtasks: subtasks.length > 0 ? subtasks : undefined,
     };
 
     if (editTask) {
@@ -121,6 +161,8 @@ export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormPr
       ? format(new Date(2000, 0, 1, parseInt(dueTime.split(':')[0]), parseInt(dueTime.split(':')[1])), 'h:mm a')
       : dueTime
     : '';
+
+  const doneCount = subtasks.filter(s => s.done).length;
 
   return (
     <FormModal
@@ -192,6 +234,35 @@ export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormPr
         )}
       </FormField>
 
+      {/* Repeat / Recurrence */}
+      <FormField label={t('repeatLabel', lang)}>
+        <View style={[repeatStyles.row, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          {RECURRENCE_OPTIONS.map(opt => {
+            const isActive = recurrenceType === opt.key;
+            return (
+              <Pressable
+                key={opt.key}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setRecurrenceType(opt.key as RecurrenceType | 'none');
+                }}
+                style={[
+                  repeatStyles.chip,
+                  {
+                    backgroundColor: isActive ? C.tint + '18' : C.surface,
+                    borderColor: isActive ? C.tint : C.border,
+                  },
+                ]}
+              >
+                <Text style={[repeatStyles.chipText, { color: isActive ? C.tint : C.textSecondary }]}>
+                  {t(opt.labelKey, lang)}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </FormField>
+
       <FormField label={t('priority', lang)}>
         <PrioritySelector
           options={priorityOptions}
@@ -206,6 +277,63 @@ export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormPr
           value={categoryId}
           onChange={setCategoryId}
         />
+      </FormField>
+
+      {/* Subtasks */}
+      <FormField
+        label={
+          subtasks.length > 0
+            ? `${t('subtasks', lang)} (${doneCount}/${subtasks.length})`
+            : t('subtasks', lang)
+        }
+      >
+        {subtasks.map((s) => (
+          <View
+            key={s.id}
+            style={[subStyles.row, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+          >
+            <Pressable
+              onPress={() => handleToggleSubtask(s.id)}
+              style={[subStyles.check, { borderColor: s.done ? C.success : C.border, backgroundColor: s.done ? C.success : 'transparent' }]}
+            >
+              {s.done && <Ionicons name="checkmark" size={11} color="#fff" />}
+            </Pressable>
+            <Text
+              style={[
+                subStyles.text,
+                { color: s.done ? C.textMuted : C.text, flex: 1, textAlign: isRTL ? 'right' : 'left' },
+                s.done && subStyles.strikethrough,
+              ]}
+              numberOfLines={2}
+            >
+              {s.text}
+            </Text>
+            <Pressable onPress={() => handleRemoveSubtask(s.id)} hitSlop={6}>
+              <Ionicons name="close-circle" size={18} color={C.textMuted} />
+            </Pressable>
+          </View>
+        ))}
+
+        <View style={[subStyles.addRow, { flexDirection: isRTL ? 'row-reverse' : 'row', borderColor: C.border, backgroundColor: C.surface }]}>
+          <TextInput
+            ref={subtaskInputRef}
+            value={subtaskInput}
+            onChangeText={setSubtaskInput}
+            placeholder={t('subtaskPlaceholder', lang)}
+            placeholderTextColor={C.textMuted}
+            style={[subStyles.input, { color: C.text }]}
+            textAlign={isRTL ? 'right' : 'left'}
+            returnKeyType="done"
+            onSubmitEditing={handleAddSubtask}
+          />
+          <Pressable
+            onPress={handleAddSubtask}
+            style={[subStyles.addBtn, { backgroundColor: subtaskInput.trim() ? C.tint : C.tint + '40' }]}
+            disabled={!subtaskInput.trim()}
+          >
+            <Ionicons name="add" size={16} color="#fff" />
+          </Pressable>
+        </View>
       </FormField>
     </FormModal>
   );
@@ -316,6 +444,44 @@ function InlineTimePicker({ value, onChange, is12h, C, onDone, lang }: { value?:
     </View>
   );
 }
+
+const repeatStyles = StyleSheet.create({
+  row: { flexWrap: 'wrap', gap: 6 },
+  chip: {
+    borderRadius: Radius.full,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  chipText: { fontSize: 12, fontFamily: F.med },
+});
+
+const subStyles = StyleSheet.create({
+  row: {
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingVertical: 6,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(0,0,0,0.06)',
+  },
+  check: {
+    width: 20, height: 20, borderRadius: 10, borderWidth: 1.5,
+    alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0,
+  },
+  text: { fontSize: 14, fontFamily: F.reg },
+  strikethrough: { textDecorationLine: 'line-through', opacity: 0.5 },
+  addRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    marginTop: 8,
+    overflow: 'hidden',
+  },
+  input: { flex: 1, fontSize: 14, fontFamily: F.reg, paddingHorizontal: 12, paddingVertical: 9 },
+  addBtn: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center', margin: 2, borderRadius: Radius.sm },
+});
 
 const timeStyles = StyleSheet.create({
   container: {

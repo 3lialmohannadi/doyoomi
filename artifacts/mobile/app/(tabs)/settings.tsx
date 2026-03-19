@@ -21,6 +21,7 @@ import {
   scheduleAllReminders,
   cancelAllReminders,
 } from '../../src/services/notificationService';
+import { exportData, importData, clearAllData } from '../../src/utils/dataExport';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
@@ -60,10 +61,63 @@ export default function MoreScreen() {
   const [showNotifTimeModal, setShowNotifTimeModal] = useState<null | 'task' | 'habit'>(null);
   const [notifTimeHour, setNotifTimeHour] = useState(9);
   const [notifTimeMin, setNotifTimeMin] = useState(0);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importText, setImportText] = useState('');
+  const [exportLoading, setExportLoading] = useState(false);
+  const [importLoading, setImportLoading] = useState(false);
 
   const tFunc = (key: string) => t(key, lang);
   const topPad = isWeb ? 67 : insets.top;
   const bottomPad = isWeb ? 34 : 0;
+
+  const handleExport = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setExportLoading(true);
+    const result = await exportData();
+    setExportLoading(false);
+    if (result.success) {
+      Alert.alert('', Platform.OS === 'web' ? tFunc('exportSuccessWeb') : tFunc('exportSuccess'));
+    } else {
+      Alert.alert('Error', result.error ?? 'Export failed');
+    }
+  };
+
+  const handleImport = async () => {
+    if (!importText.trim()) return;
+    setImportLoading(true);
+    const result = await importData(importText.trim());
+    setImportLoading(false);
+    if (result.success) {
+      setShowImportModal(false);
+      setImportText('');
+      Alert.alert('', tFunc('importSuccess'));
+    } else {
+      Alert.alert(tFunc('importError'), result.error ?? 'Invalid format');
+    }
+  };
+
+  const handleClearAll = () => {
+    Alert.alert(
+      tFunc('clearConfirmTitle'),
+      tFunc('clearConfirmMsg'),
+      [
+        { text: tFunc('cancel'), style: 'cancel' },
+        {
+          text: tFunc('clearAllData'),
+          style: 'destructive',
+          onPress: async () => {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            const result = await clearAllData();
+            if (result.success) {
+              Alert.alert('', tFunc('clearSuccess'));
+            } else {
+              Alert.alert('Error', result.error ?? tFunc('clearError'));
+            }
+          },
+        },
+      ],
+    );
+  };
 
   const openProfileModal = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -266,6 +320,17 @@ export default function MoreScreen() {
               isRTL={isRTL}
               C={C}
             />
+
+            {/* Statistics card */}
+            <ContentCard
+              icon="bar-chart"
+              label={tFunc('viewStatistics')}
+              sub={tFunc('statistics')}
+              colors={['#6366F1', '#8B5CF6']}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/statistics'); }}
+              isRTL={isRTL}
+              C={C}
+            />
           </View>
 
           {/* Section: Settings */}
@@ -407,6 +472,57 @@ export default function MoreScreen() {
             </LinearGradient>
           </View>
 
+          {/* ── Section: Data & Backup ── */}
+          <SectionHeader title={tFunc('dataAndBackup')} isRTL={isRTL} C={C} />
+          <View style={[styles.settingsGroup, { backgroundColor: C.card, borderColor: C.border }]}>
+            {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+
+            {/* Export */}
+            <Pressable
+              onPress={handleExport}
+              disabled={exportLoading}
+              style={[styles.notifRow, { flexDirection: isRTL ? 'row-reverse' : 'row', borderBottomWidth: 1, borderBottomColor: C.border, opacity: exportLoading ? 0.6 : 1 }]}
+            >
+              <View style={[styles.notifIconWrap, { backgroundColor: '#6366F1' + '20' }]}>
+                <Ionicons name="share-outline" size={20} color="#6366F1" />
+              </View>
+              <View style={{ flex: 1, marginHorizontal: 12 }}>
+                <Text style={[styles.notifRowTitle, { color: C.text, fontFamily: F.med, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('exportData')}</Text>
+                <Text style={[styles.notifRowSub, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('exportDataSub')}</Text>
+              </View>
+              <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textSecondary} />
+            </Pressable>
+
+            {/* Import */}
+            <Pressable
+              onPress={() => { setImportText(''); setShowImportModal(true); }}
+              style={[styles.notifRow, { flexDirection: isRTL ? 'row-reverse' : 'row', borderBottomWidth: 1, borderBottomColor: C.border }]}
+            >
+              <View style={[styles.notifIconWrap, { backgroundColor: '#10B981' + '20' }]}>
+                <Ionicons name="download-outline" size={20} color="#10B981" />
+              </View>
+              <View style={{ flex: 1, marginHorizontal: 12 }}>
+                <Text style={[styles.notifRowTitle, { color: C.text, fontFamily: F.med, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('importData')}</Text>
+                <Text style={[styles.notifRowSub, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('importDataSub')}</Text>
+              </View>
+              <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textSecondary} />
+            </Pressable>
+
+            {/* Clear All */}
+            <Pressable
+              onPress={handleClearAll}
+              style={[styles.notifRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+            >
+              <View style={[styles.notifIconWrap, { backgroundColor: '#EF4444' + '20' }]}>
+                <Ionicons name="trash-outline" size={20} color="#EF4444" />
+              </View>
+              <View style={{ flex: 1, marginHorizontal: 12 }}>
+                <Text style={[styles.notifRowTitle, { color: '#EF4444', fontFamily: F.med, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('clearAllData')}</Text>
+                <Text style={[styles.notifRowSub, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('clearAllDataSub')}</Text>
+              </View>
+            </Pressable>
+          </View>
+
           {/* Section: Help */}
           <SectionHeader title={tFunc('helpSection')} isRTL={isRTL} C={C} />
           <Pressable
@@ -539,6 +655,63 @@ export default function MoreScreen() {
             </View>
           </View>
         </View>
+      </Modal>
+
+      {/* ── Import / Restore Modal ── */}
+      <Modal
+        visible={showImportModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowImportModal(false)}
+      >
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <View style={[styles.modal, { backgroundColor: C.background }]}>
+            <View style={[styles.modalHeader, { borderBottomColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <Pressable onPress={() => setShowImportModal(false)} style={styles.modalCloseBtn}>
+                <Ionicons name="close" size={22} color={C.textSecondary} />
+              </Pressable>
+              <Text style={[styles.modalTitle, { color: C.text }]}>{tFunc('pasteBackupTitle')}</Text>
+              <View style={{ width: 36 }} />
+            </View>
+            <View style={[styles.modalContent, { flex: 1 }]}>
+              <TextInput
+                value={importText}
+                onChangeText={setImportText}
+                placeholder={tFunc('pasteBackupPlaceholder')}
+                placeholderTextColor={C.textSecondary}
+                multiline
+                textAlignVertical="top"
+                style={[{
+                  flex: 1,
+                  fontFamily: F.reg,
+                  fontSize: 12,
+                  color: C.text,
+                  backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                  borderRadius: Radius.md,
+                  padding: Spacing.md,
+                  borderWidth: 1,
+                  borderColor: C.border,
+                  textAlign: isRTL ? 'right' : 'left',
+                  minHeight: 200,
+                }]}
+              />
+              <Pressable
+                onPress={handleImport}
+                disabled={importLoading || !importText.trim()}
+                style={[{
+                  marginTop: Spacing.md,
+                  backgroundColor: '#10B981',
+                  borderRadius: Radius.md,
+                  padding: Spacing.md,
+                  alignItems: 'center',
+                  opacity: importLoading || !importText.trim() ? 0.5 : 1,
+                }]}
+              >
+                <Text style={{ fontFamily: F.bold, color: '#fff', fontSize: 15 }}>{tFunc('importBtn')}</Text>
+              </Pressable>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* ── Profile Modal ── */}

@@ -19,6 +19,7 @@ interface TaskCardProps {
   onDelete: (id: string) => void;
   onDeleteRequest?: (task: Task) => void;
   onPostpone: (id: string) => void;
+  onCancel?: (id: string) => void;
   onEdit: (task: Task) => void;
   onPress?: (task: Task) => void;
   priorityLabel: string;
@@ -31,7 +32,7 @@ interface TaskCardProps {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function TaskCard({
-  task, onToggle, onDelete, onDeleteRequest, onPostpone, onEdit, onPress,
+  task, onToggle, onDelete, onDeleteRequest, onPostpone, onCancel, onEdit, onPress,
   priorityLabel, timeStr, categoryName, categoryColor, t,
 }: TaskCardProps) {
   const { C, scheme } = useAppTheme();
@@ -45,6 +46,7 @@ export function TaskCard({
   const isCompleted = task.status === 'completed';
   const isOverdue = task.status === 'overdue';
   const isPostponed = task.status === 'postponed';
+  const isCancelled = task.status === 'cancelled';
 
   const [confettiKey, setConfettiKey] = useState(0);
   const prevCompleted = useRef(isCompleted);
@@ -55,26 +57,33 @@ export function TaskCard({
     prevCompleted.current = isCompleted;
   }, [isCompleted]);
 
-  const accentColor = isOverdue ? C.error
+  const accentColor = isCancelled ? '#94A3B8'
+    : isOverdue ? C.error
     : isCompleted ? C.success
     : task.priority === 'high' ? C.priorityHigh
     : task.priority === 'medium' ? C.priorityMedium
     : C.priorityLow;
 
+  const subtasks = task.subtasks ?? [];
+  const subtaskTotal = subtasks.length;
+  const subtaskDone = subtasks.filter(s => s.done).length;
+  const hasSubtasks = subtaskTotal > 0;
+  const isRecurring = !!task.recurrence;
+
   const handleLongPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert(
-      task.title,
-      undefined,
-      [
-        { text: t('postpone'), onPress: () => onPostpone(task.id) },
-        {
-          text: t('deleteTask'), style: 'destructive',
-          onPress: () => onDeleteRequest ? onDeleteRequest(task) : onDelete(task.id),
-        },
-        { text: t('cancel'), style: 'cancel' },
-      ]
-    );
+    const actions: any[] = [
+      { text: t('postpone'), onPress: () => onPostpone(task.id) },
+    ];
+    if (onCancel && !isCancelled) {
+      actions.push({ text: t('cancelTask'), onPress: () => onCancel(task.id) });
+    }
+    actions.push({
+      text: t('deleteTask'), style: 'destructive',
+      onPress: () => onDeleteRequest ? onDeleteRequest(task) : onDelete(task.id),
+    });
+    actions.push({ text: t('cancel'), style: 'cancel' });
+    Alert.alert(task.title, undefined, actions);
   };
 
   const handleDelete = () => {
@@ -88,7 +97,7 @@ export function TaskCard({
 
   return (
     <AnimatedPressable
-      style={[animStyle, { position: 'relative' }, isDark ? ShadowDark.sm : Shadow.sm]}
+      style={[animStyle, { position: 'relative' }, isDark ? ShadowDark.sm : Shadow.sm, isCancelled && { opacity: 0.65 }]}
       onPress={onPress ? () => onPress(task) : undefined}
       onPressIn={() => { scale.value = withSpring(0.985, { damping: 18 }); }}
       onPressOut={() => { scale.value = withSpring(1, { damping: 18 }); }}
@@ -113,7 +122,11 @@ export function TaskCard({
         <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
 
         <Pressable
-          onPress={() => { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); onToggle(task.id); }}
+          onPress={() => {
+            if (isCancelled) return;
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            onToggle(task.id);
+          }}
           style={[styles.checkbox, isRTL ? styles.checkboxRTL : null]}
           accessibilityRole="checkbox"
           accessibilityState={{ checked: isCompleted }}
@@ -122,11 +135,16 @@ export function TaskCard({
           <View style={[
             styles.checkCircle,
             {
-              borderColor: isCompleted ? C.success : (isDark ? 'rgba(255,255,255,0.2)' : C.border),
-              backgroundColor: isCompleted ? C.success : 'transparent',
+              borderColor: isCancelled ? '#94A3B8'
+                : isCompleted ? C.success
+                : isDark ? 'rgba(255,255,255,0.2)' : C.border,
+              backgroundColor: isCancelled ? '#94A3B820'
+                : isCompleted ? C.success
+                : 'transparent',
             },
           ]}>
             {isCompleted && <Ionicons name="checkmark" size={12} color="#fff" />}
+            {isCancelled && <Ionicons name="close" size={11} color="#94A3B8" />}
           </View>
         </Pressable>
 
@@ -135,8 +153,8 @@ export function TaskCard({
             numberOfLines={1}
             style={[
               styles.title,
-              { color: isCompleted ? C.textMuted : C.text, textAlign: isRTL ? 'right' : 'left' },
-              isCompleted && styles.strikethrough,
+              { color: isCancelled ? C.textMuted : isCompleted ? C.textMuted : C.text, textAlign: isRTL ? 'right' : 'left' },
+              (isCompleted || isCancelled) && styles.strikethrough,
             ]}
           >
             {resolveDisplayName(task.title_ar, task.title_en, profile.language, task.title)}
@@ -149,7 +167,7 @@ export function TaskCard({
           ) : null}
 
           <View style={[styles.meta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <PriorityBadge priority={task.priority} label={priorityLabel} />
+            {!isCancelled && <PriorityBadge priority={task.priority} label={priorityLabel} />}
 
             {categoryName ? (
               <View style={[styles.catBadge, { backgroundColor: (categoryColor ?? C.tint) + '22' }]}>
@@ -175,6 +193,31 @@ export function TaskCard({
                 <Text style={[styles.catText, { color: C.textMuted }]}>{t('postponed')}</Text>
               </View>
             ) : null}
+
+            {isCancelled ? (
+              <View style={[styles.catBadge, { backgroundColor: '#94A3B822' }]}>
+                <Text style={[styles.catText, { color: '#94A3B8' }]}>{t('cancelled')}</Text>
+              </View>
+            ) : null}
+
+            {isRecurring && !isCancelled ? (
+              <View style={[styles.timeRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <Ionicons name="repeat" size={11} color={C.tint} />
+              </View>
+            ) : null}
+
+            {hasSubtasks ? (
+              <View style={[styles.catBadge, { backgroundColor: subtaskDone === subtaskTotal ? C.success + '22' : C.tint + '15', flexDirection: isRTL ? 'row-reverse' : 'row', gap: 3 }]}>
+                <Ionicons
+                  name={subtaskDone === subtaskTotal ? 'checkmark-circle' : 'list'}
+                  size={10}
+                  color={subtaskDone === subtaskTotal ? C.success : C.tint}
+                />
+                <Text style={[styles.catText, { color: subtaskDone === subtaskTotal ? C.success : C.tint }]}>
+                  {subtaskDone}/{subtaskTotal}
+                </Text>
+              </View>
+            ) : null}
           </View>
         </View>
 
@@ -188,6 +231,17 @@ export function TaskCard({
           >
             <Ionicons name="pencil-outline" size={15} color={C.tint} />
           </Pressable>
+          {onCancel && !isCancelled && (
+            <Pressable
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onCancel(task.id); }}
+              style={[styles.editBtn, { backgroundColor: '#94A3B818' }]}
+              hitSlop={4}
+              accessibilityRole="button"
+              accessibilityLabel={t('cancelTask')}
+            >
+              <Ionicons name="close-circle-outline" size={15} color="#64748B" />
+            </Pressable>
+          )}
           <Pressable
             onPress={handleDelete}
             style={[styles.editBtn, { backgroundColor: C.error + '14' }]}
@@ -259,6 +313,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius.full,
     paddingHorizontal: 8,
     paddingVertical: 2,
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   catText: {
     ...Typography.label,

@@ -1,57 +1,19 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Habit } from '../types';
+import { Habit, HabitFrequency } from '../types';
 import { format, differenceInCalendarDays, parseISO } from 'date-fns';
-
-const MOCK_HABITS: Habit[] = [
-  {
-    id: 'h-1', user_id: 'user-1',
-    name: 'Morning meditation',
-    icon: 'leaf',
-    color: '#7BAE9E',
-    streak_days: 14,
-    last_completed_at: new Date().toISOString(),
-    created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'h-2', user_id: 'user-1',
-    name: 'Drink 8 glasses water',
-    icon: 'water',
-    color: '#5BA89E',
-    streak_days: 7,
-    last_completed_at: new Date().toISOString(),
-    created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'h-3', user_id: 'user-1',
-    name: 'Journal writing',
-    icon: 'journal',
-    color: '#7BAE9E',
-    streak_days: 21,
-    last_completed_at: new Date().toISOString(),
-    created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-  },
-  {
-    id: 'h-4', user_id: 'user-1',
-    name: 'No phone after 10pm',
-    icon: 'phone-portrait',
-    color: '#C97A5B',
-    streak_days: 5,
-    created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-  },
-];
 
 export interface StreakCelebrationPayload {
   habitName: string;
   streakDays: number;
 }
 
-const MILESTONES = new Set([3, 7, 14, 30]);
+const MILESTONES = new Set([3, 7, 14, 21, 30, 60, 100]);
 const sessionCelebrated = new Set<string>();
 
 interface HabitsState {
   habits: Habit[];
-  addHabit: (habit: Omit<Habit, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => void;
+  addHabit: (habit: Omit<Habit, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'streak_days' | 'best_streak' | 'completion_history'>) => void;
   updateHabit: (id: string, updates: Partial<Habit>) => void;
   deleteHabit: (id: string) => void;
   completeHabit: (id: string) => StreakCelebrationPayload | null;
@@ -63,13 +25,16 @@ const STORAGE_KEY = '@doyoomi_habits';
 const genId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
 
 export const useHabitsStore = create<HabitsState>((set, get) => ({
-  habits: MOCK_HABITS,
+  habits: [],
 
   addHabit: (habit) => {
     const newHabit: Habit = {
       ...habit,
       id: genId(),
       user_id: 'user-1',
+      streak_days: 0,
+      best_streak: 0,
+      completion_history: [],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -97,10 +62,11 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
     const todayStr = format(now, 'yyyy-MM-dd');
     const habit = get().habits.find(h => h.id === id);
     if (!habit) return null;
+
     const lastDate = habit.last_completed_at
       ? format(new Date(habit.last_completed_at), 'yyyy-MM-dd')
       : null;
-    if (lastDate === todayStr) return null; // Already completed today
+    if (lastDate === todayStr) return null;
 
     let newStreak = 1;
     if (lastDate) {
@@ -110,9 +76,15 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
       }
     }
 
+    const history = habit.completion_history ?? [];
+    const updatedHistory = [todayStr, ...history.filter(d => d !== todayStr)].slice(0, 365);
+    const newBest = Math.max(newStreak, habit.best_streak ?? 0);
+
     get().updateHabit(id, {
       streak_days: newStreak,
+      best_streak: newBest,
       last_completed_at: now.toISOString(),
+      completion_history: updatedHistory,
     });
 
     const milestoneKey = `${id}-${newStreak}`;
@@ -130,17 +102,32 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
     const lastDate = habit.last_completed_at
       ? format(new Date(habit.last_completed_at), 'yyyy-MM-dd')
       : null;
-    if (lastDate !== todayStr) return; // Can only undo today's completion
+    if (lastDate !== todayStr) return;
+
+    const updatedHistory = (habit.completion_history ?? []).filter(d => d !== todayStr);
+
     get().updateHabit(id, {
       streak_days: Math.max(0, habit.streak_days - 1),
-      last_completed_at: undefined,
+      last_completed_at: updatedHistory[0]
+        ? new Date(updatedHistory[0] + 'T12:00:00').toISOString()
+        : undefined,
+      completion_history: updatedHistory,
     });
   },
 
   loadHabits: async () => {
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
-      if (stored) set({ habits: JSON.parse(stored) });
+      if (stored) {
+        const parsed: Habit[] = JSON.parse(stored);
+        const migrated = parsed.map(h => ({
+          frequency: 'daily' as HabitFrequency,
+          best_streak: h.streak_days ?? 0,
+          completion_history: [],
+          ...h,
+        }));
+        set({ habits: migrated });
+      }
     } catch {}
   },
 }));

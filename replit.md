@@ -95,7 +95,7 @@ Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHea
 
 Expo/React Native productivity app — Do.Yoomi (يومي). Offline-first with Zustand + AsyncStorage.
 
-**Features:** Home, Calendar, Tasks, Habits, Goals, Journal, More (Profile/Goals/Categories/App Settings/Support)
+**Features:** Home, Calendar, Tasks (recurring+subtasks+cancelled), Habits (frequency+history), Goals (deadline+archive+delete), Journal, Statistics & Insights, Data Export/Import/Clear, More (Profile/Goals/Categories/Settings/Support)
 
 **Design System (Soft & Warm — ناعم ودافئ):**
 - PRIMARY `#C97A5B` (terracotta), SECONDARY `#7BAE9E` (sage teal)
@@ -108,11 +108,14 @@ Expo/React Native productivity app — Do.Yoomi (يومي). Offline-first with Z
 - `app/(tabs)/` — Tab screens (index, calendar, tasks, habits, goals, settings/More)
 - `app/support.tsx` — Support/Contact stack screen (accessible from More page)
 - `app/journal.tsx` — Journal modal screen
+- `app/statistics.tsx` — Statistics & Insights screen (tasks/habits/goals/journal stats)
+- `app/onboarding.tsx` — First-launch 5-step onboarding (language select → profile setup → tour)
 - `src/features/` — Form components (TaskForm, HabitForm, GoalForm, JournalForm)
 - `src/components/ui/FormModal.tsx` — Shared form modal with RTL support + KeyboardAvoidingView
-- `src/store/` — Zustand stores (tasks, habits, goals, journal, categories, settings)
+- `src/store/` — Zustand stores (tasks, habits, goals, journal, categories, settings); all start empty on first launch
 - `src/utils/i18n.ts` — EN/AR translations; phone placeholder uses +974
 - `src/utils/date.ts` — Date formatting with Arabic locale support (formatDate/formatShortDate)
+- `src/utils/dataExport.ts` — JSON backup: exportData (Share API), importData (paste JSON), clearAllData
 - `src/theme/index.ts` — Design tokens (colors, spacing, radius, shadow, typography)
 - `assets/images/icon.png` — App icon (يومي branded)
 

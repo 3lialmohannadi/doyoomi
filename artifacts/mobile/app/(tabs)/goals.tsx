@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   FlatList, StyleSheet, Text, View, Platform, Pressable,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { format, parseISO, differenceInCalendarDays } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 
 import { router } from 'expo-router';
@@ -13,6 +14,7 @@ import { useSettingsStore } from '../../src/store/settingsStore';
 import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_AMBER, GRADIENT_CYAN, GRADIENT_CORAL, GRADIENT_ROSE, GRADIENT_SAGE, ColorScheme, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER, Shadow, ShadowDark } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
+import { resolveDisplayName } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
 import { GoalForm } from '../../src/features/goals/GoalForm';
 import { Toast } from '../../src/components/ui/Toast';
@@ -29,12 +31,20 @@ const GOAL_GRADIENTS: readonly (readonly [string, string])[] = [
   GRADIENT_SAGE,
 ];
 
+const AR_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+
+function formatDeadline(deadline: string, lang: string) {
+  const d = parseISO(deadline);
+  if (lang === 'ar') return `${d.getDate()} ${AR_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  return format(d, 'MMM d, yyyy');
+}
+
 export default function GoalsScreen() {
   const { C, scheme } = useAppTheme();
   const isDark = scheme === 'dark';
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
-  const { goals, deleteGoal, incrementProgress, decrementProgress } = useGoalsStore();
+  const { goals, deleteGoal, archiveGoal, unarchiveGoal, incrementProgress, decrementProgress } = useGoalsStore();
   const { profile } = useSettingsStore();
   const lang = profile.language;
   const isRTL = lang === 'ar';
@@ -42,6 +52,7 @@ export default function GoalsScreen() {
   const [showForm, setShowForm] = useState(false);
   const [editGoal, setEditGoal] = useState<Goal | null>(null);
   const [confirmGoal, setConfirmGoal] = useState<Goal | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [celebrationGoal, setCelebrationGoal] = useState<Goal | null>(null);
 
@@ -49,8 +60,12 @@ export default function GoalsScreen() {
   const topPad = isWeb ? 67 : insets.top;
   const bottomPad = isWeb ? 34 : 0;
 
-  const avgProgress = goals.length > 0
-    ? goals.reduce((sum, g) => sum + (g.target_value > 0 ? Math.min(g.current_value / g.target_value, 1) : 0), 0) / goals.length
+  const activeGoals = useMemo(() => goals.filter(g => !g.is_archived), [goals]);
+  const archivedGoals = useMemo(() => goals.filter(g => g.is_archived), [goals]);
+  const displayGoals = showArchived ? archivedGoals : activeGoals;
+
+  const avgProgress = activeGoals.length > 0
+    ? activeGoals.reduce((sum, g) => sum + (g.target_value > 0 ? Math.min(g.current_value / g.target_value, 1) : 0), 0) / activeGoals.length
     : 0;
   const pctDone = Math.round(avgProgress * 100);
 
@@ -58,9 +73,11 @@ export default function GoalsScreen() {
     setToast({ message, type });
   };
 
+  const today = new Date();
+
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
-      {/* Header — Purple/Rose gradient for distinct Goals personality */}
+      {/* Header */}
       <LinearGradient
         colors={isDark ? [...GRADIENT_DARK_HEADER] : ['#8B5CF6', '#EC4899']}
         start={{ x: 0, y: 0 }}
@@ -73,7 +90,9 @@ export default function GoalsScreen() {
           <View style={{ width: 46 }} />
           <View style={{ flex: 1, alignItems: 'center' }}>
             <Text style={[styles.headerTitle, { textAlign: 'center', color: '#fff' }]}>{tFunc('goals')}</Text>
-            <Text style={[styles.headerSub, { textAlign: 'center', color: 'rgba(255,255,255,0.75)' }]}>{goals.length} {tFunc('activeGoals')}</Text>
+            <Text style={[styles.headerSub, { textAlign: 'center', color: 'rgba(255,255,255,0.75)' }]}>
+              {activeGoals.length} {tFunc('activeGoals')}
+            </Text>
           </View>
           <Pressable
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditGoal(null); setShowForm(true); }}
@@ -86,7 +105,8 @@ export default function GoalsScreen() {
             </View>
           </Pressable>
         </View>
-        {goals.length > 0 && (
+
+        {activeGoals.length > 0 && (
           <View style={styles.headerProgress}>
             <View style={[styles.headerProgressTrack, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.22)' }]}>
               <LinearGradient
@@ -99,10 +119,33 @@ export default function GoalsScreen() {
             <Text style={[styles.headerProgressLabel, { color: isDark ? C.tint : '#fff' }]}>{pctDone}% {tFunc('completed')}</Text>
           </View>
         )}
+
+        {/* Active / Archived tabs */}
+        <View style={[styles.tabsRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          {[false, true].map((archived) => {
+            const isActive = showArchived === archived;
+            const label = archived ? tFunc('archivedGoalsTab') : tFunc('activeGoalsTab');
+            const count = archived ? archivedGoals.length : activeGoals.length;
+            return (
+              <Pressable
+                key={String(archived)}
+                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowArchived(archived); }}
+                style={[
+                  styles.tab,
+                  { backgroundColor: isActive ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.08)' },
+                ]}
+              >
+                <Text style={[styles.tabText, { color: isActive ? '#fff' : 'rgba(255,255,255,0.65)' }]}>
+                  {label} {count > 0 ? `(${count})` : ''}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
       </LinearGradient>
 
       <FlatList
-        data={goals}
+        data={displayGoals}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: Spacing.lg, paddingBottom: bottomPad + 100, gap: Spacing.md }}
@@ -110,17 +153,24 @@ export default function GoalsScreen() {
           const grad = GOAL_GRADIENTS[index % GOAL_GRADIENTS.length];
           const pct = item.target_value > 0 ? item.current_value / item.target_value : 0;
           const iconName = (item.icon + '-outline') as React.ComponentProps<typeof Ionicons>['name'];
+          const isCompleted = item.current_value >= item.target_value;
+
+          const daysLeft = item.deadline
+            ? differenceInCalendarDays(parseISO(item.deadline), today)
+            : null;
+          const isOverdueDeadline = daysLeft !== null && daysLeft < 0 && !isCompleted;
+          const isDueSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 7 && !isCompleted;
 
           return (
             <View style={[
               styles.goalCard,
               { borderColor: grad[0] + '30', overflow: 'hidden' },
               isDark ? ShadowDark.sm : Shadow.sm,
+              item.is_archived && { opacity: 0.75 },
             ]}>
               {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
               {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
 
-              {/* Bold colored top stripe */}
               <LinearGradient
                 colors={grad}
                 start={{ x: 0, y: 0 }}
@@ -134,25 +184,73 @@ export default function GoalsScreen() {
                     <Ionicons name={iconName} size={22} color="#fff" />
                   </LinearGradient>
                   <View style={{ flex: 1 }}>
-                    <Text style={[styles.goalTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{item.title}</Text>
-                    <View style={[styles.typeBadge, { backgroundColor: grad[0] + '18', alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}>
-                      <Text style={[styles.typeText, { color: grad[0] }]}>{tFunc(item.type)}</Text>
+                    <Text
+                      style={[styles.goalTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}
+                      numberOfLines={1}
+                    >
+                      {resolveDisplayName(item.title_ar, item.title_en, lang, item.title)}
+                    </Text>
+                    <View style={[styles.badgesRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                      <View style={[styles.typeBadge, { backgroundColor: grad[0] + '18' }]}>
+                        <Text style={[styles.typeText, { color: grad[0] }]}>{tFunc(item.type)}</Text>
+                      </View>
+                      {isCompleted && (
+                        <View style={[styles.typeBadge, { backgroundColor: C.success + '18' }]}>
+                          <Ionicons name="checkmark-circle" size={11} color={C.success} />
+                          <Text style={[styles.typeText, { color: C.success }]}>{tFunc('done')}</Text>
+                        </View>
+                      )}
+                      {item.is_archived && (
+                        <View style={[styles.typeBadge, { backgroundColor: C.textMuted + '20' }]}>
+                          <Ionicons name="archive" size={11} color={C.textMuted} />
+                          <Text style={[styles.typeText, { color: C.textMuted }]}>{tFunc('archivedGoalsTab')}</Text>
+                        </View>
+                      )}
                     </View>
                   </View>
-                  <Pressable
-                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setEditGoal(item); setShowForm(true); }}
-                    hitSlop={10}
-                    style={({ pressed }) => [styles.editIconBtn, { backgroundColor: grad[0] + '12', opacity: pressed ? 0.6 : 1 }]}
-                    accessibilityRole="button"
-                    accessibilityLabel={tFunc('editGoal')}
-                  >
-                    <Ionicons name="pencil" size={14} color={grad[0]} />
-                  </Pressable>
+                  <View style={[styles.headerActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                    {!item.is_archived && (
+                      <Pressable
+                        onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setEditGoal(item); setShowForm(true); }}
+                        hitSlop={10}
+                        style={({ pressed }) => [styles.editIconBtn, { backgroundColor: grad[0] + '12', opacity: pressed ? 0.6 : 1 }]}
+                        accessibilityRole="button"
+                        accessibilityLabel={tFunc('editGoal')}
+                      >
+                        <Ionicons name="pencil" size={14} color={grad[0]} />
+                      </Pressable>
+                    )}
+                  </View>
                 </View>
 
                 {item.description ? (
-                  <Text style={[styles.goalDesc, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>{item.description}</Text>
+                  <Text style={[styles.goalDesc, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
+                    {item.description}
+                  </Text>
                 ) : null}
+
+                {/* Deadline indicator */}
+                {item.deadline && (
+                  <View style={[styles.deadlineRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                    <Ionicons
+                      name="calendar-outline"
+                      size={13}
+                      color={isOverdueDeadline ? C.error : isDueSoon ? '#F97316' : C.textMuted}
+                    />
+                    <Text style={[styles.deadlineText, {
+                      color: isOverdueDeadline ? C.error : isDueSoon ? '#F97316' : C.textMuted,
+                    }]}>
+                      {formatDeadline(item.deadline, lang)}
+                      {daysLeft !== null && !isCompleted && (
+                        isOverdueDeadline
+                          ? ` · ${tFunc('overdue')}`
+                          : isDueSoon
+                            ? ` · ${Math.abs(daysLeft)} ${tFunc('daysLeft')}`
+                            : ` · ${daysLeft} ${tFunc('daysLeft')}`
+                      )}
+                    </Text>
+                  </View>
+                )}
 
                 <View style={[styles.progressRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Text style={[styles.progressLabel, { color: C.textSecondary }]}>
@@ -163,7 +261,6 @@ export default function GoalsScreen() {
                   </Text>
                 </View>
 
-                {/* Bold progress bar */}
                 <View style={[styles.track, { backgroundColor: grad[0] + '18' }]}>
                   <LinearGradient
                     colors={grad}
@@ -174,36 +271,64 @@ export default function GoalsScreen() {
                 </View>
 
                 <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  <Pressable
-                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); decrementProgress(item.id); }}
-                    style={({ pressed }) => [styles.decrBtn, { borderColor: grad[0] + '35', backgroundColor: grad[0] + '10', opacity: pressed ? 0.7 : 1 }]}
-                    accessibilityRole="button"
-                    accessibilityLabel="-1"
-                  >
-                    <Ionicons name="remove" size={18} color={grad[0]} />
-                  </Pressable>
+                  {!item.is_archived && (
+                    <>
+                      <Pressable
+                        onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); decrementProgress(item.id); }}
+                        style={({ pressed }) => [styles.decrBtn, { borderColor: grad[0] + '35', backgroundColor: grad[0] + '10', opacity: pressed ? 0.7 : 1 }]}
+                        accessibilityRole="button"
+                        accessibilityLabel="-1"
+                      >
+                        <Ionicons name="remove" size={18} color={grad[0]} />
+                      </Pressable>
+                      <Pressable
+                        onPress={() => {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                          const wasComplete = item.current_value >= item.target_value;
+                          incrementProgress(item.id);
+                          if (!wasComplete && item.current_value + 1 >= item.target_value) {
+                            setCelebrationGoal(item);
+                          }
+                        }}
+                        style={({ pressed }) => [styles.actionBtn, { opacity: pressed ? 0.85 : 1, overflow: 'hidden' }]}
+                        accessibilityRole="button"
+                        accessibilityLabel="+1"
+                      >
+                        <LinearGradient
+                          colors={grad}
+                          start={{ x: isRTL ? 1 : 0, y: 0 }}
+                          end={{ x: isRTL ? 0 : 1, y: 0 }}
+                          style={StyleSheet.absoluteFill}
+                        />
+                        <Ionicons name="add" size={18} color="#fff" />
+                        <Text style={styles.actionText}>+1</Text>
+                      </Pressable>
+                    </>
+                  )}
+
+                  {/* Archive / Unarchive */}
                   <Pressable
                     onPress={() => {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      const wasComplete = item.current_value >= item.target_value;
-                      incrementProgress(item.id);
-                      if (!wasComplete && item.current_value + 1 >= item.target_value) {
-                        setCelebrationGoal(item);
+                      if (item.is_archived) {
+                        unarchiveGoal(item.id);
+                        showToast(tFunc('goalUnarchived'), 'info');
+                      } else {
+                        archiveGoal(item.id);
+                        showToast(tFunc('goalArchived'), 'info');
                       }
                     }}
-                    style={({ pressed }) => [styles.actionBtn, { opacity: pressed ? 0.85 : 1, overflow: 'hidden' }]}
+                    style={({ pressed }) => [
+                      styles.actionBtnIcon,
+                      { borderColor: C.textMuted + '30', backgroundColor: C.textMuted + '10', opacity: pressed ? 0.7 : 1 },
+                    ]}
                     accessibilityRole="button"
-                    accessibilityLabel="+1"
+                    accessibilityLabel={item.is_archived ? tFunc('unarchiveGoal') : tFunc('archiveGoal')}
                   >
-                    <LinearGradient
-                      colors={grad}
-                      start={{ x: isRTL ? 1 : 0, y: 0 }}
-                      end={{ x: isRTL ? 0 : 1, y: 0 }}
-                      style={StyleSheet.absoluteFill}
-                    />
-                    <Ionicons name="add" size={18} color="#fff" />
-                    <Text style={styles.actionText}>+1</Text>
+                    <Ionicons name={item.is_archived ? 'arrow-undo-outline' : 'archive-outline'} size={16} color={C.textMuted} />
                   </Pressable>
+
+                  {/* Delete */}
                   <Pressable
                     onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setConfirmGoal(item); }}
                     style={({ pressed }) => [
@@ -222,12 +347,12 @@ export default function GoalsScreen() {
         }}
         ListEmptyComponent={() => (
           <EmptyState
-            icon="trophy-outline"
-            title={tFunc('noGoals')}
-            subtitle={tFunc('noGoalsSubtitle')}
+            icon={showArchived ? 'archive-outline' : 'trophy-outline'}
+            title={showArchived ? tFunc('archivedGoalsTab') : tFunc('noGoals')}
+            subtitle={showArchived ? '' : tFunc('noGoalsSubtitle')}
             gradient={['#8B5CF6', '#EC4899']}
-            actionLabel={tFunc('addGoal')}
-            onAction={() => { setEditGoal(null); setShowForm(true); }}
+            actionLabel={showArchived ? undefined : tFunc('addGoal')}
+            onAction={showArchived ? undefined : () => { setEditGoal(null); setShowForm(true); }}
           />
         )}
       />
@@ -274,7 +399,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: Spacing.xl,
     borderBottomLeftRadius: 36,
     borderBottomRightRadius: 36,
     position: 'relative',
@@ -308,6 +433,17 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 5,
   },
+  tabsRow: {
+    gap: Spacing.sm,
+    marginTop: Spacing.md,
+  },
+  tab: {
+    flex: 1,
+    borderRadius: Radius.md,
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  tabText: { fontSize: 13, fontFamily: F.bold },
   goalCard: {
     borderRadius: Radius.xl,
     borderWidth: 1.5,
@@ -319,15 +455,20 @@ const styles = StyleSheet.create({
   goalIconBox: {
     width: 46, height: 46, borderRadius: Radius.md,
     alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0,
   },
+  headerActions: { gap: 6 },
   editIconBtn: {
     width: 32, height: 32, borderRadius: 10,
     alignItems: 'center', justifyContent: 'center',
   },
   goalTitle: { fontSize: 17, fontFamily: F.black, marginBottom: 4 },
-  typeBadge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
+  badgesRow: { gap: 4, flexWrap: 'wrap', alignItems: 'center' },
+  typeBadge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, flexDirection: 'row', alignItems: 'center', gap: 3 },
   typeText: { fontSize: 11, fontFamily: F.bold },
   goalDesc: { fontSize: 13, fontFamily: F.reg, lineHeight: 18 },
+  deadlineRow: { gap: 5, alignItems: 'center' },
+  deadlineText: { fontSize: 12, fontFamily: F.med },
   progressRow: { justifyContent: 'space-between', alignItems: 'center' },
   progressLabel: { fontSize: 13, fontFamily: F.med },
   progressPct: { fontSize: 22, fontFamily: F.black },

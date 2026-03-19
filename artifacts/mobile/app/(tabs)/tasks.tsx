@@ -22,7 +22,7 @@ import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 import { Task } from '../../src/types';
 import * as Haptics from 'expo-haptics';
 
-type FilterKey = 'all' | 'today' | 'done' | 'overdue' | 'high' | 'postponed' | 'nodate';
+type FilterKey = 'all' | 'today' | 'done' | 'overdue' | 'high' | 'postponed' | 'nodate' | 'cancelled';
 
 const FILTER_GRADIENTS: Record<FilterKey, readonly [string, string]> = {
   all:       GRADIENT_H,
@@ -32,6 +32,7 @@ const FILTER_GRADIENTS: Record<FilterKey, readonly [string, string]> = {
   high:      GRADIENT_AMBER,
   postponed: ['#64748B', '#94A3B8'],
   nodate:    GRADIENT_SAGE,
+  cancelled: ['#94A3B8', '#64748B'],
 };
 
 export default function TasksScreen() {
@@ -40,7 +41,7 @@ export default function TasksScreen() {
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
-  const { tasks, toggleComplete, deleteTask, postponeTask } = useTasksStore();
+  const { tasks, toggleComplete, deleteTask, postponeTask, cancelTask } = useTasksStore();
   const { categories } = useCategoriesStore();
   const { profile } = useSettingsStore();
   const lang = profile.language;
@@ -69,6 +70,7 @@ export default function TasksScreen() {
     { key: 'high',      label: tFunc('high'),      icon: 'arrow-up-circle-outline' },
     { key: 'postponed', label: tFunc('postponed'), icon: 'time-outline' },
     { key: 'nodate',    label: tFunc('noDate'),    icon: 'remove-circle-outline' },
+    { key: 'cancelled', label: tFunc('cancelled'), icon: 'close-circle-outline' },
   ];
 
   const activeOption = filterOptions.find(f => f.key === filter)!;
@@ -81,12 +83,14 @@ export default function TasksScreen() {
       result = result.filter(t => t.title.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q) || (t.title_ar?.toLowerCase().includes(q)));
     }
     switch (filter) {
-      case 'today':     result = result.filter(t => t.due_date === today); break;
+      case 'today':     result = result.filter(t => t.due_date === today && t.status !== 'cancelled'); break;
       case 'done':      result = result.filter(t => t.status === 'completed'); break;
       case 'overdue':   result = result.filter(t => t.status === 'overdue' || (t.status === 'pending' && t.due_date && isOverdue(t.due_date))); break;
-      case 'high':      result = result.filter(t => t.priority === 'high'); break;
+      case 'high':      result = result.filter(t => t.priority === 'high' && t.status !== 'cancelled'); break;
       case 'postponed': result = result.filter(t => t.status === 'postponed'); break;
-      case 'nodate':    result = result.filter(t => !t.due_date); break;
+      case 'nodate':    result = result.filter(t => !t.due_date && t.status !== 'cancelled'); break;
+      case 'cancelled': result = result.filter(t => t.status === 'cancelled'); break;
+      case 'all':       result = result.filter(t => t.status !== 'cancelled'); break;
     }
     return result;
   }, [tasks, filter, search, today]);
@@ -247,6 +251,10 @@ export default function TasksScreen() {
                   onDelete={deleteTask}
                   onDeleteRequest={(task) => setConfirmTask(task)}
                   onPostpone={postponeTask}
+                  onCancel={(id) => {
+                    cancelTask(id);
+                    showToast(tFunc('taskCancelled'), 'info');
+                  }}
                   onEdit={(task) => { setEditTask(task); setShowForm(true); }}
                   priorityLabel={tFunc(item.priority)}
                   timeStr={item.due_time ? formatTime(item.due_time, profile.time_format === '12h') : undefined}
