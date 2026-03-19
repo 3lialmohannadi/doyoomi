@@ -1,13 +1,16 @@
 import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useMemo } from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSettingsStore } from "../../src/store/settingsStore";
+import { useTasksStore } from "../../src/store/tasksStore";
+import { useHabitsStore } from "../../src/store/habitsStore";
 import { useAppTheme } from "../../src/hooks/useAppTheme";
 import { t } from "../../src/utils/i18n";
 import { F } from "../../src/theme";
+import { format } from "date-fns";
 
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
@@ -65,6 +68,8 @@ function TabIonicon({
 
 export default function TabLayout() {
   const { profile } = useSettingsStore();
+  const { tasks } = useTasksStore();
+  const { habits } = useHabitsStore();
   const { scheme, C } = useAppTheme();
   const lang = profile.language;
   const tFunc = (key: string) => t(key, lang);
@@ -72,6 +77,26 @@ export default function TabLayout() {
   const isIOS = Platform.OS === "ios";
   const isWeb = Platform.OS === "web";
   const tabBarHeight = isWeb ? 80 : 76;
+
+  const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
+
+  const pendingTasksTodayCount = useMemo(() => {
+    return tasks.filter(
+      (t) =>
+        t.due_date === today &&
+        t.status !== "completed" &&
+        t.status !== "postponed"
+    ).length;
+  }, [tasks, today]);
+
+  const remainingHabitsCount = useMemo(() => {
+    return habits.filter((h) => {
+      const lastDate = h.last_completed_at
+        ? format(new Date(h.last_completed_at), "yyyy-MM-dd")
+        : null;
+      return lastDate !== today;
+    }).length;
+  }, [habits, today]);
 
   return (
     <Tabs
@@ -94,6 +119,16 @@ export default function TabLayout() {
           borderTopWidth: 0,
           elevation: 0,
           height: tabBarHeight,
+        },
+        tabBarBadgeStyle: {
+          backgroundColor: "#F97316",
+          color: "#fff",
+          fontSize: 10,
+          fontFamily: F.bold,
+          minWidth: 16,
+          height: 16,
+          borderRadius: 8,
+          lineHeight: 16,
         },
         tabBarBackground: () => (
           <View style={StyleSheet.absoluteFill}>
@@ -145,6 +180,8 @@ export default function TabLayout() {
         name="index"
         options={{
           title: tFunc("home"),
+          tabBarBadge:
+            pendingTasksTodayCount > 0 ? pendingTasksTodayCount : undefined,
           tabBarIcon: ({ color, focused }) => (
             <TabIonicon
               focused={focused}
@@ -177,6 +214,8 @@ export default function TabLayout() {
         name="habits"
         options={{
           title: tFunc("habits"),
+          tabBarBadge:
+            remainingHabitsCount > 0 ? remainingHabitsCount : undefined,
           tabBarIcon: ({ color, focused }) => (
             <TabIonicon
               focused={focused}

@@ -113,8 +113,10 @@ export default function TasksScreen() {
         colors={isDark ? [...GRADIENT_DARK_HEADER] : [...GRADIENT_H]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={[styles.header, { paddingTop: topPad + Spacing.sm }, isDark && styles.headerDark]}
+        style={[styles.header, { paddingTop: topPad + Spacing.md }, isDark && styles.headerDark]}
       >
+        {!isDark && <View style={styles.headerDecor1} />}
+        {!isDark && <View style={styles.headerDecor2} />}
         <View style={[{ flexDirection: isRTL ? 'row-reverse' : 'row', alignItems: 'center', justifyContent: 'space-between', flex: 1 }]}>
         <View style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
           <Text style={[styles.headerTitle, { color: isDark ? C.text : '#fff', textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('tasks')}</Text>
@@ -351,14 +353,26 @@ const styles = StyleSheet.create({
 
   header: {
     alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg, paddingBottom: Spacing.md,
+    paddingHorizontal: Spacing.lg, paddingBottom: Spacing.xxl,
+    borderBottomLeftRadius: 36, borderBottomRightRadius: 36,
+    overflow: 'hidden',
   },
   headerDark: {
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.06)',
   },
-  headerTitle: { fontSize: 28, fontFamily: F.bold },
-  headerSub: { fontSize: 13, fontFamily: F.med, marginTop: 1 },
+  headerDecor1: {
+    position: 'absolute', top: -40, right: -40,
+    width: 160, height: 160, borderRadius: 80,
+    backgroundColor: 'rgba(255,255,255,0.10)',
+  },
+  headerDecor2: {
+    position: 'absolute', bottom: -20, left: -20,
+    width: 100, height: 100, borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+  },
+  headerTitle: { fontSize: 30, fontFamily: F.black },
+  headerSub: { fontSize: 13, fontFamily: F.med, marginTop: 2 },
   headerActions: { alignItems: 'center', gap: Spacing.sm },
 
   filterBtn: {

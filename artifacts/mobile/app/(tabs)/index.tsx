@@ -420,10 +420,10 @@ export default function HomeScreen() {
       <QuickAddMenu
         visible={showQuickAdd}
         onClose={() => setShowQuickAdd(false)}
-        onTask={() => { setShowQuickAdd(false); setTimeout(() => setShowTaskForm(true), 200); }}
-        onHabit={() => { setShowQuickAdd(false); setTimeout(() => { setEditHabit(null); setShowHabitForm(true); }, 200); }}
-        onGoal={() => { setShowQuickAdd(false); setTimeout(() => setShowGoalForm(true), 200); }}
-        onJournal={() => { setShowQuickAdd(false); setTimeout(() => setShowJournalForm(true), 200); }}
+        onTask={() => { setShowQuickAdd(false); setEditTask(null); setShowTaskForm(true); }}
+        onHabit={() => { setShowQuickAdd(false); setEditHabit(null); setShowHabitForm(true); }}
+        onGoal={() => { setShowQuickAdd(false); setShowGoalForm(true); }}
+        onJournal={() => { setShowQuickAdd(false); setShowJournalForm(true); }}
         isRTL={isRTL}
         lang={lang}
         C={C}
