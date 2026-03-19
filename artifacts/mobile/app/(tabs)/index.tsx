@@ -21,7 +21,7 @@ import { useJournalStore } from '../../src/store/journalStore';
 import { Spacing, Typography, Radius, Shadow, ShadowDark, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_AMBER, GRADIENT_SAGE, GRADIENT_DARK_HEADER, GRADIENT_DARK_CARD, GRADIENT_DARK_CARD_ELEVATED, cardShadow, ColorScheme, WARM_SAGE, WARM_CORAL, WARM_ERROR } from '../../src/theme';
 import type { Task, Habit, Goal, JournalEntry, Mood, Category, Language } from '../../src/types';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
-import { t, getGreeting } from '../../src/utils/i18n';
+import { t, getPersonalizedGreeting } from '../../src/utils/i18n';
 import { getTodayString, getWeekDays, getDayLabel, formatDateKey, formatTime, isOverdue, formatShortDate } from '../../src/utils/date';
 import { HabitForm } from '../../src/features/habits/HabitForm';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
@@ -133,11 +133,8 @@ export default function HomeScreen() {
                 style={[styles.heroLogo, { alignSelf: isRTL ? 'flex-end' : 'flex-start' }, isDark && { tintColor: C.tint }]}
                 resizeMode="contain"
               />
-              <Text style={[styles.greeting, { color: isDark ? C.textSecondary : 'rgba(255,255,255,0.75)', textAlign: isRTL ? 'right' : 'left' }]}>
-                {getGreeting(lang)}
-              </Text>
               <Text style={[styles.heroTitle, { color: isDark ? C.text : '#fff', textAlign: isRTL ? 'right' : 'left', width: '100%' }]} numberOfLines={2}>
-                {profile.name || ''}
+                {getPersonalizedGreeting(profile.name, lang)}
               </Text>
               <Text style={[styles.heroDate, { color: isDark ? C.textMuted : 'rgba(255,255,255,0.65)', textAlign: isRTL ? 'right' : 'left' }]}>
                 {isRTL
@@ -912,7 +909,6 @@ const styles = StyleSheet.create({
   },
   heroContent: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: Spacing.md },
   heroLeft: { gap: 2, flex: 1 },
-  greeting: { fontSize: 14, color: 'rgba(255,255,255,0.75)', fontFamily: F.med },
   heroLogo: { height: 28, marginBottom: 4 },
   heroTitle: { fontSize: 26, color: '#fff', fontFamily: F.bold, lineHeight: 32 },
   heroDate: { fontSize: 12, color: 'rgba(255,255,255,0.65)', fontFamily: F.med, marginTop: 2 },

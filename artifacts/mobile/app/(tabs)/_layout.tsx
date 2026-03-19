@@ -76,7 +76,7 @@ export default function TabLayout() {
   const isDark = scheme === "dark";
   const isIOS = Platform.OS === "ios";
   const isWeb = Platform.OS === "web";
-  const tabBarHeight = isWeb ? 80 : 76;
+  const tabBarHeight = isWeb ? 80 : 72;
 
   const today = format(new Date(), "yyyy-MM-dd");
 
@@ -117,8 +117,17 @@ export default function TabLayout() {
           position: "absolute",
           backgroundColor: "transparent",
           borderTopWidth: 0,
-          elevation: 0,
           height: tabBarHeight,
+          ...(isWeb ? {} : {
+            marginHorizontal: 16,
+            borderRadius: 28,
+            marginBottom: Platform.OS === 'ios' ? 8 : 12,
+            shadowColor: isDark ? '#000000' : '#6366F1',
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: isDark ? 0.45 : 0.18,
+            shadowRadius: 20,
+            elevation: 12,
+          }),
         },
         tabBarBadgeStyle: {
           backgroundColor: "#F97316",
@@ -131,9 +140,9 @@ export default function TabLayout() {
           lineHeight: 16,
         },
         tabBarBackground: () => (
-          <View style={StyleSheet.absoluteFill}>
+          <View style={[StyleSheet.absoluteFill, isWeb ? {} : { borderRadius: 28, overflow: "hidden" }]}>
             {isDark ? (
-              <View style={[StyleSheet.absoluteFill, { overflow: "hidden" }]}>
+              <View style={StyleSheet.absoluteFill}>
                 {isIOS ? (
                   <BlurView
                     intensity={60}
@@ -144,10 +153,9 @@ export default function TabLayout() {
                 <View
                   style={[
                     StyleSheet.absoluteFill,
-                    { backgroundColor: "rgba(11,11,20,0.93)" },
+                    { backgroundColor: "rgba(13,11,22,0.95)" },
                   ]}
                 />
-                <View style={styles.tabBorder} />
               </View>
             ) : (
               <View style={StyleSheet.absoluteFill}>
@@ -162,12 +170,6 @@ export default function TabLayout() {
                   style={[
                     StyleSheet.absoluteFill,
                     { backgroundColor: "rgba(245,245,255,0.97)" },
-                  ]}
-                />
-                <View
-                  style={[
-                    styles.tabBorder,
-                    { borderTopColor: "rgba(99,102,241,0.12)" },
                   ]}
                 />
               </View>
@@ -289,14 +291,5 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-  },
-  tabBorder: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 1,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(129,140,248,0.08)",
   },
 });
