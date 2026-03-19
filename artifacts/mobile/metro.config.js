@@ -15,4 +15,10 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, "node_modules"),
 ];
 
+// Exclude temp directories created by canvas/mockup tools to prevent ENOENT crashes
+config.resolver.blockList = [
+  /\.local[/\\]skills[/\\]\.tmp-.*/,
+  /\.local[/\\]skills[/\\]\.tmp-mockup-sandbox-.*/,
+];
+
 module.exports = config;
