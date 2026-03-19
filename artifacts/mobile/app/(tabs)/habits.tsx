@@ -16,6 +16,7 @@ import { Spacing, Radius, F, GRADIENT_H, GRADIENT_ORANGE, GRADIENT_DARK_CARD, GR
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
+import { SwipeableRow } from '../../src/components/ui/SwipeableRow';
 import { HabitForm } from '../../src/features/habits/HabitForm';
 import { Toast } from '../../src/components/ui/Toast';
 import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
@@ -129,33 +130,41 @@ export default function HabitsScreen() {
           const isDoneToday = lastDate === today;
 
           return (
-            <HabitCard
-              item={item}
-              isDoneToday={isDoneToday}
-              isDark={isDark}
+            <SwipeableRow
               isRTL={isRTL}
-              C={C}
-              tFunc={tFunc}
-              onToggle={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                if (isDoneToday) {
-                  uncompleteHabit(item.id);
-                  showToast(tFunc('habitUncompleted'), 'info');
-                } else {
-                  completeHabit(item.id);
-                  showToast(tFunc('habitCompleted'), 'success');
-                }
-              }}
-              onEdit={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setEditHabit(item);
-                setShowForm(true);
-              }}
               onDelete={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 setConfirmHabit(item);
               }}
-            />
+              deleteLabel={tFunc('delete')}
+            >
+              <HabitCard
+                item={item}
+                isDoneToday={isDoneToday}
+                isDark={isDark}
+                isRTL={isRTL}
+                C={C}
+                tFunc={tFunc}
+                onToggle={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  if (isDoneToday) {
+                    uncompleteHabit(item.id);
+                    showToast(tFunc('habitUncompleted'), 'info');
+                  } else {
+                    completeHabit(item.id);
+                    showToast(tFunc('habitCompleted'), 'success');
+                  }
+                }}
+                onEdit={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setEditHabit(item);
+                  setShowForm(true);
+                }}
+                onDelete={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  setConfirmHabit(item);
+                }}
+              />
+            </SwipeableRow>
           );
         }}
         ListEmptyComponent={() => (

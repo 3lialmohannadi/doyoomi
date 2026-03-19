@@ -14,6 +14,7 @@ import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { formatDate, formatTime, getTodayString, isOverdue } from '../../src/utils/date';
 import { TaskCard } from '../../src/components/ui/TaskCard';
+import { SwipeableRow } from '../../src/components/ui/SwipeableRow';
 import { EmptyState } from '../../src/components/ui/EmptyState';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
 import { Toast } from '../../src/components/ui/Toast';
@@ -223,27 +224,38 @@ export default function TasksScreen() {
         renderItem={({ item }) => {
           const cat = categories.find(c => c.id === item.category_id);
           return (
-            <View style={{ marginBottom: Spacing.sm }}>
-              <TaskCard
-                task={item}
-                onToggle={(id) => {
-                  toggleComplete(id);
-                  const task = tasks.find(t => t.id === id);
-                  if (task && task.status !== 'completed') {
-                    showToast(tFunc('taskCompleted'), 'success');
-                  }
-                }}
-                onDelete={deleteTask}
-                onDeleteRequest={(task) => setConfirmTask(task)}
-                onPostpone={postponeTask}
-                onEdit={(task) => { setEditTask(task); setShowForm(true); }}
-                priorityLabel={tFunc(item.priority)}
-                timeStr={item.due_time ? formatTime(item.due_time, profile.time_format === '12h') : undefined}
-                categoryName={cat?.name}
-                categoryColor={cat?.color}
-                t={tFunc}
-              />
-            </View>
+            <SwipeableRow
+              isRTL={isRTL}
+              onComplete={item.status !== 'completed' ? () => {
+                toggleComplete(item.id);
+                showToast(tFunc('taskCompleted'), 'success');
+              } : undefined}
+              onDelete={() => setConfirmTask(item)}
+              completeLabel={tFunc('done')}
+              deleteLabel={tFunc('delete')}
+            >
+              <View style={{ marginBottom: Spacing.sm }}>
+                <TaskCard
+                  task={item}
+                  onToggle={(id) => {
+                    toggleComplete(id);
+                    const task = tasks.find(t => t.id === id);
+                    if (task && task.status !== 'completed') {
+                      showToast(tFunc('taskCompleted'), 'success');
+                    }
+                  }}
+                  onDelete={deleteTask}
+                  onDeleteRequest={(task) => setConfirmTask(task)}
+                  onPostpone={postponeTask}
+                  onEdit={(task) => { setEditTask(task); setShowForm(true); }}
+                  priorityLabel={tFunc(item.priority)}
+                  timeStr={item.due_time ? formatTime(item.due_time, profile.time_format === '12h') : undefined}
+                  categoryName={cat?.name}
+                  categoryColor={cat?.color}
+                  t={tFunc}
+                />
+              </View>
+            </SwipeableRow>
           );
         }}
         ListEmptyComponent={() => (

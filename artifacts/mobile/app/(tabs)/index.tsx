@@ -27,6 +27,7 @@ import { HabitForm } from '../../src/features/habits/HabitForm';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
 import { JournalForm } from '../../src/features/journal/JournalForm';
 import { GoalForm } from '../../src/features/goals/GoalForm';
+import { SwipeableRow } from '../../src/components/ui/SwipeableRow';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -258,24 +259,32 @@ export default function HomeScreen() {
               {dayTasks.slice(0, 4).map(task => {
                 const cat = categories.find(c => c.id === task.category_id);
                 return (
-                  <FunTaskRow
+                  <SwipeableRow
                     key={task.id}
-                    task={task}
-                    catName={cat ? resolveDisplayName(cat.name_ar, cat.name_en, lang, cat.name) : undefined}
-                    catColor={cat?.color}
-                    catIcon={cat?.icon}
-                    timeStr={task.due_time ? formatTime(task.due_time, profile.time_format === '12h') : undefined}
-                    onToggle={() => toggleComplete(task.id)}
-                    onLongPress={() => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-                      Alert.alert(resolveDisplayName(task.title_ar, task.title_en, lang, task.title), undefined, [
-                        { text: tFunc('cancel'), style: 'cancel' },
-                        { text: tFunc('postpone'), onPress: () => postponeTask(task.id) },
-                        { text: tFunc('deleteTask'), style: 'destructive', onPress: () => deleteTask(task.id) },
-                      ]);
-                    }}
-                    C={C} isRTL={isRTL} lang={lang}
-                  />
+                    isRTL={isRTL}
+                    onComplete={task.status !== 'completed' ? () => toggleComplete(task.id) : undefined}
+                    onDelete={() => deleteTask(task.id)}
+                    completeLabel={tFunc('done')}
+                    deleteLabel={tFunc('delete')}
+                  >
+                    <FunTaskRow
+                      task={task}
+                      catName={cat ? resolveDisplayName(cat.name_ar, cat.name_en, lang, cat.name) : undefined}
+                      catColor={cat?.color}
+                      catIcon={cat?.icon}
+                      timeStr={task.due_time ? formatTime(task.due_time, profile.time_format === '12h') : undefined}
+                      onToggle={() => toggleComplete(task.id)}
+                      onLongPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                        Alert.alert(resolveDisplayName(task.title_ar, task.title_en, lang, task.title), undefined, [
+                          { text: tFunc('cancel'), style: 'cancel' },
+                          { text: tFunc('postpone'), onPress: () => postponeTask(task.id) },
+                          { text: tFunc('deleteTask'), style: 'destructive', onPress: () => deleteTask(task.id) },
+                        ]);
+                      }}
+                      C={C} isRTL={isRTL} lang={lang}
+                    />
+                  </SwipeableRow>
                 );
               })}
               {dayTasks.length > 4 && (
