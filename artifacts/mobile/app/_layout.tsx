@@ -18,13 +18,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, I18nManager, StyleSheet } from "react-native";
+import { I18nManager } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import AppSplashScreen from "@/src/components/SplashScreen";
 import { useSettingsStore } from "@/src/store/settingsStore";
 import { useTasksStore } from "@/src/store/tasksStore";
 import { useHabitsStore } from "@/src/store/habitsStore";
@@ -45,9 +44,6 @@ function RootLayoutNav() {
   const { loadEntries } = useJournalStore();
 
   const [dataReady, setDataReady] = useState(false);
-  const [splashDone, setSplashDone] = useState(false);
-  const fadeAnim = useRef(new Animated.Value(1)).current;
-  const splashVisible = useRef(true);
   const redirectedRef = useRef(false);
 
   useEffect(() => {
@@ -69,38 +65,21 @@ function RootLayoutNav() {
   }, []);
 
   useEffect(() => {
-    if (dataReady && splashDone && splashVisible.current) {
-      splashVisible.current = false;
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
-    }
-    if (dataReady && splashDone && !redirectedRef.current) {
+    if (dataReady && !redirectedRef.current) {
       redirectedRef.current = true;
       if (!profile.onboarding_complete) {
         router.replace('/onboarding');
       }
     }
-  }, [dataReady, splashDone]);
+  }, [dataReady]);
 
   return (
-    <>
-      <Stack screenOptions={{ headerBackTitle: "Back" }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="journal" options={{ headerShown: false, presentation: "modal" }} />
-        <Stack.Screen name="support" options={{ headerShown: false }} />
-      </Stack>
-
-      <Animated.View
-        style={[StyleSheet.absoluteFill, { opacity: fadeAnim }]}
-        pointerEvents={dataReady && splashDone ? "none" : "auto"}
-      >
-        <AppSplashScreen onFinish={() => setSplashDone(true)} duration={3000} />
-      </Animated.View>
-    </>
+    <Stack screenOptions={{ headerBackTitle: "Back" }}>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+      <Stack.Screen name="journal" options={{ headerShown: false, presentation: "modal" }} />
+      <Stack.Screen name="support" options={{ headerShown: false }} />
+    </Stack>
   );
 }
 
