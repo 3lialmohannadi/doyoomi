@@ -62,7 +62,22 @@ export default function GoalsScreen() {
 
   const activeGoals = useMemo(() => goals.filter(g => !g.is_archived), [goals]);
   const archivedGoals = useMemo(() => goals.filter(g => g.is_archived), [goals]);
-  const displayGoals = showArchived ? archivedGoals : activeGoals;
+
+  type ListItem =
+    | { kind: 'goal'; goal: Goal; idx: number }
+    | { kind: 'archived-header' }
+    | { kind: 'archived-goal'; goal: Goal; idx: number };
+
+  const listData = useMemo((): ListItem[] => {
+    const items: ListItem[] = activeGoals.map((g, i) => ({ kind: 'goal', goal: g, idx: i }));
+    if (archivedGoals.length > 0) {
+      items.push({ kind: 'archived-header' });
+      if (showArchived) {
+        archivedGoals.forEach((g, i) => items.push({ kind: 'archived-goal', goal: g, idx: i }));
+      }
+    }
+    return items;
+  }, [activeGoals, archivedGoals, showArchived]);
 
   const avgProgress = activeGoals.length > 0
     ? activeGoals.reduce((sum, g) => sum + (g.target_value > 0 ? Math.min(g.current_value / g.target_value, 1) : 0), 0) / activeGoals.length
@@ -120,43 +135,43 @@ export default function GoalsScreen() {
           </View>
         )}
 
-        {/* Active / Archived tabs */}
-        <View style={[styles.tabsRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          {[false, true].map((archived) => {
-            const isActive = showArchived === archived;
-            const label = archived ? tFunc('archivedGoalsTab') : tFunc('activeGoalsTab');
-            const count = archived ? archivedGoals.length : activeGoals.length;
-            return (
-              <Pressable
-                key={String(archived)}
-                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowArchived(archived); }}
-                style={[
-                  styles.tab,
-                  { backgroundColor: isActive ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.08)' },
-                ]}
-              >
-                <Text style={[styles.tabText, { color: isActive ? '#fff' : 'rgba(255,255,255,0.65)' }]}>
-                  {label} {count > 0 ? `(${count})` : ''}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
       </LinearGradient>
 
       <FlatList
-        data={displayGoals}
-        keyExtractor={(item) => item.id}
+        data={listData}
+        keyExtractor={(item) => {
+          if (item.kind === 'archived-header') return 'archived-header';
+          return item.goal.id + '-' + item.kind;
+        }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: Spacing.lg, paddingBottom: bottomPad + 100, gap: Spacing.md }}
-        renderItem={({ item, index }) => {
-          const grad = GOAL_GRADIENTS[index % GOAL_GRADIENTS.length];
-          const pct = item.target_value > 0 ? item.current_value / item.target_value : 0;
-          const iconName = (item.icon + '-outline') as React.ComponentProps<typeof Ionicons>['name'];
-          const isCompleted = item.current_value >= item.target_value;
+        renderItem={({ item }) => {
+          if (item.kind === 'archived-header') {
+            return (
+              <Pressable
+                onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowArchived(v => !v); }}
+                style={[styles.archivedHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+                accessibilityRole="button"
+              >
+                <Ionicons name="archive-outline" size={16} color={C.textMuted} />
+                <Text style={[styles.archivedHeaderText, { color: C.textMuted, flex: 1, textAlign: isRTL ? 'right' : 'left' }]}>
+                  {tFunc('archivedGoals')} ({archivedGoals.length})
+                </Text>
+                <Ionicons name={showArchived ? 'chevron-up' : 'chevron-down'} size={16} color={C.textMuted} />
+              </Pressable>
+            );
+          }
 
-          const daysLeft = item.deadline
-            ? differenceInCalendarDays(parseISO(item.deadline), today)
+          const goal = item.goal;
+          const isArchived = item.kind === 'archived-goal';
+          const gradIdx = item.idx;
+          const grad = GOAL_GRADIENTS[gradIdx % GOAL_GRADIENTS.length];
+          const pct = goal.target_value > 0 ? goal.current_value / goal.target_value : 0;
+          const iconName = (goal.icon + '-outline') as React.ComponentProps<typeof Ionicons>['name'];
+          const isCompleted = goal.current_value >= goal.target_value;
+
+          const daysLeft = goal.deadline
+            ? differenceInCalendarDays(parseISO(goal.deadline), today)
             : null;
           const isOverdueDeadline = daysLeft !== null && daysLeft < 0 && !isCompleted;
           const isDueSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 7 && !isCompleted;
@@ -166,17 +181,12 @@ export default function GoalsScreen() {
               styles.goalCard,
               { borderColor: grad[0] + '30', overflow: 'hidden' },
               isDark ? ShadowDark.sm : Shadow.sm,
-              item.is_archived && { opacity: 0.75 },
+              isArchived && { opacity: 0.75 },
             ]}>
               {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
               {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
 
-              <LinearGradient
-                colors={grad}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.goalTopLine}
-              />
+              <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.goalTopLine} />
 
               <View style={styles.goalContent}>
                 <View style={[styles.goalHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -184,15 +194,12 @@ export default function GoalsScreen() {
                     <Ionicons name={iconName} size={22} color="#fff" />
                   </LinearGradient>
                   <View style={{ flex: 1 }}>
-                    <Text
-                      style={[styles.goalTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}
-                      numberOfLines={1}
-                    >
-                      {resolveDisplayName(item.title_ar, item.title_en, lang, item.title)}
+                    <Text style={[styles.goalTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+                      {resolveDisplayName(goal.title_ar, goal.title_en, lang, goal.title)}
                     </Text>
                     <View style={[styles.badgesRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                       <View style={[styles.typeBadge, { backgroundColor: grad[0] + '18' }]}>
-                        <Text style={[styles.typeText, { color: grad[0] }]}>{tFunc(item.type)}</Text>
+                        <Text style={[styles.typeText, { color: grad[0] }]}>{tFunc(goal.type)}</Text>
                       </View>
                       {isCompleted && (
                         <View style={[styles.typeBadge, { backgroundColor: C.success + '18' }]}>
@@ -200,7 +207,7 @@ export default function GoalsScreen() {
                           <Text style={[styles.typeText, { color: C.success }]}>{tFunc('done')}</Text>
                         </View>
                       )}
-                      {item.is_archived && (
+                      {isArchived && (
                         <View style={[styles.typeBadge, { backgroundColor: C.textMuted + '20' }]}>
                           <Ionicons name="archive" size={11} color={C.textMuted} />
                           <Text style={[styles.typeText, { color: C.textMuted }]}>{tFunc('archived')}</Text>
@@ -209,9 +216,9 @@ export default function GoalsScreen() {
                     </View>
                   </View>
                   <View style={[styles.headerActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                    {!item.is_archived && (
+                    {!isArchived ? (
                       <Pressable
-                        onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setEditGoal(item); setShowForm(true); }}
+                        onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setEditGoal(goal); setShowForm(true); }}
                         hitSlop={10}
                         style={({ pressed }) => [styles.editIconBtn, { backgroundColor: grad[0] + '12', opacity: pressed ? 0.6 : 1 }]}
                         accessibilityRole="button"
@@ -219,10 +226,9 @@ export default function GoalsScreen() {
                       >
                         <Ionicons name="pencil" size={14} color={grad[0]} />
                       </Pressable>
-                    )}
-                    {item.is_archived && (
+                    ) : (
                       <Pressable
-                        onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); unarchiveGoal(item.id); showToast(tFunc('goalUnarchived'), 'info'); }}
+                        onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); unarchiveGoal(goal.id); showToast(tFunc('goalUnarchived'), 'info'); }}
                         hitSlop={10}
                         style={({ pressed }) => [styles.editIconBtn, { backgroundColor: C.textMuted + '10', opacity: pressed ? 0.6 : 1 }]}
                         accessibilityRole="button"
@@ -234,30 +240,21 @@ export default function GoalsScreen() {
                   </View>
                 </View>
 
-                {item.description ? (
+                {goal.description ? (
                   <Text style={[styles.goalDesc, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
-                    {item.description}
+                    {goal.description}
                   </Text>
                 ) : null}
 
-                {/* Deadline indicator */}
-                {item.deadline && (
+                {goal.deadline && (
                   <View style={[styles.deadlineRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                    <Ionicons
-                      name="calendar-outline"
-                      size={13}
-                      color={isOverdueDeadline ? C.error : isDueSoon ? '#F97316' : C.textMuted}
-                    />
-                    <Text style={[styles.deadlineText, {
-                      color: isOverdueDeadline ? C.error : isDueSoon ? '#F97316' : C.textMuted,
-                    }]}>
-                      {formatDeadline(item.deadline, lang)}
+                    <Ionicons name="calendar-outline" size={13} color={isOverdueDeadline ? C.error : isDueSoon ? '#F97316' : C.textMuted} />
+                    <Text style={[styles.deadlineText, { color: isOverdueDeadline ? C.error : isDueSoon ? '#F97316' : C.textMuted }]}>
+                      {formatDeadline(goal.deadline, lang)}
                       {daysLeft !== null && !isCompleted && (
                         isOverdueDeadline
                           ? ` · ${tFunc('overdue')}`
-                          : isDueSoon
-                            ? ` · ${Math.abs(daysLeft)} ${tFunc('daysLeft')}`
-                            : ` · ${daysLeft} ${tFunc('daysLeft')}`
+                          : ` · ${Math.abs(daysLeft)} ${tFunc('daysLeft')}`
                       )}
                     </Text>
                   </View>
@@ -265,7 +262,7 @@ export default function GoalsScreen() {
 
                 <View style={[styles.progressRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Text style={[styles.progressLabel, { color: C.textSecondary }]}>
-                    {item.current_value} / {item.target_value}
+                    {goal.current_value} / {goal.target_value}
                   </Text>
                   <Text style={[styles.progressPct, { color: grad[0] }]}>
                     {Math.round(pct * 100)}%
@@ -281,10 +278,10 @@ export default function GoalsScreen() {
                   />
                 </View>
 
-                {!item.is_archived && (
+                {!isArchived && (
                   <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                     <Pressable
-                      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); decrementProgress(item.id); }}
+                      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); decrementProgress(goal.id); }}
                       style={({ pressed }) => [styles.decrBtn, { borderColor: grad[0] + '35', backgroundColor: grad[0] + '10', opacity: pressed ? 0.7 : 1 }]}
                       accessibilityRole="button"
                       accessibilityLabel="-1"
@@ -294,22 +291,17 @@ export default function GoalsScreen() {
                     <Pressable
                       onPress={() => {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        const wasComplete = item.current_value >= item.target_value;
-                        incrementProgress(item.id);
-                        if (!wasComplete && item.current_value + 1 >= item.target_value) {
-                          setCelebrationGoal(item);
+                        const wasComplete = goal.current_value >= goal.target_value;
+                        incrementProgress(goal.id);
+                        if (!wasComplete && goal.current_value + 1 >= goal.target_value) {
+                          setCelebrationGoal(goal);
                         }
                       }}
                       style={({ pressed }) => [styles.actionBtn, { opacity: pressed ? 0.85 : 1, overflow: 'hidden' }]}
                       accessibilityRole="button"
                       accessibilityLabel="+1"
                     >
-                      <LinearGradient
-                        colors={grad}
-                        start={{ x: isRTL ? 1 : 0, y: 0 }}
-                        end={{ x: isRTL ? 0 : 1, y: 0 }}
-                        style={StyleSheet.absoluteFill}
-                      />
+                      <LinearGradient colors={grad} start={{ x: isRTL ? 1 : 0, y: 0 }} end={{ x: isRTL ? 0 : 1, y: 0 }} style={StyleSheet.absoluteFill} />
                       <Ionicons name="add" size={18} color="#fff" />
                       <Text style={styles.actionText}>+1</Text>
                     </Pressable>
@@ -319,18 +311,15 @@ export default function GoalsScreen() {
             </View>
           );
 
-          if (item.is_archived) {
+          if (isArchived) {
             return cardContent;
           }
 
           return (
             <SwipeableRow
               isRTL={isRTL}
-              onComplete={() => {
-                archiveGoal(item.id);
-                showToast(tFunc('goalArchived'), 'info');
-              }}
-              onDelete={() => setConfirmGoal(item)}
+              onComplete={() => { archiveGoal(goal.id); showToast(tFunc('goalArchived'), 'info'); }}
+              onDelete={() => setConfirmGoal(goal)}
               completeLabel={tFunc('archive')}
               deleteLabel={tFunc('delete')}
               completeIcon="archive-outline"
@@ -343,12 +332,12 @@ export default function GoalsScreen() {
         }}
         ListEmptyComponent={() => (
           <EmptyState
-            icon={showArchived ? 'archive-outline' : 'trophy-outline'}
-            title={showArchived ? tFunc('archivedGoalsTab') : tFunc('noGoals')}
-            subtitle={showArchived ? '' : tFunc('noGoalsSubtitle')}
+            icon="trophy-outline"
+            title={tFunc('noGoals')}
+            subtitle={tFunc('noGoalsSubtitle')}
             gradient={['#8B5CF6', '#EC4899']}
-            actionLabel={showArchived ? undefined : tFunc('addGoal')}
-            onAction={showArchived ? undefined : () => { setEditGoal(null); setShowForm(true); }}
+            actionLabel={tFunc('addGoal')}
+            onAction={() => { setEditGoal(null); setShowForm(true); }}
           />
         )}
       />
@@ -434,17 +423,14 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 5,
   },
-  tabsRow: {
-    gap: Spacing.sm,
-    marginTop: Spacing.md,
-  },
-  tab: {
-    flex: 1,
-    borderRadius: Radius.md,
-    paddingVertical: 8,
+  archivedHeader: {
     alignItems: 'center',
+    gap: Spacing.sm,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.xs,
+    marginBottom: Spacing.xs,
   },
-  tabText: { fontSize: 13, fontFamily: F.bold },
+  archivedHeaderText: { fontSize: 14, fontFamily: F.bold },
   goalCard: {
     borderRadius: Radius.xl,
     borderWidth: 1.5,
