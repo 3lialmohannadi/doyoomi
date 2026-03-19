@@ -12,7 +12,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-na
 import { router, useLocalSearchParams } from 'expo-router';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_GREEN, GRADIENT_SAGE, cardShadow, ColorScheme, WARM_CORAL } from '../../src/theme';
+import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_GREEN, GRADIENT_SAGE, cardShadow, ColorScheme, WARM_CORAL, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -24,7 +24,8 @@ import { Habit } from '../../src/types';
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function HabitsScreen() {
-  const { C } = useAppTheme();
+  const { C, scheme } = useAppTheme();
+  const isDark = scheme === 'dark';
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
   const { from } = useLocalSearchParams<{ from?: string }>();
@@ -57,10 +58,10 @@ export default function HabitsScreen() {
     <View style={[styles.container, { backgroundColor: C.background }]}>
       {/* Header */}
       <LinearGradient
-        colors={[...GRADIENT_H]}
+        colors={isDark ? [...GRADIENT_DARK_HEADER] : [...GRADIENT_H]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 1 }}
-        style={[styles.header, { paddingTop: topPad + Spacing.md }]}
+        style={[styles.header, { paddingTop: topPad + Spacing.md }, isDark && styles.headerDark]}
       >
         <View style={styles.headerDecor1} />
         <View style={styles.headerDecor2} />
@@ -68,8 +69,8 @@ export default function HabitsScreen() {
         <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={{ width: 46 }} />
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <Text style={[styles.headerTitle, { textAlign: 'center' }]}>{tFunc('habits')}</Text>
-            <Text style={[styles.headerSub, { textAlign: 'center' }]}>
+            <Text style={[styles.headerTitle, { textAlign: 'center', color: isDark ? C.text : '#fff' }]}>{tFunc('habits')}</Text>
+            <Text style={[styles.headerSub, { textAlign: 'center', color: isDark ? C.textSecondary : 'rgba(255,255,255,0.75)' }]}>
               {doneToday}/{habits.length} {tFunc('doneToday')}
             </Text>
           </View>
@@ -83,27 +84,27 @@ export default function HabitsScreen() {
             accessibilityRole="button"
             accessibilityLabel={tFunc('addHabit')}
           >
-            <View style={styles.addBtnInner}>
-              <Ionicons name="add" size={26} color={PRIMARY} />
+            <View style={[styles.addBtnInner, isDark && { backgroundColor: C.surfaceElevated, borderColor: 'rgba(255,255,255,0.08)', borderWidth: 1 }]}>
+              <Ionicons name="add" size={26} color={isDark ? C.tint : PRIMARY} />
             </View>
           </Pressable>
         </View>
 
         {habits.length > 0 && (
           <View style={[styles.progressWrap, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <View style={[styles.progressTrack, { backgroundColor: 'rgba(255,255,255,0.25)' }]}>
+            <View style={[styles.progressTrack, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.25)' }]}>
               <View
                 style={[
                   styles.progressFill,
                   {
-                    backgroundColor: '#fff',
+                    backgroundColor: isDark ? C.tint : '#fff',
                     width: `${Math.round((doneToday / habits.length) * 100)}%`,
                     alignSelf: isRTL ? 'flex-end' : 'flex-start',
                   },
                 ]}
               />
             </View>
-            <Text style={styles.progressLabel}>
+            <Text style={[styles.progressLabel, { color: isDark ? C.tint : '#fff' }]}>
               {Math.round((doneToday / habits.length) * 100)}%
             </Text>
           </View>
@@ -125,6 +126,7 @@ export default function HabitsScreen() {
             <HabitCard
               item={item}
               isDoneToday={isDoneToday}
+              isDark={isDark}
               isRTL={isRTL}
               C={C}
               tFunc={tFunc}
@@ -194,9 +196,10 @@ export default function HabitsScreen() {
 }
 
 function HabitCard({
-  item, isDoneToday, isRTL, C, tFunc, onToggle, onEdit, onDelete,
+  item, isDoneToday, isDark, isRTL, C, tFunc, onToggle, onEdit, onDelete,
 }: {
   item: Habit;
+  isDark: boolean;
   isDoneToday: boolean;
   isRTL: boolean;
   C: ColorScheme;
@@ -215,8 +218,9 @@ function HabitCard({
         styles.habitCard,
         {
           flexDirection: isRTL ? 'row-reverse' : 'row',
-          backgroundColor: isDoneToday ? item.color + '12' : C.card,
+          backgroundColor: isDark ? 'transparent' : (isDoneToday ? item.color + '12' : C.card),
           borderColor: isDoneToday ? item.color + '60' : C.border,
+          overflow: 'hidden',
         },
         Shadow.sm,
       ]}
@@ -227,6 +231,14 @@ function HabitCard({
       accessibilityState={{ checked: isDoneToday }}
       accessibilityLabel={item.name}
     >
+      {isDark && (
+        <LinearGradient
+          colors={isDoneToday ? [item.color + '28', item.color + '10'] : [...GRADIENT_DARK_CARD]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+      )}
       {/* Gradient accent bar */}
       <LinearGradient
         colors={isDoneToday ? [item.color, item.color + 'AA'] : [...GRADIENT_H]}
@@ -358,6 +370,10 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
   },
+  headerDark: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.06)',
+  },
   headerDecor1: {
     position: 'absolute', right: -30, top: -30,
     width: 160, height: 160, borderRadius: 80,
@@ -371,7 +387,7 @@ const styles = StyleSheet.create({
   headerRow: {
     alignItems: 'center', justifyContent: 'space-between',
   },
-  headerTitle: { fontSize: 28, fontFamily: F.bold, color: '#fff' },
+  headerTitle: { fontSize: 28, fontFamily: F.bold },
   headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: F.med, marginTop: 2 },
   backBtn: {
     width: 40, height: 40, borderRadius: 20,

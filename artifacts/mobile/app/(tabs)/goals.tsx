@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_SAGE, GRADIENT_TEAL, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_AMBER, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_SAGE, GRADIENT_TEAL, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_AMBER, cardShadow, ColorScheme, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -29,7 +29,8 @@ const GOAL_GRADIENTS: readonly (readonly [string, string])[] = [
 ];
 
 export default function GoalsScreen() {
-  const { C } = useAppTheme();
+  const { C, scheme } = useAppTheme();
+  const isDark = scheme === 'dark';
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
   const { goals, deleteGoal, incrementProgress } = useGoalsStore();
@@ -58,18 +59,18 @@ export default function GoalsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
       <LinearGradient
-        colors={[...GRADIENT_TEAL]}
+        colors={isDark ? [...GRADIENT_DARK_HEADER] : [...GRADIENT_TEAL]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 1 }}
-        style={[styles.header, { paddingTop: topPad + Spacing.md }]}
+        style={[styles.header, { paddingTop: topPad + Spacing.md }, isDark && styles.headerDark]}
       >
         <View style={styles.headerDecor1} />
         <View style={styles.headerDecor2} />
         <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={{ width: 46 }} />
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <Text style={[styles.headerTitle, { textAlign: 'center' }]}>{tFunc('goals')}</Text>
-            <Text style={[styles.headerSub, { textAlign: 'center' }]}>{goals.length} {tFunc('activeGoals')}</Text>
+            <Text style={[styles.headerTitle, { textAlign: 'center', color: isDark ? C.text : '#fff' }]}>{tFunc('goals')}</Text>
+            <Text style={[styles.headerSub, { textAlign: 'center', color: isDark ? C.textSecondary : 'rgba(255,255,255,0.75)' }]}>{goals.length} {tFunc('activeGoals')}</Text>
           </View>
           <Pressable
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditGoal(null); setShowForm(true); }}
@@ -77,8 +78,8 @@ export default function GoalsScreen() {
             accessibilityRole="button"
             accessibilityLabel={tFunc('addGoal')}
           >
-            <View style={styles.addBtnInner}>
-              <Ionicons name="add" size={26} color={SECONDARY} />
+            <View style={[styles.addBtnInner, isDark && { backgroundColor: C.surfaceElevated, borderColor: 'rgba(255,255,255,0.08)', borderWidth: 1 }]}>
+              <Ionicons name="add" size={26} color={isDark ? C.tintSecondary : SECONDARY} />
             </View>
           </Pressable>
         </View>

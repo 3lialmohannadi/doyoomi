@@ -12,21 +12,21 @@ export const WARM_AMBER2 = '#E8A650';
 
 export const Colors = {
   light: {
-    background:      '#FBF7F3',
-    surface:         '#FFF9F5',
+    background:      '#F7F3EF',
+    surface:         '#FFFFFF',
     surfaceElevated: '#FFFFFF',
-    border:          'rgba(201,122,91,0.12)',
-    borderLight:     'rgba(201,122,91,0.07)',
-    text:            '#2C1D0E',
-    textSecondary:   '#7A6655',
-    textMuted:       '#B09B87',
+    border:          'rgba(201,122,91,0.10)',
+    borderLight:     'rgba(201,122,91,0.06)',
+    text:            '#1E1009',
+    textSecondary:   '#6B5548',
+    textMuted:       '#A8907E',
     tint:            PRIMARY,
     tintSecondary:   SECONDARY,
-    tabBar:          'rgba(251,247,243,0.97)',
+    tabBar:          'rgba(247,243,239,0.96)',
     card:            '#FFFFFF',
-    card2:           '#FBF7F3',
-    shadow:          'rgba(201,122,91,0.12)',
-    shadowMedium:    'rgba(201,122,91,0.20)',
+    card2:           '#F7F3EF',
+    shadow:          'rgba(201,122,91,0.10)',
+    shadowMedium:    'rgba(201,122,91,0.18)',
     success:         '#7BAE9E',
     warning:         '#E8A650',
     error:           '#C9605B',
@@ -41,27 +41,27 @@ export const Colors = {
     gradientEnd:     '#E8A87C',
     gradientMid:     '#D48E6E',
     pillActive:      PRIMARY,
-    pillInactive:    '#F2ECE7',
-    segmentBg:       '#F2ECE7',
-    inputBg:         '#FFF9F5',
-    dim:             '#B09B87',
+    pillInactive:    '#EDE7E2',
+    segmentBg:       '#EDE7E2',
+    inputBg:         '#FDFAF7',
+    dim:             '#A8907E',
   },
   dark: {
-    background:      '#1C130C',
-    surface:         '#261A12',
-    surfaceElevated: '#30211A',
-    border:          'rgba(255,255,255,0.08)',
-    borderLight:     'rgba(255,255,255,0.05)',
-    text:            '#F5EDE5',
-    textSecondary:   '#C4AA96',
-    textMuted:       '#8A6E5C',
+    background:      '#0D0D0D',
+    surface:         '#161616',
+    surfaceElevated: '#1F1F1F',
+    border:          'rgba(255,255,255,0.07)',
+    borderLight:     'rgba(255,255,255,0.04)',
+    text:            '#F2EDE8',
+    textSecondary:   '#BBA898',
+    textMuted:       '#7A6456',
     tint:            '#E8956E',
     tintSecondary:   '#8FCABC',
-    tabBar:          'rgba(28,19,12,0.97)',
-    card:            '#261A12',
-    card2:           '#30211A',
-    shadow:          'rgba(0,0,0,0.4)',
-    shadowMedium:    'rgba(0,0,0,0.6)',
+    tabBar:          'rgba(13,13,13,0.0)',
+    card:            '#191919',
+    card2:           '#1F1F1F',
+    shadow:          'rgba(0,0,0,0.55)',
+    shadowMedium:    'rgba(0,0,0,0.75)',
     success:         '#8FCABC',
     warning:         '#E8A650',
     error:           '#E07068',
@@ -76,10 +76,10 @@ export const Colors = {
     gradientEnd:     '#F0B896',
     gradientMid:     '#E8A87C',
     pillActive:      '#E8956E',
-    pillInactive:    '#30211A',
-    segmentBg:       '#261A12',
-    inputBg:         '#30211A',
-    dim:             '#8A6E5C',
+    pillInactive:    '#1F1F1F',
+    segmentBg:       '#161616',
+    inputBg:         '#1F1F1F',
+    dim:             '#7A6456',
   },
 };
 
@@ -141,24 +141,24 @@ export const Shadow = {
 export const ShadowDark = {
   sm: {
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    elevation: 5,
   },
   md: {
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 10,
   },
   lg: {
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.18,
-    shadowRadius: 24,
-    elevation: 10,
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.65,
+    shadowRadius: 30,
+    elevation: 16,
   },
 };
 
@@ -182,6 +182,13 @@ export const GRADIENT_TEAL: readonly [string, string, string] = ['#5B9A8B', '#7B
 export const GRADIENT_AMBER: readonly [string, string] = ['#E8A650', '#F5C86A'];
 export const GRADIENT_CORAL: readonly [string, string] = ['#C9605B', '#E88078'];
 export const GRADIENT_GREEN: readonly [string, string] = [WARM_SAGE, '#4CAF82'];
+
+export const GRADIENT_DARK_CARD: readonly [string, string] = ['#222222', '#181818'];
+export const GRADIENT_DARK_CARD_ELEVATED: readonly [string, string] = ['#2A2A2A', '#202020'];
+export const GRADIENT_DARK_HEADER: readonly [string, string, string] = ['#1A1A1A', '#0F0F0F', '#0D0D0D'];
+export const GRADIENT_DARK_BRAND: readonly [string, string] = ['#C97A5B', '#8A5540'];
+export const GRADIENT_DARK_BRAND_SUBTLE: readonly [string, string] = ['rgba(232,149,110,0.15)', 'rgba(232,149,110,0.03)'];
+export const GRADIENT_DARK_SAGE_SUBTLE: readonly [string, string] = ['rgba(143,202,188,0.15)', 'rgba(143,202,188,0.03)'];
 
 function shadowHelper(color = PRIMARY, strength = 4) {
   return Platform.select({

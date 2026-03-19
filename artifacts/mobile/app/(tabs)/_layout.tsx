@@ -3,48 +3,36 @@ import { Tabs } from "expo-router";
 import { SymbolView } from "expo-symbols";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Platform, StyleSheet, View, Text } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSettingsStore } from "../../src/store/settingsStore";
 import { useAppTheme } from "../../src/hooks/useAppTheme";
 import { t } from "../../src/utils/i18n";
-import { PRIMARY, GRADIENT_H, F } from "../../src/theme";
 
 function TabIcon({
   children,
   focused,
-  label,
-  color,
+  tint,
 }: {
   children: React.ReactNode;
   focused: boolean;
-  label: string;
-  color: string;
+  tint: string;
 }) {
   return (
     <View style={styles.tabIconWrap}>
       {focused ? (
-        <View style={styles.activePill}>
+        <View style={[styles.activePill, { shadowColor: tint }]}>
           <LinearGradient
-            colors={[...GRADIENT_H]}
+            colors={[tint, tint + 'BB']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={[StyleSheet.absoluteFill, { borderRadius: 22 }]}
+            style={[StyleSheet.absoluteFill, { borderRadius: 26 }]}
           />
           {children}
         </View>
       ) : (
         <View style={styles.inactivePill}>{children}</View>
       )}
-      <Text
-        style={[
-          styles.tabLabel,
-          { color: focused ? PRIMARY : color, fontFamily: focused ? F.bold : F.med },
-        ]}
-        numberOfLines={1}
-      >
-        {label}
-      </Text>
     </View>
   );
 }
@@ -57,116 +45,125 @@ export default function TabLayout() {
   const isDark = scheme === "dark";
   const isIOS = Platform.OS === "ios";
   const isWeb = Platform.OS === "web";
+  const tabBarHeight = isWeb ? 80 : 72;
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: C.tint,
-        tabBarInactiveTintColor: C.textMuted,
+        tabBarInactiveTintColor: isDark ? 'rgba(255,255,255,0.28)' : 'rgba(0,0,0,0.28)',
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
           position: "absolute",
-          backgroundColor: isIOS ? "transparent" : isDark ? "#1C130C" : "#FBF7F3",
-          borderTopWidth: 1,
-          borderTopColor: isDark ? "#362415" : "#EFE5DB",
+          backgroundColor: "transparent",
+          borderTopWidth: 0,
           elevation: 0,
-          height: isWeb ? 84 : 74,
+          height: tabBarHeight,
         },
-        tabBarBackground: () =>
-          isIOS ? (
-            <BlurView intensity={85} tint={isDark ? "dark" : "light"} style={StyleSheet.absoluteFill} />
-          ) : isWeb ? (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? "#1C130C" : "#FBF7F3" }]} />
-          ) : null,
+        tabBarBackground: () => (
+          <View style={StyleSheet.absoluteFill}>
+            {isDark ? (
+              <View style={[StyleSheet.absoluteFill, styles.darkTabBg]}>
+                {isIOS ? (
+                  <BlurView intensity={60} tint="dark" style={StyleSheet.absoluteFill} />
+                ) : null}
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? 'rgba(13,13,13,0.92)' : 'rgba(247,243,239,0.95)' }]} />
+                <View style={styles.darkTabBorder} />
+              </View>
+            ) : (
+              <View style={StyleSheet.absoluteFill}>
+                {isIOS ? (
+                  <BlurView intensity={80} tint="light" style={StyleSheet.absoluteFill} />
+                ) : null}
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(247,243,239,0.96)' }]} />
+                <View style={[styles.darkTabBorder, { borderTopColor: 'rgba(201,122,91,0.10)' }]} />
+              </View>
+            )}
+          </View>
+        ),
       }}
     >
-      {/* 1 — الرئيسية */}
       <Tabs.Screen
         name="index"
         options={{
           title: tFunc("home"),
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} label={tFunc("home")} color={color}>
+            <TabIcon focused={focused} tint={C.tint}>
               {isIOS ? (
-                <SymbolView name="house" tintColor={focused ? "#fff" : color} size={21} />
+                <SymbolView name="house.fill" tintColor={focused ? "#fff" : color} size={22} />
               ) : (
-                <Ionicons name={focused ? "home" : "home-outline"} size={21} color={focused ? "#fff" : color} />
+                <Ionicons name={focused ? "home" : "home-outline"} size={22} color={focused ? "#fff" : color} />
               )}
             </TabIcon>
           ),
         }}
       />
 
-      {/* 2 — التقويم */}
       <Tabs.Screen
         name="calendar"
         options={{
           title: tFunc("calendar"),
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} label={tFunc("calendar")} color={color}>
+            <TabIcon focused={focused} tint={C.tint}>
               {isIOS ? (
-                <SymbolView name="calendar" tintColor={focused ? "#fff" : color} size={21} />
+                <SymbolView name="calendar" tintColor={focused ? "#fff" : color} size={22} />
               ) : (
-                <Ionicons name={focused ? "calendar" : "calendar-outline"} size={21} color={focused ? "#fff" : color} />
+                <Ionicons name={focused ? "calendar" : "calendar-outline"} size={22} color={focused ? "#fff" : color} />
               )}
             </TabIcon>
           ),
         }}
       />
 
-      {/* 3 — العادات */}
       <Tabs.Screen
         name="habits"
         options={{
           title: tFunc("habits"),
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} label={tFunc("habits")} color={color}>
+            <TabIcon focused={focused} tint={C.tintSecondary}>
               {isIOS ? (
-                <SymbolView name="sparkles" tintColor={focused ? "#fff" : color} size={21} />
+                <SymbolView name="sparkles" tintColor={focused ? "#fff" : color} size={22} />
               ) : (
-                <Ionicons name={focused ? "leaf" : "leaf-outline"} size={21} color={focused ? "#fff" : color} />
+                <Ionicons name={focused ? "leaf" : "leaf-outline"} size={22} color={focused ? "#fff" : color} />
               )}
             </TabIcon>
           ),
         }}
       />
 
-      {/* 4 — الأهداف */}
       <Tabs.Screen
         name="goals"
         options={{
           title: tFunc("goals"),
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} label={tFunc("goals")} color={color}>
+            <TabIcon focused={focused} tint={C.tint}>
               {isIOS ? (
-                <SymbolView name="trophy" tintColor={focused ? "#fff" : color} size={21} />
+                <SymbolView name="trophy.fill" tintColor={focused ? "#fff" : color} size={22} />
               ) : (
-                <Ionicons name={focused ? "trophy" : "trophy-outline"} size={21} color={focused ? "#fff" : color} />
+                <Ionicons name={focused ? "trophy" : "trophy-outline"} size={22} color={focused ? "#fff" : color} />
               )}
             </TabIcon>
           ),
         }}
       />
 
-      {/* 5 — المزيد */}
       <Tabs.Screen
         name="settings"
         options={{
           title: tFunc("more"),
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} label={tFunc("more")} color={color}>
+            <TabIcon focused={focused} tint={C.tint}>
               {isIOS ? (
-                <SymbolView name="ellipsis.circle" tintColor={focused ? "#fff" : color} size={21} />
+                <SymbolView name="ellipsis.circle.fill" tintColor={focused ? "#fff" : color} size={22} />
               ) : (
-                <Ionicons name={focused ? "grid" : "grid-outline"} size={21} color={focused ? "#fff" : color} />
+                <Ionicons name={focused ? "grid" : "grid-outline"} size={22} color={focused ? "#fff" : color} />
               )}
             </TabIcon>
           ),
         }}
       />
 
-      {/* مخفية — Tasks لا تزال موجودة لكن غير مباشرة */}
       <Tabs.Screen name="tasks" options={{ href: null }} />
     </Tabs>
   );
@@ -176,32 +173,36 @@ const styles = StyleSheet.create({
   tabIconWrap: {
     alignItems: "center",
     justifyContent: "center",
-    gap: 3,
-    paddingTop: 8,
   },
   activePill: {
-    width: 48,
-    height: 34,
-    borderRadius: 22,
+    width: 52,
+    height: 38,
+    borderRadius: 26,
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
-    shadowColor: PRIMARY,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.35,
-    shadowRadius: 6,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.45,
+    shadowRadius: 10,
+    elevation: 6,
   },
   inactivePill: {
-    width: 48,
-    height: 34,
-    borderRadius: 22,
+    width: 52,
+    height: 38,
+    borderRadius: 26,
     alignItems: "center",
     justifyContent: "center",
   },
-  tabLabel: {
-    fontSize: 10,
-    textAlign: 'center',
-    width: 70,
+  darkTabBg: {
+    overflow: 'hidden',
+  },
+  darkTabBorder: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 0.5,
+    borderTopWidth: 0.5,
+    borderTopColor: 'rgba(255,255,255,0.08)',
   },
 });

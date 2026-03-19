@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { Task } from '../../types';
-import { Radius, Shadow, Spacing, Typography, F } from '../../theme';
+import { Radius, Spacing, Typography, F, GRADIENT_DARK_CARD } from '../../theme';
 import { PriorityBadge } from './PriorityBadge';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useSettingsStore } from '../../store/settingsStore';
@@ -31,9 +32,10 @@ export function TaskCard({
   task, onToggle, onDelete, onDeleteRequest, onPostpone, onEdit,
   priorityLabel, timeStr, categoryName, categoryColor, t,
 }: TaskCardProps) {
-  const { C } = useAppTheme();
+  const { C, scheme } = useAppTheme();
   const { profile } = useSettingsStore();
   const isRTL = profile.language === 'ar';
+  const isDark = scheme === 'dark';
   const scale = useSharedValue(1);
 
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
@@ -43,7 +45,7 @@ export function TaskCard({
   const isPostponed = task.status === 'postponed';
 
   const accentColor = isOverdue ? C.error
-    : isCompleted ? SECONDARY
+    : isCompleted ? C.success
     : task.priority === 'high' ? C.priorityHigh
     : task.priority === 'medium' ? C.priorityMedium
     : C.priorityLow;
@@ -76,15 +78,27 @@ export function TaskCard({
   return (
     <AnimatedPressable
       style={animStyle}
-      onPressIn={() => { scale.value = withSpring(0.98); }}
-      onPressOut={() => { scale.value = withSpring(1); }}
+      onPressIn={() => { scale.value = withSpring(0.985, { damping: 18 }); }}
+      onPressOut={() => { scale.value = withSpring(1, { damping: 18 }); }}
       onLongPress={handleLongPress}
     >
       <View style={[
         styles.card,
-        { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' },
+        isDark
+          ? { borderColor: 'rgba(255,255,255,0.06)', overflow: 'hidden' }
+          : { backgroundColor: C.card, borderColor: C.border, overflow: 'hidden' },
+        { flexDirection: isRTL ? 'row-reverse' : 'row' },
       ]}>
-        <View style={[styles.accent, { backgroundColor: accentColor }]} />
+        {isDark && (
+          <LinearGradient
+            colors={[...GRADIENT_DARK_CARD]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+        )}
+
+        <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
 
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onToggle(task.id); }}
@@ -96,8 +110,8 @@ export function TaskCard({
           <View style={[
             styles.checkCircle,
             {
-              borderColor: isCompleted ? SECONDARY : C.border,
-              backgroundColor: isCompleted ? SECONDARY : 'transparent',
+              borderColor: isCompleted ? C.success : (isDark ? 'rgba(255,255,255,0.2)' : C.border),
+              backgroundColor: isCompleted ? C.success : 'transparent',
             },
           ]}>
             {isCompleted && <Ionicons name="checkmark" size={12} color="#fff" />}
@@ -126,7 +140,7 @@ export function TaskCard({
             <PriorityBadge priority={task.priority} label={priorityLabel} />
 
             {categoryName ? (
-              <View style={[styles.catBadge, { backgroundColor: (categoryColor ?? C.tint) + '20' }]}>
+              <View style={[styles.catBadge, { backgroundColor: (categoryColor ?? C.tint) + '22' }]}>
                 <Text style={[styles.catText, { color: categoryColor ?? C.tint }]}>{categoryName}</Text>
               </View>
             ) : null}
@@ -139,13 +153,13 @@ export function TaskCard({
             ) : null}
 
             {isOverdue ? (
-              <View style={[styles.catBadge, { backgroundColor: C.error + '20' }]}>
+              <View style={[styles.catBadge, { backgroundColor: C.error + '22' }]}>
                 <Text style={[styles.catText, { color: C.error }]}>{t('overdue')}</Text>
               </View>
             ) : null}
 
             {isPostponed ? (
-              <View style={[styles.catBadge, { backgroundColor: C.textMuted + '20' }]}>
+              <View style={[styles.catBadge, { backgroundColor: C.textMuted + '22' }]}>
                 <Text style={[styles.catText, { color: C.textMuted }]}>{t('postponed')}</Text>
               </View>
             ) : null}
@@ -155,7 +169,7 @@ export function TaskCard({
         <View style={styles.actionBtns}>
           <Pressable
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onEdit(task); }}
-            style={[styles.editBtn, { backgroundColor: C.tint + '15' }]}
+            style={[styles.editBtn, { backgroundColor: C.tint + '18' }]}
             hitSlop={4}
             accessibilityRole="button"
             accessibilityLabel={t('editTask')}
@@ -164,7 +178,7 @@ export function TaskCard({
           </Pressable>
           <Pressable
             onPress={handleDelete}
-            style={[styles.editBtn, { backgroundColor: C.error + '12' }]}
+            style={[styles.editBtn, { backgroundColor: C.error + '14' }]}
             hitSlop={4}
             accessibilityRole="button"
             accessibilityLabel={t('deleteTask')}
@@ -182,12 +196,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     borderRadius: Radius.lg,
     borderWidth: 1,
-    overflow: 'hidden',
-    ...Shadow.sm,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  accent: {
+  accentBar: {
     width: 3,
     alignSelf: 'stretch',
+    borderTopLeftRadius: Radius.lg,
+    borderBottomLeftRadius: Radius.lg,
   },
   checkbox: {
     padding: Spacing.md,
@@ -217,6 +236,7 @@ const styles = StyleSheet.create({
   },
   strikethrough: {
     textDecorationLine: 'line-through',
+    opacity: 0.5,
   },
   desc: {
     ...Typography.caption,
@@ -252,7 +272,7 @@ const styles = StyleSheet.create({
   editBtn: {
     width: 30,
     height: 30,
-    borderRadius: 8,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
