@@ -404,7 +404,7 @@ function HabitCard({
           </Pressable>
         </View>
       </View>
-      <MiniConfetti trigger={confettiKey} xPct={isRTL ? 18 : 82} yPct={50} />
+      <MiniConfetti trigger={confettiKey} x={isRTL ? 18 : 82} y={50} />
     </AnimatedPressable>
   );
 }

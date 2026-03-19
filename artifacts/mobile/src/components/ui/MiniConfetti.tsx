@@ -42,15 +42,15 @@ function Dot({ color, angle, dist, trigger }: { color: string; angle: number; di
 
 interface MiniConfettiProps {
   trigger: number;
-  xPct?: number;
-  yPct?: number;
+  x?: number;
+  y?: number;
   color?: string;
 }
 
-export function MiniConfetti({ trigger, xPct = 50, yPct = 50 }: MiniConfettiProps) {
+export function MiniConfetti({ trigger, x = 50, y = 50 }: MiniConfettiProps) {
   return (
     <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
-      <View style={[styles.origin, { left: `${xPct}%` as `${number}%`, top: `${yPct}%` as `${number}%` }]}>
+      <View style={[styles.origin, { left: `${x}%` as `${number}%`, top: `${y}%` as `${number}%` }]}>
         {DOTS.map((d, i) => (
           <Dot key={i} {...d} trigger={trigger} />
         ))}

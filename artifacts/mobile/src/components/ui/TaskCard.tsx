@@ -197,7 +197,7 @@ export function TaskCard({
           </Pressable>
         </View>
       </View>
-      <MiniConfetti trigger={confettiKey} xPct={isRTL ? 82 : 18} yPct={50} />
+      <MiniConfetti trigger={confettiKey} x={isRTL ? 82 : 18} y={50} />
     </AnimatedPressable>
   );
 }

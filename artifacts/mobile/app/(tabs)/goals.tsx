@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_AMBER, GRADIENT_CYAN, GRADIENT_CORAL, GRADIENT_ROSE, GRADIENT_SAGE, ColorScheme, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_AMBER, GRADIENT_CYAN, GRADIENT_CORAL, GRADIENT_ROSE, GRADIENT_SAGE, ColorScheme, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER, Shadow, ShadowDark } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -113,13 +113,7 @@ export default function GoalsScreen() {
             <View style={[
               styles.goalCard,
               { borderColor: grad[0] + '30', overflow: 'hidden' },
-              {
-                shadowColor: grad[0],
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: isDark ? 0.3 : 0.10,
-                shadowRadius: 14,
-                elevation: 5,
-              },
+              isDark ? ShadowDark.sm : Shadow.sm,
             ]}>
               {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
               {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}

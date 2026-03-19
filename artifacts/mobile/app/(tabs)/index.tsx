@@ -683,7 +683,7 @@ function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLon
           {timeStr && <Text style={[styles.taskTime, { color: C.textMuted }]}>{timeStr}</Text>}
         </View>
       </View>
-      <MiniConfetti trigger={confettiKey} xPct={isRTL ? 82 : 18} yPct={50} />
+      <MiniConfetti trigger={confettiKey} x={isRTL ? 82 : 18} y={50} />
     </AnimatedPressable>
   );
 }
@@ -727,6 +727,7 @@ function FunHabitCard({
       onPress={handlePress}
       style={[
         animStyle,
+        isHabitDark ? ShadowDark.sm : Shadow.sm,
         styles.habitCard,
         {
           backgroundColor: isDone ? habit.color + '12' : isHabitDark ? 'transparent' : C.card,
@@ -775,7 +776,7 @@ function FunHabitCard({
           </Text>
         </View>
       </View>
-      <MiniConfetti trigger={confettiKey} xPct={50} yPct={50} />
+      <MiniConfetti trigger={confettiKey} x={50} y={50} />
     </AnimatedPressable>
   );
 }
@@ -1051,7 +1052,6 @@ const styles = StyleSheet.create({
   // Habit card
   habitCard: {
     width: 128, borderRadius: Radius.xl, borderWidth: 1, overflow: 'hidden',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 3,
   },
   habitTopLine: { height: 4, width: '100%' },
   habitCardInner: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, gap: Spacing.sm },
