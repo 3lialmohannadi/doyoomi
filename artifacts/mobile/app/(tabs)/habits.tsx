@@ -88,13 +88,29 @@ function HistoryCalendarModal({
   const today = new Date();
   const days30 = Array.from({ length: 30 }, (_, i) => subDays(today, 29 - i));
   const history = habit.completion_history ?? [];
+  const historySet = new Set(history);
 
   const rows: Date[][] = [];
-  for (let i = 0; i < days30.length; i += 7) {
-    rows.push(days30.slice(i, i + 7));
+  for (let i = 0; i < days30.length; i += 6) {
+    rows.push(days30.slice(i, i + 6));
   }
 
-  const completedCount = days30.filter(d => history.includes(format(d, 'yyyy-MM-dd'))).length;
+  const completedCount = days30.filter(d => historySet.has(format(d, 'yyyy-MM-dd'))).length;
+
+  const isWeekMissed = (weekIndex: number): boolean => {
+    if (habit.frequency?.type !== 'custom') return false;
+    const dpw = habit.frequency.days_per_week;
+    if (!dpw || (habit.frequency.specific_days && habit.frequency.specific_days.length > 0)) return false;
+    const blockStart = (4 - weekIndex) * 6;
+    const blockEnd = blockStart + 6;
+    const blockStr = Array.from({ length: blockEnd - blockStart }, (_, i) =>
+      format(subDays(today, blockStart + i), 'yyyy-MM-dd')
+    );
+    const lastDayOfBlock = blockStr[blockStr.length - 1];
+    if (lastDayOfBlock >= format(today, 'yyyy-MM-dd')) return false;
+    const count = blockStr.filter(d => historySet.has(d)).length;
+    return count < dpw;
+  };
 
   return (
     <Modal
@@ -123,19 +139,21 @@ function HistoryCalendarModal({
             </Pressable>
           </View>
 
-          {/* Calendar grid */}
+          {/* Calendar grid — 5 rows × 6 columns = 30 days */}
           <View style={calStyles.grid}>
-            {rows.map((week, wi) => (
+            {rows.map((row, wi) => {
+              const weekFailed = isWeekMissed(wi);
+              return (
               <View key={wi} style={[calStyles.week, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                {week.map((d) => {
+                {row.map((d) => {
                   const dStr = format(d, 'yyyy-MM-dd');
                   const todayStr = format(today, 'yyyy-MM-dd');
                   const isToday = dStr === todayStr;
                   const isFuture = d > today;
-                  const isDone = history.includes(dStr);
+                  const isDone = historySet.has(dStr);
 
                   const required = !isFuture && isRequiredDay(d, habit.frequency ?? { type: 'daily' });
-                  const isMissed = !isFuture && !isToday && !isDone && required;
+                  const isMissed = !isFuture && !isToday && !isDone && (required || weekFailed);
 
                   let bg = isDark ? 'rgba(255,255,255,0.05)' : C.surface;
                   let dotColor = isDark ? 'rgba(255,255,255,0.1)' : C.border;
@@ -163,7 +181,8 @@ function HistoryCalendarModal({
                   );
                 })}
               </View>
-            ))}
+              );
+            })}
           </View>
 
           {/* Legend */}
@@ -359,7 +378,10 @@ function HabitCard({
               accessibilityLabel={tFunc('completionHistory30')}
             >
               <Ionicons name="flame" size={12} color="#F97316" />
-              <Text style={[styles.streakText, { color: '#F97316' }]}>{item.streak_days} {tFunc('days')}</Text>
+              <Text style={[styles.streakText, { color: '#F97316' }]}>
+                {item.streak_days}{' '}
+                {item.frequency?.type === 'custom' && !(item.frequency.specific_days?.length) ? tFunc('weeks') : tFunc('days')}
+              </Text>
             </Pressable>
 
             {/* Frequency badge */}

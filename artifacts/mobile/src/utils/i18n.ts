@@ -32,6 +32,7 @@ const translations: Record<Language, Record<string, string>> = {
     thisWeek: 'This week',
     streak: 'Streak',
     days: 'days',
+    weeks: 'weeks',
 
     // Celebration
     allDoneToday: 'All done for today!',
@@ -450,6 +451,7 @@ const translations: Record<Language, Record<string, string>> = {
     thisWeek: 'هذا الأسبوع',
     streak: 'التسلسل',
     days: 'أيام',
+    weeks: 'أسابيع',
 
     // الاحتفال
     allDoneToday: 'أنجزت كل مهامك اليوم!',
