@@ -180,6 +180,8 @@ export default function HabitsScreen() {
             title={tFunc('noHabits')}
             subtitle={tFunc('noHabitsSubtitle')}
             gradient={['#F97316', '#EF4444']}
+            actionLabel={tFunc('addHabit')}
+            onAction={() => { setEditHabit(null); setShowForm(true); }}
           />
         )}
       />

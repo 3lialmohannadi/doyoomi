@@ -33,7 +33,7 @@ export default function GoalsScreen() {
   const isDark = scheme === 'dark';
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
-  const { goals, deleteGoal, incrementProgress } = useGoalsStore();
+  const { goals, deleteGoal, incrementProgress, decrementProgress } = useGoalsStore();
   const { profile } = useSettingsStore();
   const lang = profile.language;
   const isRTL = lang === 'ar';
@@ -179,16 +179,27 @@ export default function GoalsScreen() {
 
                 <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Pressable
-                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); incrementProgress(item.id); }}
-                    style={({ pressed }) => [
-                      styles.actionBtn,
-                      { borderColor: grad[0] + '40', backgroundColor: grad[0] + '12', flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.7 : 1 },
-                    ]}
+                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); decrementProgress(item.id); }}
+                    style={({ pressed }) => [styles.decrBtn, { borderColor: grad[0] + '35', backgroundColor: grad[0] + '10', opacity: pressed ? 0.7 : 1 }]}
                     accessibilityRole="button"
-                    accessibilityLabel={`+1 ${t('progress', lang)}`}
+                    accessibilityLabel="-1"
                   >
-                    <Ionicons name="add-circle-outline" size={16} color={grad[0]} />
-                    <Text style={[styles.actionText, { color: grad[0] }]}>+1 {t('progress', lang)}</Text>
+                    <Ionicons name="remove" size={18} color={grad[0]} />
+                  </Pressable>
+                  <Pressable
+                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); incrementProgress(item.id); }}
+                    style={({ pressed }) => [styles.actionBtn, { opacity: pressed ? 0.85 : 1, overflow: 'hidden' }]}
+                    accessibilityRole="button"
+                    accessibilityLabel="+1"
+                  >
+                    <LinearGradient
+                      colors={grad}
+                      start={{ x: isRTL ? 1 : 0, y: 0 }}
+                      end={{ x: isRTL ? 0 : 1, y: 0 }}
+                      style={StyleSheet.absoluteFill}
+                    />
+                    <Ionicons name="add" size={18} color="#fff" />
+                    <Text style={styles.actionText}>+1</Text>
                   </Pressable>
                   <Pressable
                     onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setConfirmGoal(item); }}
@@ -212,6 +223,8 @@ export default function GoalsScreen() {
             title={tFunc('noGoals')}
             subtitle={tFunc('noGoalsSubtitle')}
             gradient={['#8B5CF6', '#EC4899']}
+            actionLabel={tFunc('addGoal')}
+            onAction={() => { setEditGoal(null); setShowForm(true); }}
           />
         )}
       />
@@ -311,14 +324,19 @@ const styles = StyleSheet.create({
   trackFill: { height: '100%', borderRadius: 6 },
   actions: { gap: Spacing.sm },
   actionBtn: {
-    flex: 1, alignItems: 'center', justifyContent: 'center',
-    borderRadius: Radius.md, borderWidth: 1.5,
-    paddingVertical: 10, gap: 5,
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    borderRadius: Radius.md,
+    paddingVertical: 11, gap: 6,
   },
-  actionBtnIcon: {
-    width: 42, alignItems: 'center', justifyContent: 'center',
+  decrBtn: {
+    width: 40, alignItems: 'center', justifyContent: 'center',
     borderRadius: Radius.md, borderWidth: 1.5,
     paddingVertical: 10,
   },
-  actionText: { fontSize: 13, fontFamily: F.bold },
+  actionBtnIcon: {
+    width: 40, alignItems: 'center', justifyContent: 'center',
+    borderRadius: Radius.md, borderWidth: 1.5,
+    paddingVertical: 10,
+  },
+  actionText: { fontSize: 14, fontFamily: F.bold, color: '#fff' },
 });

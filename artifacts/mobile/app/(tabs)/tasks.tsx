@@ -263,6 +263,8 @@ export default function TasksScreen() {
             icon="checkmark-circle-outline"
             title={search ? tFunc('noSearchResults') : tFunc('noTasks')}
             subtitle={!search ? tFunc('noTasksSubtitle') : undefined}
+            actionLabel={!search && filter === 'all' ? tFunc('addTask') : undefined}
+            onAction={!search && filter === 'all' ? () => setShowForm(true) : undefined}
           />
         )}
         stickySectionHeadersEnabled={false}

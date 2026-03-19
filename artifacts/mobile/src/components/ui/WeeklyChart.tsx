@@ -57,8 +57,8 @@ function ChartBar({
     ? 'rgba(255,255,255,0.06)'
     : 'rgba(99,102,241,0.07)';
 
-  const pctInt = Math.round(day.pct * 100);
   const showLabel = !day.isFuture && day.totalCount > 0;
+  const countLabel = showLabel ? `${day.completedCount}/${day.totalCount}` : '';
 
   return (
     <View style={styles.barCol}>
@@ -71,7 +71,7 @@ function ChartBar({
           },
         ]}
       >
-        {showLabel ? `${pctInt}%` : ''}
+        {countLabel}
       </Text>
 
       <View style={[styles.barTrack, { backgroundColor: trackBg }]}>
@@ -198,20 +198,20 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   pctLabel: {
-    fontSize: 9,
+    fontSize: 10,
     fontFamily: F.bold,
     marginBottom: 2,
     textAlign: 'center',
   },
   barTrack: {
-    width: 20,
+    width: 22,
     height: MAX_BAR_H,
     borderRadius: 6,
     overflow: 'hidden',
     justifyContent: 'flex-end',
   },
   barFill: {
-    width: '100%',
+    width: 22,
     borderRadius: 6,
     overflow: 'hidden',
   },

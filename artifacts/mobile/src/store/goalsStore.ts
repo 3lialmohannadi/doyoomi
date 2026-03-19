@@ -55,6 +55,7 @@ interface GoalsState {
   updateGoal: (id: string, updates: Partial<Goal>) => void;
   deleteGoal: (id: string) => void;
   incrementProgress: (id: string, amount?: number) => void;
+  decrementProgress: (id: string) => void;
   loadGoals: () => Promise<void>;
 }
 
@@ -95,6 +96,13 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
     const goal = get().goals.find(g => g.id === id);
     if (!goal) return;
     const newValue = Math.min(goal.current_value + amount, goal.target_value);
+    get().updateGoal(id, { current_value: newValue });
+  },
+
+  decrementProgress: (id) => {
+    const goal = get().goals.find(g => g.id === id);
+    if (!goal) return;
+    const newValue = Math.max(goal.current_value - 1, 0);
     get().updateGoal(id, { current_value: newValue });
   },
 
