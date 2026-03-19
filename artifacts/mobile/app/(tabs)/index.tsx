@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   ScrollView, StyleSheet, Text, View, Pressable, Platform, Modal, Alert, Image,
 } from 'react-native';
@@ -29,6 +29,7 @@ import { JournalForm } from '../../src/features/journal/JournalForm';
 import { GoalForm } from '../../src/features/goals/GoalForm';
 import { SwipeableRow } from '../../src/components/ui/SwipeableRow';
 import { WeeklyChart, WeekDayData } from '../../src/components/ui/WeeklyChart';
+import { MiniConfetti } from '../../src/components/ui/MiniConfetti';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -628,6 +629,15 @@ function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLon
   const { scheme: rowScheme } = useAppTheme();
   const isRowDark = rowScheme === 'dark';
 
+  const [confettiKey, setConfettiKey] = useState(0);
+  const prevCompleted = useRef(isCompleted);
+  useEffect(() => {
+    if (isCompleted && !prevCompleted.current) {
+      setConfettiKey(k => k + 1);
+    }
+    prevCompleted.current = isCompleted;
+  }, [isCompleted]);
+
   const priorityGrad: Record<string, readonly [string, string]> = {
     high: GRADIENT_CORAL,
     medium: GRADIENT_AMBER,
@@ -637,7 +647,7 @@ function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLon
 
   return (
     <AnimatedPressable
-      style={[animStyle, styles.taskRow, { borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row', overflow: 'hidden' }, isRowDark ? ShadowDark.sm : Shadow.sm]}
+      style={[animStyle, styles.taskRow, { borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row', overflow: 'hidden', position: 'relative' }, isRowDark ? ShadowDark.sm : Shadow.sm]}
       onPressIn={() => { scale.value = withSpring(0.98); }}
       onPressOut={() => { scale.value = withSpring(1); }}
       onLongPress={onLongPress}
@@ -673,6 +683,7 @@ function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLon
           {timeStr && <Text style={[styles.taskTime, { color: C.textMuted }]}>{timeStr}</Text>}
         </View>
       </View>
+      <MiniConfetti triggerKey={confettiKey} />
     </AnimatedPressable>
   );
 }
@@ -694,6 +705,15 @@ function FunHabitCard({
   const { scheme: habitScheme } = useAppTheme();
   const isHabitDark = habitScheme === 'dark';
 
+  const [confettiKey, setConfettiKey] = useState(0);
+  const prevDone = useRef(isDone);
+  useEffect(() => {
+    if (isDone && !prevDone.current) {
+      setConfettiKey(k => k + 1);
+    }
+    prevDone.current = isDone;
+  }, [isDone]);
+
   const handlePress = () => {
     scale.value = withSpring(0.92, { damping: 10 });
     setTimeout(() => { scale.value = withSpring(1, { damping: 12 }); }, 120);
@@ -711,6 +731,7 @@ function FunHabitCard({
         {
           backgroundColor: isDone ? habit.color + '12' : isHabitDark ? 'transparent' : C.card,
           borderColor: isDone ? habit.color + '55' : C.border,
+          position: 'relative',
         },
       ]}
       accessibilityRole="button"
@@ -754,6 +775,7 @@ function FunHabitCard({
           </Text>
         </View>
       </View>
+      <MiniConfetti triggerKey={confettiKey} />
     </AnimatedPressable>
   );
 }
@@ -1015,7 +1037,7 @@ const styles = StyleSheet.create({
   // Task row
   taskRow: {
     flexDirection: 'row', alignItems: 'center',
-    borderRadius: Radius.lg, borderWidth: 1,
+    borderRadius: Radius.xl, borderWidth: 1,
   },
   taskAccent: { width: 4, alignSelf: 'stretch' },
   taskCheck: { padding: Spacing.md, paddingRight: Spacing.sm },

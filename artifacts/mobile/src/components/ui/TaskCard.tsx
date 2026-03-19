@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,6 +11,7 @@ import { useAppTheme } from '../../hooks/useAppTheme';
 import { useSettingsStore } from '../../store/settingsStore';
 import { resolveDisplayName } from '../../utils/i18n';
 import { SECONDARY } from '../../theme';
+import { MiniConfetti } from './MiniConfetti';
 
 interface TaskCardProps {
   task: Task;
@@ -43,6 +44,15 @@ export function TaskCard({
   const isCompleted = task.status === 'completed';
   const isOverdue = task.status === 'overdue';
   const isPostponed = task.status === 'postponed';
+
+  const [confettiKey, setConfettiKey] = useState(0);
+  const prevCompleted = useRef(isCompleted);
+  useEffect(() => {
+    if (isCompleted && !prevCompleted.current) {
+      setConfettiKey(k => k + 1);
+    }
+    prevCompleted.current = isCompleted;
+  }, [isCompleted]);
 
   const accentColor = isOverdue ? C.error
     : isCompleted ? C.success
@@ -77,7 +87,7 @@ export function TaskCard({
 
   return (
     <AnimatedPressable
-      style={animStyle}
+      style={[animStyle, { position: 'relative' }]}
       onPressIn={() => { scale.value = withSpring(0.985, { damping: 18 }); }}
       onPressOut={() => { scale.value = withSpring(1, { damping: 18 }); }}
       onLongPress={handleLongPress}
@@ -187,6 +197,7 @@ export function TaskCard({
           </Pressable>
         </View>
       </View>
+      <MiniConfetti triggerKey={confettiKey} />
     </AnimatedPressable>
   );
 }
@@ -194,7 +205,7 @@ export function TaskCard({
 const styles = StyleSheet.create({
   card: {
     alignItems: 'flex-start',
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
@@ -205,8 +216,8 @@ const styles = StyleSheet.create({
   accentBar: {
     width: 5,
     alignSelf: 'stretch',
-    borderTopLeftRadius: Radius.lg,
-    borderBottomLeftRadius: Radius.lg,
+    borderTopLeftRadius: Radius.xl,
+    borderBottomLeftRadius: Radius.xl,
   },
   checkbox: {
     padding: Spacing.md,

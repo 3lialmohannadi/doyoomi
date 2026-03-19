@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   FlatList, StyleSheet, Text, View, Platform, Pressable,
 } from 'react-native';
@@ -21,6 +21,7 @@ import { HabitForm } from '../../src/features/habits/HabitForm';
 import { Toast } from '../../src/components/ui/Toast';
 import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 import { StreakCelebration } from '../../src/components/ui/StreakCelebration';
+import { MiniConfetti } from '../../src/components/ui/MiniConfetti';
 import { Habit } from '../../src/types';
 import { StreakCelebrationPayload } from '../../src/store/habitsStore';
 
@@ -247,10 +248,20 @@ function HabitCard({
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
+  const [confettiKey, setConfettiKey] = useState(0);
+  const prevDone = useRef(isDoneToday);
+  useEffect(() => {
+    if (isDoneToday && !prevDone.current) {
+      setConfettiKey(k => k + 1);
+    }
+    prevDone.current = isDoneToday;
+  }, [isDoneToday]);
+
   return (
     <AnimatedPressable
       style={[
         animStyle,
+        { position: 'relative' },
         styles.habitCard,
         {
           flexDirection: isRTL ? 'row-reverse' : 'row',
@@ -397,6 +408,7 @@ function HabitCard({
           </Pressable>
         </View>
       </View>
+      <MiniConfetti triggerKey={confettiKey} />
     </AnimatedPressable>
   );
 }
