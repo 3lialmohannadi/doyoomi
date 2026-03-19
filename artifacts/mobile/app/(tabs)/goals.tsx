@@ -8,10 +8,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { format, parseISO, differenceInCalendarDays } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 
-import { router } from 'expo-router';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_AMBER, GRADIENT_CYAN, GRADIENT_CORAL, GRADIENT_ROSE, GRADIENT_SAGE, ColorScheme, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER, Shadow, ShadowDark } from '../../src/theme';
+import { Spacing, Radius, F, GRADIENT_H, GRADIENT_AMBER, GRADIENT_CYAN, GRADIENT_CORAL, GRADIENT_ROSE, GRADIENT_SAGE, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER, Shadow, ShadowDark } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { resolveDisplayName } from '../../src/utils/i18n';
@@ -19,6 +18,7 @@ import { EmptyState } from '../../src/components/ui/EmptyState';
 import { GoalForm } from '../../src/features/goals/GoalForm';
 import { Toast } from '../../src/components/ui/Toast';
 import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
+import { SwipeableRow } from '../../src/components/ui/SwipeableRow';
 import { Goal } from '../../src/types';
 import { StreakCelebration } from '../../src/components/ui/StreakCelebration';
 
@@ -161,7 +161,7 @@ export default function GoalsScreen() {
           const isOverdueDeadline = daysLeft !== null && daysLeft < 0 && !isCompleted;
           const isDueSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 7 && !isCompleted;
 
-          return (
+          const cardContent = (
             <View style={[
               styles.goalCard,
               { borderColor: grad[0] + '30', overflow: 'hidden' },
@@ -203,7 +203,7 @@ export default function GoalsScreen() {
                       {item.is_archived && (
                         <View style={[styles.typeBadge, { backgroundColor: C.textMuted + '20' }]}>
                           <Ionicons name="archive" size={11} color={C.textMuted} />
-                          <Text style={[styles.typeText, { color: C.textMuted }]}>{tFunc('archivedGoalsTab')}</Text>
+                          <Text style={[styles.typeText, { color: C.textMuted }]}>{tFunc('archived')}</Text>
                         </View>
                       )}
                     </View>
@@ -218,6 +218,17 @@ export default function GoalsScreen() {
                         accessibilityLabel={tFunc('editGoal')}
                       >
                         <Ionicons name="pencil" size={14} color={grad[0]} />
+                      </Pressable>
+                    )}
+                    {item.is_archived && (
+                      <Pressable
+                        onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); unarchiveGoal(item.id); showToast(tFunc('goalUnarchived'), 'info'); }}
+                        hitSlop={10}
+                        style={({ pressed }) => [styles.editIconBtn, { backgroundColor: C.textMuted + '10', opacity: pressed ? 0.6 : 1 }]}
+                        accessibilityRole="button"
+                        accessibilityLabel={tFunc('restoreGoal')}
+                      >
+                        <Ionicons name="arrow-undo-outline" size={14} color={C.textMuted} />
                       </Pressable>
                     )}
                   </View>
@@ -270,79 +281,64 @@ export default function GoalsScreen() {
                   />
                 </View>
 
-                <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  {!item.is_archived && (
-                    <>
-                      <Pressable
-                        onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); decrementProgress(item.id); }}
-                        style={({ pressed }) => [styles.decrBtn, { borderColor: grad[0] + '35', backgroundColor: grad[0] + '10', opacity: pressed ? 0.7 : 1 }]}
-                        accessibilityRole="button"
-                        accessibilityLabel="-1"
-                      >
-                        <Ionicons name="remove" size={18} color={grad[0]} />
-                      </Pressable>
-                      <Pressable
-                        onPress={() => {
-                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                          const wasComplete = item.current_value >= item.target_value;
-                          incrementProgress(item.id);
-                          if (!wasComplete && item.current_value + 1 >= item.target_value) {
-                            setCelebrationGoal(item);
-                          }
-                        }}
-                        style={({ pressed }) => [styles.actionBtn, { opacity: pressed ? 0.85 : 1, overflow: 'hidden' }]}
-                        accessibilityRole="button"
-                        accessibilityLabel="+1"
-                      >
-                        <LinearGradient
-                          colors={grad}
-                          start={{ x: isRTL ? 1 : 0, y: 0 }}
-                          end={{ x: isRTL ? 0 : 1, y: 0 }}
-                          style={StyleSheet.absoluteFill}
-                        />
-                        <Ionicons name="add" size={18} color="#fff" />
-                        <Text style={styles.actionText}>+1</Text>
-                      </Pressable>
-                    </>
-                  )}
-
-                  {/* Archive / Unarchive */}
-                  <Pressable
-                    onPress={() => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      if (item.is_archived) {
-                        unarchiveGoal(item.id);
-                        showToast(tFunc('goalUnarchived'), 'info');
-                      } else {
-                        archiveGoal(item.id);
-                        showToast(tFunc('goalArchived'), 'info');
-                      }
-                    }}
-                    style={({ pressed }) => [
-                      styles.actionBtnIcon,
-                      { borderColor: C.textMuted + '30', backgroundColor: C.textMuted + '10', opacity: pressed ? 0.7 : 1 },
-                    ]}
-                    accessibilityRole="button"
-                    accessibilityLabel={item.is_archived ? tFunc('unarchiveGoal') : tFunc('archiveGoal')}
-                  >
-                    <Ionicons name={item.is_archived ? 'arrow-undo-outline' : 'archive-outline'} size={16} color={C.textMuted} />
-                  </Pressable>
-
-                  {/* Delete */}
-                  <Pressable
-                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setConfirmGoal(item); }}
-                    style={({ pressed }) => [
-                      styles.actionBtnIcon,
-                      { borderColor: C.error + '30', backgroundColor: C.error + '10', opacity: pressed ? 0.7 : 1 },
-                    ]}
-                    accessibilityRole="button"
-                    accessibilityLabel={tFunc('deleteGoal')}
-                  >
-                    <Ionicons name="trash-outline" size={16} color={C.error} />
-                  </Pressable>
-                </View>
+                {!item.is_archived && (
+                  <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                    <Pressable
+                      onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); decrementProgress(item.id); }}
+                      style={({ pressed }) => [styles.decrBtn, { borderColor: grad[0] + '35', backgroundColor: grad[0] + '10', opacity: pressed ? 0.7 : 1 }]}
+                      accessibilityRole="button"
+                      accessibilityLabel="-1"
+                    >
+                      <Ionicons name="remove" size={18} color={grad[0]} />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        const wasComplete = item.current_value >= item.target_value;
+                        incrementProgress(item.id);
+                        if (!wasComplete && item.current_value + 1 >= item.target_value) {
+                          setCelebrationGoal(item);
+                        }
+                      }}
+                      style={({ pressed }) => [styles.actionBtn, { opacity: pressed ? 0.85 : 1, overflow: 'hidden' }]}
+                      accessibilityRole="button"
+                      accessibilityLabel="+1"
+                    >
+                      <LinearGradient
+                        colors={grad}
+                        start={{ x: isRTL ? 1 : 0, y: 0 }}
+                        end={{ x: isRTL ? 0 : 1, y: 0 }}
+                        style={StyleSheet.absoluteFill}
+                      />
+                      <Ionicons name="add" size={18} color="#fff" />
+                      <Text style={styles.actionText}>+1</Text>
+                    </Pressable>
+                  </View>
+                )}
               </View>
             </View>
+          );
+
+          if (item.is_archived) {
+            return cardContent;
+          }
+
+          return (
+            <SwipeableRow
+              isRTL={isRTL}
+              onComplete={() => {
+                archiveGoal(item.id);
+                showToast(tFunc('goalArchived'), 'info');
+              }}
+              onDelete={() => setConfirmGoal(item)}
+              completeLabel={tFunc('archive')}
+              deleteLabel={tFunc('delete')}
+              completeIcon="archive-outline"
+              completeColor="#7C3AED"
+              completeHaptic="light"
+            >
+              {cardContent}
+            </SwipeableRow>
           );
         }}
         ListEmptyComponent={() => (
@@ -386,10 +382,15 @@ export default function GoalsScreen() {
 
       <StreakCelebration
         visible={!!celebrationGoal}
-        habitName={celebrationGoal?.title ?? ''}
+        habitName={celebrationGoal ? resolveDisplayName(celebrationGoal.title_ar, celebrationGoal.title_en, lang, celebrationGoal.title) : ''}
         streakDays={100}
         lang={lang}
         onDismiss={() => setCelebrationGoal(null)}
+        onArchive={celebrationGoal ? () => {
+          archiveGoal(celebrationGoal.id);
+          showToast(tFunc('goalArchived'), 'info');
+          setCelebrationGoal(null);
+        } : undefined}
       />
     </View>
   );

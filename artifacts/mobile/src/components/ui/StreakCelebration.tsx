@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Animated,
   TouchableWithoutFeedback,
+  Pressable,
   Dimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -92,6 +93,7 @@ interface StreakCelebrationProps {
   streakDays: number;
   lang: Language;
   onDismiss: () => void;
+  onArchive?: () => void;
 }
 
 export function StreakCelebration({
@@ -100,6 +102,7 @@ export function StreakCelebration({
   streakDays,
   lang,
   onDismiss,
+  onArchive,
 }: StreakCelebrationProps) {
   const isRTL = lang === 'ar';
   const cfg = getConfig(streakDays);
@@ -274,9 +277,26 @@ export function StreakCelebration({
               {getCelebrationMessage(streakDays, lang)}
             </Text>
 
-            <Text style={styles.dismissHint}>
-              {t('streakTapToDismiss', lang)}
-            </Text>
+            {onArchive ? (
+              <View style={[styles.archiveBtns, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <Pressable
+                  onPress={() => { dismiss(); setTimeout(() => onArchive(), 220); }}
+                  style={[styles.archiveBtn, styles.archiveBtnPrimary]}
+                >
+                  <Text style={styles.archiveBtnPrimaryText}>{t('archiveNow', lang)}</Text>
+                </Pressable>
+                <Pressable
+                  onPress={dismiss}
+                  style={[styles.archiveBtn, styles.archiveBtnSecondary]}
+                >
+                  <Text style={styles.archiveBtnSecondaryText}>{t('keepActive', lang)}</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <Text style={styles.dismissHint}>
+                {t('streakTapToDismiss', lang)}
+              </Text>
+            )}
           </Animated.View>
         </Animated.View>
       </TouchableWithoutFeedback>
@@ -346,5 +366,34 @@ const styles = StyleSheet.create({
     fontFamily: F.reg,
     color: 'rgba(255,255,255,0.50)',
     textAlign: 'center',
+  },
+  archiveBtns: {
+    gap: 10,
+    marginTop: 4,
+  },
+  archiveBtn: {
+    flex: 1,
+    borderRadius: Radius.md,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  archiveBtnPrimary: {
+    backgroundColor: 'rgba(255,255,255,0.95)',
+  },
+  archiveBtnSecondary: {
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+  },
+  archiveBtnPrimaryText: {
+    fontSize: 15,
+    fontFamily: F.bold,
+    color: '#6D28D9',
+  },
+  archiveBtnSecondaryText: {
+    fontSize: 15,
+    fontFamily: F.bold,
+    color: 'rgba(255,255,255,0.90)',
   },
 });
