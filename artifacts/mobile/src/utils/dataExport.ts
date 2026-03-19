@@ -1,8 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
-import * as DocumentPicker from 'expo-document-picker';
+import { Platform, Share } from 'react-native';
 import { format } from 'date-fns';
 import type { Task, Habit, Goal, JournalEntry, Category, UserProfile } from '../types';
 
@@ -48,11 +45,12 @@ export async function exportData(): Promise<{ success: boolean; error?: string }
       profile: settings ? (JSON.parse(settings) as UserProfile) : {},
     };
 
+    const dateStr = format(new Date(), 'yyyy-MM-dd');
     const json = JSON.stringify(backup, null, 2);
 
     if (Platform.OS === 'web') {
       try {
-        await (navigator as Navigator & { clipboard: Clipboard }).clipboard.writeText(json);
+        await navigator.clipboard.writeText(json);
       } catch {
         const el = document.createElement('textarea');
         el.value = json;
@@ -64,54 +62,18 @@ export async function exportData(): Promise<{ success: boolean; error?: string }
       return { success: true };
     }
 
-    const dateStr = format(new Date(), 'yyyy-MM-dd');
-    const fileName = `doyoomi-backup-${dateStr}.json`;
-    const fileUri = (FileSystem.cacheDirectory ?? '') + fileName;
-
-    await FileSystem.writeAsStringAsync(fileUri, json, {
-      encoding: FileSystem.EncodingType.UTF8,
-    });
-
-    const canShare = await Sharing.isAvailableAsync();
-    if (canShare) {
-      await Sharing.shareAsync(fileUri, {
-        mimeType: 'application/json',
-        dialogTitle: 'Share Do.Yoomi Backup',
-        UTI: 'public.json',
-      });
-      return { success: true };
-    }
-
-    return { success: false, error: 'Sharing not available on this device' };
+    await Share.share(
+      {
+        title: `doyoomi-backup-${dateStr}.json`,
+        message: json,
+      },
+      { dialogTitle: 'Share Do.Yoomi Backup' },
+    );
+    return { success: true };
   } catch (e: unknown) {
-    return { success: false, error: (e as Error)?.message ?? 'Unknown error' };
-  }
-}
-
-export async function pickAndImportFile(): Promise<{ success: boolean; data?: BackupData; error?: string }> {
-  try {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: ['application/json', 'text/plain'],
-      copyToCacheDirectory: true,
-    });
-
-    if (result.canceled || !result.assets || result.assets.length === 0) {
-      return { success: false, error: 'cancelled' };
-    }
-
-    const asset = result.assets[0];
-    const json = await FileSystem.readAsStringAsync(asset.uri, {
-      encoding: FileSystem.EncodingType.UTF8,
-    });
-
-    const parsed = validateBackup(json);
-    if (!parsed) {
-      return { success: false, error: 'invalid' };
-    }
-
-    return { success: true, data: parsed };
-  } catch (e: unknown) {
-    return { success: false, error: (e as Error)?.message ?? 'Unknown error' };
+    const err = e as { message?: string; code?: string };
+    if (err?.code === 'ENS_CANCELED') return { success: false, error: 'cancelled' };
+    return { success: false, error: err?.message ?? 'Unknown error' };
   }
 }
 
@@ -146,7 +108,7 @@ export function validateBackup(json: string): BackupData | null {
       backup.profile && typeof backup.profile === 'object' ? backup.profile :
       backup.settings && typeof backup.settings === 'object' ? backup.settings : {};
 
-    const result: BackupData = {
+    return {
       version: backup.version,
       exportedAt: backup.exportedAt ?? new Date().toISOString(),
       tasks: backup.tasks as Task[],
@@ -156,7 +118,6 @@ export function validateBackup(json: string): BackupData | null {
       categories: backup.categories as Category[],
       profile,
     };
-    return result;
   } catch {
     return null;
   }
@@ -188,19 +149,6 @@ export async function importData(json: string): Promise<{ success: boolean; erro
 
 export async function exportAllData(): Promise<{ success: boolean; error?: string }> {
   return exportData();
-}
-
-export async function importAllData(uri: string): Promise<{ success: boolean; data?: BackupData; error?: string }> {
-  try {
-    const json = await FileSystem.readAsStringAsync(uri, {
-      encoding: FileSystem.EncodingType.UTF8,
-    });
-    const parsed = validateBackup(json);
-    if (!parsed) return { success: false, error: 'invalid' };
-    return { success: true, data: parsed };
-  } catch (e: unknown) {
-    return { success: false, error: (e as Error)?.message ?? 'Unknown error' };
-  }
 }
 
 export async function restoreAll(

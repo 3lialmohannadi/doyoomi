@@ -21,7 +21,7 @@ import {
   scheduleAllReminders,
   cancelAllReminders,
 } from '../../src/services/notificationService';
-import { exportData, pickAndImportFile, applyBackup, clearAllData, validateBackup, BackupData } from '../../src/utils/dataExport';
+import { exportData, applyBackup, clearAllData, validateBackup, BackupData } from '../../src/utils/dataExport';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
@@ -89,19 +89,6 @@ export default function MoreScreen() {
       showToast(Platform.OS === 'web' ? tFunc('exportSuccessWeb') : tFunc('exportSuccess'), 'success');
     } else {
       showToast(result.error ?? tFunc('importError'), 'error');
-    }
-  };
-
-  const handlePickFile = async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setImportLoading(true);
-    const result = await pickAndImportFile();
-    setImportLoading(false);
-    if (result.success && result.data) {
-      setPendingBackup(result.data);
-      setShowImportConfirm(true);
-    } else if (result.error !== 'cancelled') {
-      showToast(tFunc('importError'), 'error');
     }
   };
 
@@ -564,7 +551,7 @@ export default function MoreScreen() {
 
             {/* Import */}
             <Pressable
-              onPress={Platform.OS === 'web' ? () => { setImportText(''); setShowImportModal(true); } : handlePickFile}
+              onPress={() => { setImportText(''); setShowImportModal(true); }}
               disabled={importLoading}
               style={[styles.notifRow, { flexDirection: isRTL ? 'row-reverse' : 'row', borderBottomWidth: 1, borderBottomColor: C.border, opacity: importLoading ? 0.6 : 1 }]}
             >
