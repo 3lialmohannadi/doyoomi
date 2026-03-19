@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   goalTopLine: { height: 5, width: '100%' },
-  goalContent: { padding: Spacing.lg, gap: Spacing.md },
+  goalContent: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, gap: Spacing.md },
   goalHeader: { alignItems: 'center', gap: Spacing.md },
   goalIconBox: {
     width: 46, height: 46, borderRadius: Radius.md,

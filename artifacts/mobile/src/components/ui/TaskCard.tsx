@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingVertical: Spacing.md,
-    paddingRight: Spacing.sm,
+    paddingRight: Spacing.lg,
     gap: 4,
   },
   title: {

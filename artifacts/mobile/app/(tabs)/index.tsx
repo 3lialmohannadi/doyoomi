@@ -1054,7 +1054,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 3,
   },
   habitTopLine: { height: 4, width: '100%' },
-  habitCardInner: { padding: Spacing.md, gap: Spacing.sm },
+  habitCardInner: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, gap: Spacing.sm },
   habitIconWrap: { position: 'relative' as const, alignSelf: 'flex-start' as const },
   habitIconBox: { width: 44, height: 44, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
   habitDoneBadge: {
@@ -1070,7 +1070,8 @@ const styles = StyleSheet.create({
 
   // Goal card
   goalCard: {
-    borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg,
+    borderRadius: Radius.xl, borderWidth: 1,
+    paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md,
     position: 'relative' as const,
   },
   goalIcon: { width: 44, height: 44, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
