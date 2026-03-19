@@ -21,25 +21,47 @@ import { Toast } from '../../src/components/ui/Toast';
 import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 import { StreakCelebration } from '../../src/components/ui/StreakCelebration';
 import { MiniConfetti } from '../../src/components/ui/MiniConfetti';
-import { Habit } from '../../src/types';
+import { Habit, HabitFrequency } from '../../src/types';
 import { StreakCelebrationPayload } from '../../src/store/habitsStore';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const FREQ_LABEL_KEY: Record<string, string> = {
-  daily: 'freqDaily',
-  '3x_week': 'freq3xWeek',
-  '5x_week': 'freq5xWeek',
-  weekdays: 'freqWeekdays',
-  weekends: 'freqWeekends',
-  weekly: 'freqWeekly',
-};
+function getFreqBadge(freq: HabitFrequency, tFunc: (k: string) => string): string {
+  if (freq.type === 'daily') return tFunc('freqDaily');
+  if (freq.type === 'weekdays') return tFunc('freqWeekdays');
+  if (freq.type === 'custom') {
+    const sd = freq.specific_days;
+    if (sd && sd.length > 0) {
+      const dayAbbr = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+      return sd.map(d => dayAbbr[d]).join(', ');
+    }
+    const dpw = freq.days_per_week ?? 3;
+    return `${dpw}× / ${tFunc('freqWeek')}`;
+  }
+  return '';
+}
 
 function getDayAbbr(date: Date, lang: string): string {
   const day = getDay(date);
   const en = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
   const ar = ['أح', 'اث', 'ثل', 'أر', 'خم', 'جم', 'سب'];
   return lang === 'ar' ? ar[day] : en[day];
+}
+
+function isRequiredDay(date: Date, freq: HabitFrequency): boolean {
+  if (freq.type === 'daily') return true;
+  if (freq.type === 'weekdays') {
+    const d = getDay(date);
+    return d !== 0 && d !== 6;
+  }
+  if (freq.type === 'custom') {
+    const sd = freq.specific_days;
+    if (sd && sd.length > 0) {
+      return sd.includes(getDay(date));
+    }
+    return true;
+  }
+  return true;
 }
 
 function HistoryCalendarModal({
@@ -109,9 +131,13 @@ function HistoryCalendarModal({
                   const isFuture = d > today;
                   const isDone = history.includes(dStr);
 
+                  const required = !isFuture && isRequiredDay(d, habit.frequency ?? { type: 'daily' });
+                  const isMissed = !isFuture && !isToday && !isDone && required;
+
                   let bg = isDark ? 'rgba(255,255,255,0.05)' : C.surface;
                   let dotColor = isDark ? 'rgba(255,255,255,0.1)' : C.border;
                   if (isDone) { bg = habit.color + '25'; dotColor = habit.color; }
+                  else if (isMissed) { bg = '#EF444415'; dotColor = '#EF4444'; }
                   else if (isFuture) { bg = 'transparent'; dotColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'; }
 
                   return (
@@ -122,6 +148,9 @@ function HistoryCalendarModal({
                       ]}>
                         {isDone && (
                           <Ionicons name="checkmark" size={12} color={habit.color} />
+                        )}
+                        {isMissed && !isToday && (
+                          <Ionicons name="close" size={10} color="#EF4444" />
                         )}
                       </View>
                       <Text style={[calStyles.dayLabel, { color: isFuture ? C.textMuted + '60' : C.textMuted }]}>
@@ -141,7 +170,7 @@ function HistoryCalendarModal({
               <Text style={[calStyles.legendText, { color: C.textSecondary }]}>{t('done', lang)}</Text>
             </View>
             <View style={[calStyles.legendItem, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <View style={[calStyles.legendDot, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : C.surface, borderColor: C.border }]} />
+              <View style={[calStyles.legendDot, { backgroundColor: '#EF444415', borderColor: '#EF4444' }]} />
               <Text style={[calStyles.legendText, { color: C.textSecondary }]}>{t('missed', lang)}</Text>
             </View>
             <View style={[calStyles.legendItem, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -242,7 +271,7 @@ function HabitCard({
     prevDone.current = isDoneToday;
   }, [isDoneToday]);
 
-  const freqLabelKey = FREQ_LABEL_KEY[item.frequency ?? 'daily'];
+  const freqBadge = item.frequency ? getFreqBadge(item.frequency, tFunc) : '';
 
   return (
     <AnimatedPressable
@@ -330,10 +359,10 @@ function HabitCard({
             </Pressable>
 
             {/* Frequency badge */}
-            {freqLabelKey && (
+            {!!freqBadge && (
               <View style={[styles.doneBadge, { backgroundColor: C.tint + '12', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                 <Ionicons name="repeat" size={11} color={C.tint} />
-                <Text style={[styles.doneBadgeText, { color: C.tint }]}>{tFunc(freqLabelKey)}</Text>
+                <Text style={[styles.doneBadgeText, { color: C.tint }]}>{freqBadge}</Text>
               </View>
             )}
 

@@ -11,23 +11,23 @@ export interface StreakCelebrationPayload {
 const MILESTONES = new Set([3, 7, 14, 21, 30, 60, 100]);
 const sessionCelebrated = new Set<string>();
 
+const DEFAULT_FREQUENCY: HabitFrequency = { type: 'daily' };
+
 function isWeekend(date: Date): boolean {
   const d = getDay(date);
   return d === 0 || d === 6;
 }
 
-function isWeekday(date: Date): boolean {
-  return !isWeekend(date);
-}
-
-function countCompletionsInWindow(history: string[], days: number): number {
-  const today = new Date();
-  let count = 0;
-  for (let i = 0; i < days; i++) {
-    const d = format(subDays(today, i), 'yyyy-MM-dd');
-    if (history.includes(d)) count++;
+function isRequiredDay(date: Date, freq: HabitFrequency): boolean {
+  if (freq.type === 'daily') return true;
+  if (freq.type === 'weekdays') return !isWeekend(date);
+  if (freq.type === 'custom') {
+    if (freq.specific_days && freq.specific_days.length > 0) {
+      return freq.specific_days.includes(getDay(date));
+    }
+    return true;
   }
-  return count;
+  return true;
 }
 
 function computeStreak(history: string[], freq: HabitFrequency): number {
@@ -35,9 +35,9 @@ function computeStreak(history: string[], freq: HabitFrequency): number {
 
   const today = new Date();
 
-  if (freq === 'daily') {
+  if (freq.type === 'daily') {
     let streak = 0;
-    for (let i = 0; ; i++) {
+    for (let i = 0; i <= 365; i++) {
       const d = format(subDays(today, i), 'yyyy-MM-dd');
       if (history.includes(d)) {
         streak++;
@@ -48,10 +48,12 @@ function computeStreak(history: string[], freq: HabitFrequency): number {
     return streak;
   }
 
-  if (freq === 'weekdays') {
+  if (freq.type === 'weekdays') {
     let streak = 0;
-    for (let i = 0; ; i++) {
+    let i = 0;
+    while (i <= 365) {
       const d = subDays(today, i);
+      i++;
       if (isWeekend(d)) continue;
       const dStr = format(d, 'yyyy-MM-dd');
       if (history.includes(dStr)) {
@@ -59,51 +61,65 @@ function computeStreak(history: string[], freq: HabitFrequency): number {
       } else {
         break;
       }
-      if (i > 60) break;
     }
     return streak;
   }
 
-  if (freq === 'weekends') {
-    let streak = 0;
-    for (let i = 0; ; i++) {
-      const d = subDays(today, i);
-      if (isWeekday(d)) continue;
-      const dStr = format(d, 'yyyy-MM-dd');
-      if (history.includes(dStr)) {
-        streak++;
-      } else {
-        break;
+  if (freq.type === 'custom') {
+    const daysPerWeek = freq.days_per_week ?? 3;
+    const specificDays = freq.specific_days;
+
+    if (specificDays && specificDays.length > 0) {
+      let streak = 0;
+      let i = 0;
+      while (i <= 365) {
+        const d = subDays(today, i);
+        i++;
+        if (!specificDays.includes(getDay(d))) continue;
+        const dStr = format(d, 'yyyy-MM-dd');
+        if (history.includes(dStr)) {
+          streak++;
+        } else {
+          break;
+        }
       }
-      if (i > 60) break;
+      return streak;
     }
-    return streak;
-  }
 
-  if (freq === '3x_week') {
-    return Math.floor(countCompletionsInWindow(history, 7) / 3);
-  }
-
-  if (freq === '5x_week') {
-    return Math.floor(countCompletionsInWindow(history, 7) / 5);
-  }
-
-  if (freq === 'weekly') {
-    let streak = 0;
+    let streakWeeks = 0;
     for (let w = 0; w < 52; w++) {
-      const found = Array.from({ length: 7 }, (_, i) =>
+      const weekDates = Array.from({ length: 7 }, (_, i) =>
         format(subDays(today, w * 7 + i), 'yyyy-MM-dd')
-      ).some(d => history.includes(d));
-      if (found) {
-        streak++;
+      );
+      const completionsThisWeek = weekDates.filter(d => history.includes(d)).length;
+      if (completionsThisWeek >= daysPerWeek) {
+        streakWeeks++;
       } else if (w > 0) {
         break;
       }
     }
-    return streak;
+    return streakWeeks;
   }
 
   return 0;
+}
+
+function migrateFrequency(raw: unknown): HabitFrequency {
+  if (raw && typeof raw === 'object' && 'type' in raw) {
+    return raw as HabitFrequency;
+  }
+  if (typeof raw === 'string') {
+    switch (raw) {
+      case 'daily': return { type: 'daily' };
+      case 'weekdays': return { type: 'weekdays' };
+      case '3x_week': return { type: 'custom', days_per_week: 3 };
+      case '5x_week': return { type: 'custom', days_per_week: 5 };
+      case 'weekends': return { type: 'custom', days_per_week: 2, specific_days: [0, 6] };
+      case 'weekly': return { type: 'custom', days_per_week: 1 };
+      default: return { type: 'daily' };
+    }
+  }
+  return DEFAULT_FREQUENCY;
 }
 
 interface HabitsState {
@@ -166,7 +182,8 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
     const history = habit.completion_history ?? [];
     const updatedHistory = [todayStr, ...history.filter(d => d !== todayStr)].slice(0, 365);
 
-    const newStreak = computeStreak(updatedHistory, habit.frequency ?? 'daily');
+    const freq = habit.frequency ?? DEFAULT_FREQUENCY;
+    const newStreak = computeStreak(updatedHistory, freq);
     const newBest = Math.max(newStreak, habit.best_streak ?? 0);
 
     get().updateHabit(id, {
@@ -194,7 +211,8 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
     if (lastDate !== todayStr) return;
 
     const updatedHistory = (habit.completion_history ?? []).filter(d => d !== todayStr);
-    const newStreak = computeStreak(updatedHistory, habit.frequency ?? 'daily');
+    const freq = habit.frequency ?? DEFAULT_FREQUENCY;
+    const newStreak = computeStreak(updatedHistory, freq);
 
     get().updateHabit(id, {
       streak_days: newStreak,
@@ -209,12 +227,13 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
-        const parsed: Habit[] = JSON.parse(stored);
-        const migrated = parsed.map(h => ({
-          frequency: 'daily' as HabitFrequency,
-          best_streak: h.streak_days ?? 0,
+        const parsed = JSON.parse(stored);
+        const migrated: Habit[] = parsed.map((h: Habit & { frequency: unknown }) => ({
+          streak_days: 0,
+          best_streak: 0,
           completion_history: [],
           ...h,
+          frequency: migrateFrequency(h.frequency),
         }));
         set({ habits: migrated });
       }

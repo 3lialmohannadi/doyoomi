@@ -90,13 +90,15 @@ export default function TabLayout() {
   }, [tasks, today]);
 
   const remainingHabitsCount = useMemo(() => {
-    const todayDow = getDay(new Date());
+    const now = new Date();
+    const todayDow = getDay(now);
     const isWeekend = todayDow === 0 || todayDow === 6;
-    const isWeekday = !isWeekend;
     return habits.filter((h) => {
-      const freq = h.frequency ?? 'daily';
-      if (freq === 'weekdays' && isWeekend) return false;
-      if (freq === 'weekends' && isWeekday) return false;
+      const freq = h.frequency ?? { type: 'daily' };
+      if (freq.type === 'weekdays' && isWeekend) return false;
+      if (freq.type === 'custom' && freq.specific_days && freq.specific_days.length > 0) {
+        if (!freq.specific_days.includes(todayDow)) return false;
+      }
       const lastDate = h.last_completed_at
         ? format(new Date(h.last_completed_at), "yyyy-MM-dd")
         : null;

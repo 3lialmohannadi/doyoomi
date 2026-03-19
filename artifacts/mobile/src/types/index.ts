@@ -2,7 +2,12 @@ export type Priority = 'low' | 'medium' | 'high';
 export type TaskStatus = 'pending' | 'completed' | 'overdue' | 'postponed' | 'cancelled';
 export type GoalType = 'monthly' | 'yearly';
 export type RecurrenceType = 'daily' | 'weekdays' | 'weekly' | 'monthly';
-export type HabitFrequency = 'daily' | '3x_week' | '5x_week' | 'weekdays' | 'weekends' | 'weekly';
+
+export interface HabitFrequency {
+  type: 'daily' | 'weekdays' | 'custom';
+  days_per_week?: number;
+  specific_days?: number[];
+}
 
 export interface RecurrenceRule {
   type: RecurrenceType;
