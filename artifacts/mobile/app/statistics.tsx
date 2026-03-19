@@ -31,8 +31,10 @@ import { Mood, Goal } from '../src/types';
 // ── Typed Ionicons helper ──────────────────────────────────────────────────────
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
-// ── Mood config (mirrored from journal.tsx) ───────────────────────────────────
+// ── Mood config (covers all Mood enum values) ─────────────────────────────────
 const MOOD_CONFIG: Partial<Record<Mood, { icon: IoniconName; color: string }>> = {
+  excellent:   { icon: 'star',                    color: BOLD_GOLD },
+  veryGood:    { icon: 'thumbs-up',               color: BOLD_GREEN },
   happy:       { icon: 'happy',                   color: BOLD_GREEN },
   excited:     { icon: 'rocket-outline',           color: BOLD_GOLD },
   energetic:   { icon: 'flash-outline',            color: BOLD_ORANGE },
@@ -626,7 +628,7 @@ function HabitsSparklineCard({
         <Text style={[hkStyles.cardTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>
           {tFunc('completionHistory')}
         </Text>
-        <Text style={[hkStyles.cardSub, { color: C.textMuted }]}>7d</Text>
+        <Text style={[hkStyles.cardSub, { color: C.textMuted }]}>{tFunc('sevenDayShort')}</Text>
       </View>
 
       {sparklines.map(({ habit, dots }, idx) => {
@@ -790,7 +792,7 @@ function GoalsProgressCard({
                 <View style={[gpStyles.badge, { backgroundColor: BOLD_RED + '15' }]}>
                   <Ionicons name="alert-circle-outline" size={11} color={BOLD_RED} />
                   <Text style={[gpStyles.badgeText, { color: BOLD_RED }]}>
-                    {fmt(Math.abs(daysLeft))}d
+                    {fmt(Math.abs(daysLeft))}{tFunc('daysShort')}
                   </Text>
                 </View>
               )}
@@ -888,7 +890,7 @@ function MoodDistributionCard({
           </View>
           <View style={[mdStyles.topMoodBadge, { backgroundColor: topCfg.color + '20' }]}>
             <Ionicons name="star" size={10} color={topCfg.color} />
-            <Text style={[mdStyles.topMoodBadgeText, { color: topCfg.color }]}>Top</Text>
+            <Text style={[mdStyles.topMoodBadgeText, { color: topCfg.color }]}>{tFunc('topMoodLabel')}</Text>
           </View>
         </View>
       )}

@@ -141,6 +141,9 @@ const translations: Record<Language, Record<string, string>> = {
     avgMood: 'Avg mood score',
     viewStatistics: 'Statistics & Insights',
     lastWeek: 'Last week',
+    topMoodLabel: 'Top mood',
+    sevenDayShort: '7d',
+    daysShort: 'd',
 
     // Data & Backup
     dataAndBackup: 'Data & Backup',
@@ -569,6 +572,9 @@ const translations: Record<Language, Record<string, string>> = {
     avgMood: 'متوسط درجة المزاج',
     viewStatistics: 'الإحصائيات والتحليلات',
     lastWeek: 'الأسبوع الماضي',
+    topMoodLabel: 'المزاج الأكثر',
+    sevenDayShort: '٧ أيام',
+    daysShort: 'ي',
 
     dataAndBackup: 'البيانات والنسخ الاحتياطي',
     exportData: 'تصدير البيانات',
