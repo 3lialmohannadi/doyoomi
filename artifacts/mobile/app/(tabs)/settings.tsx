@@ -455,22 +455,29 @@ export default function MoreScreen() {
             )}
           </View>
 
-          {/* ── Section: Widgets ── */}
-          <SectionHeader title={tFunc('widgets')} isRTL={isRTL} C={C} />
-          <View style={[styles.widgetsCard, { backgroundColor: C.card, borderColor: C.border, overflow: 'hidden' }]}>
+          {/* ── Section: Statistics ── */}
+          <SectionHeader title={tFunc('statistics')} isRTL={isRTL} C={C} />
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push('/statistics'); }}
+            style={({ pressed }) => [
+              styles.widgetsCard,
+              { backgroundColor: C.card, borderColor: C.border, overflow: 'hidden', opacity: pressed ? 0.85 : 1 },
+            ]}
+          >
             {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
             <LinearGradient
-              colors={['#06B6D4', '#6366F1']}
+              colors={['#6366F1', '#8B5CF6']}
               start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
               style={styles.widgetsBanner}
             >
-              <Ionicons name="grid" size={32} color="#fff" />
+              <Ionicons name="bar-chart" size={32} color="#fff" />
               <View style={{ flex: 1, marginLeft: 14 }}>
-                <Text style={[styles.widgetsBannerTitle, { fontFamily: F.black }]}>{tFunc('widgetsComingSoon')}</Text>
-                <Text style={[styles.widgetsBannerSub, { fontFamily: F.reg }]}>{tFunc('widgetsComingSoonDesc')}</Text>
+                <Text style={[styles.widgetsBannerTitle, { fontFamily: F.black }]}>{tFunc('viewStatistics')}</Text>
+                <Text style={[styles.widgetsBannerSub, { fontFamily: F.reg }]}>{tFunc('completionRate')} · {tFunc('avgStreak')} · {tFunc('avgMood')}</Text>
               </View>
+              <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color="rgba(255,255,255,0.8)" />
             </LinearGradient>
-          </View>
+          </Pressable>
 
           {/* ── Section: Data & Backup ── */}
           <SectionHeader title={tFunc('dataAndBackup')} isRTL={isRTL} C={C} />

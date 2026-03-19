@@ -140,6 +140,7 @@ const translations: Record<Language, Record<string, string>> = {
     avgGoalProgress: 'Average goal progress',
     avgMood: 'Avg mood score',
     viewStatistics: 'Statistics & Insights',
+    lastWeek: 'Last week',
 
     // Data & Backup
     dataAndBackup: 'Data & Backup',
@@ -567,6 +568,7 @@ const translations: Record<Language, Record<string, string>> = {
     avgGoalProgress: 'متوسط تقدم الأهداف',
     avgMood: 'متوسط درجة المزاج',
     viewStatistics: 'الإحصائيات والتحليلات',
+    lastWeek: 'الأسبوع الماضي',
 
     dataAndBackup: 'البيانات والنسخ الاحتياطي',
     exportData: 'تصدير البيانات',

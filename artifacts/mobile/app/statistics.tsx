@@ -111,6 +111,8 @@ export default function StatisticsScreen() {
   const monthEnd = endOfMonth(today);
 
   // ── Build last-7-days WeekDayData for Tasks ───────────────────────────────
+  // completedCount = tasks completed ON that day (by completed_at)
+  // totalCount = tasks due ON that day (excluding cancelled)
   const taskWeekData: WeekDayData[] = useMemo(() => {
     return Array.from({ length: 7 }, (_, i) => {
       const date = subDays(today, 6 - i);
@@ -119,12 +121,22 @@ export default function StatisticsScreen() {
       const dayIdx = getDay(date);
       const dayLabel = isRTL ? DAY_LABELS_AR[dayIdx] : DAY_LABELS_EN[dayIdx];
 
-      const dayTasks = tasks.filter(t => t.due_date === dateStr && t.status !== 'cancelled');
-      const completedCount = dayTasks.filter(t => t.status === 'completed').length;
-      const totalCount = dayTasks.length;
-      const pct = totalCount > 0 ? completedCount / totalCount : 0;
+      // Tasks completed on this calendar day (by completed_at date)
+      const completedCount = tasks.filter(t => {
+        if (!t.completed_at) return false;
+        return format(parseISO(t.completed_at), 'yyyy-MM-dd') === dateStr;
+      }).length;
 
-      return { date: dateStr, dayLabel, completedCount, totalCount, pct, isToday, isFuture: false };
+      // Tasks due this day (as the "total" denominator)
+      const totalCount = tasks.filter(t =>
+        t.due_date === dateStr && t.status !== 'cancelled'
+      ).length;
+
+      // Use completedCount as numerator; if no due tasks, still show completions out of max
+      const effectiveTotal = Math.max(totalCount, completedCount);
+      const pct = effectiveTotal > 0 ? completedCount / effectiveTotal : 0;
+
+      return { date: dateStr, dayLabel, completedCount, totalCount: effectiveTotal, pct, isToday, isFuture: false };
     });
   }, [tasks, todayStr, isRTL]);
 
@@ -132,7 +144,6 @@ export default function StatisticsScreen() {
   const stats = useMemo(() => {
     const weekAgo = subDays(today, 7);
     const twoWeeksAgo = subDays(today, 14);
-    const thirtyDaysAgo = subDays(today, 30);
 
     // Tasks
     const activeTasks = tasks.filter(t => t.status !== 'cancelled');
@@ -204,8 +215,10 @@ export default function StatisticsScreen() {
       ? (moodsWithScore.reduce((sum, e) => sum + MOOD_SCORES[e.mood!], 0) / moodsWithScore.length)
       : 0;
 
-    // Mood distribution (last 30 entries, up to 12 top moods)
-    const last30Entries = entries.filter(e => parseISO(e.date) >= thirtyDaysAgo);
+    // Mood distribution (most recent 30 entries by array order, up to 12 top moods)
+    const last30Entries = [...entries]
+      .sort((a, b) => b.created_at.localeCompare(a.created_at))
+      .slice(0, 30);
     const moodCounts: Partial<Record<Mood, number>> = {};
     for (const e of last30Entries) {
       if (e.mood) moodCounts[e.mood] = (moodCounts[e.mood] ?? 0) + 1;
@@ -496,7 +509,7 @@ function WeekDeltaCard({
 
         {/* Last week */}
         <View style={[wdStyles.col, { alignItems: isRTL ? 'flex-start' : 'flex-end' }]}>
-          <Text style={[wdStyles.weekLabel, { color: C.textMuted }]}>{tFunc('yesterday')}</Text>
+          <Text style={[wdStyles.weekLabel, { color: C.textMuted }]}>{tFunc('lastWeek')}</Text>
           <Text style={[wdStyles.weekVal, { color: C.textSecondary }]}>{fmt(lastWeek)}</Text>
         </View>
       </View>
