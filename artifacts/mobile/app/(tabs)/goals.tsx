@@ -18,6 +18,7 @@ import { GoalForm } from '../../src/features/goals/GoalForm';
 import { Toast } from '../../src/components/ui/Toast';
 import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 import { Goal } from '../../src/types';
+import { StreakCelebration } from '../../src/components/ui/StreakCelebration';
 
 const GOAL_GRADIENTS: readonly (readonly [string, string])[] = [
   GRADIENT_H,
@@ -42,6 +43,7 @@ export default function GoalsScreen() {
   const [editGoal, setEditGoal] = useState<Goal | null>(null);
   const [confirmGoal, setConfirmGoal] = useState<Goal | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [celebrationGoal, setCelebrationGoal] = useState<Goal | null>(null);
 
   const tFunc = (key: string) => t(key, lang);
   const topPad = isWeb ? 67 : insets.top;
@@ -181,7 +183,14 @@ export default function GoalsScreen() {
                     <Ionicons name="remove" size={18} color={grad[0]} />
                   </Pressable>
                   <Pressable
-                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); incrementProgress(item.id); }}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      const wasComplete = item.current_value >= item.target_value;
+                      incrementProgress(item.id);
+                      if (!wasComplete && item.current_value + 1 >= item.target_value) {
+                        setCelebrationGoal(item);
+                      }
+                    }}
                     style={({ pressed }) => [styles.actionBtn, { opacity: pressed ? 0.85 : 1, overflow: 'hidden' }]}
                     accessibilityRole="button"
                     accessibilityLabel="+1"
@@ -249,6 +258,14 @@ export default function GoalsScreen() {
           onHide={() => setToast(null)}
         />
       )}
+
+      <StreakCelebration
+        visible={!!celebrationGoal}
+        habitName={celebrationGoal?.title ?? ''}
+        streakDays={100}
+        lang={lang}
+        onDismiss={() => setCelebrationGoal(null)}
+      />
     </View>
   );
 }

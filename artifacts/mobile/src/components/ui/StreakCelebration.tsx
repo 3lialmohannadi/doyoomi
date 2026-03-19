@@ -43,6 +43,11 @@ const MILESTONE_CONFIG: Record<number, {
     gradient: ['#EAB308', '#F97316', '#EF4444'] as const,
     particleColors: ['#EAB308', '#FDE68A', '#F97316', '#FCA5A5'],
   },
+  100: {
+    emoji: '🎯',
+    gradient: ['#8B5CF6', '#6366F1', '#EC4899'] as const,
+    particleColors: ['#8B5CF6', '#EC4899', '#6366F1', '#F9A8D4'],
+  },
 };
 
 function getConfig(streakDays: number) {
@@ -54,7 +59,8 @@ function getCelebrationMessage(streakDays: number, lang: Language): string {
     | 'streakCelebration3'
     | 'streakCelebration7'
     | 'streakCelebration14'
-    | 'streakCelebration30';
+    | 'streakCelebration30'
+    | 'streakCelebration100';
   return t(key, lang);
 }
 

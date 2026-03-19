@@ -62,6 +62,11 @@ export default function OnboardingScreen() {
   const bg = isDark ? '#0B0B14' : '#F5F5FF';
   const cardBg = isDark ? 'rgba(30,30,60,0.95)' : '#FFFFFF';
 
+  const goBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    setStep(s => s - 1);
+  };
+
   const goNext = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     if (step < TOTAL_STEPS - 1) {
@@ -89,7 +94,22 @@ export default function OnboardingScreen() {
 
   return (
     <View style={[styles.root, { backgroundColor: bg, paddingTop: topPad }]}>
-      <StepDots current={step} total={TOTAL_STEPS} />
+      <View style={[styles.topNav, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        {step > 0 ? (
+          <Pressable
+            onPress={goBack}
+            hitSlop={12}
+            style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.6 : 1 }]}
+            accessibilityRole="button"
+          >
+            <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={24} color={isDark ? '#E0E0FF' : '#1A1A3A'} />
+          </Pressable>
+        ) : (
+          <View style={styles.backBtn} />
+        )}
+        <StepDots current={step} total={TOTAL_STEPS} />
+        <View style={styles.backBtn} />
+      </View>
 
       {step === 0 && <WelcomeStep tFunc={tFunc} isDark={isDark} cardBg={cardBg} onNext={goNext} />}
       {step === 1 && (
@@ -435,6 +455,19 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     alignItems: 'center',
+  },
+  topNav: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  backBtn: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   dots: {
     flexDirection: 'row',

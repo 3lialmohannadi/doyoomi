@@ -223,6 +223,9 @@ export const GRADIENT_DARK_BRAND: readonly [string, string]           = ['#6366F
 export const GRADIENT_DARK_BRAND_SUBTLE: readonly [string, string]    = ['rgba(129,140,248,0.18)', 'rgba(129,140,248,0.03)'];
 export const GRADIENT_DARK_SAGE_SUBTLE: readonly [string, string]     = ['rgba(34,211,238,0.15)', 'rgba(34,211,238,0.03)'];
 
+// ── App Version ───────────────────────────────────────────────────────────────
+export const APP_VERSION = '1.0.0';
+
 // ── Shadow Helpers ────────────────────────────────────────────────────────────
 function shadowHelper(color = PRIMARY, strength = 4) {
   return Platform.select({

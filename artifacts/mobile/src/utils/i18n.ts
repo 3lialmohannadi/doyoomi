@@ -156,6 +156,7 @@ const translations: Record<Language, Record<string, string>> = {
     streakCelebration7: "One week! You're unstoppable! 🔥",
     streakCelebration14: "Two weeks! Amazing dedication! 🏅",
     streakCelebration30: "A whole month! Absolutely legendary! 🏆",
+    streakCelebration100: "Goal achieved! You crushed it! 🏆",
     streakTapToDismiss: 'Tap anywhere to dismiss',
     streakKeepItUp: 'Keep it up!',
 
@@ -499,6 +500,7 @@ const translations: Record<Language, Record<string, string>> = {
     streakCelebration7: 'أسبوع كامل! لا شيء يوقفك! 🔥',
     streakCelebration14: 'أسبوعان! إصرار رائع! 🏅',
     streakCelebration30: 'شهر كامل! أسطوري بحق! 🏆',
+    streakCelebration100: 'الهدف تحقق! أنجزته بامتياز! 🏆',
     streakTapToDismiss: 'اضغط للإغلاق',
     streakKeepItUp: 'استمر هكذا!',
 

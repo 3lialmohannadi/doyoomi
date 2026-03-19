@@ -25,7 +25,7 @@ import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useJournalStore } from '../../src/store/journalStore';
 import { useTasksStore } from '../../src/store/tasksStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_SAGE, GRADIENT_AMBER, GRADIENT_CORAL, GRADIENT_DARK_HEADER, GRADIENT_DARK_CARD, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_SAGE, GRADIENT_AMBER, GRADIENT_CORAL, GRADIENT_DARK_HEADER, GRADIENT_DARK_CARD, cardShadow, ColorScheme, APP_VERSION } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
@@ -404,26 +404,6 @@ export default function MoreScreen() {
                 <Text style={[styles.widgetsBannerSub, { fontFamily: F.reg }]}>{tFunc('widgetsComingSoonDesc')}</Text>
               </View>
             </LinearGradient>
-            <View style={{ padding: 16, gap: 12 }}>
-              <Text style={[styles.widgetsSetupTitle, { color: C.text, fontFamily: F.med, textAlign: isRTL ? 'right' : 'left' }]}>
-                {tFunc('widgetsSetupTitle')}
-              </Text>
-              {[
-                { step: '1', label: tFunc('widgetsStep1'), icon: 'phone-portrait' as const },
-                { step: '2', label: tFunc('widgetsStep2'), icon: 'add-circle' as const },
-                { step: '3', label: tFunc('widgetsStep3'), icon: 'search' as const },
-              ].map(s => (
-                <View key={s.step} style={[styles.widgetsStep, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  <View style={[styles.widgetsStepNum, { backgroundColor: '#06B6D4' + '20' }]}>
-                    <Text style={[styles.widgetsStepNumText, { color: '#06B6D4', fontFamily: F.black }]}>{s.step}</Text>
-                  </View>
-                  <Ionicons name={s.icon} size={18} color={C.textSecondary} style={{ marginHorizontal: 10 }} />
-                  <Text style={[styles.widgetsStepLabel, { color: C.text, textAlign: isRTL ? 'right' : 'left', flex: 1, fontFamily: F.reg }]}>
-                    {s.label}
-                  </Text>
-                </View>
-              ))}
-            </View>
           </View>
 
           {/* Section: Help */}
@@ -469,7 +449,7 @@ export default function MoreScreen() {
             <Text style={[styles.aboutAr, { color: C.tint }]}>يومي</Text>
             <Text style={[styles.aboutTagline, { color: C.textSecondary }]}>{tFunc('yourDayYourWay')}</Text>
             <View style={[styles.versionPill, { backgroundColor: C.tint + '15' }]}>
-              <Text style={[styles.versionText, { color: C.tint }]}>v1.0.0</Text>
+              <Text style={[styles.versionText, { color: C.tint }]}>v{APP_VERSION}</Text>
             </View>
           </View>
 
