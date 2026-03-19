@@ -85,7 +85,7 @@ export default function HomeScreen() {
           colors={isDark ? [...GRADIENT_DARK_HEADER] : [...GRADIENT_D]}
           start={{ x: 1, y: 0 }}
           end={{ x: 0, y: 1 }}
-          style={[styles.hero, { paddingTop: topPad + Spacing.md }, isDark && styles.heroDark]}
+          style={[styles.hero, { paddingTop: topPad + Spacing.xs }, isDark && styles.heroDark]}
         >
           {/* Decorative circles — only in light mode */}
           {!isDark && <View style={[styles.deco1]} />}
@@ -906,7 +906,7 @@ const styles = StyleSheet.create({
   // Hero
   hero: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xxxl + Spacing.md,
+    paddingBottom: Spacing.xl,
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
     position: 'relative',
@@ -934,9 +934,9 @@ const styles = StyleSheet.create({
   heroContent: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: Spacing.md },
   heroLeft: { gap: 2, flex: 1 },
   greeting: { fontSize: 14, color: 'rgba(255,255,255,0.75)', fontFamily: F.med },
-  heroLogo: { height: 36, marginBottom: 8 },
-  heroTitle: { fontSize: 32, color: '#fff', fontFamily: F.bold, lineHeight: 40 },
-  heroDate: { fontSize: 13, color: 'rgba(255,255,255,0.65)', fontFamily: F.med, marginTop: 4 },
+  heroLogo: { height: 28, marginBottom: 4 },
+  heroTitle: { fontSize: 26, color: '#fff', fontFamily: F.bold, lineHeight: 32 },
+  heroDate: { fontSize: 12, color: 'rgba(255,255,255,0.65)', fontFamily: F.med, marginTop: 2 },
   heroSub: { fontSize: 16, color: 'rgba(255,255,255,0.65)', fontFamily: F.med },
   heroProgress: { gap: 6, marginTop: Spacing.md },
   heroProgressBar: {
