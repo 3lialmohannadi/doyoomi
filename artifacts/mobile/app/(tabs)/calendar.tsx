@@ -190,7 +190,7 @@ export default function CalendarScreen() {
         )}
 
         {view === 'day' && (
-          <DayView date={currentDate} tasks={tasks} categories={categories} C={C} tFunc={tFunc} isRTL={isRTL} />
+          <DayView date={currentDate} tasks={tasks} categories={categories} C={C} tFunc={tFunc} isRTL={isRTL} lang={lang} />
         )}
 
         {/* Selected date tasks */}
@@ -405,10 +405,10 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
 }
 
 interface DayViewProps {
-  date: Date; tasks: Task[]; categories: Category[]; C: ColorScheme; tFunc: (k: string) => string; isRTL: boolean;
+  date: Date; tasks: Task[]; categories: Category[]; C: ColorScheme; tFunc: (k: string) => string; isRTL: boolean; lang: Language;
 }
 
-function DayView({ date, tasks, categories, C, tFunc, isRTL }: DayViewProps) {
+function DayView({ date, tasks, categories, C, tFunc, isRTL, lang }: DayViewProps) {
   const key = formatDateKey(date);
   const dayTasks = tasks.filter((t) => t.due_date === key);
   const { scheme: dayScheme } = useAppTheme();

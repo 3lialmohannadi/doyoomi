@@ -235,6 +235,10 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
   },
+  headerDark: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.06)',
+  },
   headerDecor1: {
     position: 'absolute', right: -30, top: -30,
     width: 140, height: 140, borderRadius: 70,
