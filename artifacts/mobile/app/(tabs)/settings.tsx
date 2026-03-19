@@ -274,17 +274,18 @@ export default function MoreScreen() {
           </Pressable>
 
           {/* About card */}
-          <View style={[styles.aboutCard, { backgroundColor: C.card, borderColor: C.border }]}>
+          <View style={[styles.aboutCard, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Image
               source={require('../../assets/images/icon-nobg.png')}
               style={styles.aboutLogo}
               resizeMode="contain"
             />
-            <Text style={[styles.aboutName, { color: C.text }]}>Do.Yoomi</Text>
-            <Text style={[styles.aboutAr, { color: C.tint }]}>يومي</Text>
-            <Text style={[styles.aboutTagline, { color: C.textSecondary }]}>{tFunc('yourDayYourWay')}</Text>
-            <View style={[styles.versionPill, { backgroundColor: C.tint + '15' }]}>
-              <Text style={[styles.versionText, { color: C.tint }]}>v1.0.0</Text>
+            <View style={[styles.aboutInfo, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+              <Text style={[styles.aboutName, { color: C.text }]}>Do.Yoomi · <Text style={{ color: C.tint }}>يومي</Text></Text>
+              <Text style={[styles.aboutTagline, { color: C.textSecondary }]}>{tFunc('yourDayYourWay')}</Text>
+              <View style={[styles.versionPill, { backgroundColor: C.tint + '15', marginTop: 4 }]}>
+                <Text style={[styles.versionText, { color: C.tint }]}>v1.0.0</Text>
+              </View>
             </View>
           </View>
 
@@ -773,19 +774,20 @@ const styles = StyleSheet.create({
   // About card
   aboutCard: {
     borderRadius: Radius.xl, borderWidth: 1,
-    alignItems: 'center', paddingVertical: Spacing.md, paddingHorizontal: Spacing.lg,
+    alignItems: 'center', gap: Spacing.sm,
+    paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md,
     marginTop: Spacing.sm, marginBottom: Spacing.sm,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
   aboutLogo: {
-    width: 56, height: 56,
-    marginBottom: Spacing.xs,
+    width: 40, height: 40,
   },
-  aboutName: { fontSize: 17, fontFamily: F.brand, marginBottom: 1 },
-  aboutAr: { fontSize: 13, fontFamily: F.bold, marginBottom: Spacing.xs },
-  aboutTagline: { fontSize: 12, fontFamily: F.reg, marginBottom: Spacing.sm },
-  versionPill: { borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 4 },
-  versionText: { fontSize: 12, fontFamily: F.med },
+  aboutInfo: { flex: 1, gap: 2 },
+  aboutName: { fontSize: 14, fontFamily: F.brand },
+  aboutAr: { fontSize: 12, fontFamily: F.bold },
+  aboutTagline: { fontSize: 11, fontFamily: F.reg },
+  versionPill: { borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3, alignSelf: 'flex-start' },
+  versionText: { fontSize: 11, fontFamily: F.med },
 
   // Modals
   modal: { flex: 1 },
