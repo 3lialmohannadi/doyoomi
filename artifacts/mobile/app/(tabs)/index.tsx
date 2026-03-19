@@ -683,7 +683,7 @@ function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLon
           {timeStr && <Text style={[styles.taskTime, { color: C.textMuted }]}>{timeStr}</Text>}
         </View>
       </View>
-      <MiniConfetti triggerKey={confettiKey} />
+      <MiniConfetti trigger={confettiKey} xPct={isRTL ? 82 : 18} yPct={50} />
     </AnimatedPressable>
   );
 }
@@ -775,7 +775,7 @@ function FunHabitCard({
           </Text>
         </View>
       </View>
-      <MiniConfetti triggerKey={confettiKey} />
+      <MiniConfetti trigger={confettiKey} xPct={50} yPct={50} />
     </AnimatedPressable>
   );
 }

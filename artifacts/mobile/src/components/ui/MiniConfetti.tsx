@@ -15,13 +15,13 @@ const DOTS = [
 
 function toRad(deg: number) { return (deg * Math.PI) / 180; }
 
-function Dot({ color, angle, dist, triggerKey }: { color: string; angle: number; dist: number; triggerKey: number }) {
+function Dot({ color, angle, dist, trigger }: { color: string; angle: number; dist: number; trigger: number }) {
   const tx = useSharedValue(0);
   const ty = useSharedValue(0);
   const opacity = useSharedValue(0);
 
   useEffect(() => {
-    if (triggerKey === 0) return;
+    if (trigger === 0) return;
     tx.value = 0;
     ty.value = 0;
     opacity.value = 0;
@@ -30,7 +30,7 @@ function Dot({ color, angle, dist, triggerKey }: { color: string; angle: number;
     tx.value = withTiming(Math.cos(rad) * dist, { duration: 420, easing: Easing.out(Easing.cubic) });
     ty.value = withTiming(Math.sin(rad) * dist, { duration: 420, easing: Easing.out(Easing.cubic) });
     opacity.value = withDelay(180, withTiming(0, { duration: 260, easing: Easing.in(Easing.quad) }));
-  }, [triggerKey]);
+  }, [trigger]);
 
   const style = useAnimatedStyle(() => ({
     transform: [{ translateX: tx.value }, { translateY: ty.value }],
@@ -40,12 +40,19 @@ function Dot({ color, angle, dist, triggerKey }: { color: string; angle: number;
   return <Animated.View style={[styles.dot, { backgroundColor: color }, style]} />;
 }
 
-export function MiniConfetti({ triggerKey }: { triggerKey: number }) {
+interface MiniConfettiProps {
+  trigger: number;
+  xPct?: number;
+  yPct?: number;
+  color?: string;
+}
+
+export function MiniConfetti({ trigger, xPct = 50, yPct = 50 }: MiniConfettiProps) {
   return (
-    <View style={styles.container} pointerEvents="none">
-      <View style={styles.origin}>
+    <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+      <View style={[styles.origin, { left: `${xPct}%` as `${number}%`, top: `${yPct}%` as `${number}%` }]}>
         {DOTS.map((d, i) => (
-          <Dot key={i} {...d} triggerKey={triggerKey} />
+          <Dot key={i} {...d} trigger={trigger} />
         ))}
       </View>
     </View>
@@ -53,16 +60,10 @@ export function MiniConfetti({ triggerKey }: { triggerKey: number }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 99,
-  },
   origin: {
+    position: 'absolute',
     width: 0,
     height: 0,
-    position: 'relative',
   },
   dot: {
     position: 'absolute',

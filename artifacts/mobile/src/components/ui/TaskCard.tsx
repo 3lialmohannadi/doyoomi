@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { Task } from '../../types';
-import { Radius, Spacing, Typography, F, GRADIENT_DARK_CARD } from '../../theme';
+import { Radius, Spacing, Typography, F, GRADIENT_DARK_CARD, Shadow, ShadowDark } from '../../theme';
 import { PriorityBadge } from './PriorityBadge';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useSettingsStore } from '../../store/settingsStore';
@@ -87,7 +87,7 @@ export function TaskCard({
 
   return (
     <AnimatedPressable
-      style={[animStyle, { position: 'relative' }]}
+      style={[animStyle, { position: 'relative' }, isDark ? ShadowDark.sm : Shadow.sm]}
       onPressIn={() => { scale.value = withSpring(0.985, { damping: 18 }); }}
       onPressOut={() => { scale.value = withSpring(1, { damping: 18 }); }}
       onLongPress={handleLongPress}
@@ -197,7 +197,7 @@ export function TaskCard({
           </Pressable>
         </View>
       </View>
-      <MiniConfetti triggerKey={confettiKey} />
+      <MiniConfetti trigger={confettiKey} xPct={isRTL ? 82 : 18} yPct={50} />
     </AnimatedPressable>
   );
 }
@@ -207,11 +207,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     borderRadius: Radius.xl,
     borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.18,
-    shadowRadius: 8,
-    elevation: 4,
   },
   accentBar: {
     width: 5,

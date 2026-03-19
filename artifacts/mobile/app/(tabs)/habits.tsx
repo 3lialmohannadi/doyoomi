@@ -12,7 +12,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-na
 import { router, useLocalSearchParams } from 'expo-router';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, F, GRADIENT_H, GRADIENT_ORANGE, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER, ColorScheme } from '../../src/theme';
+import { Spacing, Radius, F, GRADIENT_H, GRADIENT_ORANGE, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER, ColorScheme, Shadow, ShadowDark } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -262,17 +262,13 @@ function HabitCard({
       style={[
         animStyle,
         { position: 'relative' },
+        isDark ? ShadowDark.sm : Shadow.sm,
         styles.habitCard,
         {
           flexDirection: isRTL ? 'row-reverse' : 'row',
           backgroundColor: isDark ? 'transparent' : (isDoneToday ? item.color + '10' : C.card),
           borderColor: isDoneToday ? item.color + '50' : C.border,
           overflow: 'hidden',
-          shadowColor: isDoneToday ? item.color : '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: isDark ? 0.5 : 0.08,
-          shadowRadius: 12,
-          elevation: 4,
         },
       ]}
       onPressIn={() => { scale.value = withSpring(0.98, { damping: 15 }); }}
@@ -408,7 +404,7 @@ function HabitCard({
           </Pressable>
         </View>
       </View>
-      <MiniConfetti triggerKey={confettiKey} />
+      <MiniConfetti trigger={confettiKey} xPct={isRTL ? 18 : 82} yPct={50} />
     </AnimatedPressable>
   );
 }
@@ -470,7 +466,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     gap: Spacing.md,
   },
   habitIconWrap: {
