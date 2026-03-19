@@ -15,7 +15,7 @@ import {
   Comfortaa_700Bold,
 } from "@expo-google-fonts/comfortaa";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, I18nManager, StyleSheet } from "react-native";
@@ -37,7 +37,7 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient();
 
 function RootLayoutNav() {
-  const { loadSettings } = useSettingsStore();
+  const { loadSettings, profile } = useSettingsStore();
   const { loadTasks } = useTasksStore();
   const { loadHabits } = useHabitsStore();
   const { loadGoals } = useGoalsStore();
@@ -48,6 +48,7 @@ function RootLayoutNav() {
   const [splashDone, setSplashDone] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const splashVisible = useRef(true);
+  const redirectedRef = useRef(false);
 
   useEffect(() => {
     Promise.allSettled([
@@ -76,12 +77,19 @@ function RootLayoutNav() {
         useNativeDriver: true,
       }).start();
     }
+    if (dataReady && splashDone && !redirectedRef.current) {
+      redirectedRef.current = true;
+      if (!profile.onboarding_complete) {
+        router.replace('/onboarding');
+      }
+    }
   }, [dataReady, splashDone]);
 
   return (
     <>
       <Stack screenOptions={{ headerBackTitle: "Back" }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="journal" options={{ headerShown: false, presentation: "modal" }} />
         <Stack.Screen name="support" options={{ headerShown: false }} />
       </Stack>

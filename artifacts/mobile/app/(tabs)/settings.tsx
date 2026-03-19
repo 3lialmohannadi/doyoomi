@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   ScrollView, StyleSheet, Text, View, Pressable, Modal, TextInput,
-  Platform, KeyboardAvoidingView, Image,
+  Platform, KeyboardAvoidingView, Image, Switch, Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,6 +15,11 @@ import {
 import { ar } from 'date-fns/locale';
 
 import { useSettingsStore } from '../../src/store/settingsStore';
+import {
+  requestNotificationPermission,
+  scheduleAllReminders,
+  cancelAllReminders,
+} from '../../src/services/notificationService';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
@@ -32,7 +37,10 @@ export default function MoreScreen() {
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
-  const { profile, setLanguage, setTheme, setTimeFormat, setStartOfWeek, setProfile } = useSettingsStore();
+  const {
+    profile, setLanguage, setTheme, setTimeFormat, setStartOfWeek, setProfile,
+    setNotificationsEnabled, setNotificationsTaskTime, setNotificationsHabitTime,
+  } = useSettingsStore();
   const { categories } = useCategoriesStore();
   const { goals } = useGoalsStore();
   const { habits } = useHabitsStore();
@@ -48,6 +56,9 @@ export default function MoreScreen() {
   const [profilePhone, setProfilePhone] = useState(profile.phone_number ?? '');
   const [profileDob, setProfileDob] = useState(profile.date_of_birth ?? '');
   const [showDobPicker, setShowDobPicker] = useState(false);
+  const [showNotifTimeModal, setShowNotifTimeModal] = useState<null | 'task' | 'habit'>(null);
+  const [notifTimeHour, setNotifTimeHour] = useState(9);
+  const [notifTimeMin, setNotifTimeMin] = useState(0);
 
   const tFunc = (key: string) => t(key, lang);
   const topPad = isWeb ? 67 : insets.top;
@@ -84,6 +95,56 @@ export default function MoreScreen() {
   const goalsCount = goals.length;
   const habitsCount = habits.length;
   const journalCount = journalEntries.length;
+
+  const notifEnabled = profile.notifications_enabled ?? false;
+  const notifTaskTime = profile.notifications_task_time ?? '09:00';
+  const notifHabitTime = profile.notifications_habit_time ?? '20:00';
+
+  const handleNotificationToggle = async (val: boolean) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (val) {
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        Alert.alert(tFunc('notificationsPermissionTitle'), tFunc('notificationsDenied'));
+        return;
+      }
+      setNotificationsEnabled(true);
+      await scheduleAllReminders(notifTaskTime, notifHabitTime, lang);
+    } else {
+      setNotificationsEnabled(false);
+      await cancelAllReminders();
+    }
+  };
+
+  const openNotifTimePicker = (type: 'task' | 'habit') => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const timeStr = type === 'task' ? notifTaskTime : notifHabitTime;
+    const [h, m] = timeStr.split(':').map(Number);
+    setNotifTimeHour(h);
+    setNotifTimeMin(m);
+    setShowNotifTimeModal(type);
+  };
+
+  const saveNotifTime = async () => {
+    const hh = String(notifTimeHour).padStart(2, '0');
+    const mm = String(notifTimeMin).padStart(2, '0');
+    const timeStr = `${hh}:${mm}`;
+    if (showNotifTimeModal === 'task') {
+      setNotificationsTaskTime(timeStr);
+      if (notifEnabled) await scheduleAllReminders(timeStr, notifHabitTime, lang);
+    } else if (showNotifTimeModal === 'habit') {
+      setNotificationsHabitTime(timeStr);
+      if (notifEnabled) await scheduleAllReminders(notifTaskTime, timeStr, lang);
+    }
+    setShowNotifTimeModal(null);
+  };
+
+  const formatTime12 = (timeStr: string) => {
+    const [h, m] = timeStr.split(':').map(Number);
+    const ampm = h < 12 ? 'AM' : 'PM';
+    const h12 = h % 12 || 12;
+    return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
@@ -255,6 +316,116 @@ export default function MoreScreen() {
             </View>
           </View>
 
+          {/* ── Section: Notifications ── */}
+          <SectionHeader title={tFunc('notifications')} isRTL={isRTL} C={C} />
+          <View style={[styles.settingsGroup, { backgroundColor: C.card, borderColor: C.border }]}>
+            {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+
+            {/* Toggle row */}
+            <View style={[styles.notifRow, { flexDirection: isRTL ? 'row-reverse' : 'row', borderBottomWidth: notifEnabled ? 1 : 0, borderBottomColor: C.border }]}>
+              <View style={[styles.notifIconWrap, { backgroundColor: '#6366F1' + '20' }]}>
+                <Ionicons name="notifications" size={20} color="#6366F1" />
+              </View>
+              <View style={{ flex: 1, marginHorizontal: 12 }}>
+                <Text style={[styles.notifRowTitle, { color: C.text, fontFamily: F.med, textAlign: isRTL ? 'right' : 'left' }]}>
+                  {tFunc('notificationsEnabled')}
+                </Text>
+                <Text style={[styles.notifRowSub, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
+                  {tFunc('notificationsDesc')}
+                </Text>
+              </View>
+              <Switch
+                value={notifEnabled}
+                onValueChange={handleNotificationToggle}
+                trackColor={{ false: C.border, true: '#6366F1' + '80' }}
+                thumbColor={notifEnabled ? '#6366F1' : (isDark ? '#555' : '#ccc')}
+              />
+            </View>
+
+            {/* Task time */}
+            {notifEnabled && (
+              <Pressable
+                onPress={() => openNotifTimePicker('task')}
+                style={[styles.notifRow, { flexDirection: isRTL ? 'row-reverse' : 'row', borderBottomWidth: 1, borderBottomColor: C.border }]}
+              >
+                <View style={[styles.notifIconWrap, { backgroundColor: '#06B6D4' + '20' }]}>
+                  <Ionicons name="checkmark-circle" size={20} color="#06B6D4" />
+                </View>
+                <View style={{ flex: 1, marginHorizontal: 12 }}>
+                  <Text style={[styles.notifRowTitle, { color: C.text, fontFamily: F.med, textAlign: isRTL ? 'right' : 'left' }]}>
+                    {tFunc('notificationsTaskReminder')}
+                  </Text>
+                </View>
+                <View style={[styles.timePill, { backgroundColor: '#6366F1' + '18' }]}>
+                  <Text style={[styles.timePillText, { color: '#6366F1', fontFamily: F.bold }]}>
+                    {formatTime12(notifTaskTime)}
+                  </Text>
+                </View>
+                <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textSecondary} style={{ marginLeft: 4 }} />
+              </Pressable>
+            )}
+
+            {/* Habit time */}
+            {notifEnabled && (
+              <Pressable
+                onPress={() => openNotifTimePicker('habit')}
+                style={[styles.notifRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+              >
+                <View style={[styles.notifIconWrap, { backgroundColor: '#F97316' + '20' }]}>
+                  <Ionicons name="leaf" size={20} color="#F97316" />
+                </View>
+                <View style={{ flex: 1, marginHorizontal: 12 }}>
+                  <Text style={[styles.notifRowTitle, { color: C.text, fontFamily: F.med, textAlign: isRTL ? 'right' : 'left' }]}>
+                    {tFunc('notificationsHabitReminder')}
+                  </Text>
+                </View>
+                <View style={[styles.timePill, { backgroundColor: '#F97316' + '18' }]}>
+                  <Text style={[styles.timePillText, { color: '#F97316', fontFamily: F.bold }]}>
+                    {formatTime12(notifHabitTime)}
+                  </Text>
+                </View>
+                <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textSecondary} style={{ marginLeft: 4 }} />
+              </Pressable>
+            )}
+          </View>
+
+          {/* ── Section: Widgets ── */}
+          <SectionHeader title={tFunc('widgets')} isRTL={isRTL} C={C} />
+          <View style={[styles.widgetsCard, { backgroundColor: C.card, borderColor: C.border, overflow: 'hidden' }]}>
+            {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+            <LinearGradient
+              colors={['#06B6D4', '#6366F1']}
+              start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+              style={styles.widgetsBanner}
+            >
+              <Ionicons name="grid" size={32} color="#fff" />
+              <View style={{ flex: 1, marginLeft: 14 }}>
+                <Text style={[styles.widgetsBannerTitle, { fontFamily: F.black }]}>{tFunc('widgetsComingSoon')}</Text>
+                <Text style={[styles.widgetsBannerSub, { fontFamily: F.reg }]}>{tFunc('widgetsComingSoonDesc')}</Text>
+              </View>
+            </LinearGradient>
+            <View style={{ padding: 16, gap: 12 }}>
+              <Text style={[styles.widgetsSetupTitle, { color: C.text, fontFamily: F.med, textAlign: isRTL ? 'right' : 'left' }]}>
+                {tFunc('widgetsSetupTitle')}
+              </Text>
+              {[
+                { step: '1', label: tFunc('widgetsStep1'), icon: 'phone-portrait' as const },
+                { step: '2', label: tFunc('widgetsStep2'), icon: 'add-circle' as const },
+                { step: '3', label: tFunc('widgetsStep3'), icon: 'search' as const },
+              ].map(s => (
+                <View key={s.step} style={[styles.widgetsStep, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                  <View style={[styles.widgetsStepNum, { backgroundColor: '#06B6D4' + '20' }]}>
+                    <Text style={[styles.widgetsStepNumText, { color: '#06B6D4', fontFamily: F.black }]}>{s.step}</Text>
+                  </View>
+                  <Ionicons name={s.icon} size={18} color={C.textSecondary} style={{ marginHorizontal: 10 }} />
+                  <Text style={[styles.widgetsStepLabel, { color: C.text, textAlign: isRTL ? 'right' : 'left', flex: 1, fontFamily: F.reg }]}>
+                    {s.label}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+
           {/* Section: Help */}
           <SectionHeader title={tFunc('helpSection')} isRTL={isRTL} C={C} />
           <Pressable
@@ -306,6 +477,117 @@ export default function MoreScreen() {
       </ScrollView>
 
       <CategoriesManager visible={showCategories} onClose={() => setShowCategories(false)} />
+
+      {/* ── Notification Time Picker Modal ── */}
+      <Modal
+        visible={showNotifTimeModal !== null}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowNotifTimeModal(null)}
+      >
+        <View style={[styles.modal, { backgroundColor: C.background }]}>
+          <View style={[styles.modalHeader, { borderBottomColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <Pressable onPress={() => setShowNotifTimeModal(null)} style={styles.modalCloseBtn}>
+              <Ionicons name="close" size={20} color={C.textSecondary} />
+            </Pressable>
+            <Text style={[styles.modalTitle, { color: C.text }]}>
+              {showNotifTimeModal === 'task' ? tFunc('notificationsTaskReminder') : tFunc('notificationsHabitReminder')}
+            </Text>
+            <View style={{ width: 36 }} />
+          </View>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 24 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {/* Hour */}
+              <View style={{ alignItems: 'center', gap: 8 }}>
+                <Text style={{ color: C.textSecondary, fontSize: 12, fontFamily: F.med }}>{tFunc('hourLabel')}</Text>
+                <View style={[styles.timePill, { backgroundColor: C.card, paddingHorizontal: 0 }]}>
+                  <ScrollView
+                    style={{ height: 160, width: 80 }}
+                    showsVerticalScrollIndicator={false}
+                    snapToInterval={44}
+                    decelerationRate="fast"
+                    contentOffset={{ x: 0, y: notifTimeHour * 44 }}
+                    onMomentumScrollEnd={(e) => {
+                      const h = Math.round(e.nativeEvent.contentOffset.y / 44) % 24;
+                      setNotifTimeHour(h < 0 ? 0 : h);
+                    }}
+                    contentContainerStyle={{ paddingVertical: 58 }}
+                  >
+                    {Array.from({ length: 24 }).map((_, h) => (
+                      <Pressable key={h} onPress={() => setNotifTimeHour(h)}
+                        style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={{
+                          fontSize: h === notifTimeHour ? 24 : 16,
+                          fontFamily: h === notifTimeHour ? F.black : F.reg,
+                          color: h === notifTimeHour ? '#6366F1' : C.textSecondary,
+                        }}>
+                          {String(h).padStart(2, '0')}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </ScrollView>
+                </View>
+              </View>
+              <Text style={{ fontSize: 28, fontFamily: F.black, color: '#6366F1' }}>:</Text>
+              {/* Minute */}
+              <View style={{ alignItems: 'center', gap: 8 }}>
+                <Text style={{ color: C.textSecondary, fontSize: 12, fontFamily: F.med }}>{tFunc('minLabel')}</Text>
+                <View style={[styles.timePill, { backgroundColor: C.card, paddingHorizontal: 0 }]}>
+                  <ScrollView
+                    style={{ height: 160, width: 80 }}
+                    showsVerticalScrollIndicator={false}
+                    snapToInterval={44}
+                    decelerationRate="fast"
+                    contentOffset={{ x: 0, y: Math.floor(notifTimeMin / 5) * 44 }}
+                    onMomentumScrollEnd={(e) => {
+                      const idx = Math.round(e.nativeEvent.contentOffset.y / 44);
+                      setNotifTimeMin(Math.max(0, Math.min(59, idx * 5)));
+                    }}
+                    contentContainerStyle={{ paddingVertical: 58 }}
+                  >
+                    {Array.from({ length: 12 }).map((_, i) => {
+                      const m = i * 5;
+                      return (
+                        <Pressable key={m} onPress={() => setNotifTimeMin(m)}
+                          style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}>
+                          <Text style={{
+                            fontSize: m === notifTimeMin ? 24 : 16,
+                            fontFamily: m === notifTimeMin ? F.black : F.reg,
+                            color: m === notifTimeMin ? '#6366F1' : C.textSecondary,
+                          }}>
+                            {String(m).padStart(2, '0')}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              </View>
+            </View>
+            <View style={[{ backgroundColor: '#6366F1' + '18', borderRadius: 16, paddingVertical: 12, paddingHorizontal: 28 }]}>
+              <Text style={{ fontSize: 26, fontFamily: F.black, color: '#6366F1' }}>
+                {String(notifTimeHour).padStart(2, '0')}:{String(notifTimeMin).padStart(2, '0')}
+              </Text>
+            </View>
+          </View>
+          <View style={[styles.modalBottomBar, { borderTopColor: C.border }]}>
+            <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', gap: 12, width: '100%' }}>
+              <Pressable onPress={() => setShowNotifTimeModal(null)} style={[styles.modalCancelBtn, { borderColor: C.border }]}>
+                <Text style={[styles.modalCancelText, { color: C.text }]}>{tFunc('cancel')}</Text>
+              </Pressable>
+              <Pressable onPress={saveNotifTime} style={{ flex: 2, height: 48, borderRadius: 16, overflow: 'hidden' }}>
+                <LinearGradient
+                  colors={['#6366F1', '#4F46E5']}
+                  start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                  style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Text style={[styles.modalSaveText]}>{tFunc('save')}</Text>
+                </LinearGradient>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       {/* ── Profile Modal ── */}
       <Modal
@@ -868,6 +1150,48 @@ const styles = StyleSheet.create({
   profileFieldValue: { flex: 1 },
   formInputInline: { flex: 1, fontSize: 15, fontFamily: F.reg, padding: 0 },
   dobPressable: { flex: 1, alignItems: 'center', gap: 4 },
+
+  settingsGroup: {
+    borderRadius: Radius.xl, borderWidth: 1, overflow: 'hidden',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2,
+    marginBottom: Spacing.xs,
+  },
+
+  // Notifications
+  notifRow: {
+    alignItems: 'center', paddingHorizontal: Spacing.md, paddingVertical: 14,
+  },
+  notifIconWrap: {
+    width: 38, height: 38, borderRadius: 11,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  notifRowTitle: { fontSize: 15 },
+  notifRowSub: { fontSize: 12, marginTop: 2, fontFamily: F.reg },
+  timePill: {
+    borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 5,
+  },
+  timePillText: { fontSize: 13 },
+
+  // Widgets
+  widgetsCard: {
+    borderRadius: Radius.xl, borderWidth: 1,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2,
+    marginBottom: Spacing.xs, overflow: 'hidden',
+  },
+  widgetsBanner: {
+    flexDirection: 'row', alignItems: 'center',
+    padding: 18, gap: 0,
+  },
+  widgetsBannerTitle: { fontSize: 16, color: '#fff' },
+  widgetsBannerSub: { fontSize: 12, color: 'rgba(255,255,255,0.8)', marginTop: 3 },
+  widgetsSetupTitle: { fontSize: 14 },
+  widgetsStep: { alignItems: 'center', gap: 0 },
+  widgetsStepNum: {
+    width: 28, height: 28, borderRadius: 8,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  widgetsStepNumText: { fontSize: 13 },
+  widgetsStepLabel: { fontSize: 14 },
 
   // Settings 2×2 grid
   settingGrid: { gap: Spacing.sm, marginBottom: Spacing.xs },

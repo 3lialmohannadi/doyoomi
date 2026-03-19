@@ -23,6 +23,10 @@ export interface UserProfile {
   theme: Theme;
   time_format: TimeFormat;
   start_of_week: StartOfWeek;
+  onboarding_complete?: boolean;
+  notifications_enabled?: boolean;
+  notifications_task_time?: string;
+  notifications_habit_time?: string;
   created_at: string;
   updated_at: string;
 }
