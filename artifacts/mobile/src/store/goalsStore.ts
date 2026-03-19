@@ -78,13 +78,13 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed: Goal[] = JSON.parse(stored);
-        const migrated = parsed.map(g => ({
-          archived: false,
-          is_archived: false,
-          ...g,
-          archived: g.archived ?? g.is_archived ?? false,
-          is_archived: g.is_archived ?? g.archived ?? false,
-        }));
+        const migrated = parsed.map(g => {
+          const isArchived = g.archived ?? g.is_archived ?? false;
+          const m = { archived: false, is_archived: false, ...g };
+          m.archived = isArchived;
+          m.is_archived = isArchived;
+          return m;
+        });
         set({ goals: migrated });
         return;
       }
