@@ -541,8 +541,8 @@ export default function MoreScreen() {
             </LinearGradient>
           </Pressable>
 
-          {/* ── Section: Data & Backup ── */}
-          <SectionHeader title={tFunc('dataAndBackup')} isRTL={isRTL} C={C} />
+          {/* ── Section: Backup & Restore ── */}
+          <SectionHeader title={tFunc('backupAndRestore')} isRTL={isRTL} C={C} />
           <View style={[styles.settingsGroup, { backgroundColor: C.card, borderColor: C.border }]}>
             {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
 

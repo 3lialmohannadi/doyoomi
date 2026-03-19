@@ -139,7 +139,7 @@ export function validateBackup(json: string): BackupData | null {
       if (!item || typeof item.id !== 'string' || typeof item.created_at !== 'string') return null;
     }
     for (const item of backup.categories) {
-      if (!item || typeof item.id !== 'string') return null;
+      if (!item || typeof item.id !== 'string' || typeof item.created_at !== 'string') return null;
     }
 
     const profile: Partial<UserProfile> =
@@ -184,6 +184,47 @@ export async function importData(json: string): Promise<{ success: boolean; erro
   const backup = validateBackup(json);
   if (!backup) return { success: false, error: 'Invalid backup format' };
   return applyBackup(backup);
+}
+
+export async function exportAllData(): Promise<{ success: boolean; error?: string }> {
+  return exportData();
+}
+
+export async function importAllData(uri: string): Promise<{ success: boolean; data?: BackupData; error?: string }> {
+  try {
+    const json = await FileSystem.readAsStringAsync(uri, {
+      encoding: FileSystem.EncodingType.UTF8,
+    });
+    const parsed = validateBackup(json);
+    if (!parsed) return { success: false, error: 'invalid' };
+    return { success: true, data: parsed };
+  } catch (e: unknown) {
+    return { success: false, error: (e as Error)?.message ?? 'Unknown error' };
+  }
+}
+
+export async function restoreAll(
+  backup: BackupData,
+  callbacks: {
+    restoreTasks: (items: Task[]) => void;
+    restoreHabits: (items: Habit[]) => void;
+    restoreGoals: (items: Goal[]) => void;
+    restoreEntries: (items: JournalEntry[]) => void;
+    restoreCategories: (items: Category[]) => void;
+    setProfile: (profile: Partial<UserProfile>) => void;
+  },
+): Promise<{ success: boolean; error?: string }> {
+  const result = await applyBackup(backup);
+  if (!result.success) return result;
+  callbacks.restoreTasks(backup.tasks);
+  callbacks.restoreHabits(backup.habits);
+  callbacks.restoreGoals(backup.goals);
+  callbacks.restoreEntries(backup.journal);
+  callbacks.restoreCategories(backup.categories);
+  if (backup.profile && Object.keys(backup.profile).length > 0) {
+    callbacks.setProfile(backup.profile);
+  }
+  return { success: true };
 }
 
 export async function clearAllData(): Promise<{ success: boolean; error?: string }> {
