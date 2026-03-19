@@ -15,15 +15,7 @@ interface SwipeableRowProps {
   deleteLabel?: string;
 }
 
-function CompleteAction({
-  methods,
-  onComplete,
-  label,
-}: {
-  methods: SwipeableMethods;
-  onComplete: () => void;
-  label?: string;
-}) {
+function CompletePanel({ label }: { label?: string }) {
   return (
     <View style={[styles.actionPanel, styles.completePanel]}>
       <Ionicons name="checkmark-circle" size={26} color="#fff" />
@@ -32,15 +24,7 @@ function CompleteAction({
   );
 }
 
-function DeleteAction({
-  methods,
-  onDelete,
-  label,
-}: {
-  methods: SwipeableMethods;
-  onDelete: () => void;
-  label?: string;
-}) {
+function DeletePanel({ label }: { label?: string }) {
   return (
     <View style={[styles.actionPanel, styles.deletePanel]}>
       <Ionicons name="trash-outline" size={22} color="#fff" />
@@ -86,46 +70,26 @@ export function SwipeableRow({
   }, []);
 
   const renderComplete = useCallback(
-    (
-      _progress: SharedValue<number>,
-      _translation: SharedValue<number>,
-      methods: SwipeableMethods,
-    ) => (
-      <CompleteAction
-        methods={methods}
-        onComplete={onComplete ?? (() => {})}
-        label={completeLabel}
-      />
+    (_progress: SharedValue<number>, _translation: SharedValue<number>, _methods: SwipeableMethods) => (
+      <CompletePanel label={completeLabel} />
     ),
-    [onComplete, completeLabel],
+    [completeLabel],
   );
 
   const renderDelete = useCallback(
-    (
-      _progress: SharedValue<number>,
-      _translation: SharedValue<number>,
-      methods: SwipeableMethods,
-    ) => (
-      <DeleteAction
-        methods={methods}
-        onDelete={onDelete}
-        label={deleteLabel}
-      />
+    (_progress: SharedValue<number>, _translation: SharedValue<number>, _methods: SwipeableMethods) => (
+      <DeletePanel label={deleteLabel} />
     ),
-    [onDelete, deleteLabel],
+    [deleteLabel],
   );
 
   const leftActions = !isRTL
-    ? onComplete
-      ? renderComplete
-      : undefined
+    ? onComplete ? renderComplete : undefined
     : renderDelete;
 
   const rightActions = !isRTL
     ? renderDelete
-    : onComplete
-      ? renderComplete
-      : undefined;
+    : onComplete ? renderComplete : undefined;
 
   return (
     <ReanimatedSwipeable
