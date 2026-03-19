@@ -11,6 +11,7 @@ interface JournalState {
   updateEntry: (id: string, updates: Partial<JournalEntry>) => void;
   deleteEntry: (id: string) => void;
   loadEntries: () => Promise<void>;
+  restoreEntries: (entries: JournalEntry[]) => void;
 }
 
 const STORAGE_KEY = '@doyoomi_journal';
@@ -64,5 +65,9 @@ export const useJournalStore = create<JournalState>((set, get) => ({
         AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
       }
     } catch {}
+  },
+
+  restoreEntries: (entries) => {
+    set({ entries });
   },
 }));

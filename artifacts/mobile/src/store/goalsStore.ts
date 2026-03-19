@@ -15,6 +15,7 @@ interface GoalsState {
   incrementProgress: (id: string, amount?: number) => void;
   decrementProgress: (id: string) => void;
   loadGoals: () => Promise<void>;
+  restoreGoals: (goals: Goal[]) => void;
 }
 
 const STORAGE_KEY = '@doyoomi_goals';
@@ -97,5 +98,9 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
         AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
       }
     } catch {}
+  },
+
+  restoreGoals: (goals) => {
+    set({ goals });
   },
 }));

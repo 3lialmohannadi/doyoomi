@@ -136,6 +136,7 @@ interface HabitsState {
   completeHabit: (id: string) => StreakCelebrationPayload | null;
   uncompleteHabit: (id: string) => void;
   loadHabits: () => Promise<void>;
+  restoreHabits: (habits: Habit[]) => void;
 }
 
 const STORAGE_KEY = '@doyoomi_habits';
@@ -257,5 +258,9 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
         AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
       }
     } catch {}
+  },
+
+  restoreHabits: (habits) => {
+    set({ habits });
   },
 }));

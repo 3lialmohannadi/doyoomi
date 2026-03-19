@@ -70,6 +70,9 @@
     "@hookform/resolvers": "^3.10.0",
     "@react-native-community/datetimepicker": "^8.4.4",
     "date-fns": "^3.6.0",
+    "expo-document-picker": "^55.0.9",
+    "expo-file-system": "^55.0.11",
+    "expo-sharing": "^55.0.12",
     "expo-video": "^3.0.16",
     "react-hook-form": "^7.71.2",
     "zustand": "^5.0.11"

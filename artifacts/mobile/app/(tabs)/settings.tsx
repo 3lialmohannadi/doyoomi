@@ -21,7 +21,7 @@ import {
   scheduleAllReminders,
   cancelAllReminders,
 } from '../../src/services/notificationService';
-import { exportData, importData, clearAllData } from '../../src/utils/dataExport';
+import { exportData, pickAndImportFile, applyBackup, clearAllData, BackupData } from '../../src/utils/dataExport';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
@@ -33,6 +33,8 @@ import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
 import { getTodayString, formatDateKey } from '../../src/utils/date';
+import { Toast } from '../../src/components/ui/Toast';
+import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 
 export default function MoreScreen() {
   const { C, scheme } = useAppTheme();
@@ -45,10 +47,10 @@ export default function MoreScreen() {
     setNotificationsEnabled, setNotificationsTaskTime, setNotificationsHabitTime,
   } = useSettingsStore();
   const { categories } = useCategoriesStore();
-  const { goals, deleteGoal } = useGoalsStore();
-  const { habits, deleteHabit } = useHabitsStore();
-  const { entries: journalEntries, deleteEntry } = useJournalStore();
-  const { tasks, deleteTask } = useTasksStore();
+  const { goals, deleteGoal, restoreGoals } = useGoalsStore();
+  const { habits, deleteHabit, restoreHabits } = useHabitsStore();
+  const { entries: journalEntries, deleteEntry, restoreEntries } = useJournalStore();
+  const { tasks, deleteTask, restoreTasks } = useTasksStore();
   const lang = profile.language;
   const isRTL = lang === 'ar';
 
@@ -66,10 +68,17 @@ export default function MoreScreen() {
   const [importText, setImportText] = useState('');
   const [exportLoading, setExportLoading] = useState(false);
   const [importLoading, setImportLoading] = useState(false);
+  const [pendingBackup, setPendingBackup] = useState<BackupData | null>(null);
+  const [showImportConfirm, setShowImportConfirm] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const tFunc = (key: string) => t(key, lang);
   const topPad = isWeb ? 67 : insets.top;
   const bottomPad = isWeb ? 34 : 0;
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToast({ message, type });
+  };
 
   const handleExport = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -77,69 +86,94 @@ export default function MoreScreen() {
     const result = await exportData();
     setExportLoading(false);
     if (result.success) {
-      Alert.alert('', Platform.OS === 'web' ? tFunc('exportSuccessWeb') : tFunc('exportSuccess'));
+      showToast(Platform.OS === 'web' ? tFunc('exportSuccessWeb') : tFunc('exportSuccess'), 'success');
     } else {
-      Alert.alert('Error', result.error ?? 'Export failed');
+      showToast(result.error ?? tFunc('importError'), 'error');
+    }
+  };
+
+  const handlePickFile = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setImportLoading(true);
+    const result = await pickAndImportFile();
+    setImportLoading(false);
+    if (result.success && result.data) {
+      setPendingBackup(result.data);
+      setShowImportConfirm(true);
+    } else if (result.error !== 'cancelled') {
+      showToast(tFunc('importError'), 'error');
+    }
+  };
+
+  const handleConfirmRestore = async () => {
+    if (!pendingBackup) return;
+    setShowImportConfirm(false);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    const result = await applyBackup(pendingBackup);
+    if (result.success) {
+      restoreTasks(pendingBackup.tasks);
+      restoreHabits(pendingBackup.habits);
+      restoreGoals(pendingBackup.goals);
+      restoreEntries(pendingBackup.journal);
+      setPendingBackup(null);
+      showToast(tFunc('importSuccess'), 'success');
+    } else {
+      showToast(tFunc('importError'), 'error');
     }
   };
 
   const handleImport = async () => {
     if (!importText.trim()) return;
     setImportLoading(true);
-    const result = await importData(importText.trim());
+    let backup;
+    try { backup = JSON.parse(importText.trim()); } catch { backup = null; }
     setImportLoading(false);
+    if (!backup || !backup.version || !Array.isArray(backup.tasks)) {
+      showToast(tFunc('importError'), 'error');
+      return;
+    }
+    setPendingBackup(backup);
+    setShowImportModal(false);
+    setImportText('');
+    setShowImportConfirm(true);
+  };
+
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showClearDemoConfirm, setShowClearDemoConfirm] = useState(false);
+
+  const handleClearAll = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setShowClearConfirm(true);
+  };
+
+  const handleConfirmClearAll = async () => {
+    setShowClearConfirm(false);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    const result = await clearAllData();
     if (result.success) {
-      setShowImportModal(false);
-      setImportText('');
-      Alert.alert('', tFunc('importSuccess'));
+      restoreTasks([]);
+      restoreHabits([]);
+      restoreGoals([]);
+      restoreEntries([]);
+      showToast(tFunc('clearSuccess'), 'success');
     } else {
-      Alert.alert(tFunc('importError'), result.error ?? 'Invalid format');
+      showToast(result.error ?? tFunc('clearError'), 'error');
     }
   };
 
-  const handleClearAll = () => {
-    Alert.alert(
-      tFunc('clearConfirmTitle'),
-      tFunc('clearConfirmMsg'),
-      [
-        { text: tFunc('cancel'), style: 'cancel' },
-        {
-          text: tFunc('clearAllData'),
-          style: 'destructive',
-          onPress: async () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            const result = await clearAllData();
-            if (result.success) {
-              Alert.alert('', tFunc('clearSuccess'));
-            } else {
-              Alert.alert('Error', result.error ?? tFunc('clearError'));
-            }
-          },
-        },
-      ],
-    );
+  const handleClearDemo = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setShowClearDemoConfirm(true);
   };
 
-  const handleClearDemo = () => {
-    Alert.alert(
-      tFunc('clearDemoConfirmTitle'),
-      tFunc('clearDemoConfirmMsg'),
-      [
-        { text: tFunc('cancel'), style: 'cancel' },
-        {
-          text: tFunc('clearDemoData'),
-          style: 'destructive',
-          onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            tasks.filter(t => t.is_demo).forEach(t => deleteTask(t.id));
-            habits.filter(h => h.is_demo).forEach(h => deleteHabit(h.id));
-            goals.filter(g => g.is_demo).forEach(g => deleteGoal(g.id));
-            journalEntries.filter(e => e.is_demo).forEach(e => deleteEntry(e.id));
-            Alert.alert('', tFunc('clearDemoSuccess'));
-          },
-        },
-      ],
-    );
+  const handleConfirmClearDemo = () => {
+    setShowClearDemoConfirm(false);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    tasks.filter(tsk => tsk.is_demo).forEach(tsk => deleteTask(tsk.id));
+    habits.filter(h => h.is_demo).forEach(h => deleteHabit(h.id));
+    goals.filter(g => g.is_demo).forEach(g => deleteGoal(g.id));
+    journalEntries.filter(e => e.is_demo).forEach(e => deleteEntry(e.id));
+    showToast(tFunc('clearDemoSuccess'), 'success');
   };
 
   const openProfileModal = () => {
@@ -527,8 +561,9 @@ export default function MoreScreen() {
 
             {/* Import */}
             <Pressable
-              onPress={() => { setImportText(''); setShowImportModal(true); }}
-              style={[styles.notifRow, { flexDirection: isRTL ? 'row-reverse' : 'row', borderBottomWidth: 1, borderBottomColor: C.border }]}
+              onPress={Platform.OS === 'web' ? () => { setImportText(''); setShowImportModal(true); } : handlePickFile}
+              disabled={importLoading}
+              style={[styles.notifRow, { flexDirection: isRTL ? 'row-reverse' : 'row', borderBottomWidth: 1, borderBottomColor: C.border, opacity: importLoading ? 0.6 : 1 }]}
             >
               <View style={[styles.notifIconWrap, { backgroundColor: '#10B981' + '20' }]}>
                 <Ionicons name="download-outline" size={20} color="#10B981" />
@@ -622,6 +657,51 @@ export default function MoreScreen() {
       </ScrollView>
 
       <CategoriesManager visible={showCategories} onClose={() => setShowCategories(false)} />
+
+      {/* ── Import Confirm Dialog ── */}
+      <ConfirmDialog
+        visible={showImportConfirm}
+        type="warning"
+        title={tFunc('importConfirmTitle')}
+        message={tFunc('importConfirmMessage')}
+        confirmLabel={tFunc('importBtn')}
+        cancelLabel={tFunc('cancel')}
+        onConfirm={handleConfirmRestore}
+        onCancel={() => { setShowImportConfirm(false); setPendingBackup(null); }}
+      />
+
+      {/* ── Clear All Confirm Dialog ── */}
+      <ConfirmDialog
+        visible={showClearConfirm}
+        type="danger"
+        title={tFunc('clearConfirmTitle')}
+        message={tFunc('clearConfirmMsg')}
+        confirmLabel={tFunc('clearAllData')}
+        cancelLabel={tFunc('cancel')}
+        onConfirm={handleConfirmClearAll}
+        onCancel={() => setShowClearConfirm(false)}
+      />
+
+      {/* ── Clear Demo Confirm Dialog ── */}
+      <ConfirmDialog
+        visible={showClearDemoConfirm}
+        type="warning"
+        title={tFunc('clearDemoConfirmTitle')}
+        message={tFunc('clearDemoConfirmMsg')}
+        confirmLabel={tFunc('clearDemoData')}
+        cancelLabel={tFunc('cancel')}
+        onConfirm={handleConfirmClearDemo}
+        onCancel={() => setShowClearDemoConfirm(false)}
+      />
+
+      {/* ── Toast ── */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onHide={() => setToast(null)}
+        />
+      )}
 
       {/* ── Notification Time Picker Modal ── */}
       <Modal

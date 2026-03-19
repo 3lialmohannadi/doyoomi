@@ -40,6 +40,7 @@ interface TasksState {
   toggleSubtask: (taskId: string, subtaskId: string) => void;
   removeSubtask: (taskId: string, subtaskId: string) => void;
   loadTasks: () => Promise<void>;
+  restoreTasks: (tasks: Task[]) => void;
 }
 
 const STORAGE_KEY = '@doyoomi_tasks';
@@ -158,5 +159,9 @@ export const useTasksStore = create<TasksState>((set, get) => ({
         AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
       }
     } catch {}
+  },
+
+  restoreTasks: (tasks) => {
+    set({ tasks });
   },
 }));
