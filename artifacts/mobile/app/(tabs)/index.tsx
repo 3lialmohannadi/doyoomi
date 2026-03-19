@@ -453,11 +453,6 @@ export default function HomeScreen() {
           />
         </Section>
 
-        {/* Weekly vibe chart */}
-        <Section title={tFunc('weeklyAchievement')} C={C} isRTL={isRTL}>
-          <FunWeekChart weekDays={weekDays} tasks={tasks} C={C} tFunc={tFunc} lang={lang} />
-        </Section>
-
         {/* Bottom spacing for tab bar */}
         <View style={{ height: 8 }} />
       </ScrollView>
@@ -884,71 +879,6 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
   );
 }
 
-interface FunWeekChartProps {
-  weekDays: Date[]; tasks: Task[]; C: ColorScheme; tFunc: (k: string) => string; lang: Language;
-}
-
-function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: FunWeekChartProps) {
-  const isRTL = lang === 'ar';
-  const { scheme: chartScheme } = useAppTheme();
-  const isChartDark = chartScheme === 'dark';
-  const maxVal = 8;
-  const data = weekDays.map((d: Date) => {
-    const key = formatDateKey(d);
-    const count = tasks.filter((task) => task.due_date === key).length;
-    const done = tasks.filter((task) => task.due_date === key && task.status === 'completed').length;
-    return { day: getDayLabel(d, lang).slice(0, 1), count, done };
-  });
-
-  const barColors: readonly (readonly [string, string])[] = [
-    GRADIENT_H,
-    GRADIENT_SAGE,
-    GRADIENT_GREEN,
-    GRADIENT_AMBER,
-    GRADIENT_H,
-    GRADIENT_H,
-    GRADIENT_SAGE,
-  ];
-
-  return (
-    <View style={[styles.chartCard, { borderColor: C.border, overflow: 'hidden' }, isChartDark ? ShadowDark.sm : Shadow.sm]}>
-      {isChartDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
-      {!isChartDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
-      <View style={styles.chartBars}>
-        {data.map((d, i) => {
-          const h = d.count > 0 ? Math.max((d.count / maxVal) * 64, 8) : 6;
-          const doneH = d.done > 0 ? Math.max((d.done / maxVal) * 64, 6) : 0;
-          return (
-            <View key={d.day + '-' + i} style={styles.chartCol}>
-              <View style={styles.chartBar}>
-                <View style={[styles.chartBarBg, { height: h, backgroundColor: C.borderLight, borderRadius: 8 }]}>
-                  {doneH > 0 && (
-                    <LinearGradient
-                      colors={barColors[i]}
-                      style={[styles.chartBarFill, { height: doneH }]}
-                    />
-                  )}
-                </View>
-              </View>
-              <Text style={[styles.chartDay, { color: C.textMuted }]}>{d.day}</Text>
-            </View>
-          );
-        })}
-      </View>
-      <View style={[styles.chartLegend, isRTL && { flexDirection: 'row-reverse' }]}>
-        <View style={[styles.legendItem, isRTL && { flexDirection: 'row-reverse' }]}>
-          <LinearGradient colors={[...GRADIENT_H]} style={styles.legendDot} />
-          <Text style={[styles.legendText, { color: C.textSecondary }]}>{tFunc('chartDone')}</Text>
-        </View>
-        <View style={[styles.legendItem, isRTL && { flexDirection: 'row-reverse' }]}>
-          <View style={[styles.legendDot, { backgroundColor: C.borderLight }]} />
-          <Text style={[styles.legendText, { color: C.textSecondary }]}>{tFunc('chartTotal')}</Text>
-        </View>
-      </View>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   container: { flex: 1 },
 
@@ -1131,22 +1061,6 @@ const styles = StyleSheet.create({
   goalPct: { fontSize: 22, fontFamily: F.bold },
   goalTrack: { height: 10, borderRadius: 6, overflow: 'hidden', marginTop: 4 },
   goalFill: { height: '100%', borderRadius: 6 },
-
-  // Chart
-  chartCard: {
-    borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg,
-    position: 'relative' as const,
-  },
-  chartBars: { flexDirection: 'row', alignItems: 'flex-end', height: 80, gap: 6, marginBottom: Spacing.sm },
-  chartCol: { flex: 1, alignItems: 'center', gap: 4 },
-  chartBar: { width: '100%', height: 70, justifyContent: 'flex-end' },
-  chartBarBg: { width: '100%', justifyContent: 'flex-end', overflow: 'hidden' },
-  chartBarFill: { width: '100%', borderRadius: 8 },
-  chartDay: { fontSize: 11, fontFamily: F.med },
-  chartLegend: { flexDirection: 'row', gap: Spacing.md, marginTop: 4 },
-  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  legendDot: { width: 10, height: 10, borderRadius: 5 },
-  legendText: { fontSize: 11, fontFamily: F.med },
 
   // Habits empty state
   habitsEmpty: {
