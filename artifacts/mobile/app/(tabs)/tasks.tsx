@@ -230,12 +230,17 @@ export default function TasksScreen() {
           return (
             <SwipeableRow
               isRTL={isRTL}
-              onComplete={item.status !== 'completed' ? () => {
-                toggleComplete(item.id);
-                showToast(tFunc('taskCompleted'), 'success');
+              onPostpone={item.status !== 'cancelled' ? () => {
+                postponeTask(item.id);
+                showToast(tFunc('taskPostponed'), 'info');
+              } : undefined}
+              onCancel={item.status !== 'cancelled' ? () => {
+                cancelTask(item.id);
+                showToast(tFunc('taskCancelled'), 'info');
               } : undefined}
               onDelete={() => setConfirmTask(item)}
-              completeLabel={tFunc('done')}
+              postponeLabel={tFunc('postpone')}
+              cancelLabel={tFunc('cancelTask')}
               deleteLabel={tFunc('delete')}
             >
               <View style={{ marginBottom: Spacing.sm }}>

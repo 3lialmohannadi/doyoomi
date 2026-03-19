@@ -57,6 +57,8 @@ export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormPr
   const [recurrenceType, setRecurrenceType] = useState<RecurrenceType | 'none'>('none');
   const [subtasks, setSubtasks] = useState<Subtask[]>([]);
   const [subtaskInput, setSubtaskInput] = useState('');
+  const [editingSubtaskId, setEditingSubtaskId] = useState<string | null>(null);
+  const [editingSubtaskText, setEditingSubtaskText] = useState('');
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -107,7 +109,24 @@ export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormPr
 
   const handleRemoveSubtask = (id: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (editingSubtaskId === id) {
+      setEditingSubtaskId(null);
+      setEditingSubtaskText('');
+    }
     setSubtasks(prev => prev.filter(s => s.id !== id));
+  };
+
+  const handleStartEditSubtask = (s: Subtask) => {
+    setEditingSubtaskId(s.id);
+    setEditingSubtaskText(s.text);
+  };
+
+  const handleSaveEditSubtask = () => {
+    const text = editingSubtaskText.trim();
+    if (!text || !editingSubtaskId) return;
+    setSubtasks(prev => prev.map(s => s.id === editingSubtaskId ? { ...s, text } : s));
+    setEditingSubtaskId(null);
+    setEditingSubtaskText('');
   };
 
   const handleSave = () => {
@@ -287,32 +306,57 @@ export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormPr
             : t('subtasks', lang)
         }
       >
-        {subtasks.map((s) => (
-          <View
-            key={s.id}
-            style={[subStyles.row, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
-          >
-            <Pressable
-              onPress={() => handleToggleSubtask(s.id)}
-              style={[subStyles.check, { borderColor: s.done ? C.success : C.border, backgroundColor: s.done ? C.success : 'transparent' }]}
+        {subtasks.map((s) => {
+          const isEditing = editingSubtaskId === s.id;
+          return (
+            <View
+              key={s.id}
+              style={[subStyles.row, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
             >
-              {s.done && <Ionicons name="checkmark" size={11} color="#fff" />}
-            </Pressable>
-            <Text
-              style={[
-                subStyles.text,
-                { color: s.done ? C.textMuted : C.text, flex: 1, textAlign: isRTL ? 'right' : 'left' },
-                s.done && subStyles.strikethrough,
-              ]}
-              numberOfLines={2}
-            >
-              {s.text}
-            </Text>
-            <Pressable onPress={() => handleRemoveSubtask(s.id)} hitSlop={6}>
-              <Ionicons name="close-circle" size={18} color={C.textMuted} />
-            </Pressable>
-          </View>
-        ))}
+              <Pressable
+                onPress={() => { if (!isEditing) handleToggleSubtask(s.id); }}
+                style={[subStyles.check, { borderColor: s.done ? C.success : C.border, backgroundColor: s.done ? C.success : 'transparent' }]}
+              >
+                {s.done && <Ionicons name="checkmark" size={11} color="#fff" />}
+              </Pressable>
+
+              {isEditing ? (
+                <TextInput
+                  value={editingSubtaskText}
+                  onChangeText={setEditingSubtaskText}
+                  autoFocus
+                  style={[subStyles.text, subStyles.editInput, { color: C.text, flex: 1, textAlign: isRTL ? 'right' : 'left', borderColor: C.tint }]}
+                  returnKeyType="done"
+                  onSubmitEditing={handleSaveEditSubtask}
+                  onBlur={handleSaveEditSubtask}
+                />
+              ) : (
+                <Pressable onPress={() => handleStartEditSubtask(s)} style={{ flex: 1 }}>
+                  <Text
+                    style={[
+                      subStyles.text,
+                      { color: s.done ? C.textMuted : C.text, textAlign: isRTL ? 'right' : 'left' },
+                      s.done && subStyles.strikethrough,
+                    ]}
+                    numberOfLines={2}
+                  >
+                    {s.text}
+                  </Text>
+                </Pressable>
+              )}
+
+              {isEditing ? (
+                <Pressable onPress={handleSaveEditSubtask} hitSlop={6}>
+                  <Ionicons name="checkmark-circle" size={20} color={C.success} />
+                </Pressable>
+              ) : (
+                <Pressable onPress={() => handleRemoveSubtask(s.id)} hitSlop={6}>
+                  <Ionicons name="close-circle" size={18} color={C.textMuted} />
+                </Pressable>
+              )}
+            </View>
+          );
+        })}
 
         <View style={[subStyles.addRow, { flexDirection: isRTL ? 'row-reverse' : 'row', borderColor: C.border, backgroundColor: C.surface }]}>
           <TextInput
@@ -470,6 +514,14 @@ const subStyles = StyleSheet.create({
     flexShrink: 0,
   },
   text: { fontSize: 14, fontFamily: F.reg },
+  editInput: {
+    borderWidth: 1,
+    borderRadius: Radius.sm,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    fontSize: 14,
+    fontFamily: F.reg,
+  },
   strikethrough: { textDecorationLine: 'line-through', opacity: 0.5 },
   addRow: {
     flexDirection: 'row',

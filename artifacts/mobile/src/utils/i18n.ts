@@ -359,6 +359,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Cancel task
     cancelTask: 'Cancel task',
     taskCancelled: 'Task cancelled',
+    taskPostponed: 'Task postponed',
 
     // Time picker
     hourLabel: 'Hour',
@@ -768,6 +769,7 @@ const translations: Record<Language, Record<string, string>> = {
     // إلغاء المهمة
     cancelTask: 'إلغاء المهمة',
     taskCancelled: 'تم إلغاء المهمة',
+    taskPostponed: 'تم تأجيل المهمة',
 
     // منتقي الوقت
     hourLabel: 'ساعة',
