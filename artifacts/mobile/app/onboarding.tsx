@@ -213,7 +213,6 @@ function LangStep({
                 colors={active ? ['#6366F1', '#4F46E5'] : ['transparent', 'transparent']}
                 style={[StyleSheet.absoluteFill, { borderRadius: 20 }]}
               />
-              <Text style={styles.langFlag}>{lang === 'en' ? '🇺🇸' : '🇸🇦'}</Text>
               <Text style={[styles.langName, {
                 color: active ? '#fff' : (isDark ? '#E0E0FF' : '#1A1A3A'),
                 fontFamily: F.bold,
@@ -544,9 +543,6 @@ const styles = StyleSheet.create({
     elevation: 4,
     minHeight: 130,
     justifyContent: 'center',
-  },
-  langFlag: {
-    fontSize: 32,
   },
   langName: {
     fontSize: 16,
