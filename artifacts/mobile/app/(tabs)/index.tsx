@@ -28,6 +28,7 @@ import { TaskForm } from '../../src/features/tasks/TaskForm';
 import { JournalForm } from '../../src/features/journal/JournalForm';
 import { GoalForm } from '../../src/features/goals/GoalForm';
 import { SwipeableRow } from '../../src/components/ui/SwipeableRow';
+import { WeeklyChart, WeekDayData } from '../../src/components/ui/WeeklyChart';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -74,6 +75,27 @@ export default function HomeScreen() {
   const topGoals = goals.slice(0, 2);
   const todayJournal = journalEntries.find(e => e.date === today);
   const topPad = isWeb ? 67 : insets.top;
+
+  const weeklyStats = useMemo((): WeekDayData[] => {
+    const dayAbbrEn: Record<number, string> = {
+      0: 'Su', 1: 'Mo', 2: 'Tu', 3: 'We', 4: 'Th', 5: 'Fr', 6: 'Sa',
+    };
+    const dayAbbrAr: Record<number, string> = {
+      0: 'أح', 1: 'إث', 2: 'ثل', 3: 'أر', 4: 'خم', 5: 'جم', 6: 'سب',
+    };
+    return weekDays.map((day) => {
+      const dateStr = formatDateKey(day);
+      const isToday = dateStr === today;
+      const isFuture = dateStr > today;
+      const tasksForDay = tasks.filter((t) => t.due_date === dateStr);
+      const completedCount = tasksForDay.filter((t) => t.status === 'completed').length;
+      const totalCount = tasksForDay.length;
+      const pct = totalCount > 0 ? completedCount / totalCount : 0;
+      const dayOfWeek = day.getDay();
+      const dayLabel = lang === 'ar' ? dayAbbrAr[dayOfWeek] : dayAbbrEn[dayOfWeek];
+      return { date: dateStr, dayLabel, completedCount, totalCount, pct, isToday, isFuture };
+    });
+  }, [weekDays, tasks, today, lang]);
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
@@ -161,6 +183,15 @@ export default function HomeScreen() {
           <View style={[styles.statDivider, { backgroundColor: C.border }]} />
           <StatPill icon="flame" value={maxStreak} label={tFunc('streak')} color={C.warning} C={C} />
         </View>
+
+        {/* Weekly Chart */}
+        <WeeklyChart
+          data={weeklyStats}
+          C={C}
+          isDark={isDark}
+          isRTL={isRTL}
+          title={tFunc('weeklyAchievement')}
+        />
 
         {/* Week Strip */}
         <View style={[styles.weekCard, { borderColor: C.border, borderWidth: 1, overflow: 'hidden' }, isDark ? ShadowDark.sm : Shadow.sm]}> 
