@@ -87,21 +87,21 @@ function computeStreak(history: string[], freq: HabitFrequency): number {
     }
 
     const historySet = new Set(history);
-    let streakWeeks = 0;
-    for (let w = 0; w < 52; w++) {
-      const start = w * 7;
+    let streakDays = 0;
+    for (let offset = 0; offset < 365; offset++) {
+      const anchor = subDays(today, offset);
       let count = 0;
-      for (let i = 0; i < 7; i++) {
-        const d = format(subDays(today, start + i), 'yyyy-MM-dd');
-        if (historySet.has(d)) count++;
+      for (let j = 0; j < 7; j++) {
+        const w = format(subDays(anchor, j), 'yyyy-MM-dd');
+        if (historySet.has(w)) count++;
       }
       if (count >= daysPerWeek) {
-        streakWeeks++;
+        streakDays++;
       } else {
         break;
       }
     }
-    return streakWeeks;
+    return streakDays;
   }
 
   return 0;

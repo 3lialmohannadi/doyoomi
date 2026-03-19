@@ -112,7 +112,7 @@ export interface Habit {
   streak_days: number;
   best_streak: number;
   last_completed_at?: string;
-  completion_history: string[];
+  completion_history?: string[];
   created_at: string;
   updated_at: string;
 }

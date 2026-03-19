@@ -97,18 +97,16 @@ function HistoryCalendarModal({
 
   const completedCount = days30.filter(d => historySet.has(format(d, 'yyyy-MM-dd'))).length;
 
-  const isWeekMissed = (weekIndex: number): boolean => {
+  const isWindowMissedForDay = (date: Date): boolean => {
     if (habit.frequency?.type !== 'custom') return false;
     const dpw = habit.frequency.days_per_week;
     if (!dpw || (habit.frequency.specific_days && habit.frequency.specific_days.length > 0)) return false;
-    const blockStart = (4 - weekIndex) * 6;
-    const blockEnd = blockStart + 6;
-    const blockStr = Array.from({ length: blockEnd - blockStart }, (_, i) =>
-      format(subDays(today, blockStart + i), 'yyyy-MM-dd')
-    );
-    const lastDayOfBlock = blockStr[blockStr.length - 1];
-    if (lastDayOfBlock >= format(today, 'yyyy-MM-dd')) return false;
-    const count = blockStr.filter(d => historySet.has(d)).length;
+    if (date >= today) return false;
+    let count = 0;
+    for (let j = 0; j < 7; j++) {
+      const w = format(subDays(date, j), 'yyyy-MM-dd');
+      if (historySet.has(w)) count++;
+    }
     return count < dpw;
   };
 
@@ -141,9 +139,7 @@ function HistoryCalendarModal({
 
           {/* Calendar grid — 5 rows × 6 columns = 30 days */}
           <View style={calStyles.grid}>
-            {rows.map((row, wi) => {
-              const weekFailed = isWeekMissed(wi);
-              return (
+            {rows.map((row, wi) => (
               <View key={wi} style={[calStyles.week, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                 {row.map((d) => {
                   const dStr = format(d, 'yyyy-MM-dd');
@@ -153,7 +149,8 @@ function HistoryCalendarModal({
                   const isDone = historySet.has(dStr);
 
                   const required = !isFuture && isRequiredDay(d, habit.frequency ?? { type: 'daily' });
-                  const isMissed = !isFuture && !isToday && !isDone && (required || weekFailed);
+                  const windowFailed = isWindowMissedForDay(d);
+                  const isMissed = !isFuture && !isToday && !isDone && (required || windowFailed);
 
                   let bg = isDark ? 'rgba(255,255,255,0.05)' : C.surface;
                   let dotColor = isDark ? 'rgba(255,255,255,0.1)' : C.border;
@@ -181,8 +178,7 @@ function HistoryCalendarModal({
                   );
                 })}
               </View>
-              );
-            })}
+            ))}
           </View>
 
           {/* Legend */}
