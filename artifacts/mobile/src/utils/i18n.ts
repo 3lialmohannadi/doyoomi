@@ -339,10 +339,6 @@ const translations: Record<Language, Record<string, string>> = {
     widgetsDesc: 'Quick glance at your tasks and habits',
     widgetsComingSoon: 'Coming Soon',
     widgetsComingSoonDesc: 'Widgets will be available in the iOS App Store release',
-    widgetsSetupTitle: 'How to add widgets',
-    widgetsStep1: 'Long press your home screen',
-    widgetsStep2: 'Tap the + button',
-    widgetsStep3: 'Search for "Do.Yoomi"',
   },
 
   ar: {
@@ -683,10 +679,6 @@ const translations: Record<Language, Record<string, string>> = {
     widgetsDesc: 'نظرة سريعة على مهامك وعاداتك',
     widgetsComingSoon: 'قريباً',
     widgetsComingSoonDesc: 'ستكون الودجات متاحة في إصدار App Store',
-    widgetsSetupTitle: 'كيفية إضافة الودجات',
-    widgetsStep1: 'اضغط مطولاً على الشاشة الرئيسية',
-    widgetsStep2: 'اضغط على زر +',
-    widgetsStep3: 'ابحث عن "يومي"',
   },
 };
 
