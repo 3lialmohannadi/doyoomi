@@ -58,7 +58,8 @@ export const useJournalStore = create<JournalState>((set, get) => ({
       const settings = settingsRaw ? JSON.parse(settingsRaw) : null;
       const onboardingComplete = settings?.onboarding_complete === true;
       if (!onboardingComplete) {
-        const demo = createDemoJournalEntries();
+        const lang = settings?.language === 'ar' ? 'ar' : 'en';
+        const demo = createDemoJournalEntries(lang);
         set({ entries: demo });
         AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
       }

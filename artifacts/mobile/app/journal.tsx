@@ -13,7 +13,7 @@ import { useJournalStore } from '../src/store/journalStore';
 import { useSettingsStore } from '../src/store/settingsStore';
 import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, BOLD_GREEN, BOLD_GOLD, BOLD_ORANGE, BOLD_RED, BOLD_CYAN, BOLD_TEAL } from '../src/theme';
 import { useAppTheme } from '../src/hooks/useAppTheme';
-import { t } from '../src/utils/i18n';
+import { t, resolveDisplayName } from '../src/utils/i18n';
 import { formatDate } from '../src/utils/date';
 import { EmptyState } from '../src/components/ui/EmptyState';
 import { JournalForm } from '../src/features/journal/JournalForm';

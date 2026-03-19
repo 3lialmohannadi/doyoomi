@@ -13,7 +13,7 @@ import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
 import { Spacing, Radius, F, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER, ColorScheme, Shadow, ShadowDark } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
-import { t } from '../../src/utils/i18n';
+import { t, resolveDisplayName } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
 import { SwipeableRow } from '../../src/components/ui/SwipeableRow';
 import { HabitForm } from '../../src/features/habits/HabitForm';
@@ -361,7 +361,7 @@ function HabitCard({
             ]}
             numberOfLines={1}
           >
-            {item.name}
+            {resolveDisplayName(item.name_ar, item.name_en, lang, item.name)}
           </Text>
 
           <View style={[styles.habitMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>

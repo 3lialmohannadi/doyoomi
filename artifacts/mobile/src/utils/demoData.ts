@@ -119,14 +119,14 @@ export function createDemoGoals(): Goal[] {
   ];
 }
 
-export function createDemoJournalEntries(): JournalEntry[] {
+export function createDemoJournalEntries(lang: Language = 'en'): JournalEntry[] {
   return [
     {
       id: 'demo-journal-1',
       user_id: 'user-1',
       date: today(),
-      title: t('demoJournal1TitleEn', 'en'),
-      content: t('demoJournal1ContentEn', 'en'),
+      title: t(lang === 'ar' ? 'demoJournal1TitleAr' : 'demoJournal1TitleEn', lang),
+      content: t(lang === 'ar' ? 'demoJournal1ContentAr' : 'demoJournal1ContentEn', lang),
       mood: 'happy',
       tags: ['example'],
       is_demo: true,
