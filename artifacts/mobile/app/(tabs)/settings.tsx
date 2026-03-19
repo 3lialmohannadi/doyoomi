@@ -21,7 +21,7 @@ import {
   scheduleAllReminders,
   cancelAllReminders,
 } from '../../src/services/notificationService';
-import { exportData, pickAndImportFile, applyBackup, clearAllData, BackupData } from '../../src/utils/dataExport';
+import { exportData, pickAndImportFile, applyBackup, clearAllData, validateBackup, BackupData } from '../../src/utils/dataExport';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
@@ -46,7 +46,7 @@ export default function MoreScreen() {
     profile, setLanguage, setTheme, setTimeFormat, setStartOfWeek, setProfile,
     setNotificationsEnabled, setNotificationsTaskTime, setNotificationsHabitTime,
   } = useSettingsStore();
-  const { categories } = useCategoriesStore();
+  const { categories, restoreCategories } = useCategoriesStore();
   const { goals, deleteGoal, restoreGoals } = useGoalsStore();
   const { habits, deleteHabit, restoreHabits } = useHabitsStore();
   const { entries: journalEntries, deleteEntry, restoreEntries } = useJournalStore();
@@ -115,6 +115,10 @@ export default function MoreScreen() {
       restoreHabits(pendingBackup.habits);
       restoreGoals(pendingBackup.goals);
       restoreEntries(pendingBackup.journal);
+      restoreCategories(pendingBackup.categories);
+      if (pendingBackup.profile && Object.keys(pendingBackup.profile).length > 0) {
+        setProfile(pendingBackup.profile);
+      }
       setPendingBackup(null);
       showToast(tFunc('importSuccess'), 'success');
     } else {
@@ -125,14 +129,13 @@ export default function MoreScreen() {
   const handleImport = async () => {
     if (!importText.trim()) return;
     setImportLoading(true);
-    let backup;
-    try { backup = JSON.parse(importText.trim()); } catch { backup = null; }
+    const parsed = validateBackup(importText.trim());
     setImportLoading(false);
-    if (!backup || !backup.version || !Array.isArray(backup.tasks)) {
+    if (!parsed) {
       showToast(tFunc('importError'), 'error');
       return;
     }
-    setPendingBackup(backup);
+    setPendingBackup(parsed);
     setShowImportModal(false);
     setImportText('');
     setShowImportConfirm(true);

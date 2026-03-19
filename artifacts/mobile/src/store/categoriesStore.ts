@@ -16,6 +16,7 @@ interface CategoriesState {
   updateCategory: (id: string, cat: Partial<Category>) => void;
   deleteCategory: (id: string) => void;
   loadCategories: () => Promise<void>;
+  restoreCategories: (categories: Category[]) => void;
 }
 
 const STORAGE_KEY = '@doyoomi_categories';
@@ -54,4 +55,6 @@ export const useCategoriesStore = create<CategoriesState>((set, get) => ({
       if (stored) set({ categories: JSON.parse(stored) });
     } catch {}
   },
+
+  restoreCategories: (categories) => set({ categories }),
 }));

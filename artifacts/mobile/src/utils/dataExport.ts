@@ -4,6 +4,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { format } from 'date-fns';
+import type { Task, Habit, Goal, JournalEntry, Category, UserProfile } from '../types';
 
 const STORAGE_KEYS = {
   tasks: '@doyoomi_tasks',
@@ -17,12 +18,12 @@ const STORAGE_KEYS = {
 export interface BackupData {
   version: number;
   exportedAt: string;
-  tasks: any[];
-  habits: any[];
-  goals: any[];
-  journal: any[];
-  categories: any[];
-  settings?: any;
+  tasks: Task[];
+  habits: Habit[];
+  goals: Goal[];
+  journal: JournalEntry[];
+  categories: Category[];
+  profile: Partial<UserProfile>;
 }
 
 export async function exportData(): Promise<{ success: boolean; error?: string }> {
@@ -39,19 +40,19 @@ export async function exportData(): Promise<{ success: boolean; error?: string }
     const backup: BackupData = {
       version: 2,
       exportedAt: new Date().toISOString(),
-      tasks: tasks ? JSON.parse(tasks) : [],
-      habits: habits ? JSON.parse(habits) : [],
-      goals: goals ? JSON.parse(goals) : [],
-      journal: journal ? JSON.parse(journal) : [],
-      categories: categories ? JSON.parse(categories) : [],
-      settings: settings ? JSON.parse(settings) : undefined,
+      tasks: tasks ? (JSON.parse(tasks) as Task[]) : [],
+      habits: habits ? (JSON.parse(habits) as Habit[]) : [],
+      goals: goals ? (JSON.parse(goals) as Goal[]) : [],
+      journal: journal ? (JSON.parse(journal) as JournalEntry[]) : [],
+      categories: categories ? (JSON.parse(categories) as Category[]) : [],
+      profile: settings ? (JSON.parse(settings) as UserProfile) : {},
     };
 
     const json = JSON.stringify(backup, null, 2);
 
     if (Platform.OS === 'web') {
       try {
-        await (navigator as any).clipboard.writeText(json);
+        await (navigator as Navigator & { clipboard: Clipboard }).clipboard.writeText(json);
       } catch {
         const el = document.createElement('textarea');
         el.value = json;
@@ -82,15 +83,15 @@ export async function exportData(): Promise<{ success: boolean; error?: string }
     }
 
     return { success: false, error: 'Sharing not available on this device' };
-  } catch (e: any) {
-    return { success: false, error: e?.message ?? 'Unknown error' };
+  } catch (e: unknown) {
+    return { success: false, error: (e as Error)?.message ?? 'Unknown error' };
   }
 }
 
 export async function pickAndImportFile(): Promise<{ success: boolean; data?: BackupData; error?: string }> {
   try {
     const result = await DocumentPicker.getDocumentAsync({
-      type: ['application/json', 'text/plain', '*/*'],
+      type: ['application/json', 'text/plain'],
       copyToCacheDirectory: true,
     });
 
@@ -109,8 +110,8 @@ export async function pickAndImportFile(): Promise<{ success: boolean; data?: Ba
     }
 
     return { success: true, data: parsed };
-  } catch (e: any) {
-    return { success: false, error: e?.message ?? 'Unknown error' };
+  } catch (e: unknown) {
+    return { success: false, error: (e as Error)?.message ?? 'Unknown error' };
   }
 }
 
@@ -118,14 +119,44 @@ export function validateBackup(json: string): BackupData | null {
   try {
     const backup = JSON.parse(json);
     if (!backup || typeof backup !== 'object') return null;
-    if (!backup.version || !backup.exportedAt) return null;
-    if (!Array.isArray(backup.tasks) || !Array.isArray(backup.habits) ||
-        !Array.isArray(backup.goals) || !Array.isArray(backup.journal)) return null;
-    const allItems = [...backup.tasks, ...backup.habits, ...backup.goals, ...backup.journal];
-    for (const item of allItems) {
-      if (!item || !item.id || !item.created_at) return null;
+    if (typeof backup.version !== 'number') return null;
+    if (!Array.isArray(backup.tasks)) return null;
+    if (!Array.isArray(backup.habits)) return null;
+    if (!Array.isArray(backup.goals)) return null;
+    if (!Array.isArray(backup.journal)) return null;
+    if (!Array.isArray(backup.categories)) return null;
+
+    for (const item of backup.tasks) {
+      if (!item || typeof item.id !== 'string' || typeof item.created_at !== 'string') return null;
     }
-    return backup as BackupData;
+    for (const item of backup.habits) {
+      if (!item || typeof item.id !== 'string' || typeof item.created_at !== 'string') return null;
+    }
+    for (const item of backup.goals) {
+      if (!item || typeof item.id !== 'string' || typeof item.created_at !== 'string') return null;
+    }
+    for (const item of backup.journal) {
+      if (!item || typeof item.id !== 'string' || typeof item.created_at !== 'string') return null;
+    }
+    for (const item of backup.categories) {
+      if (!item || typeof item.id !== 'string') return null;
+    }
+
+    const profile: Partial<UserProfile> =
+      backup.profile && typeof backup.profile === 'object' ? backup.profile :
+      backup.settings && typeof backup.settings === 'object' ? backup.settings : {};
+
+    const result: BackupData = {
+      version: backup.version,
+      exportedAt: backup.exportedAt ?? new Date().toISOString(),
+      tasks: backup.tasks as Task[],
+      habits: backup.habits as Habit[],
+      goals: backup.goals as Goal[],
+      journal: backup.journal as JournalEntry[],
+      categories: backup.categories as Category[],
+      profile,
+    };
+    return result;
   } catch {
     return null;
   }
@@ -133,18 +164,19 @@ export function validateBackup(json: string): BackupData | null {
 
 export async function applyBackup(backup: BackupData): Promise<{ success: boolean; error?: string }> {
   try {
-    const ops: Promise<void>[] = [];
-    ops.push(AsyncStorage.setItem(STORAGE_KEYS.tasks, JSON.stringify(backup.tasks)));
-    ops.push(AsyncStorage.setItem(STORAGE_KEYS.habits, JSON.stringify(backup.habits)));
-    ops.push(AsyncStorage.setItem(STORAGE_KEYS.goals, JSON.stringify(backup.goals)));
-    ops.push(AsyncStorage.setItem(STORAGE_KEYS.journal, JSON.stringify(backup.journal)));
-    if (Array.isArray(backup.categories)) {
-      ops.push(AsyncStorage.setItem(STORAGE_KEYS.categories, JSON.stringify(backup.categories)));
-    }
-    await Promise.all(ops);
+    await Promise.all([
+      AsyncStorage.setItem(STORAGE_KEYS.tasks, JSON.stringify(backup.tasks)),
+      AsyncStorage.setItem(STORAGE_KEYS.habits, JSON.stringify(backup.habits)),
+      AsyncStorage.setItem(STORAGE_KEYS.goals, JSON.stringify(backup.goals)),
+      AsyncStorage.setItem(STORAGE_KEYS.journal, JSON.stringify(backup.journal)),
+      AsyncStorage.setItem(STORAGE_KEYS.categories, JSON.stringify(backup.categories)),
+      ...(backup.profile && Object.keys(backup.profile).length > 0
+        ? [AsyncStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(backup.profile))]
+        : []),
+    ]);
     return { success: true };
-  } catch (e: any) {
-    return { success: false, error: e?.message ?? 'Write failed' };
+  } catch (e: unknown) {
+    return { success: false, error: (e as Error)?.message ?? 'Write failed' };
   }
 }
 
@@ -164,7 +196,7 @@ export async function clearAllData(): Promise<{ success: boolean; error?: string
       STORAGE_KEYS.categories,
     ]);
     return { success: true };
-  } catch (e: any) {
-    return { success: false, error: e?.message };
+  } catch (e: unknown) {
+    return { success: false, error: (e as Error)?.message };
   }
 }
