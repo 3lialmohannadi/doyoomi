@@ -87,15 +87,24 @@ export default function HomeScreen() {
       const dateStr = formatDateKey(day);
       const isToday = dateStr === today;
       const isFuture = dateStr > today;
+
       const tasksForDay = tasks.filter((t) => t.due_date === dateStr);
-      const completedCount = tasksForDay.filter((t) => t.status === 'completed').length;
-      const totalCount = tasksForDay.length;
+      const completedTasks = tasksForDay.filter((t) => t.status === 'completed').length;
+
+      const habitsCompletedOnDay = habits.filter((h) => {
+        if (!h.last_completed_at) return false;
+        return format(new Date(h.last_completed_at), 'yyyy-MM-dd') === dateStr;
+      }).length;
+
+      const completedCount = completedTasks + habitsCompletedOnDay;
+      const totalCount = tasksForDay.length + habits.length;
       const pct = totalCount > 0 ? completedCount / totalCount : 0;
+
       const dayOfWeek = day.getDay();
       const dayLabel = lang === 'ar' ? dayAbbrAr[dayOfWeek] : dayAbbrEn[dayOfWeek];
       return { date: dateStr, dayLabel, completedCount, totalCount, pct, isToday, isFuture };
     });
-  }, [weekDays, tasks, today, lang]);
+  }, [weekDays, tasks, habits, today, lang]);
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
