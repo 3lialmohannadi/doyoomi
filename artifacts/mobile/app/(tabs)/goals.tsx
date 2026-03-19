@@ -246,20 +246,6 @@ export default function GoalsScreen() {
                   </Text>
                 ) : null}
 
-                {goal.deadline && (
-                  <View style={[styles.deadlineRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                    <Ionicons name="calendar-outline" size={13} color={isOverdueDeadline ? C.error : isDueSoon ? '#F97316' : C.textMuted} />
-                    <Text style={[styles.deadlineText, { color: isOverdueDeadline ? C.error : isDueSoon ? '#F97316' : C.textMuted }]}>
-                      {formatDeadline(goal.deadline, lang)}
-                      {daysLeft !== null && !isCompleted && (
-                        isOverdueDeadline
-                          ? ` · ${tFunc('overdue')}`
-                          : ` · ${Math.abs(daysLeft)} ${tFunc('daysLeft')}`
-                      )}
-                    </Text>
-                  </View>
-                )}
-
                 <View style={[styles.progressRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Text style={[styles.progressLabel, { color: C.textSecondary }]}>
                     {goal.current_value} / {goal.target_value}
@@ -277,6 +263,20 @@ export default function GoalsScreen() {
                     style={[styles.trackFill, { width: `${Math.min(pct * 100, 100)}%`, alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}
                   />
                 </View>
+
+                {goal.deadline && (
+                  <View style={[styles.deadlineRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                    <Ionicons name="calendar-outline" size={13} color={isOverdueDeadline ? C.error : isDueSoon ? '#F97316' : C.textMuted} />
+                    <Text style={[styles.deadlineText, { color: isOverdueDeadline ? C.error : isDueSoon ? '#F97316' : C.textMuted }]}>
+                      {formatDeadline(goal.deadline, lang)}
+                      {daysLeft !== null && !isCompleted && (
+                        isOverdueDeadline
+                          ? ` · ${tFunc('overdue')}`
+                          : ` · ${Math.abs(daysLeft)} ${tFunc('daysLeft')}`
+                      )}
+                    </Text>
+                  </View>
+                )}
 
                 {!isArchived && (
                   <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
