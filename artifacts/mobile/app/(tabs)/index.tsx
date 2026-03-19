@@ -77,7 +77,7 @@ export default function HomeScreen() {
   const todayJournal = journalEntries.find(e => e.date === today);
   const topPad = isWeb ? 67 : insets.top;
 
-  const prevAllDone = useRef(false);
+  const prevAllDone = useRef(allDone);
   useEffect(() => {
     if (allDone && !prevAllDone.current) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
