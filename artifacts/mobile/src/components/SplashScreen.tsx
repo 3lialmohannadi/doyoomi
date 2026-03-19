@@ -4,6 +4,7 @@ import {
   Dimensions,
   Easing,
   Image,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -27,7 +28,14 @@ const features = [
   { icon: "📅", en: "Calendar", ar: "تقويم"  },
 ];
 
-export default function SplashScreen({ onFinish, duration = 3000 }: Props) {
+function WebSplash({ onFinish }: { onFinish?: () => void }) {
+  useEffect(() => {
+    onFinish?.();
+  }, []);
+  return null;
+}
+
+function NativeSplash({ onFinish, duration = 3000 }: Props) {
   const { profile } = useSettingsStore();
   const isRTL = profile.language === "ar";
   const contentOpacity    = useRef(new Animated.Value(0)).current;
@@ -201,6 +209,11 @@ export default function SplashScreen({ onFinish, duration = 3000 }: Props) {
       <View style={styles.homeIndicator} />
     </View>
   );
+}
+
+export default function SplashScreen(props: Props) {
+  if (Platform.OS === "web") return <WebSplash onFinish={props.onFinish} />;
+  return <NativeSplash {...props} />;
 }
 
 const styles = StyleSheet.create({
