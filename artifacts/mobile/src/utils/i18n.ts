@@ -441,6 +441,24 @@ const translations: Record<Language, Record<string, string>> = {
     clearDemoConfirmMsg: 'This will delete all sample tasks, habits, goals and journal entries.',
     clearDemoSuccess: 'Example data removed',
     demoBadge: 'Example',
+
+    // Demo item content (bilingual)
+    demoTask1En: 'Plan your week',
+    demoTask1Ar: 'خطط لأسبوعك',
+    demoTask2En: 'Read for 20 minutes',
+    demoTask2Ar: 'اقرأ لمدة 20 دقيقة',
+    demoHabit1En: 'Morning water',
+    demoHabit1Ar: 'شرب الماء صباحاً',
+    demoHabit2En: 'Evening walk',
+    demoHabit2Ar: 'المشي المسائي',
+    demoGoal1En: 'Read 12 books this year',
+    demoGoal1Ar: 'قراءة 12 كتاباً هذا العام',
+    demoGoal2En: 'Exercise 20 times',
+    demoGoal2Ar: 'ممارسة الرياضة 20 مرة',
+    demoJournal1TitleEn: 'Welcome to Do.Yoomi',
+    demoJournal1TitleAr: 'مرحباً بك في Do.Yoomi',
+    demoJournal1ContentEn: 'This is your first journal entry. Write about your day, your goals, or anything on your mind. Tap to edit or delete this example.\n\nمرحباً بك في Do.Yoomi. هذا مثال على إدخال يومي. اكتب عن يومك وأهدافك.',
+    demoJournal1ContentAr: 'هذا أول إدخال يومي لك. اكتب عن يومك وأهدافك أو أي شيء في ذهنك. اضغط للتعديل أو الحذف.\n\nThis is your first journal entry. Write about your day or goals. Tap to edit or delete.',
   },
 
   ar: {
@@ -881,6 +899,24 @@ const translations: Record<Language, Record<string, string>> = {
     clearDemoConfirmMsg: 'سيتم حذف جميع المهام والعادات والأهداف والمذكرات النموذجية.',
     clearDemoSuccess: 'تمت إزالة البيانات التجريبية',
     demoBadge: 'مثال',
+
+    // محتوى العناصر التجريبية
+    demoTask1En: 'Plan your week',
+    demoTask1Ar: 'خطط لأسبوعك',
+    demoTask2En: 'Read for 20 minutes',
+    demoTask2Ar: 'اقرأ لمدة 20 دقيقة',
+    demoHabit1En: 'Morning water',
+    demoHabit1Ar: 'شرب الماء صباحاً',
+    demoHabit2En: 'Evening walk',
+    demoHabit2Ar: 'المشي المسائي',
+    demoGoal1En: 'Read 12 books this year',
+    demoGoal1Ar: 'قراءة 12 كتاباً هذا العام',
+    demoGoal2En: 'Exercise 20 times',
+    demoGoal2Ar: 'ممارسة الرياضة 20 مرة',
+    demoJournal1TitleEn: 'Welcome to Do.Yoomi',
+    demoJournal1TitleAr: 'مرحباً بك في Do.Yoomi',
+    demoJournal1ContentEn: 'This is your first journal entry. Write about your day, your goals, or anything on your mind. Tap to edit or delete this example.\n\nمرحباً بك في Do.Yoomi. هذا مثال على إدخال يومي. اكتب عن يومك وأهدافك.',
+    demoJournal1ContentAr: 'هذا أول إدخال يومي لك. اكتب عن يومك وأهدافك أو أي شيء في ذهنك. اضغط للتعديل أو الحذف.\n\nThis is your first journal entry. Write about your day or goals. Tap to edit or delete.',
   },
 };
 

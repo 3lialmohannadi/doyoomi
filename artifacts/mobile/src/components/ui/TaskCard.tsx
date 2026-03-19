@@ -167,6 +167,11 @@ export function TaskCard({
           ) : null}
 
           <View style={[styles.meta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            {task.is_demo && (
+              <View style={[styles.catBadge, { backgroundColor: '#6366F122' }]}>
+                <Text style={[styles.catText, { color: '#6366F1' }]}>{t('demoBadge')}</Text>
+              </View>
+            )}
             {!isCancelled && <PriorityBadge priority={task.priority} label={priorityLabel} />}
 
             {categoryName ? (

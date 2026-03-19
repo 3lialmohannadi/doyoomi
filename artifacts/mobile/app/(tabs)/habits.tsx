@@ -365,6 +365,12 @@ function HabitCard({
           </Text>
 
           <View style={[styles.habitMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            {item.is_demo && (
+              <View style={[styles.doneBadge, { backgroundColor: '#6366F122', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <Ionicons name="sparkles-outline" size={11} color="#6366F1" />
+                <Text style={[styles.doneBadgeText, { color: '#6366F1' }]}>{tFunc('demoBadge')}</Text>
+              </View>
+            )}
             {/* Streak badge — tappable to open 30-day calendar */}
             <Pressable
               onPress={(e) => { e.stopPropagation?.(); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onShowHistory(); }}

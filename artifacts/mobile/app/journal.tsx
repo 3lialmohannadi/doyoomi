@@ -257,6 +257,12 @@ export default function JournalScreen() {
                     <Text style={[styles.entryDate, { color: C.textMuted }]}>
                       {formatDate(item.date, lang)}
                     </Text>
+                    {item.is_demo && (
+                      <View style={[styles.moodBadge, { backgroundColor: '#6366F118', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                        <Ionicons name="sparkles-outline" size={13} color="#6366F1" />
+                        <Text style={[styles.moodText, { color: '#6366F1' }]}>{tFunc('demoBadge')}</Text>
+                      </View>
+                    )}
                     {moodCfg && (
                       <View style={[styles.moodBadge, { backgroundColor: moodCfg.color + '18', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                         <Ionicons name={moodCfg.icon as React.ComponentProps<typeof Ionicons>['name']} size={14} color={moodCfg.color} />

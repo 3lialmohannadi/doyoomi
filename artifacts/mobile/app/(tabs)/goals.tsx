@@ -201,6 +201,12 @@ export default function GoalsScreen() {
                       <View style={[styles.typeBadge, { backgroundColor: grad[0] + '18' }]}>
                         <Text style={[styles.typeText, { color: grad[0] }]}>{tFunc(goal.type)}</Text>
                       </View>
+                      {goal.is_demo && (
+                        <View style={[styles.typeBadge, { backgroundColor: '#6366F118' }]}>
+                          <Ionicons name="sparkles-outline" size={11} color="#6366F1" />
+                          <Text style={[styles.typeText, { color: '#6366F1' }]}>{tFunc('demoBadge')}</Text>
+                        </View>
+                      )}
                       {isCompleted && (
                         <View style={[styles.typeBadge, { backgroundColor: C.success + '18' }]}>
                           <Ionicons name="checkmark-circle" size={11} color={C.success} />
