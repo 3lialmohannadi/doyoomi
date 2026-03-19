@@ -111,7 +111,7 @@ export function TaskCard({
         <View style={[styles.accentBar, { backgroundColor: accentColor }]} />
 
         <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onToggle(task.id); }}
+          onPress={() => { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); onToggle(task.id); }}
           style={[styles.checkbox, isRTL ? styles.checkboxRTL : null]}
           accessibilityRole="checkbox"
           accessibilityState={{ checked: isCompleted }}

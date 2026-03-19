@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  View, Text, StyleSheet, Animated,
+  View, Text, StyleSheet, Animated, Pressable,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
 import { F, Spacing, Radius, ColorScheme, Shadow, ShadowDark, GRADIENT_H, GRADIENT_DARK_CARD } from '../../theme';
 
 export interface WeekDayData {
@@ -21,6 +22,7 @@ interface WeeklyChartProps {
   isDark: boolean;
   isRTL: boolean;
   title: string;
+  onBarPress?: (date: string) => void;
 }
 
 const MAX_BAR_H = 68;
@@ -31,11 +33,13 @@ function ChartBar({
   index,
   C,
   isDark,
+  onPress,
 }: {
   day: WeekDayData;
   index: number;
   C: ColorScheme;
   isDark: boolean;
+  onPress?: () => void;
 }) {
   const anim = useRef(new Animated.Value(0)).current;
 
@@ -61,7 +65,11 @@ function ChartBar({
   const countLabel = showLabel ? `${day.completedCount}/${day.totalCount}` : '';
 
   return (
-    <View style={styles.barCol}>
+    <Pressable
+      style={({ pressed }) => [styles.barCol, { opacity: pressed && onPress ? 0.7 : 1 }]}
+      onPress={onPress}
+      disabled={!onPress}
+    >
       <Text
         style={[
           styles.pctLabel,
@@ -115,7 +123,7 @@ function ChartBar({
       {day.isToday && (
         <View style={[styles.todayDot, { backgroundColor: C.tint }]} />
       )}
-    </View>
+    </Pressable>
   );
 }
 
@@ -125,6 +133,7 @@ export function WeeklyChart({
   isDark,
   isRTL,
   title,
+  onBarPress,
 }: WeeklyChartProps) {
   const hasData = data.some((d) => d.totalCount > 0);
   if (!hasData) return null;
@@ -162,7 +171,17 @@ export function WeeklyChart({
 
       <View style={styles.chartRow}>
         {displayData.map((day, i) => (
-          <ChartBar key={day.date} day={day} index={i} C={C} isDark={isDark} />
+          <ChartBar
+            key={day.date}
+            day={day}
+            index={i}
+            C={C}
+            isDark={isDark}
+            onPress={onBarPress ? () => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              onBarPress(day.date);
+            } : undefined}
+          />
         ))}
       </View>
     </View>

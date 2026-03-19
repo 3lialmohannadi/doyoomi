@@ -5,7 +5,7 @@ import { Radius, Spacing, F, PRIMARY, SECONDARY, WARM_ERROR, GRADIENT_H } from '
 import { useSettingsStore } from '../../store/settingsStore';
 import { useAppTheme } from '../../hooks/useAppTheme';
 
-export type ToastType = 'success' | 'error' | 'info';
+export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
 interface ToastProps {
   message: string;
@@ -17,7 +17,8 @@ interface ToastProps {
 const CONFIG: Record<ToastType, { color: string; icon: string; border: string }> = {
   success: { color: SECONDARY,   icon: 'checkmark-circle',   border: SECONDARY + '30' },
   error:   { color: WARM_ERROR,  icon: 'alert-circle',       border: WARM_ERROR + '30' },
-  info:    { color: PRIMARY,   icon: 'information-circle', border: PRIMARY + '30' },
+  info:    { color: PRIMARY,     icon: 'information-circle', border: PRIMARY + '30' },
+  warning: { color: '#F97316',   icon: 'warning',            border: '#F97316' + '30' },
 };
 
 export function Toast({ message, type = 'success', duration = 2500, onHide }: ToastProps) {

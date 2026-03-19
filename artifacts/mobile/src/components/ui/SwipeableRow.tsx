@@ -54,7 +54,7 @@ export function SwipeableRow({
         : direction === 'left';
 
       if (isCompleteDir && onComplete) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         onComplete();
       } else {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);

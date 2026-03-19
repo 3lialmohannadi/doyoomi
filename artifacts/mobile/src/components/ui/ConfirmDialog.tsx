@@ -54,7 +54,16 @@ export function ConfirmDialog({
               <Text style={[styles.cancelText, { color: C.textSecondary }]}>{cancelLabel}</Text>
             </Pressable>
             <Pressable
-              onPress={() => { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning); onConfirm(); }}
+              onPress={() => {
+                if (type === 'danger') {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                } else if (type === 'warning') {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+                } else {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                }
+                onConfirm();
+              }}
               style={[styles.confirmBtn, { overflow: 'hidden' }]}
             >
               <LinearGradient

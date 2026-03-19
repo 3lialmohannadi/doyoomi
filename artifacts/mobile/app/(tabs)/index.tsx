@@ -77,6 +77,14 @@ export default function HomeScreen() {
   const todayJournal = journalEntries.find(e => e.date === today);
   const topPad = isWeb ? 67 : insets.top;
 
+  const prevAllDone = useRef(false);
+  useEffect(() => {
+    if (allDone && !prevAllDone.current) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }
+    prevAllDone.current = allDone;
+  }, [allDone]);
+
   const weeklyStats = useMemo((): WeekDayData[] => {
     const dayAbbrEn: Record<number, string> = {
       0: 'Su', 1: 'Mo', 2: 'Tu', 3: 'We', 4: 'Th', 5: 'Fr', 6: 'Sa',
@@ -198,6 +206,7 @@ export default function HomeScreen() {
           isDark={isDark}
           isRTL={isRTL}
           title={tFunc('weeklyAchievement')}
+          onBarPress={(date) => setSelectedDay(date)}
         />
 
         {/* Week Strip */}

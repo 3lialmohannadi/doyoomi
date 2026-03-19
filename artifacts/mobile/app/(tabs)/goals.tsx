@@ -173,7 +173,7 @@ export default function GoalsScreen() {
 
                 <View style={[styles.actions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                   <Pressable
-                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); decrementProgress(item.id); }}
+                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); decrementProgress(item.id); }}
                     style={({ pressed }) => [styles.decrBtn, { borderColor: grad[0] + '35', backgroundColor: grad[0] + '10', opacity: pressed ? 0.7 : 1 }]}
                     accessibilityRole="button"
                     accessibilityLabel="-1"
@@ -181,7 +181,7 @@ export default function GoalsScreen() {
                     <Ionicons name="remove" size={18} color={grad[0]} />
                   </Pressable>
                   <Pressable
-                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); incrementProgress(item.id); }}
+                    onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); incrementProgress(item.id); }}
                     style={({ pressed }) => [styles.actionBtn, { opacity: pressed ? 0.85 : 1, overflow: 'hidden' }]}
                     accessibilityRole="button"
                     accessibilityLabel="+1"

@@ -136,9 +136,19 @@ export default function HabitsScreen() {
           return (
             <SwipeableRow
               isRTL={isRTL}
+              onComplete={!isDoneToday ? () => {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                const payload = completeHabit(item.id);
+                if (payload) {
+                  setCelebrationPayload(payload);
+                } else {
+                  showToast(tFunc('habitCompleted'), 'success');
+                }
+              } : undefined}
               onDelete={() => {
                 setConfirmHabit(item);
               }}
+              completeLabel={tFunc('done')}
               deleteLabel={tFunc('delete')}
             >
               <HabitCard
@@ -149,11 +159,12 @@ export default function HabitsScreen() {
                 C={C}
                 tFunc={tFunc}
                 onToggle={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                   if (isDoneToday) {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     uncompleteHabit(item.id);
                     showToast(tFunc('habitUncompleted'), 'info');
                   } else {
+                    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                     const payload = completeHabit(item.id);
                     if (payload) {
                       setCelebrationPayload(payload);
