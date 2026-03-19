@@ -91,7 +91,7 @@ export default function GoalsScreen() {
                 colors={isDark ? [C.tint, C.tintSecondary] : ['#fff', 'rgba(255,255,255,0.8)']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                style={[styles.headerProgressFill, { width: `${pctDone}%` as any }]}
+                style={[styles.headerProgressFill, { width: `${pctDone}%` as `${number}%` }]}
               />
             </View>
             <Text style={[styles.headerProgressLabel, { color: isDark ? C.tint : '#fff' }]}>{pctDone}% {tFunc('completed')}</Text>

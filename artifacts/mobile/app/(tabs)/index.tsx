@@ -126,7 +126,7 @@ export default function HomeScreen() {
                   end={{ x: 1, y: 0 }}
                   style={[
                     styles.heroProgressFill,
-                    { width: `${Math.round((completedToday / todayTasks.length) * 100)}%` as any },
+                    { width: `${Math.round((completedToday / todayTasks.length) * 100)}%` as `${number}%` },
                   ]}
                 />
               </View>
