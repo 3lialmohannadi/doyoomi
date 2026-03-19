@@ -275,11 +275,13 @@ export default function MoreScreen() {
 
           {/* About card */}
           <View style={[styles.aboutCard, { backgroundColor: C.card, borderColor: C.border }]}>
-            <Image
-              source={require('../../assets/images/icon-nobg.png')}
-              style={styles.aboutLogo}
-              resizeMode="contain"
-            />
+            <View style={styles.aboutLogoWrap}>
+              <Image
+                source={require('../../assets/images/icon-nobg.png')}
+                style={styles.aboutLogo}
+                resizeMode="cover"
+              />
+            </View>
             <Text style={[styles.aboutName, { color: C.text }]}>Do.Yoomi</Text>
             <Text style={[styles.aboutAr, { color: C.tint }]}>يومي</Text>
             <Text style={[styles.aboutTagline, { color: C.textSecondary }]}>{tFunc('yourDayYourWay')}</Text>
@@ -777,9 +779,15 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm, marginBottom: Spacing.sm,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
+  aboutLogoWrap: {
+    width: 96, height: 96,
+    borderRadius: 22,
+    overflow: 'hidden',
+    marginBottom: Spacing.md,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4,
+  },
   aboutLogo: {
     width: 96, height: 96,
-    marginBottom: Spacing.md,
   },
   aboutInfo: { flex: 1, gap: 2 },
   aboutName: { fontSize: 24, fontFamily: F.brand, marginBottom: 2 },
