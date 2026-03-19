@@ -21,7 +21,7 @@ import { Toast } from '../../src/components/ui/Toast';
 import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 import { StreakCelebration } from '../../src/components/ui/StreakCelebration';
 import { MiniConfetti } from '../../src/components/ui/MiniConfetti';
-import { Habit, HabitFrequency } from '../../src/types';
+import { Habit, HabitFrequency, Language } from '../../src/types';
 import { StreakCelebrationPayload } from '../../src/store/habitsStore';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -41,7 +41,7 @@ function getFreqBadge(freq: HabitFrequency, tFunc: (k: string) => string): strin
   return '';
 }
 
-function getDayAbbr(date: Date, lang: string): string {
+function getDayAbbr(date: Date, lang: Language): string {
   const day = getDay(date);
   const en = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
   const ar = ['أح', 'اث', 'ثل', 'أر', 'خم', 'جم', 'سب'];
@@ -76,7 +76,7 @@ function HistoryCalendarModal({
   visible: boolean;
   habit: Habit | null;
   onClose: () => void;
-  lang: string;
+  lang: Language;
   isRTL: boolean;
   C: ColorScheme;
   isDark: boolean;
@@ -453,7 +453,6 @@ export default function HabitsScreen() {
   const isDark = scheme === 'dark';
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
-  const { from } = useLocalSearchParams<{ from?: string }>();
 
   const { habits, completeHabit, uncompleteHabit, deleteHabit } = useHabitsStore();
   const { profile } = useSettingsStore();

@@ -28,7 +28,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Home stats
     completed: 'Done',
-    overdue: 'Late',
+    overdue: 'Overdue',
     thisWeek: 'This week',
     streak: 'Streak',
     days: 'days',
@@ -131,7 +131,6 @@ const translations: Record<Language, Record<string, string>> = {
     // Statistics
     statistics: 'Statistics & Insights',
     total: 'Total',
-    thisWeek: 'This week',
     thisMonth: 'This month',
     completionRate: 'Completion rate',
     avgStreak: 'Average streak',
@@ -283,7 +282,6 @@ const translations: Record<Language, Record<string, string>> = {
     activeGoalsTab: 'Active',
     archivedGoalsTab: 'Archived',
     daysLeft: 'days left',
-    overdue: 'Overdue',
     dueSoon: 'Due soon',
     taskCompleted: 'Task completed!',
     taskDeleted: 'Task deleted',
@@ -551,7 +549,6 @@ const translations: Record<Language, Record<string, string>> = {
     // الدعم والتواصل
     statistics: 'الإحصائيات والتحليلات',
     total: 'الإجمالي',
-    thisWeek: 'هذا الأسبوع',
     thisMonth: 'هذا الشهر',
     completionRate: 'نسبة الإنجاز',
     avgStreak: 'متوسط الأيام المتتالية',

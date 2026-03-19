@@ -86,19 +86,31 @@ function computeStreak(history: string[], freq: HabitFrequency): number {
       return streak;
     }
 
-    let streakWeeks = 0;
-    for (let w = 0; w < 52; w++) {
-      const weekDates = Array.from({ length: 7 }, (_, i) =>
-        format(subDays(today, w * 7 + i), 'yyyy-MM-dd')
-      );
-      const completionsThisWeek = weekDates.filter(d => history.includes(d)).length;
-      if (completionsThisWeek >= daysPerWeek) {
-        streakWeeks++;
-      } else if (w > 0) {
-        break;
+    let streakDays = 0;
+    let rollingCount = 0;
+    const windowSize = 7;
+    const historySet = new Set(history);
+
+    const windowDays: string[] = Array.from({ length: windowSize }, (_, i) =>
+      format(subDays(today, i), 'yyyy-MM-dd')
+    );
+    rollingCount = windowDays.filter(d => historySet.has(d)).length;
+
+    if (rollingCount >= daysPerWeek) {
+      streakDays = rollingCount;
+      for (let offset = 1; offset <= 52; offset++) {
+        const olderWindow: string[] = Array.from({ length: windowSize }, (_, i) =>
+          format(subDays(today, offset * windowSize + i), 'yyyy-MM-dd')
+        );
+        const olderCount = olderWindow.filter(d => historySet.has(d)).length;
+        if (olderCount >= daysPerWeek) {
+          streakDays += olderCount;
+        } else {
+          break;
+        }
       }
     }
-    return streakWeeks;
+    return streakDays;
   }
 
   return 0;
@@ -228,13 +240,16 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        const migrated: Habit[] = parsed.map((h: Habit & { frequency: unknown }) => ({
-          streak_days: 0,
-          best_streak: 0,
-          completion_history: [],
-          ...h,
-          frequency: migrateFrequency(h.frequency),
-        }));
+        const migrated: Habit[] = parsed.map((h: Habit & { frequency: unknown }) => {
+          const base: Habit = {
+            ...h,
+            frequency: migrateFrequency(h.frequency),
+          };
+          if (base.streak_days === undefined) base.streak_days = 0;
+          if (base.best_streak === undefined) base.best_streak = 0;
+          if (!base.completion_history) base.completion_history = [];
+          return base;
+        });
         set({ habits: migrated });
       }
     } catch {}
