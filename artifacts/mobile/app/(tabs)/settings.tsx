@@ -27,6 +27,7 @@ import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useJournalStore } from '../../src/store/journalStore';
 import { useTasksStore } from '../../src/store/tasksStore';
+import { hasDemoItems } from '../../src/utils/demoData';
 import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_SAGE, GRADIENT_AMBER, GRADIENT_CORAL, GRADIENT_DARK_HEADER, GRADIENT_DARK_CARD, cardShadow, ColorScheme, APP_VERSION } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
@@ -44,10 +45,10 @@ export default function MoreScreen() {
     setNotificationsEnabled, setNotificationsTaskTime, setNotificationsHabitTime,
   } = useSettingsStore();
   const { categories } = useCategoriesStore();
-  const { goals } = useGoalsStore();
-  const { habits } = useHabitsStore();
-  const { entries: journalEntries } = useJournalStore();
-  const { tasks } = useTasksStore();
+  const { goals, deleteGoal } = useGoalsStore();
+  const { habits, deleteHabit } = useHabitsStore();
+  const { entries: journalEntries, deleteEntry } = useJournalStore();
+  const { tasks, deleteTask } = useTasksStore();
   const lang = profile.language;
   const isRTL = lang === 'ar';
 
@@ -119,6 +120,28 @@ export default function MoreScreen() {
     );
   };
 
+  const handleClearDemo = () => {
+    Alert.alert(
+      tFunc('clearDemoConfirmTitle'),
+      tFunc('clearDemoConfirmMsg'),
+      [
+        { text: tFunc('cancel'), style: 'cancel' },
+        {
+          text: tFunc('clearDemoData'),
+          style: 'destructive',
+          onPress: () => {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+            tasks.filter(t => t.is_demo).forEach(t => deleteTask(t.id));
+            habits.filter(h => h.is_demo).forEach(h => deleteHabit(h.id));
+            goals.filter(g => g.is_demo).forEach(g => deleteGoal(g.id));
+            journalEntries.filter(e => e.is_demo).forEach(e => deleteEntry(e.id));
+            Alert.alert('', tFunc('clearDemoSuccess'));
+          },
+        },
+      ],
+    );
+  };
+
   const openProfileModal = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setProfileName(profile.name);
@@ -150,6 +173,8 @@ export default function MoreScreen() {
   const goalsCount = goals.length;
   const habitsCount = habits.length;
   const journalCount = journalEntries.length;
+
+  const hasDemoData = hasDemoItems(tasks) || hasDemoItems(habits) || hasDemoItems(goals) || hasDemoItems(journalEntries);
 
   const notifEnabled = profile.notifications_enabled ?? false;
   const notifTaskTime = profile.notifications_task_time ?? '09:00';
@@ -514,6 +539,22 @@ export default function MoreScreen() {
               </View>
               <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={16} color={C.textSecondary} />
             </Pressable>
+
+            {/* Clear Demo Data (only visible when demo data exists) */}
+            {hasDemoData && (
+              <Pressable
+                onPress={handleClearDemo}
+                style={[styles.notifRow, { flexDirection: isRTL ? 'row-reverse' : 'row', borderBottomWidth: 1, borderBottomColor: C.border }]}
+              >
+                <View style={[styles.notifIconWrap, { backgroundColor: '#F97316' + '20' }]}>
+                  <Ionicons name="sparkles-outline" size={20} color="#F97316" />
+                </View>
+                <View style={{ flex: 1, marginHorizontal: 12 }}>
+                  <Text style={[styles.notifRowTitle, { color: '#F97316', fontFamily: F.med, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('clearDemoData')}</Text>
+                  <Text style={[styles.notifRowSub, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('clearDemoDataSub')}</Text>
+                </View>
+              </Pressable>
+            )}
 
             {/* Clear All */}
             <Pressable

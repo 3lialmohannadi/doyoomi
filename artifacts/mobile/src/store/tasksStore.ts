@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Task, TaskStatus, Subtask, RecurrenceType } from '../types';
 import { format, addDays, addWeeks, addMonths, parseISO, getDay } from 'date-fns';
+import { createDemoTasks } from '../utils/demoData';
+
+const SETTINGS_KEY = '@doyoomi_settings';
 
 function getNextRecurringDate(dueDate: string, recurrenceType: RecurrenceType): string {
   const base = parseISO(dueDate);
@@ -46,14 +49,15 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   tasks: [],
 
   addTask: (task) => {
-    const newTask: Task = {
+    const realTask: Task = {
       ...task,
       id: genId(),
       user_id: 'user-1',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
-    const updated = [newTask, ...get().tasks];
+    const withoutDemo = get().tasks.filter(t => !t.is_demo);
+    const updated = [realTask, ...withoutDemo];
     set({ tasks: updated });
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   },
@@ -141,7 +145,18 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   loadTasks: async () => {
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
-      if (stored) set({ tasks: JSON.parse(stored) });
+      if (stored) {
+        set({ tasks: JSON.parse(stored) });
+        return;
+      }
+      const settingsRaw = await AsyncStorage.getItem(SETTINGS_KEY);
+      const settings = settingsRaw ? JSON.parse(settingsRaw) : null;
+      const onboardingComplete = settings?.onboarding_complete === true;
+      if (!onboardingComplete) {
+        const demo = createDemoTasks();
+        set({ tasks: demo });
+        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
+      }
     } catch {}
   },
 }));

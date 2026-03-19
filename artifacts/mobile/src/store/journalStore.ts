@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { JournalEntry, Mood } from '../types';
+import { JournalEntry } from '../types';
+import { createDemoJournalEntries } from '../utils/demoData';
+
+const SETTINGS_KEY = '@doyoomi_settings';
 
 interface JournalState {
   entries: JournalEntry[];
@@ -24,7 +27,8 @@ export const useJournalStore = create<JournalState>((set, get) => ({
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
-    const updated = [newEntry, ...get().entries];
+    const withoutDemo = get().entries.filter(e => !e.is_demo);
+    const updated = [newEntry, ...withoutDemo];
     set({ entries: updated });
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   },
@@ -46,7 +50,18 @@ export const useJournalStore = create<JournalState>((set, get) => ({
   loadEntries: async () => {
     try {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
-      if (stored) set({ entries: JSON.parse(stored) });
+      if (stored) {
+        set({ entries: JSON.parse(stored) });
+        return;
+      }
+      const settingsRaw = await AsyncStorage.getItem(SETTINGS_KEY);
+      const settings = settingsRaw ? JSON.parse(settingsRaw) : null;
+      const onboardingComplete = settings?.onboarding_complete === true;
+      if (!onboardingComplete) {
+        const demo = createDemoJournalEntries();
+        set({ entries: demo });
+        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
+      }
     } catch {}
   },
 }));

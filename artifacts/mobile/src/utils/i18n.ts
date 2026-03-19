@@ -432,6 +432,15 @@ const translations: Record<Language, Record<string, string>> = {
     widgetsDesc: 'Quick glance at your tasks and habits',
     widgetsComingSoon: 'Coming Soon',
     widgetsComingSoonDesc: 'Widgets will be available in the iOS App Store release',
+
+    // Demo data
+    demoDataSection: 'Example Data',
+    clearDemoData: 'Clear example data',
+    clearDemoDataSub: 'Remove all sample items added at first launch',
+    clearDemoConfirmTitle: 'Remove example data?',
+    clearDemoConfirmMsg: 'This will delete all sample tasks, habits, goals and journal entries.',
+    clearDemoSuccess: 'Example data removed',
+    demoBadge: 'Example',
   },
 
   ar: {
@@ -863,6 +872,15 @@ const translations: Record<Language, Record<string, string>> = {
     widgetsDesc: 'نظرة سريعة على مهامك وعاداتك',
     widgetsComingSoon: 'قريباً',
     widgetsComingSoonDesc: 'ستكون الودجات متاحة في إصدار App Store',
+
+    // بيانات تجريبية
+    demoDataSection: 'البيانات التجريبية',
+    clearDemoData: 'حذف البيانات التجريبية',
+    clearDemoDataSub: 'إزالة جميع العناصر النموذجية المضافة عند الإطلاق',
+    clearDemoConfirmTitle: 'حذف البيانات التجريبية؟',
+    clearDemoConfirmMsg: 'سيتم حذف جميع المهام والعادات والأهداف والمذكرات النموذجية.',
+    clearDemoSuccess: 'تمت إزالة البيانات التجريبية',
+    demoBadge: 'مثال',
   },
 };
 

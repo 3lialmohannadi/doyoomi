@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Goal } from '../types';
+import { createDemoGoals } from '../utils/demoData';
+
+const SETTINGS_KEY = '@doyoomi_settings';
 
 interface GoalsState {
   goals: Goal[];
@@ -28,7 +31,8 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
-    const updated = [newGoal, ...get().goals];
+    const withoutDemo = get().goals.filter(g => !g.is_demo);
+    const updated = [newGoal, ...withoutDemo];
     set({ goals: updated });
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   },
@@ -82,6 +86,15 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
           is_archived: g.is_archived ?? g.archived ?? false,
         }));
         set({ goals: migrated });
+        return;
+      }
+      const settingsRaw = await AsyncStorage.getItem(SETTINGS_KEY);
+      const settings = settingsRaw ? JSON.parse(settingsRaw) : null;
+      const onboardingComplete = settings?.onboarding_complete === true;
+      if (!onboardingComplete) {
+        const demo = createDemoGoals();
+        set({ goals: demo });
+        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
       }
     } catch {}
   },

@@ -77,6 +77,7 @@ export interface Task {
   completed_at?: string;
   recurrence?: RecurrenceRule;
   subtasks?: Subtask[];
+  is_demo?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -97,6 +98,7 @@ export interface Goal {
   archived?: boolean;
   is_archived?: boolean;
   archived_at?: string;
+  is_demo?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -114,6 +116,7 @@ export interface Habit {
   best_streak: number;
   last_completed_at?: string;
   completion_history?: string[];
+  is_demo?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -126,6 +129,7 @@ export interface JournalEntry {
   content: string;
   mood?: Mood;
   tags?: string[];
+  is_demo?: boolean;
   created_at: string;
   updated_at: string;
 }

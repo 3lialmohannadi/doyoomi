@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Habit, HabitFrequency } from '../types';
 import { format, subDays, getDay } from 'date-fns';
+import { createDemoHabits } from '../utils/demoData';
+
+const SETTINGS_KEY = '@doyoomi_settings';
 
 export interface StreakCelebrationPayload {
   habitName: string;
@@ -152,7 +155,8 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
-    const updated = [newHabit, ...get().habits];
+    const withoutDemo = get().habits.filter(h => !h.is_demo);
+    const updated = [newHabit, ...withoutDemo];
     set({ habits: updated });
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   },
@@ -242,6 +246,15 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
           return base;
         });
         set({ habits: migrated });
+        return;
+      }
+      const settingsRaw = await AsyncStorage.getItem(SETTINGS_KEY);
+      const settings = settingsRaw ? JSON.parse(settingsRaw) : null;
+      const onboardingComplete = settings?.onboarding_complete === true;
+      if (!onboardingComplete) {
+        const demo = createDemoHabits();
+        set({ habits: demo });
+        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
       }
     } catch {}
   },
