@@ -90,8 +90,8 @@ export default function StatisticsScreen() {
     }, 0);
 
     // Goals
-    const activeGoals = goals.filter(g => !g.is_archived);
-    const archivedGoals = goals.filter(g => g.is_archived);
+    const activeGoals = goals.filter(g => !(g.archived ?? g.is_archived));
+    const archivedGoals = goals.filter(g => g.archived ?? g.is_archived);
     const completedGoals = activeGoals.filter(g => g.current_value >= g.target_value);
     const avgGoalProgress = activeGoals.length > 0
       ? Math.round(activeGoals.reduce((sum, g) => sum + (g.target_value > 0 ? Math.min(g.current_value / g.target_value, 1) : 0), 0) / activeGoals.length * 100)

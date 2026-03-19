@@ -94,6 +94,7 @@ export interface Goal {
   icon: string;
   color: string;
   deadline?: string;
+  archived?: boolean;
   is_archived?: boolean;
   archived_at?: string;
   created_at: string;

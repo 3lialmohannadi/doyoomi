@@ -96,82 +96,33 @@ export function SwipeableRow({
     onDelete();
   }, [close, onDelete]);
 
+  // LTR: right swipe (left panel) = Delete; left swipe (right panel) = Archive/Complete
+  // RTL: mirrored — left swipe (left panel) = Archive/Complete; right swipe (right panel) = Delete
   const renderLeftLTR = useCallback(
-    (_progress: SharedValue<number>, _translation: SharedValue<number>) => {
-      if (onPostpone) {
-        return (
+    (_progress: SharedValue<number>, _translation: SharedValue<number>) => (
+      <View style={styles.multiPanel}>
+        {onCancel && (
           <ActionButton
-            icon="time-outline"
-            label={postponeLabel}
-            color="#F59E0B"
-            onPress={handlePostpone}
+            icon="close-circle-outline"
+            label={cancelLabel}
+            color="#94A3B8"
+            width={72}
+            onPress={handleCancel}
           />
-        );
-      }
-      if (onComplete) {
-        return (
-          <ActionButton
-            icon={completeIcon ?? 'checkmark-circle'}
-            label={completeLabel}
-            color={completeColor ?? '#22C55E'}
-            onPress={handleComplete}
-          />
-        );
-      }
-      return null;
-    },
-    [onPostpone, onComplete, postponeLabel, completeLabel, completeIcon, completeColor, handlePostpone, handleComplete],
+        )}
+        <ActionButton
+          icon="trash-outline"
+          label={deleteLabel}
+          color="#EF4444"
+          width={72}
+          onPress={handleDelete}
+        />
+      </View>
+    ),
+    [onCancel, cancelLabel, deleteLabel, handleCancel, handleDelete],
   );
 
   const renderRightLTR = useCallback(
-    (_progress: SharedValue<number>, _translation: SharedValue<number>) => (
-      <View style={styles.multiPanel}>
-        {onCancel && (
-          <ActionButton
-            icon="close-circle-outline"
-            label={cancelLabel}
-            color="#94A3B8"
-            width={72}
-            onPress={handleCancel}
-          />
-        )}
-        <ActionButton
-          icon="trash-outline"
-          label={deleteLabel}
-          color="#EF4444"
-          width={72}
-          onPress={handleDelete}
-        />
-      </View>
-    ),
-    [onCancel, cancelLabel, deleteLabel, handleCancel, handleDelete],
-  );
-
-  const renderLeftRTL = useCallback(
-    (_progress: SharedValue<number>, _translation: SharedValue<number>) => (
-      <View style={styles.multiPanel}>
-        <ActionButton
-          icon="trash-outline"
-          label={deleteLabel}
-          color="#EF4444"
-          width={72}
-          onPress={handleDelete}
-        />
-        {onCancel && (
-          <ActionButton
-            icon="close-circle-outline"
-            label={cancelLabel}
-            color="#94A3B8"
-            width={72}
-            onPress={handleCancel}
-          />
-        )}
-      </View>
-    ),
-    [onCancel, cancelLabel, deleteLabel, handleCancel, handleDelete],
-  );
-
-  const renderRightRTL = useCallback(
     (_progress: SharedValue<number>, _translation: SharedValue<number>) => {
       if (onPostpone) {
         return (
@@ -198,13 +149,64 @@ export function SwipeableRow({
     [onPostpone, onComplete, postponeLabel, completeLabel, completeIcon, completeColor, handlePostpone, handleComplete],
   );
 
-  const hasLeftLTR = !isRTL && (onPostpone != null || onComplete != null);
-  const hasRightLTR = !isRTL;
-  const hasLeftRTL = isRTL;
-  const hasRightRTL = isRTL && (onPostpone != null || onComplete != null);
+  const renderLeftRTL = useCallback(
+    (_progress: SharedValue<number>, _translation: SharedValue<number>) => {
+      if (onPostpone) {
+        return (
+          <ActionButton
+            icon="time-outline"
+            label={postponeLabel}
+            color="#F59E0B"
+            onPress={handlePostpone}
+          />
+        );
+      }
+      if (onComplete) {
+        return (
+          <ActionButton
+            icon={completeIcon ?? 'checkmark-circle'}
+            label={completeLabel}
+            color={completeColor ?? '#22C55E'}
+            onPress={handleComplete}
+          />
+        );
+      }
+      return null;
+    },
+    [onPostpone, onComplete, postponeLabel, completeLabel, completeIcon, completeColor, handlePostpone, handleComplete],
+  );
 
-  const rightThreshold = onCancel ? 144 : 72;
-  const leftThreshold = onCancel && isRTL ? 144 : 72;
+  const renderRightRTL = useCallback(
+    (_progress: SharedValue<number>, _translation: SharedValue<number>) => (
+      <View style={styles.multiPanel}>
+        <ActionButton
+          icon="trash-outline"
+          label={deleteLabel}
+          color="#EF4444"
+          width={72}
+          onPress={handleDelete}
+        />
+        {onCancel && (
+          <ActionButton
+            icon="close-circle-outline"
+            label={cancelLabel}
+            color="#94A3B8"
+            width={72}
+            onPress={handleCancel}
+          />
+        )}
+      </View>
+    ),
+    [onCancel, cancelLabel, deleteLabel, handleCancel, handleDelete],
+  );
+
+  const hasLeftLTR = !isRTL;
+  const hasRightLTR = !isRTL && (onPostpone != null || onComplete != null);
+  const hasLeftRTL = isRTL && (onPostpone != null || onComplete != null);
+  const hasRightRTL = isRTL;
+
+  const leftThreshold = onCancel ? 144 : 72;
+  const rightThreshold = onCancel && isRTL ? 144 : 72;
 
   return (
     <ReanimatedSwipeable

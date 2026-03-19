@@ -60,8 +60,8 @@ export default function GoalsScreen() {
   const topPad = isWeb ? 67 : insets.top;
   const bottomPad = isWeb ? 34 : 0;
 
-  const activeGoals = useMemo(() => goals.filter(g => !g.is_archived), [goals]);
-  const archivedGoals = useMemo(() => goals.filter(g => g.is_archived), [goals]);
+  const activeGoals = useMemo(() => goals.filter(g => !(g.archived ?? g.is_archived)), [goals]);
+  const archivedGoals = useMemo(() => goals.filter(g => g.archived ?? g.is_archived), [goals]);
 
   type ListItem =
     | { kind: 'goal'; goal: Goal; idx: number }

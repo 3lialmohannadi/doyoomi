@@ -48,11 +48,11 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
   },
 
   archiveGoal: (id) => {
-    get().updateGoal(id, { is_archived: true, archived_at: new Date().toISOString() });
+    get().updateGoal(id, { archived: true, is_archived: true, archived_at: new Date().toISOString() });
   },
 
   unarchiveGoal: (id) => {
-    get().updateGoal(id, { is_archived: false, archived_at: undefined });
+    get().updateGoal(id, { archived: false, is_archived: false, archived_at: undefined });
   },
 
   incrementProgress: (id, amount = 1) => {
@@ -75,8 +75,11 @@ export const useGoalsStore = create<GoalsState>((set, get) => ({
       if (stored) {
         const parsed: Goal[] = JSON.parse(stored);
         const migrated = parsed.map(g => ({
+          archived: false,
           is_archived: false,
           ...g,
+          archived: g.archived ?? g.is_archived ?? false,
+          is_archived: g.is_archived ?? g.archived ?? false,
         }));
         set({ goals: migrated });
       }
