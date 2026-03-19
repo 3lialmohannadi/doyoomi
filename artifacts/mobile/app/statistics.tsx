@@ -7,7 +7,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import {
-  format, subDays, parseISO, startOfMonth, endOfMonth, getDay,
+  format, subDays, parseISO, startOfMonth, endOfMonth,
+  getDay, differenceInCalendarDays,
 } from 'date-fns';
 
 import { useTasksStore } from '../src/store/tasksStore';
@@ -25,10 +26,13 @@ import {
 import { useAppTheme } from '../src/hooks/useAppTheme';
 import { t, resolveDisplayName } from '../src/utils/i18n';
 import { WeeklyChart, WeekDayData } from '../src/components/ui/WeeklyChart';
-import { Mood } from '../src/types';
+import { Mood, Goal } from '../src/types';
+
+// ── Typed Ionicons helper ──────────────────────────────────────────────────────
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
 // ── Mood config (mirrored from journal.tsx) ───────────────────────────────────
-const MOOD_CONFIG: Partial<Record<Mood, { icon: string; color: string }>> = {
+const MOOD_CONFIG: Partial<Record<Mood, { icon: IoniconName; color: string }>> = {
   happy:       { icon: 'happy',                   color: BOLD_GREEN },
   excited:     { icon: 'rocket-outline',           color: BOLD_GOLD },
   energetic:   { icon: 'flash-outline',            color: BOLD_ORANGE },
@@ -72,6 +76,16 @@ const MOOD_SCORES: Record<string, number> = {
 const DAY_LABELS_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const DAY_LABELS_AR = ['أحد', 'اثن', 'ثلا', 'أرب', 'خمس', 'جمع', 'سبت'];
 
+// ── Locale-aware number formatting ─────────────────────────────────────────────
+function fmtNum(value: number, lang: 'en' | 'ar'): string {
+  try {
+    const locale = lang === 'ar' ? 'ar-QA' : 'en-US';
+    return new Intl.NumberFormat(locale).format(value);
+  } catch {
+    return String(value);
+  }
+}
+
 export default function StatisticsScreen() {
   const { C, scheme } = useAppTheme();
   const isDark = scheme === 'dark';
@@ -81,6 +95,7 @@ export default function StatisticsScreen() {
   const lang = profile.language;
   const isRTL = lang === 'ar';
   const tFunc = (key: string) => t(key, lang);
+  const fmt = (v: number) => fmtNum(v, lang);
 
   const { tasks } = useTasksStore();
   const { habits } = useHabitsStore();
@@ -101,25 +116,22 @@ export default function StatisticsScreen() {
       const date = subDays(today, 6 - i);
       const dateStr = format(date, 'yyyy-MM-dd');
       const isToday = dateStr === todayStr;
-      const isFuture = false;
       const dayIdx = getDay(date);
       const dayLabel = isRTL ? DAY_LABELS_AR[dayIdx] : DAY_LABELS_EN[dayIdx];
 
-      const dayTasks = tasks.filter(t => {
-        const d = t.due_date;
-        return d === dateStr && t.status !== 'cancelled';
-      });
+      const dayTasks = tasks.filter(t => t.due_date === dateStr && t.status !== 'cancelled');
       const completedCount = dayTasks.filter(t => t.status === 'completed').length;
       const totalCount = dayTasks.length;
       const pct = totalCount > 0 ? completedCount / totalCount : 0;
 
-      return { date: dateStr, dayLabel, completedCount, totalCount, pct, isToday, isFuture };
+      return { date: dateStr, dayLabel, completedCount, totalCount, pct, isToday, isFuture: false };
     });
   }, [tasks, todayStr, isRTL]);
 
   // ── Main stats ────────────────────────────────────────────────────────────
   const stats = useMemo(() => {
     const weekAgo = subDays(today, 7);
+    const twoWeeksAgo = subDays(today, 14);
     const thirtyDaysAgo = subDays(today, 30);
 
     // Tasks
@@ -127,9 +139,16 @@ export default function StatisticsScreen() {
     const completedTasks = tasks.filter(t => t.status === 'completed');
     const cancelledTasks = tasks.filter(t => t.status === 'cancelled');
     const overdueTasks = tasks.filter(t => t.status === 'overdue');
+
     const completedThisWeek = completedTasks.filter(t => {
       const d = t.completed_at ?? t.updated_at;
       return d && parseISO(d) >= weekAgo;
+    });
+    const completedLastWeek = completedTasks.filter(t => {
+      const d = t.completed_at ?? t.updated_at;
+      if (!d) return false;
+      const pd = parseISO(d);
+      return pd >= twoWeeksAgo && pd < weekAgo;
     });
     const completedThisMonth = completedTasks.filter(t => {
       const d = t.completed_at ?? t.updated_at;
@@ -140,6 +159,9 @@ export default function StatisticsScreen() {
     const taskCompletionRate = activeTasks.length > 0
       ? Math.round((completedTasks.length / activeTasks.length) * 100)
       : 0;
+
+    // Week-over-week delta
+    const weekDelta = completedThisWeek.length - completedLastWeek.length;
 
     // Habits
     const totalHabits = habits.length;
@@ -153,6 +175,13 @@ export default function StatisticsScreen() {
     const bestStreak = habits.reduce((max, h) => Math.max(max, h.best_streak ?? h.streak_days), 0);
     const totalCompletionsThisWeek = habits.reduce((sum, h) => {
       return sum + (h.completion_history ?? []).filter(d => parseISO(d) >= weekAgo).length;
+    }, 0);
+    // Monthly habit completions
+    const totalCompletionsThisMonth = habits.reduce((sum, h) => {
+      return sum + (h.completion_history ?? []).filter(d => {
+        const pd = parseISO(d);
+        return pd >= monthStart && pd <= monthEnd;
+      }).length;
     }, 0);
 
     // Goals
@@ -175,17 +204,16 @@ export default function StatisticsScreen() {
       ? (moodsWithScore.reduce((sum, e) => sum + MOOD_SCORES[e.mood!], 0) / moodsWithScore.length)
       : 0;
 
-    // Mood distribution (last 30 entries)
-    const last30Entries = entries
-      .filter(e => parseISO(e.date) >= thirtyDaysAgo)
-      .slice(0, 30);
+    // Mood distribution (last 30 entries, up to 12 top moods)
+    const last30Entries = entries.filter(e => parseISO(e.date) >= thirtyDaysAgo);
     const moodCounts: Partial<Record<Mood, number>> = {};
     for (const e of last30Entries) {
       if (e.mood) moodCounts[e.mood] = (moodCounts[e.mood] ?? 0) + 1;
     }
-    const moodDistribution = Object.entries(moodCounts)
+    const moodDistribution = (Object.entries(moodCounts) as [Mood, number][])
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 12) as [Mood, number][];
+      .slice(0, 12);
+    const topMood: Mood | null = moodDistribution.length > 0 ? moodDistribution[0][0] : null;
 
     return {
       // Tasks
@@ -194,14 +222,17 @@ export default function StatisticsScreen() {
       cancelledTasks: cancelledTasks.length,
       overdueTasks: overdueTasks.length,
       completedThisWeek: completedThisWeek.length,
+      completedLastWeek: completedLastWeek.length,
       completedThisMonth: completedThisMonth.length,
       taskCompletionRate,
+      weekDelta,
       // Habits
       totalHabits,
       completedTodayHabits,
       avgStreak,
       bestStreak,
       totalCompletionsThisWeek,
+      totalCompletionsThisMonth,
       // Goals
       activeGoals,
       completedGoals: completedGoals.length,
@@ -213,6 +244,7 @@ export default function StatisticsScreen() {
       entriesThisWeek,
       avgMoodScore: Math.round(avgMoodScore * 10) / 10,
       moodDistribution,
+      topMood,
     };
   }, [tasks, habits, goals, entries, todayStr, monthStart, monthEnd]);
 
@@ -221,9 +253,11 @@ export default function StatisticsScreen() {
     return habits.map(h => {
       const dots = Array.from({ length: 7 }, (_, i) => {
         const d = format(subDays(today, 6 - i), 'yyyy-MM-dd');
-        const done = (h.completion_history ?? []).includes(d);
-        const isToday2 = d === todayStr;
-        return { date: d, done, isToday: isToday2 };
+        return {
+          date: d,
+          done: (h.completion_history ?? []).includes(d),
+          isToday: d === todayStr,
+        };
       });
       return { habit: h, dots };
     });
@@ -275,17 +309,31 @@ export default function StatisticsScreen() {
           />
         )}
 
+        {/* Week-over-week delta card */}
+        <View style={{ paddingHorizontal: Spacing.lg }}>
+          <WeekDeltaCard
+            thisWeek={stats.completedThisWeek}
+            lastWeek={stats.completedLastWeek}
+            delta={stats.weekDelta}
+            C={C}
+            isDark={isDark}
+            isRTL={isRTL}
+            tFunc={tFunc}
+            fmt={fmt}
+          />
+        </View>
+
         <View style={[styles.grid2, { paddingHorizontal: Spacing.lg }]}>
-          <StatCard label={tFunc('total')} value={stats.totalTasks} icon="list-outline" grad={GRADIENT_H} C={C} isDark={isDark} />
-          <StatCard label={tFunc('done')} value={stats.completedTasks} icon="checkmark-circle-outline" grad={GRADIENT_GREEN} C={C} isDark={isDark} />
-          <StatCard label={tFunc('thisWeek')} value={stats.completedThisWeek} icon="calendar-outline" grad={GRADIENT_SAGE} C={C} isDark={isDark} />
-          <StatCard label={tFunc('thisMonth')} value={stats.completedThisMonth} icon="calendar-number-outline" grad={GRADIENT_CYAN} C={C} isDark={isDark} />
-          <StatCard label={tFunc('overdue')} value={stats.overdueTasks} icon="alert-circle-outline" grad={GRADIENT_CORAL} C={C} isDark={isDark} />
-          <StatCard label={tFunc('cancelled')} value={stats.cancelledTasks} icon="close-circle-outline" grad={['#94A3B8', '#64748B']} C={C} isDark={isDark} />
+          <StatCard label={tFunc('total')} value={fmt(stats.totalTasks)} icon="list-outline" grad={GRADIENT_H} C={C} isDark={isDark} />
+          <StatCard label={tFunc('done')} value={fmt(stats.completedTasks)} icon="checkmark-circle-outline" grad={GRADIENT_GREEN} C={C} isDark={isDark} />
+          <StatCard label={tFunc('thisWeek')} value={fmt(stats.completedThisWeek)} icon="calendar-outline" grad={GRADIENT_SAGE} C={C} isDark={isDark} />
+          <StatCard label={tFunc('thisMonth')} value={fmt(stats.completedThisMonth)} icon="calendar-number-outline" grad={GRADIENT_CYAN} C={C} isDark={isDark} />
+          <StatCard label={tFunc('overdue')} value={fmt(stats.overdueTasks)} icon="alert-circle-outline" grad={GRADIENT_CORAL} C={C} isDark={isDark} />
+          <StatCard label={tFunc('cancelled')} value={fmt(stats.cancelledTasks)} icon="close-circle-outline" grad={['#94A3B8', '#64748B']} C={C} isDark={isDark} />
         </View>
 
         <View style={{ paddingHorizontal: Spacing.lg }}>
-          <ProgressCard label={tFunc('completionRate')} value={stats.taskCompletionRate} grad={GRADIENT_GREEN} C={C} isDark={isDark} isRTL={isRTL} />
+          <ProgressCard label={tFunc('completionRate')} value={stats.taskCompletionRate} grad={GRADIENT_GREEN} C={C} isDark={isDark} isRTL={isRTL} fmt={fmt} />
         </View>
 
         {/* ════════════════════════════════════════════
@@ -293,12 +341,13 @@ export default function StatisticsScreen() {
         ════════════════════════════════════════════ */}
         <SectionHeader icon="leaf-outline" title={tFunc('habits')} grad={['#F97316', '#EF4444']} isRTL={isRTL} C={C} />
 
-        {/* Summary stats */}
         <View style={[styles.grid2, { paddingHorizontal: Spacing.lg }]}>
-          <StatCard label={tFunc('total')} value={stats.totalHabits} icon="leaf-outline" grad={['#F97316', '#EF4444']} C={C} isDark={isDark} />
-          <StatCard label={tFunc('todayDone')} value={`${stats.completedTodayHabits}/${stats.totalHabits}`} icon="today-outline" grad={GRADIENT_AMBER} C={C} isDark={isDark} />
-          <StatCard label={tFunc('avgStreak')} value={`${stats.avgStreak} ${tFunc('days')}`} icon="flame-outline" grad={['#F97316', '#EF4444']} C={C} isDark={isDark} />
-          <StatCard label={tFunc('bestStreak')} value={`${stats.bestStreak} ${tFunc('days')}`} icon="trophy-outline" grad={GRADIENT_AMBER} C={C} isDark={isDark} />
+          <StatCard label={tFunc('total')} value={fmt(stats.totalHabits)} icon="leaf-outline" grad={['#F97316', '#EF4444']} C={C} isDark={isDark} />
+          <StatCard label={tFunc('todayDone')} value={`${fmt(stats.completedTodayHabits)}/${fmt(stats.totalHabits)}`} icon="today-outline" grad={GRADIENT_AMBER} C={C} isDark={isDark} />
+          <StatCard label={tFunc('avgStreak')} value={`${fmt(stats.avgStreak)} ${tFunc('days')}`} icon="flame-outline" grad={['#F97316', '#EF4444']} C={C} isDark={isDark} />
+          <StatCard label={tFunc('bestStreak')} value={`${fmt(stats.bestStreak)} ${tFunc('days')}`} icon="trophy-outline" grad={GRADIENT_AMBER} C={C} isDark={isDark} />
+          <StatCard label={tFunc('thisWeek')} value={fmt(stats.totalCompletionsThisWeek)} icon="bar-chart-outline" grad={['#F97316', '#EF4444']} C={C} isDark={isDark} />
+          <StatCard label={tFunc('thisMonth')} value={fmt(stats.totalCompletionsThisMonth)} icon="calendar-number-outline" grad={GRADIENT_AMBER} C={C} isDark={isDark} />
         </View>
 
         {/* Per-habit sparkline rows */}
@@ -312,18 +361,7 @@ export default function StatisticsScreen() {
               isRTL={isRTL}
               tFunc={tFunc}
               todayStr={todayStr}
-            />
-          </View>
-        )}
-
-        {stats.totalCompletionsThisWeek > 0 && (
-          <View style={{ paddingHorizontal: Spacing.lg }}>
-            <InfoCard
-              icon="bar-chart-outline"
-              text={`${stats.totalCompletionsThisWeek} ${tFunc('habitCompletionsWeek')}`}
-              grad={['#F97316', '#EF4444']}
-              C={C}
-              isDark={isDark}
+              fmt={fmt}
             />
           </View>
         )}
@@ -334,16 +372,16 @@ export default function StatisticsScreen() {
         <SectionHeader icon="trophy-outline" title={tFunc('goals')} grad={['#8B5CF6', '#EC4899']} isRTL={isRTL} C={C} />
 
         <View style={[styles.grid2, { paddingHorizontal: Spacing.lg }]}>
-          <StatCard label={tFunc('total')} value={goals.length} icon="trophy-outline" grad={['#8B5CF6', '#EC4899']} C={C} isDark={isDark} />
-          <StatCard label={tFunc('completed')} value={stats.completedGoals} icon="checkmark-done-circle-outline" grad={GRADIENT_GREEN} C={C} isDark={isDark} />
-          <StatCard label={tFunc('archivedGoalsTab')} value={stats.archivedGoals} icon="archive-outline" grad={['#94A3B8', '#64748B']} C={C} isDark={isDark} />
+          <StatCard label={tFunc('total')} value={fmt(goals.length)} icon="trophy-outline" grad={['#8B5CF6', '#EC4899']} C={C} isDark={isDark} />
+          <StatCard label={tFunc('completed')} value={fmt(stats.completedGoals)} icon="checkmark-done-circle-outline" grad={GRADIENT_GREEN} C={C} isDark={isDark} />
+          <StatCard label={tFunc('archivedGoalsTab')} value={fmt(stats.archivedGoals)} icon="archive-outline" grad={['#94A3B8', '#64748B']} C={C} isDark={isDark} />
         </View>
 
         <View style={{ paddingHorizontal: Spacing.lg }}>
-          <ProgressCard label={tFunc('avgGoalProgress')} value={stats.avgGoalProgress} grad={['#8B5CF6', '#EC4899']} C={C} isDark={isDark} isRTL={isRTL} />
+          <ProgressCard label={tFunc('avgGoalProgress')} value={stats.avgGoalProgress} grad={['#8B5CF6', '#EC4899']} C={C} isDark={isDark} isRTL={isRTL} fmt={fmt} />
         </View>
 
-        {/* Per-goal progress bars */}
+        {/* Per-goal progress bars with deadline countdown */}
         {stats.activeGoals.length > 0 && (
           <View style={{ paddingHorizontal: Spacing.lg }}>
             <GoalsProgressCard
@@ -352,6 +390,9 @@ export default function StatisticsScreen() {
               C={C}
               isDark={isDark}
               isRTL={isRTL}
+              tFunc={tFunc}
+              today={today}
+              fmt={fmt}
             />
           </View>
         )}
@@ -362,9 +403,9 @@ export default function StatisticsScreen() {
         <SectionHeader icon="journal-outline" title={tFunc('journal')} grad={GRADIENT_SAGE} isRTL={isRTL} C={C} />
 
         <View style={[styles.grid2, { paddingHorizontal: Spacing.lg }]}>
-          <StatCard label={tFunc('total')} value={stats.totalEntries} icon="journal-outline" grad={GRADIENT_SAGE} C={C} isDark={isDark} />
-          <StatCard label={tFunc('thisWeek')} value={stats.entriesThisWeek} icon="calendar-outline" grad={GRADIENT_SAGE} C={C} isDark={isDark} />
-          <StatCard label={tFunc('thisMonth')} value={stats.entriesThisMonth} icon="calendar-number-outline" grad={GRADIENT_CYAN} C={C} isDark={isDark} />
+          <StatCard label={tFunc('total')} value={fmt(stats.totalEntries)} icon="journal-outline" grad={GRADIENT_SAGE} C={C} isDark={isDark} />
+          <StatCard label={tFunc('thisWeek')} value={fmt(stats.entriesThisWeek)} icon="calendar-outline" grad={GRADIENT_SAGE} C={C} isDark={isDark} />
+          <StatCard label={tFunc('thisMonth')} value={fmt(stats.entriesThisMonth)} icon="calendar-number-outline" grad={GRADIENT_CYAN} C={C} isDark={isDark} />
           {stats.avgMoodScore > 0 && (
             <StatCard
               label={tFunc('avgMood')}
@@ -377,16 +418,18 @@ export default function StatisticsScreen() {
           )}
         </View>
 
-        {/* Mood distribution */}
+        {/* Mood distribution with top-mood highlight */}
         {stats.moodDistribution.length > 0 && (
           <View style={{ paddingHorizontal: Spacing.lg }}>
             <MoodDistributionCard
               distribution={stats.moodDistribution}
+              topMood={stats.topMood}
               lang={lang}
               C={C}
               isDark={isDark}
               isRTL={isRTL}
               tFunc={tFunc}
+              fmt={fmt}
             />
           </View>
         )}
@@ -399,13 +442,13 @@ export default function StatisticsScreen() {
 function SectionHeader({
   icon, title, grad, isRTL, C,
 }: {
-  icon: string; title: string; grad: readonly [string, string];
+  icon: IoniconName; title: string; grad: readonly [string, string];
   isRTL: boolean; C: ColorScheme;
 }) {
   return (
     <View style={[shStyles.row, { flexDirection: isRTL ? 'row-reverse' : 'row', paddingHorizontal: Spacing.lg }]}>
       <LinearGradient colors={[...grad]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={shStyles.iconBox}>
-        <Ionicons name={icon as any} size={18} color="#fff" />
+        <Ionicons name={icon} size={18} color="#fff" />
       </LinearGradient>
       <Text style={[shStyles.title, { color: C.text }]}>{title}</Text>
     </View>
@@ -418,9 +461,66 @@ const shStyles = StyleSheet.create({
   title: { fontSize: 18, fontFamily: F.black },
 });
 
+// ── Week Delta Card ────────────────────────────────────────────────────────────
+function WeekDeltaCard({
+  thisWeek, lastWeek, delta, C, isDark, isRTL, tFunc, fmt,
+}: {
+  thisWeek: number; lastWeek: number; delta: number;
+  C: ColorScheme; isDark: boolean; isRTL: boolean;
+  tFunc: (k: string) => string; fmt: (v: number) => string;
+}) {
+  const up = delta > 0;
+  const same = delta === 0;
+  const deltaColor = up ? BOLD_GREEN : same ? C.textMuted : BOLD_RED;
+  const deltaIcon: IoniconName = up ? 'trending-up-outline' : same ? 'remove-outline' : 'trending-down-outline';
+
+  return (
+    <View style={[wdStyles.card, isDark ? ShadowDark.sm : Shadow.sm, { borderColor: C.border }]}>
+      {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+      {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
+
+      <View style={[wdStyles.row, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        {/* This week */}
+        <View style={[wdStyles.col, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+          <Text style={[wdStyles.weekLabel, { color: C.textMuted }]}>{tFunc('thisWeek')}</Text>
+          <Text style={[wdStyles.weekVal, { color: C.text }]}>{fmt(thisWeek)}</Text>
+        </View>
+
+        {/* Delta */}
+        <View style={[wdStyles.deltaBox, { backgroundColor: deltaColor + '15' }]}>
+          <Ionicons name={deltaIcon} size={18} color={deltaColor} />
+          <Text style={[wdStyles.deltaText, { color: deltaColor }]}>
+            {same ? '—' : `${up ? '+' : ''}${fmt(delta)}`}
+          </Text>
+        </View>
+
+        {/* Last week */}
+        <View style={[wdStyles.col, { alignItems: isRTL ? 'flex-start' : 'flex-end' }]}>
+          <Text style={[wdStyles.weekLabel, { color: C.textMuted }]}>{tFunc('yesterday')}</Text>
+          <Text style={[wdStyles.weekVal, { color: C.textSecondary }]}>{fmt(lastWeek)}</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+const wdStyles = StyleSheet.create({
+  card: { borderRadius: Radius.lg, borderWidth: 1, overflow: 'hidden', padding: Spacing.md },
+  row: { alignItems: 'center', justifyContent: 'space-between', gap: Spacing.sm },
+  col: { flex: 1, gap: 2 },
+  weekLabel: { fontSize: 11, fontFamily: F.med },
+  weekVal: { fontSize: 24, fontFamily: F.black },
+  deltaBox: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
+    borderRadius: Radius.sm,
+  },
+  deltaText: { fontSize: 15, fontFamily: F.bold },
+});
+
 // ── Stat Card ─────────────────────────────────────────────────────────────────
 function StatCard({ label, value, icon, grad, C, isDark }: {
-  label: string; value: string | number; icon: string;
+  label: string; value: string | number; icon: IoniconName;
   grad: readonly [string, string]; C: ColorScheme; isDark: boolean;
 }) {
   return (
@@ -430,7 +530,7 @@ function StatCard({ label, value, icon, grad, C, isDark }: {
       <LinearGradient colors={[...grad]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={scStyles.topBar} />
       <View style={scStyles.body}>
         <LinearGradient colors={[...grad]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={scStyles.iconCircle}>
-          <Ionicons name={icon as any} size={16} color="#fff" />
+          <Ionicons name={icon} size={16} color="#fff" />
         </LinearGradient>
         <Text style={[scStyles.value, { color: grad[0] }]}>{value}</Text>
         <Text style={[scStyles.label, { color: C.textSecondary }]} numberOfLines={2}>{label}</Text>
@@ -449,9 +549,10 @@ const scStyles = StyleSheet.create({
 });
 
 // ── Progress Card ─────────────────────────────────────────────────────────────
-function ProgressCard({ label, value, grad, C, isDark, isRTL }: {
+function ProgressCard({ label, value, grad, C, isDark, isRTL, fmt }: {
   label: string; value: number;
   grad: readonly [string, string]; C: ColorScheme; isDark: boolean; isRTL: boolean;
+  fmt: (v: number) => string;
 }) {
   return (
     <View style={[pcStyles.card, isDark ? ShadowDark.sm : Shadow.sm, { borderColor: C.border }]}>
@@ -459,7 +560,7 @@ function ProgressCard({ label, value, grad, C, isDark, isRTL }: {
       {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
       <View style={[pcStyles.body, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <Text style={[pcStyles.label, { color: C.textSecondary }]}>{label}</Text>
-        <Text style={[pcStyles.value, { color: grad[0] }]}>{value}%</Text>
+        <Text style={[pcStyles.value, { color: grad[0] }]}>{fmt(value)}%</Text>
       </View>
       <View style={[pcStyles.track, { backgroundColor: grad[0] + '18' }]}>
         <LinearGradient
@@ -484,12 +585,15 @@ const pcStyles = StyleSheet.create({
 
 // ── Habits Sparkline Card ─────────────────────────────────────────────────────
 type SparklineItem = {
-  habit: { id: string; name: string; name_ar?: string; name_en?: string; icon: string; color: string; streak_days: number };
+  habit: {
+    id: string; name: string; name_ar?: string; name_en?: string;
+    icon: string; color: string; streak_days: number;
+  };
   dots: { date: string; done: boolean; isToday: boolean }[];
 };
 
 function HabitsSparklineCard({
-  sparklines, lang, C, isDark, isRTL, tFunc, todayStr,
+  sparklines, lang, C, isDark, isRTL, tFunc, todayStr, fmt,
 }: {
   sparklines: SparklineItem[];
   lang: 'en' | 'ar';
@@ -498,6 +602,7 @@ function HabitsSparklineCard({
   isRTL: boolean;
   tFunc: (k: string) => string;
   todayStr: string;
+  fmt: (v: number) => string;
 }) {
   return (
     <View style={[hkStyles.card, isDark ? ShadowDark.sm : Shadow.sm, { borderColor: C.border }]}>
@@ -508,9 +613,7 @@ function HabitsSparklineCard({
         <Text style={[hkStyles.cardTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>
           {tFunc('completionHistory')}
         </Text>
-        <Text style={[hkStyles.cardSub, { color: C.textMuted }]}>
-          7d
-        </Text>
+        <Text style={[hkStyles.cardSub, { color: C.textMuted }]}>7d</Text>
       </View>
 
       {sparklines.map(({ habit, dots }, idx) => {
@@ -527,21 +630,16 @@ function HabitsSparklineCard({
               idx < sparklines.length - 1 && { borderBottomColor: C.border, borderBottomWidth: StyleSheet.hairlineWidth },
             ]}
           >
-            {/* Icon */}
             <View style={[hkStyles.habitIcon, { backgroundColor: habit.color + '22' }]}>
               <Text style={{ fontSize: 16 }}>{habit.icon}</Text>
             </View>
-
-            {/* Name + streak */}
             <View style={[hkStyles.nameBlock, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
               <Text style={[hkStyles.habitName, { color: C.text }]} numberOfLines={1}>{name}</Text>
               <View style={[hkStyles.streakRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
                 <Ionicons name="flame-outline" size={11} color={habit.color} />
-                <Text style={[hkStyles.streakText, { color: habit.color }]}>{habit.streak_days}</Text>
+                <Text style={[hkStyles.streakText, { color: habit.color }]}>{fmt(habit.streak_days)}</Text>
               </View>
             </View>
-
-            {/* Sparkline dots */}
             <View style={[hkStyles.dotsRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               {displayDots.map((d) => (
                 <View
@@ -560,8 +658,6 @@ function HabitsSparklineCard({
                 />
               ))}
             </View>
-
-            {/* Today badge */}
             {doneTodayH && (
               <View style={[hkStyles.todayBadge, { backgroundColor: habit.color + '18' }]}>
                 <Ionicons name="checkmark" size={12} color={habit.color} />
@@ -582,14 +678,8 @@ const hkStyles = StyleSheet.create({
   },
   cardTitle: { fontSize: 13, fontFamily: F.bold, letterSpacing: 0.3 },
   cardSub: { fontSize: 12, fontFamily: F.med },
-  row: {
-    alignItems: 'center', gap: Spacing.sm,
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm + 2,
-  },
-  habitIcon: {
-    width: 34, height: 34, borderRadius: 10,
-    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-  },
+  row: { alignItems: 'center', gap: Spacing.sm, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm + 2 },
+  habitIcon: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   nameBlock: { flex: 1, gap: 2, minWidth: 0 },
   habitName: { fontSize: 13, fontFamily: F.med },
   streakRow: { alignItems: 'center', gap: 3 },
@@ -597,23 +687,21 @@ const hkStyles = StyleSheet.create({
   dotsRow: { alignItems: 'center', gap: 5, flexShrink: 0 },
   dot: { width: 9, height: 9, borderRadius: 5 },
   dotToday: { borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.5)' },
-  todayBadge: {
-    width: 22, height: 22, borderRadius: 11,
-    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-  },
+  todayBadge: { width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
 });
 
 // ── Goals Progress Card ───────────────────────────────────────────────────────
-import { Goal } from '../src/types';
-
 function GoalsProgressCard({
-  activeGoals, lang, C, isDark, isRTL,
+  activeGoals, lang, C, isDark, isRTL, tFunc, today, fmt,
 }: {
   activeGoals: Goal[];
   lang: 'en' | 'ar';
   C: ColorScheme;
   isDark: boolean;
   isRTL: boolean;
+  tFunc: (k: string) => string;
+  today: Date;
+  fmt: (v: number) => string;
 }) {
   return (
     <View style={[gpStyles.card, isDark ? ShadowDark.sm : Shadow.sm, { borderColor: C.border }]}>
@@ -626,6 +714,19 @@ function GoalsProgressCard({
           ? Math.min(Math.round((goal.current_value / goal.target_value) * 100), 100)
           : 0;
 
+        // Deadline countdown
+        let daysLeft: number | null = null;
+        if (goal.deadline) {
+          try {
+            const deadlineDate = parseISO(goal.deadline);
+            daysLeft = differenceInCalendarDays(deadlineDate, today);
+          } catch {}
+        }
+
+        const isComplete = pct >= 100;
+        const isOverdue = daysLeft !== null && daysLeft < 0 && !isComplete;
+        const isDueSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 7 && !isComplete;
+
         return (
           <View
             key={goal.id}
@@ -634,6 +735,7 @@ function GoalsProgressCard({
               idx < activeGoals.length - 1 && { borderBottomColor: C.border, borderBottomWidth: StyleSheet.hairlineWidth },
             ]}
           >
+            {/* Title row */}
             <View style={[gpStyles.goalTop, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <View style={[gpStyles.goalIconBox, { backgroundColor: goal.color + '22' }]}>
                 <Text style={{ fontSize: 15 }}>{goal.icon}</Text>
@@ -641,9 +743,10 @@ function GoalsProgressCard({
               <Text style={[gpStyles.goalName, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
                 {name}
               </Text>
-              <Text style={[gpStyles.goalPct, { color: goal.color }]}>{pct}%</Text>
+              <Text style={[gpStyles.goalPct, { color: goal.color }]}>{fmt(pct)}%</Text>
             </View>
 
+            {/* Progress bar */}
             <View style={[gpStyles.trackOuter, { backgroundColor: goal.color + '18' }]}>
               <View
                 style={[
@@ -657,13 +760,43 @@ function GoalsProgressCard({
               />
             </View>
 
+            {/* Footer: value + deadline */}
             <View style={[gpStyles.valRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
               <Text style={[gpStyles.valText, { color: C.textMuted }]}>
-                {goal.current_value} / {goal.target_value}
+                {fmt(goal.current_value)} / {fmt(goal.target_value)}
               </Text>
-              {pct >= 100 && (
-                <View style={[gpStyles.doneBadge, { backgroundColor: BOLD_GREEN + '18' }]}>
-                  <Ionicons name="checkmark-circle" size={12} color={BOLD_GREEN} />
+
+              {isComplete && (
+                <View style={[gpStyles.badge, { backgroundColor: BOLD_GREEN + '18' }]}>
+                  <Ionicons name="checkmark-circle" size={11} color={BOLD_GREEN} />
+                  <Text style={[gpStyles.badgeText, { color: BOLD_GREEN }]}>{tFunc('done')}</Text>
+                </View>
+              )}
+
+              {isOverdue && daysLeft !== null && (
+                <View style={[gpStyles.badge, { backgroundColor: BOLD_RED + '15' }]}>
+                  <Ionicons name="alert-circle-outline" size={11} color={BOLD_RED} />
+                  <Text style={[gpStyles.badgeText, { color: BOLD_RED }]}>
+                    {fmt(Math.abs(daysLeft))}d
+                  </Text>
+                </View>
+              )}
+
+              {isDueSoon && daysLeft !== null && (
+                <View style={[gpStyles.badge, { backgroundColor: BOLD_GOLD + '20' }]}>
+                  <Ionicons name="time-outline" size={11} color={BOLD_GOLD} />
+                  <Text style={[gpStyles.badgeText, { color: BOLD_GOLD }]}>
+                    {fmt(daysLeft)} {tFunc('daysLeft')}
+                  </Text>
+                </View>
+              )}
+
+              {!isComplete && !isOverdue && !isDueSoon && daysLeft !== null && (
+                <View style={[gpStyles.badge, { backgroundColor: C.border }]}>
+                  <Ionicons name="calendar-outline" size={11} color={C.textMuted} />
+                  <Text style={[gpStyles.badgeText, { color: C.textMuted }]}>
+                    {fmt(daysLeft)} {tFunc('daysLeft')}
+                  </Text>
                 </View>
               )}
             </View>
@@ -678,34 +811,38 @@ const gpStyles = StyleSheet.create({
   card: { borderRadius: Radius.lg, borderWidth: 1, overflow: 'hidden' },
   row: { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md, gap: 6 },
   goalTop: { alignItems: 'center', gap: Spacing.sm },
-  goalIconBox: {
-    width: 30, height: 30, borderRadius: 8,
-    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-  },
+  goalIconBox: { width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   goalName: { flex: 1, fontSize: 14, fontFamily: F.med },
   goalPct: { fontSize: 15, fontFamily: F.black, flexShrink: 0 },
   trackOuter: { height: 8, borderRadius: 4, overflow: 'hidden' },
   trackFill: { height: '100%', borderRadius: 4 },
   valRow: { alignItems: 'center', gap: 6 },
   valText: { fontSize: 11, fontFamily: F.med },
-  doneBadge: {
-    width: 20, height: 20, borderRadius: 10,
-    alignItems: 'center', justifyContent: 'center',
+  badge: {
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+    paddingHorizontal: 6, paddingVertical: 3, borderRadius: 6,
   },
+  badgeText: { fontSize: 10, fontFamily: F.bold },
 });
 
 // ── Mood Distribution Card ────────────────────────────────────────────────────
 function MoodDistributionCard({
-  distribution, lang, C, isDark, isRTL, tFunc,
+  distribution, topMood, lang, C, isDark, isRTL, tFunc, fmt,
 }: {
   distribution: [Mood, number][];
+  topMood: Mood | null;
   lang: 'en' | 'ar';
   C: ColorScheme;
   isDark: boolean;
   isRTL: boolean;
   tFunc: (k: string) => string;
+  fmt: (v: number) => string;
 }) {
   const maxCount = distribution.length > 0 ? distribution[0][1] : 1;
+  const topCfg = topMood ? MOOD_CONFIG[topMood] : null;
+  const topLabel = topMood
+    ? tFunc(`mood${topMood.charAt(0).toUpperCase() + topMood.slice(1)}`)
+    : null;
 
   return (
     <View style={[mdStyles.card, isDark ? ShadowDark.sm : Shadow.sm, { borderColor: C.border }]}>
@@ -718,31 +855,55 @@ function MoodDistributionCard({
         <Text style={[mdStyles.sub, { color: C.textMuted }]}>{tFunc('completionHistory30')}</Text>
       </View>
 
+      {/* Top mood highlight */}
+      {topMood && topCfg && topLabel && (
+        <View style={[mdStyles.topMoodRow, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: topCfg.color + '12' }]}>
+          <LinearGradient
+            colors={[topCfg.color, topCfg.color + 'AA']}
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+            style={mdStyles.topMoodIcon}
+          >
+            <Ionicons name={topCfg.icon} size={18} color="#fff" />
+          </LinearGradient>
+          <View style={{ flex: 1, gap: 1 }}>
+            <Text style={[mdStyles.topMoodLabel, { color: topCfg.color, textAlign: isRTL ? 'right' : 'left' }]}>
+              {topLabel}
+            </Text>
+            <Text style={[mdStyles.topMoodSub, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>
+              #{1} · {fmt(distribution[0][1])}×
+            </Text>
+          </View>
+          <View style={[mdStyles.topMoodBadge, { backgroundColor: topCfg.color + '20' }]}>
+            <Ionicons name="star" size={10} color={topCfg.color} />
+            <Text style={[mdStyles.topMoodBadgeText, { color: topCfg.color }]}>Top</Text>
+          </View>
+        </View>
+      )}
+
+      {/* Mood grid */}
       <View style={mdStyles.grid}>
-        {distribution.map(([mood, count]) => {
+        {distribution.map(([mood, count], i) => {
           const cfg = MOOD_CONFIG[mood];
           if (!cfg) return null;
           const pct = count / maxCount;
           const moodLabel = tFunc(`mood${mood.charAt(0).toUpperCase() + mood.slice(1)}`);
+          const isTop = i === 0;
 
           return (
-            <View key={mood} style={mdStyles.moodItem}>
-              {/* Bar */}
-              <View style={[mdStyles.barTrack, { backgroundColor: cfg.color + '15' }]}>
+            <View key={mood} style={[mdStyles.moodItem, isTop && { opacity: 1 }]}>
+              <View style={[mdStyles.barTrack, { backgroundColor: cfg.color + '15' }, isTop && mdStyles.barTrackTop]}>
                 <View
                   style={[
                     mdStyles.barFill,
                     { height: `${Math.round(pct * 100)}%`, backgroundColor: cfg.color },
+                    isTop && { backgroundColor: cfg.color },
                   ]}
                 />
               </View>
-              {/* Icon */}
-              <View style={[mdStyles.iconBox, { backgroundColor: cfg.color + '18' }]}>
-                <Ionicons name={cfg.icon as any} size={14} color={cfg.color} />
+              <View style={[mdStyles.iconBox, { backgroundColor: cfg.color + '18' }, isTop && { backgroundColor: cfg.color + '30' }]}>
+                <Ionicons name={cfg.icon} size={14} color={cfg.color} />
               </View>
-              {/* Count */}
-              <Text style={[mdStyles.countText, { color: cfg.color }]}>{count}</Text>
-              {/* Label */}
+              <Text style={[mdStyles.countText, { color: cfg.color }]}>{fmt(count)}</Text>
               <Text style={[mdStyles.moodLabel, { color: C.textMuted }]} numberOfLines={1}>{moodLabel}</Text>
             </View>
           );
@@ -760,51 +921,35 @@ const mdStyles = StyleSheet.create({
   },
   title: { fontSize: 13, fontFamily: F.bold, letterSpacing: 0.3, flex: 1 },
   sub: { fontSize: 11, fontFamily: F.med },
+  topMoodRow: {
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
+    marginHorizontal: Spacing.md, marginBottom: Spacing.md,
+    borderRadius: Radius.sm, padding: Spacing.md,
+  },
+  topMoodIcon: {
+    width: 38, height: 38, borderRadius: 12,
+    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+  },
+  topMoodLabel: { fontSize: 15, fontFamily: F.bold },
+  topMoodSub: { fontSize: 11, fontFamily: F.med },
+  topMoodBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+    paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8,
+    flexShrink: 0,
+  },
+  topMoodBadgeText: { fontSize: 10, fontFamily: F.bold },
   grid: {
     flexDirection: 'row', flexWrap: 'wrap',
     paddingHorizontal: Spacing.md, gap: Spacing.sm,
     justifyContent: 'flex-start',
   },
-  moodItem: {
-    width: 52, alignItems: 'center', gap: 4,
-  },
-  barTrack: {
-    width: 20, height: 44, borderRadius: 4,
-    overflow: 'hidden', justifyContent: 'flex-end',
-  },
+  moodItem: { width: 52, alignItems: 'center', gap: 4 },
+  barTrack: { width: 20, height: 44, borderRadius: 4, overflow: 'hidden', justifyContent: 'flex-end' },
+  barTrackTop: { width: 24, height: 52 },
   barFill: { width: '100%', borderRadius: 4 },
-  iconBox: {
-    width: 26, height: 26, borderRadius: 8,
-    alignItems: 'center', justifyContent: 'center',
-  },
+  iconBox: { width: 26, height: 26, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   countText: { fontSize: 12, fontFamily: F.black },
   moodLabel: { fontSize: 9, fontFamily: F.med, textAlign: 'center' },
-});
-
-// ── Info Card ─────────────────────────────────────────────────────────────────
-function InfoCard({ icon, text, grad, C, isDark }: {
-  icon: string; text: string;
-  grad: readonly [string, string]; C: ColorScheme; isDark: boolean;
-}) {
-  return (
-    <View style={[infoStyles.card, { borderColor: grad[0] + '30', overflow: 'hidden' }, isDark ? ShadowDark.sm : Shadow.sm]}>
-      {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
-      {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: grad[0] + '08' }]} />}
-      <LinearGradient colors={[...grad]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={infoStyles.iconBox}>
-        <Ionicons name={icon as any} size={16} color="#fff" />
-      </LinearGradient>
-      <Text style={[infoStyles.text, { color: grad[0] }]}>{text}</Text>
-    </View>
-  );
-}
-
-const infoStyles = StyleSheet.create({
-  card: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
-    borderRadius: Radius.lg, borderWidth: 1, padding: Spacing.md, overflow: 'hidden',
-  },
-  iconBox: { width: 32, height: 32, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  text: { fontSize: 14, fontFamily: F.med, flex: 1 },
 });
 
 // ── Screen styles ─────────────────────────────────────────────────────────────
