@@ -86,31 +86,22 @@ function computeStreak(history: string[], freq: HabitFrequency): number {
       return streak;
     }
 
-    let streakDays = 0;
-    let rollingCount = 0;
-    const windowSize = 7;
     const historySet = new Set(history);
-
-    const windowDays: string[] = Array.from({ length: windowSize }, (_, i) =>
-      format(subDays(today, i), 'yyyy-MM-dd')
-    );
-    rollingCount = windowDays.filter(d => historySet.has(d)).length;
-
-    if (rollingCount >= daysPerWeek) {
-      streakDays = rollingCount;
-      for (let offset = 1; offset <= 52; offset++) {
-        const olderWindow: string[] = Array.from({ length: windowSize }, (_, i) =>
-          format(subDays(today, offset * windowSize + i), 'yyyy-MM-dd')
-        );
-        const olderCount = olderWindow.filter(d => historySet.has(d)).length;
-        if (olderCount >= daysPerWeek) {
-          streakDays += olderCount;
-        } else {
-          break;
-        }
+    let streakWeeks = 0;
+    for (let w = 0; w < 52; w++) {
+      const start = w * 7;
+      let count = 0;
+      for (let i = 0; i < 7; i++) {
+        const d = format(subDays(today, start + i), 'yyyy-MM-dd');
+        if (historySet.has(d)) count++;
+      }
+      if (count >= daysPerWeek) {
+        streakWeeks++;
+      } else {
+        break;
       }
     }
-    return streakDays;
+    return streakWeeks;
   }
 
   return 0;

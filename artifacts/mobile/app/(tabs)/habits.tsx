@@ -26,14 +26,17 @@ import { StreakCelebrationPayload } from '../../src/store/habitsStore';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-function getFreqBadge(freq: HabitFrequency, tFunc: (k: string) => string): string {
+const DAY_ABBR_EN = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const DAY_ABBR_AR = ['أح', 'اث', 'ثل', 'أر', 'خم', 'جم', 'سب'];
+
+function getFreqBadge(freq: HabitFrequency, tFunc: (k: string) => string, lang: Language): string {
   if (freq.type === 'daily') return tFunc('freqDaily');
   if (freq.type === 'weekdays') return tFunc('freqWeekdays');
   if (freq.type === 'custom') {
     const sd = freq.specific_days;
     if (sd && sd.length > 0) {
-      const dayAbbr = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-      return sd.map(d => dayAbbr[d]).join(', ');
+      const dayAbbr = lang === 'ar' ? DAY_ABBR_AR : DAY_ABBR_EN;
+      return sd.map(d => dayAbbr[d]).join(lang === 'ar' ? '، ' : ', ');
     }
     const dpw = freq.days_per_week ?? 3;
     return `${dpw}× / ${tFunc('freqWeek')}`;
@@ -59,9 +62,9 @@ function isRequiredDay(date: Date, freq: HabitFrequency): boolean {
     if (sd && sd.length > 0) {
       return sd.includes(getDay(date));
     }
-    return true;
+    return false;
   }
-  return true;
+  return false;
 }
 
 function HistoryCalendarModal({
@@ -246,12 +249,13 @@ const hStyles = StyleSheet.create({
 });
 
 function HabitCard({
-  item, isDoneToday, isDark, isRTL, C, tFunc, onToggle, onEdit, onDelete, onShowHistory,
+  item, isDoneToday, isDark, isRTL, lang, C, tFunc, onToggle, onEdit, onDelete, onShowHistory,
 }: {
   item: Habit;
   isDark: boolean;
   isDoneToday: boolean;
   isRTL: boolean;
+  lang: Language;
   C: ColorScheme;
   tFunc: (k: string) => string;
   onToggle: () => void;
@@ -271,7 +275,7 @@ function HabitCard({
     prevDone.current = isDoneToday;
   }, [isDoneToday]);
 
-  const freqBadge = item.frequency ? getFreqBadge(item.frequency, tFunc) : '';
+  const freqBadge = item.frequency ? getFreqBadge(item.frequency, tFunc, lang) : '';
 
   return (
     <AnimatedPressable
@@ -576,6 +580,7 @@ export default function HabitsScreen() {
                 isDoneToday={isDoneToday}
                 isDark={isDark}
                 isRTL={isRTL}
+                lang={lang}
                 C={C}
                 tFunc={tFunc}
                 onToggle={() => {
