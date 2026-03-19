@@ -69,7 +69,6 @@
     "@expo-google-fonts/comfortaa": "^0.4.2",
     "@hookform/resolvers": "^3.10.0",
     "date-fns": "^3.6.0",
-    "expo-notifications": "^0.32.16",
     "expo-video": "^3.0.16",
     "react-hook-form": "^7.71.2",
     "zustand": "^5.0.11"
