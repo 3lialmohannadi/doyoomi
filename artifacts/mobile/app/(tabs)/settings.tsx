@@ -20,14 +20,15 @@ import { useGoalsStore } from '../../src/store/goalsStore';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useJournalStore } from '../../src/store/journalStore';
 import { useTasksStore } from '../../src/store/tasksStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_SAGE, GRADIENT_AMBER, GRADIENT_CORAL, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_SAGE, GRADIENT_AMBER, GRADIENT_CORAL, GRADIENT_DARK_HEADER, GRADIENT_DARK_CARD, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { CategoriesManager } from '../../src/features/categories/CategoriesManager';
 import { getTodayString, formatDateKey } from '../../src/utils/date';
 
 export default function MoreScreen() {
-  const { C } = useAppTheme();
+  const { C, scheme } = useAppTheme();
+  const isDark = scheme === 'dark';
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
@@ -90,21 +91,30 @@ export default function MoreScreen() {
 
         {/* ── Hero ── */}
         <LinearGradient
-          colors={[...GRADIENT_D]}
+          colors={isDark ? [...GRADIENT_DARK_HEADER] : [...GRADIENT_D]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={[styles.hero, { paddingTop: topPad + Spacing.md }]}
+          style={[styles.hero, { paddingTop: topPad + Spacing.md }, isDark && styles.heroDark]}
         >
-          <View style={styles.heroDecor1} />
-          <View style={styles.heroDecor2} />
-          <View style={styles.heroDecor3} />
+          {!isDark && <View style={styles.heroDecor1} />}
+          {!isDark && <View style={styles.heroDecor2} />}
+          {!isDark && <View style={styles.heroDecor3} />}
 
-          <Text style={[styles.heroLabel, { textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('more')}</Text>
+          <Text style={[styles.heroLabel, { color: isDark ? C.tint : '#fff', textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('more')}</Text>
 
           {/* Profile card */}
           <Pressable
             onPress={openProfileModal}
-            style={({ pressed }) => [styles.profileCard, { flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.93 : 1 }]}
+            style={({ pressed }) => [
+              styles.profileCard,
+              {
+                backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.95)',
+                borderWidth: isDark ? 1 : 0,
+                borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'transparent',
+                flexDirection: isRTL ? 'row-reverse' : 'row',
+                opacity: pressed ? 0.93 : 1,
+              },
+            ]}
             accessibilityRole="button"
           >
             <LinearGradient
@@ -119,16 +129,16 @@ export default function MoreScreen() {
             </LinearGradient>
 
             <View style={[styles.profileInfo, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
-              <Text style={[styles.profileName, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+              <Text style={[styles.profileName, { color: isDark ? C.text : '#2D1A0E', textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
                 {profile.name || tFunc('noNameSet')}
               </Text>
-              <Text style={[styles.profileEmail, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+              <Text style={[styles.profileEmail, { color: isDark ? C.textSecondary : '#7A5C48', textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
                 {profile.email || tFunc('tapToEditProfile')}
               </Text>
             </View>
 
-            <View style={styles.editBadge}>
-              <Ionicons name="pencil" size={13} color={PRIMARY} />
+            <View style={[styles.editBadge, { backgroundColor: isDark ? C.tint + '20' : PRIMARY + '1A' }]}>
+              <Ionicons name="pencil" size={13} color={C.tint} />
             </View>
           </Pressable>
         </LinearGradient>
@@ -274,7 +284,9 @@ export default function MoreScreen() {
           </Pressable>
 
           {/* About card */}
-          <View style={[styles.aboutCard, { backgroundColor: C.card, borderColor: C.border }]}>
+          <View style={[styles.aboutCard, { borderColor: C.border, overflow: 'hidden' }]}>
+            {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+            {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
             <View style={styles.aboutLogoWrap}>
               <Image
                 source={require('../../assets/images/icon-nobg.png')}
@@ -443,15 +455,19 @@ function ContentCard({ icon, label, sub, colors, onPress, isRTL, C }: {
   colors: [string, string]; onPress: () => void;
   isRTL: boolean; C: ColorScheme;
 }) {
+  const { scheme: ccScheme } = useAppTheme();
+  const isCCDark = ccScheme === 'dark';
   return (
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [
         styles.contentCard,
-        { backgroundColor: C.card, borderColor: C.border, opacity: pressed ? 0.88 : 1 },
+        { borderColor: C.border, overflow: 'hidden', opacity: pressed ? 0.88 : 1 },
       ]}
       accessibilityRole="button"
     >
+      {isCCDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+      {!isCCDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
       <View style={[styles.contentCardRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <LinearGradient
           colors={colors}
@@ -476,8 +492,12 @@ function SettingCard({ icon, iconColor, title, options, activeIndex, onSelect, C
   options: string[]; activeIndex: number;
   onSelect: (index: number) => void; C: ColorScheme; isRTL?: boolean;
 }) {
+  const { scheme: scScheme } = useAppTheme();
+  const isSCDark = scScheme === 'dark';
   return (
-    <View style={[styles.settingCard, { backgroundColor: C.card, borderColor: C.border }]}>
+    <View style={[styles.settingCard, { borderColor: C.border, overflow: 'hidden' }]}>
+      {isSCDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+      {!isSCDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
       <View style={[styles.settingCardHeader, isRTL && { flexDirection: 'row-reverse' }]}>
         <View style={[styles.settingCardIcon, { backgroundColor: iconColor + '18' }]}>
           <Ionicons name={icon} size={17} color={iconColor} />
@@ -666,6 +686,10 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
     minHeight: 200,
+  },
+  heroDark: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.06)',
   },
   heroDecor1: {
     position: 'absolute', left: -50, top: -50,

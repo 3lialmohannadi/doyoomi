@@ -11,7 +11,7 @@ import * as Haptics from 'expo-haptics';
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_SAGE, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow, ShadowDark, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_SAGE, GRADIENT_DARK_HEADER, GRADIENT_DARK_CARD, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, resolveDisplayName } from '../../src/utils/i18n';
 import { formatTime, formatDateKey, getTodayString, formatDate } from '../../src/utils/date';
@@ -40,7 +40,8 @@ function formatHeaderAr(date: Date, view: string, startDay: string) {
 type CalView = 'month' | 'week' | 'day';
 
 export default function CalendarScreen() {
-  const { C } = useAppTheme();
+  const { C, scheme } = useAppTheme();
+  const isDark = scheme === 'dark';
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
@@ -101,18 +102,18 @@ export default function CalendarScreen() {
     <View style={[styles.container, { backgroundColor: C.background }]}>
       {/* Header */}
       <LinearGradient
-        colors={[...GRADIENT_SAGE]}
+        colors={isDark ? [...GRADIENT_DARK_HEADER] : [...GRADIENT_SAGE]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 1 }}
-        style={[styles.header, { paddingTop: topPad + Spacing.md }]}
+        style={[styles.header, { paddingTop: topPad + Spacing.md }, isDark && styles.headerDark]}
       >
-        <View style={styles.headerDecor1} />
-        <View style={styles.headerDecor2} />
+        {!isDark && <View style={styles.headerDecor1} />}
+        {!isDark && <View style={styles.headerDecor2} />}
         <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={{ width: 46 }} />
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <Text style={styles.headerTitle}>{tFunc('calendar')}</Text>
-            <Text style={styles.headerSub}>{headerLabel}</Text>
+            <Text style={[styles.headerTitle, { color: isDark ? C.text : '#fff' }]}>{tFunc('calendar')}</Text>
+            <Text style={[styles.headerSub, { color: isDark ? C.textSecondary : 'rgba(255,255,255,0.75)' }]}>{headerLabel}</Text>
           </View>
           <Pressable
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditTask(null); setShowTaskForm(true); }}
@@ -120,8 +121,8 @@ export default function CalendarScreen() {
             accessibilityRole="button"
             accessibilityLabel={tFunc('addTask')}
           >
-            <View style={styles.addBtnInner}>
-              <Ionicons name="add" size={26} color={SECONDARY} />
+            <View style={[styles.addBtnInner, { backgroundColor: isDark ? C.surface : '#fff' }]}>
+              <Ionicons name="add" size={26} color={isDark ? C.tint : SECONDARY} />
             </View>
           </Pressable>
         </View>
@@ -247,6 +248,8 @@ interface CalendarViewProps {
 
 function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, lang, C }: CalendarViewProps) {
   const isRTL = lang === 'ar';
+  const { scheme: monthScheme } = useAppTheme();
+  const isMonthDark = monthScheme === 'dark';
   const weekStart = startDay === 'sunday' ? 0 : 1;
 
   const dayHeadersEn = startDay === 'sunday'
@@ -282,7 +285,9 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
   const cells = rows.flat();
 
   return (
-    <View style={[styles.calCard, { backgroundColor: C.card, borderColor: C.border }]}>
+    <View style={[styles.calCard, { borderColor: C.border, overflow: 'hidden' }]}>
+      {isMonthDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+      {!isMonthDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
       <View style={styles.dayHeadersRow}>
         {dayHeaders.map((d, idx) => (
           <Text key={`${d}-${idx}`} style={[styles.dayHeader, { color: C.textMuted }]}>{d}</Text>
@@ -346,9 +351,13 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
   // In RTL: reverse so Sunday appears on the right
   const days = isRTL ? [...ltrDays].reverse() : ltrDays;
   const today = getTodayString();
+  const { scheme: weekScheme } = useAppTheme();
+  const isWeekDark = weekScheme === 'dark';
 
   return (
-    <View style={[styles.weekCard, { backgroundColor: C.card, borderColor: C.border }]}>
+    <View style={[styles.weekCard, { borderColor: C.border, overflow: 'hidden' }]}>
+      {isWeekDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+      {!isWeekDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
       <View style={styles.weekViewRow}>
         {days.map(day => {
           const key = formatDateKey(day);
@@ -402,6 +411,8 @@ interface DayViewProps {
 function DayView({ date, tasks, categories, C, tFunc, isRTL }: DayViewProps) {
   const key = formatDateKey(date);
   const dayTasks = tasks.filter((t) => t.due_date === key);
+  const { scheme: dayScheme } = useAppTheme();
+  const isDayDark = dayScheme === 'dark';
 
   return (
     <View style={styles.dayViewContainer}>
@@ -412,7 +423,9 @@ function DayView({ date, tasks, categories, C, tFunc, isRTL }: DayViewProps) {
           const cat = categories.find((c) => c.id === task.category_id);
           const accentColor = task.priority === 'high' ? C.priorityHigh : task.priority === 'medium' ? C.priorityMedium : C.priorityLow;
           return (
-            <View key={task.id} style={[styles.dayTaskCard, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View key={task.id} style={[styles.dayTaskCard, { borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row', overflow: 'hidden' }]}>
+              {isDayDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+              {!isDayDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
               <View style={[styles.dayTaskAccent, { backgroundColor: accentColor }]} />
               <View style={[styles.dayTaskContent, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
                 <Text style={[styles.dayTaskTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{resolveDisplayName(task.title_ar, task.title_en, lang, task.title)}</Text>
@@ -476,6 +489,10 @@ const styles = StyleSheet.create({
   navLabel: { ...Typography.subtitle, fontFamily: F.med },
 
   // Month calendar card
+  headerDark: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.06)',
+  },
   calCard: {
     marginHorizontal: Spacing.lg,
     borderRadius: Radius.xl,

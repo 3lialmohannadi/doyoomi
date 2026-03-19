@@ -63,8 +63,8 @@ export default function HabitsScreen() {
         end={{ x: 0, y: 1 }}
         style={[styles.header, { paddingTop: topPad + Spacing.md }, isDark && styles.headerDark]}
       >
-        <View style={styles.headerDecor1} />
-        <View style={styles.headerDecor2} />
+        {!isDark && <View style={styles.headerDecor1} />}
+        {!isDark && <View style={styles.headerDecor2} />}
 
         <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={{ width: 46 }} />

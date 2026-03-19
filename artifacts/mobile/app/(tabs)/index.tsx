@@ -18,7 +18,7 @@ import { useSettingsStore } from '../../src/store/settingsStore';
 import { resolveDisplayName } from '../../src/utils/i18n';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useJournalStore } from '../../src/store/journalStore';
-import { Spacing, Typography, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_AMBER, GRADIENT_SAGE, cardShadow, ColorScheme, WARM_SAGE, WARM_CORAL, WARM_ERROR } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow, ShadowDark, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_D, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_AMBER, GRADIENT_SAGE, GRADIENT_DARK_HEADER, GRADIENT_DARK_CARD, GRADIENT_DARK_CARD_ELEVATED, cardShadow, ColorScheme, WARM_SAGE, WARM_CORAL, WARM_ERROR } from '../../src/theme';
 import type { Task, Habit, Goal, JournalEntry, Mood, Category, Language } from '../../src/types';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, getGreeting } from '../../src/utils/i18n';
@@ -31,7 +31,8 @@ import { GoalForm } from '../../src/features/goals/GoalForm';
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function HomeScreen() {
-  const { C } = useAppTheme();
+  const { C, scheme } = useAppTheme();
+  const isDark = scheme === 'dark';
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
@@ -81,15 +82,15 @@ export default function HomeScreen() {
       >
         {/* Hero Header */}
         <LinearGradient
-          colors={[...GRADIENT_D]}
+          colors={isDark ? [...GRADIENT_DARK_HEADER] : [...GRADIENT_D]}
           start={{ x: 1, y: 0 }}
           end={{ x: 0, y: 1 }}
-          style={[styles.hero, { paddingTop: topPad + Spacing.md }]}
+          style={[styles.hero, { paddingTop: topPad + Spacing.md }, isDark && styles.heroDark]}
         >
-          {/* Decorative circles */}
-          <View style={[styles.deco1]} />
-          <View style={[styles.deco2]} />
-          <View style={[styles.deco3]} />
+          {/* Decorative circles — only in light mode */}
+          {!isDark && <View style={[styles.deco1]} />}
+          {!isDark && <View style={[styles.deco2]} />}
+          {!isDark && <View style={[styles.deco3]} />}
 
           <View style={[styles.heroContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={[styles.heroLeft, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
@@ -97,14 +98,16 @@ export default function HomeScreen() {
                 source={isRTL
                   ? require('../../assets/images/logo-ar-transparent.png')
                   : require('../../assets/images/logo-en-transparent.png')}
-                style={[styles.heroLogo, { alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}
+                style={[styles.heroLogo, { alignSelf: isRTL ? 'flex-end' : 'flex-start' }, isDark && { tintColor: C.tint }]}
                 resizeMode="contain"
               />
-              <Text style={[styles.greeting, { textAlign: isRTL ? 'right' : 'left' }]}>{getGreeting(lang)}</Text>
-              <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left', width: '100%' }]} numberOfLines={2}>
+              <Text style={[styles.greeting, { color: isDark ? C.textSecondary : 'rgba(255,255,255,0.75)', textAlign: isRTL ? 'right' : 'left' }]}>
+                {getGreeting(lang)}
+              </Text>
+              <Text style={[styles.heroTitle, { color: isDark ? C.text : '#fff', textAlign: isRTL ? 'right' : 'left', width: '100%' }]} numberOfLines={2}>
                 {profile.name || ''}
               </Text>
-              <Text style={[styles.heroDate, { textAlign: isRTL ? 'right' : 'left' }]}>
+              <Text style={[styles.heroDate, { color: isDark ? C.textMuted : 'rgba(255,255,255,0.65)', textAlign: isRTL ? 'right' : 'left' }]}>
                 {isRTL
                   ? format(new Date(), 'EEEE، d MMMM', { locale: arLocale })
                   : format(new Date(), 'EEEE, MMMM d')}
@@ -116,9 +119,9 @@ export default function HomeScreen() {
           {/* Today progress bar */}
           {todayTasks.length > 0 && (
             <View style={styles.heroProgress}>
-              <View style={[styles.heroProgressBar, { backgroundColor: 'rgba(255,255,255,0.18)' }]}>
+              <View style={[styles.heroProgressBar, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.18)' }]}>
                 <LinearGradient
-                  colors={['rgba(255,255,255,0.95)', 'rgba(255,255,255,0.65)']}
+                  colors={isDark ? [C.tint, C.tintSecondary] : ['rgba(255,255,255,0.95)', 'rgba(255,255,255,0.65)']}
                   start={{ x: 0, y: 0 }}
                   end={{ x: 1, y: 0 }}
                   style={[
@@ -128,12 +131,12 @@ export default function HomeScreen() {
                 />
               </View>
               <View style={[styles.heroProgressLabelRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <Text style={styles.heroProgressText}>
+                <Text style={[styles.heroProgressText, { color: isDark ? C.textSecondary : 'rgba(255,255,255,0.75)' }]}>
                   {completedToday}/{todayTasks.length} {tFunc('completed')}
                 </Text>
                 {completedToday > 0 && (
-                  <View style={styles.heroProgressPct}>
-                    <Text style={styles.heroProgressPctText}>
+                  <View style={[styles.heroProgressPct, { backgroundColor: isDark ? C.tint + '25' : 'rgba(255,255,255,0.2)' }]}>
+                    <Text style={[styles.heroProgressPctText, { color: isDark ? C.tint : 'rgba(255,255,255,0.9)' }]}>
                       {Math.round((completedToday / todayTasks.length) * 100)}%
                     </Text>
                   </View>
@@ -144,18 +147,26 @@ export default function HomeScreen() {
         </LinearGradient>
 
         {/* Stats Row */}
-        <View style={[styles.statsRow, { backgroundColor: C.card, borderColor: C.border }]}>
-          <StatPill icon="checkmark-done" value={completedToday} label={tFunc('completed')} color={SECONDARY} C={C} />
+        <View style={[styles.statsRow, { borderColor: C.border, overflow: 'hidden' }, isDark ? ShadowDark.sm : Shadow.sm]}>
+          {isDark && (
+            <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+          )}
+          {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
+          <StatPill icon="checkmark-done" value={completedToday} label={tFunc('completed')} color={C.tintSecondary} C={C} />
           <View style={[styles.statDivider, { backgroundColor: C.border }]} />
-          <StatPill icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color={WARM_ERROR} C={C} />
+          <StatPill icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color={C.error} C={C} />
           <View style={[styles.statDivider, { backgroundColor: C.border }]} />
           <StatPill icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color={C.tint} C={C} />
           <View style={[styles.statDivider, { backgroundColor: C.border }]} />
-          <StatPill icon="flame" value={maxStreak} label={tFunc('streak')} color={WARM_CORAL} C={C} />
+          <StatPill icon="flame" value={maxStreak} label={tFunc('streak')} color={C.warning} C={C} />
         </View>
 
         {/* Week Strip */}
-        <View style={[styles.weekCard, { backgroundColor: C.card, borderColor: C.border, borderWidth: 1, ...Shadow.sm }]}>
+        <View style={[styles.weekCard, { borderColor: C.border, borderWidth: 1, overflow: 'hidden' }, isDark ? ShadowDark.sm : Shadow.sm]}> 
+          {isDark && (
+            <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
+          )}
+          {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
           {weekStripDays.map((day) => {
             const key = formatDateKey(day);
             const isSelected = key === selectedDay;
@@ -573,6 +584,8 @@ function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLon
   const isCompleted = task.status === 'completed';
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  const { scheme: rowScheme } = useAppTheme();
+  const isRowDark = rowScheme === 'dark';
 
   const priorityGrad: Record<string, readonly [string, string]> = {
     high: GRADIENT_CORAL,
@@ -583,13 +596,15 @@ function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLon
 
   return (
     <AnimatedPressable
-      style={[animStyle, styles.taskRow, { backgroundColor: C.card, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+      style={[animStyle, styles.taskRow, { borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row', overflow: 'hidden' }, isRowDark ? ShadowDark.sm : Shadow.sm]}
       onPressIn={() => { scale.value = withSpring(0.98); }}
       onPressOut={() => { scale.value = withSpring(1); }}
       onLongPress={onLongPress}
       delayLongPress={400}
       accessibilityRole="button"
     >
+      {isRowDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+      {!isRowDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
       <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.taskAccent} />
       <Pressable
         onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onToggle(); }}
@@ -635,6 +650,8 @@ function FunHabitCard({
   const isDone = lastDate === today;
   const scale = useSharedValue(1);
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  const { scheme: habitScheme } = useAppTheme();
+  const isHabitDark = habitScheme === 'dark';
 
   const handlePress = () => {
     scale.value = withSpring(0.92, { damping: 10 });
@@ -651,7 +668,7 @@ function FunHabitCard({
         animStyle,
         styles.habitCard,
         {
-          backgroundColor: isDone ? habit.color + '12' : C.card,
+          backgroundColor: isDone ? habit.color + '12' : isHabitDark ? 'transparent' : C.card,
           borderColor: isDone ? habit.color + '55' : C.border,
         },
       ]}
@@ -659,6 +676,7 @@ function FunHabitCard({
       accessibilityState={{ checked: isDone }}
       accessibilityLabel={resolveDisplayName(habit.name_ar, habit.name_en, lang ?? 'en', habit.name)}
     >
+      {isHabitDark && !isDone && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
       {/* Top colour line */}
       <View style={[styles.habitTopLine, { backgroundColor: habit.color }]} />
 
@@ -705,9 +723,13 @@ interface FunGoalCardProps {
 
 function FunGoalCard({ goal, progress, gradient, C, isRTL, lang }: FunGoalCardProps) {
   const pct = Math.round(progress * 100);
+  const { scheme: goalScheme } = useAppTheme();
+  const isGoalDark = goalScheme === 'dark';
 
   return (
-    <View style={[styles.goalCard, { backgroundColor: C.card, borderColor: C.border }]}>
+    <View style={[styles.goalCard, { borderColor: C.border, overflow: 'hidden' }, isGoalDark ? ShadowDark.sm : Shadow.sm]}>
+      {isGoalDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+      {!isGoalDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
       <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md }}>
         <LinearGradient colors={gradient} style={styles.goalIcon}>
           <Ionicons name={((goal.icon ?? 'star') + '-outline') as IoniconsName} size={18} color="#fff" />
@@ -819,6 +841,8 @@ interface FunWeekChartProps {
 
 function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: FunWeekChartProps) {
   const isRTL = lang === 'ar';
+  const { scheme: chartScheme } = useAppTheme();
+  const isChartDark = chartScheme === 'dark';
   const maxVal = 8;
   const data = weekDays.map((d: Date) => {
     const key = formatDateKey(d);
@@ -838,7 +862,9 @@ function FunWeekChart({ weekDays, tasks, C, tFunc, lang }: FunWeekChartProps) {
   ];
 
   return (
-    <View style={[styles.chartCard, { backgroundColor: C.card, borderColor: C.border }]}>
+    <View style={[styles.chartCard, { borderColor: C.border, overflow: 'hidden' }, isChartDark ? ShadowDark.sm : Shadow.sm]}>
+      {isChartDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+      {!isChartDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
       <View style={styles.chartBars}>
         {data.map((d, i) => {
           const h = d.count > 0 ? Math.max((d.count / maxVal) * 64, 8) : 6;
@@ -885,6 +911,10 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 32,
     position: 'relative',
     overflow: 'hidden',
+  },
+  heroDark: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.06)',
   },
   deco1: {
     position: 'absolute', right: -40, top: -40,
@@ -944,11 +974,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,
-    shadowColor: PRIMARY,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
   },
   statDivider: { width: 1, alignSelf: 'stretch', marginVertical: 4 },
   statPill: { flex: 1, alignItems: 'center', gap: 4 },
@@ -966,6 +991,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     padding: Spacing.sm,
     marginBottom: Spacing.lg,
+    position: 'relative' as const,
   },
   dayPill: { flex: 1, borderRadius: Radius.lg, alignItems: 'center', paddingVertical: 8, gap: 2 },
   dayLbl: { fontSize: 10, fontFamily: F.med },
@@ -1015,8 +1041,6 @@ const styles = StyleSheet.create({
   taskRow: {
     flexDirection: 'row', alignItems: 'center',
     borderRadius: Radius.lg, borderWidth: 1,
-    overflow: 'hidden',
-    shadowColor: PRIMARY, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 8, elevation: 2,
   },
   taskAccent: { width: 4, alignSelf: 'stretch' },
   taskCheck: { padding: Spacing.md, paddingRight: Spacing.sm },
@@ -1050,7 +1074,7 @@ const styles = StyleSheet.create({
   // Goal card
   goalCard: {
     borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg,
-    shadowColor: PRIMARY, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.10, shadowRadius: 14, elevation: 4,
+    position: 'relative' as const,
   },
   goalIcon: { width: 44, height: 44, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
   goalTitle: { fontSize: 15, fontFamily: F.bold },
@@ -1062,7 +1086,7 @@ const styles = StyleSheet.create({
   // Chart
   chartCard: {
     borderRadius: Radius.xl, borderWidth: 1, padding: Spacing.lg,
-    shadowColor: PRIMARY, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.07, shadowRadius: 10, elevation: 2,
+    position: 'relative' as const,
   },
   chartBars: { flexDirection: 'row', alignItems: 'flex-end', height: 80, gap: 6, marginBottom: Spacing.sm },
   chartCol: { flex: 1, alignItems: 'center', gap: 4 },

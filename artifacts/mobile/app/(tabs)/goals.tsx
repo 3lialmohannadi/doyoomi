@@ -64,8 +64,8 @@ export default function GoalsScreen() {
         end={{ x: 0, y: 1 }}
         style={[styles.header, { paddingTop: topPad + Spacing.md }, isDark && styles.headerDark]}
       >
-        <View style={styles.headerDecor1} />
-        <View style={styles.headerDecor2} />
+        {!isDark && <View style={styles.headerDecor1} />}
+        {!isDark && <View style={styles.headerDecor2} />}
         <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={{ width: 46 }} />
           <View style={{ flex: 1, alignItems: 'center' }}>
@@ -85,10 +85,10 @@ export default function GoalsScreen() {
         </View>
         {goals.length > 0 && (
           <View style={styles.headerProgress}>
-            <View style={[styles.headerProgressTrack, { backgroundColor: 'rgba(255,255,255,0.22)' }]}>
-              <View style={[styles.headerProgressFill, { width: `${pctDone}%` as any }]} />
+            <View style={[styles.headerProgressTrack, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.22)' }]}>
+              <View style={[styles.headerProgressFill, { width: `${pctDone}%` as any, backgroundColor: isDark ? C.tint : '#fff' }]} />
             </View>
-            <Text style={styles.headerProgressLabel}>{pctDone}% {tFunc('completed')}</Text>
+            <Text style={[styles.headerProgressLabel, { color: isDark ? C.tint : '#fff' }]}>{pctDone}% {tFunc('completed')}</Text>
           </View>
         )}
       </LinearGradient>
@@ -104,7 +104,9 @@ export default function GoalsScreen() {
           const iconName = (item.icon + '-outline') as React.ComponentProps<typeof Ionicons>['name'];
 
           return (
-            <View style={[styles.goalCard, { backgroundColor: C.card, borderColor: C.border }]}>
+            <View style={[styles.goalCard, { borderColor: C.border, overflow: 'hidden' }]}>
+              {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+              {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
               <LinearGradient
                 colors={grad}
                 start={{ x: 0, y: 0 }}

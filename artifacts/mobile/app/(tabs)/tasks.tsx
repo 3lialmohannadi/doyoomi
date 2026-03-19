@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_SAGE, GRADIENT_AMBER, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Radius, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_SAGE, GRADIENT_AMBER, GRADIENT_DARK_HEADER, GRADIENT_DARK_CARD, ShadowDark, cardShadow, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { formatDate, formatTime, getTodayString, isOverdue } from '../../src/utils/date';
@@ -34,7 +34,8 @@ const FILTER_GRADIENTS: Record<FilterKey, readonly [string, string]> = {
 };
 
 export default function TasksScreen() {
-  const { C } = useAppTheme();
+  const { C, scheme } = useAppTheme();
+  const isDark = scheme === 'dark';
   const insets = useSafeAreaInsets();
   const isWeb = Platform.OS === 'web';
 
@@ -108,10 +109,16 @@ export default function TasksScreen() {
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: topPad + Spacing.sm, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      <LinearGradient
+        colors={isDark ? [...GRADIENT_DARK_HEADER] : [...GRADIENT_H]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.header, { paddingTop: topPad + Spacing.sm }, isDark && styles.headerDark]}
+      >
+        <View style={[{ flexDirection: isRTL ? 'row-reverse' : 'row', alignItems: 'center', justifyContent: 'space-between', flex: 1 }]}>
         <View style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
-          <Text style={[styles.headerTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('tasks')}</Text>
-          <Text style={[styles.headerSub, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
+          <Text style={[styles.headerTitle, { color: isDark ? C.text : '#fff', textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('tasks')}</Text>
+          <Text style={[styles.headerSub, { color: isDark ? C.textSecondary : 'rgba(255,255,255,0.75)', textAlign: isRTL ? 'right' : 'left' }]}>
             {filteredTasks.length} {tFunc('taskCount')}
           </Text>
         </View>
@@ -153,6 +160,7 @@ export default function TasksScreen() {
           </Pressable>
         </View>
       </View>
+      </LinearGradient>
 
       {/* Search */}
       <View style={[styles.searchBar, { backgroundColor: C.surface, borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
@@ -344,6 +352,10 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg, paddingBottom: Spacing.md,
+  },
+  headerDark: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.06)',
   },
   headerTitle: { fontSize: 28, fontFamily: F.bold },
   headerSub: { fontSize: 13, fontFamily: F.med, marginTop: 1 },
