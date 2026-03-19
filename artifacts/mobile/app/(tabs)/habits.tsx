@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  FlatList, StyleSheet, Text, View, Platform, Pressable,
+  FlatList, StyleSheet, Text, View, Platform, Pressable, Modal,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { format, subDays } from 'date-fns';
+import { format, subDays, getDay } from 'date-fns';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
-import { router, useLocalSearchParams } from 'expo-router';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, F, GRADIENT_H, GRADIENT_ORANGE, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER, ColorScheme, Shadow, ShadowDark } from '../../src/theme';
+import { Spacing, Radius, F, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER, ColorScheme, Shadow, ShadowDark } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -26,6 +25,399 @@ import { Habit } from '../../src/types';
 import { StreakCelebrationPayload } from '../../src/store/habitsStore';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+const FREQ_LABEL_KEY: Record<string, string> = {
+  daily: 'freqDaily',
+  '3x_week': 'freq3xWeek',
+  '5x_week': 'freq5xWeek',
+  weekdays: 'freqWeekdays',
+  weekends: 'freqWeekends',
+  weekly: 'freqWeekly',
+};
+
+function getDayAbbr(date: Date, lang: string): string {
+  const day = getDay(date);
+  const en = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+  const ar = ['أح', 'اث', 'ثل', 'أر', 'خم', 'جم', 'سب'];
+  return lang === 'ar' ? ar[day] : en[day];
+}
+
+function HistoryCalendarModal({
+  visible,
+  habit,
+  onClose,
+  lang,
+  isRTL,
+  C,
+  isDark,
+}: {
+  visible: boolean;
+  habit: Habit | null;
+  onClose: () => void;
+  lang: string;
+  isRTL: boolean;
+  C: ColorScheme;
+  isDark: boolean;
+}) {
+  if (!habit) return null;
+  const today = new Date();
+  const days30 = Array.from({ length: 30 }, (_, i) => subDays(today, 29 - i));
+  const history = habit.completion_history ?? [];
+
+  const rows: Date[][] = [];
+  for (let i = 0; i < days30.length; i += 7) {
+    rows.push(days30.slice(i, i + 7));
+  }
+
+  const completedCount = days30.filter(d => history.includes(format(d, 'yyyy-MM-dd'))).length;
+
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <Pressable style={calStyles.overlay} onPress={onClose}>
+        <Pressable style={[calStyles.sheet, { backgroundColor: isDark ? '#1C1A2E' : C.card }]} onPress={() => {}}>
+          {/* Header */}
+          <View style={[calStyles.header, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={[calStyles.habitIconWrap, { backgroundColor: habit.color + '20' }]}>
+              <Ionicons name={habit.icon as React.ComponentProps<typeof Ionicons>['name']} size={20} color={habit.color} />
+            </View>
+            <View style={{ flex: 1, alignItems: isRTL ? 'flex-end' : 'flex-start', marginHorizontal: 10 }}>
+              <Text style={[calStyles.title, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+                {habit.name}
+              </Text>
+              <Text style={[calStyles.subtitle, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
+                {t('completionHistory30', lang)} · {completedCount}/30
+              </Text>
+            </View>
+            <Pressable onPress={onClose} style={calStyles.closeBtn} hitSlop={8}>
+              <Ionicons name="close" size={20} color={C.textMuted} />
+            </Pressable>
+          </View>
+
+          {/* Calendar grid */}
+          <View style={calStyles.grid}>
+            {rows.map((week, wi) => (
+              <View key={wi} style={[calStyles.week, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                {week.map((d) => {
+                  const dStr = format(d, 'yyyy-MM-dd');
+                  const todayStr = format(today, 'yyyy-MM-dd');
+                  const isToday = dStr === todayStr;
+                  const isFuture = d > today;
+                  const isDone = history.includes(dStr);
+
+                  let bg = isDark ? 'rgba(255,255,255,0.05)' : C.surface;
+                  let dotColor = isDark ? 'rgba(255,255,255,0.1)' : C.border;
+                  if (isDone) { bg = habit.color + '25'; dotColor = habit.color; }
+                  else if (isFuture) { bg = 'transparent'; dotColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'; }
+
+                  return (
+                    <View key={dStr} style={[calStyles.dayCell]}>
+                      <View style={[
+                        calStyles.dayDot,
+                        { backgroundColor: bg, borderColor: isToday ? habit.color : dotColor, borderWidth: isToday ? 2 : 1 },
+                      ]}>
+                        {isDone && (
+                          <Ionicons name="checkmark" size={12} color={habit.color} />
+                        )}
+                      </View>
+                      <Text style={[calStyles.dayLabel, { color: isFuture ? C.textMuted + '60' : C.textMuted }]}>
+                        {getDayAbbr(d, lang)}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </View>
+            ))}
+          </View>
+
+          {/* Legend */}
+          <View style={[calStyles.legend, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={[calStyles.legendItem, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <View style={[calStyles.legendDot, { backgroundColor: habit.color + '25', borderColor: habit.color }]} />
+              <Text style={[calStyles.legendText, { color: C.textSecondary }]}>{t('done', lang)}</Text>
+            </View>
+            <View style={[calStyles.legendItem, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <View style={[calStyles.legendDot, { backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : C.surface, borderColor: C.border }]} />
+              <Text style={[calStyles.legendText, { color: C.textSecondary }]}>{t('missed', lang)}</Text>
+            </View>
+            <View style={[calStyles.legendItem, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <View style={[calStyles.legendDot, { backgroundColor: 'transparent', borderColor: C.textMuted + '30' }]} />
+              <Text style={[calStyles.legendText, { color: C.textSecondary }]}>{t('future', lang)}</Text>
+            </View>
+          </View>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
+}
+
+const calStyles = StyleSheet.create({
+  overlay: {
+    flex: 1, backgroundColor: 'rgba(0,0,0,0.55)',
+    justifyContent: 'center', alignItems: 'center', padding: 20,
+  },
+  sheet: {
+    width: '100%', maxWidth: 380, borderRadius: 24, padding: 20,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25, shadowRadius: 24, elevation: 20,
+  },
+  header: { alignItems: 'center', marginBottom: 16 },
+  habitIconWrap: {
+    width: 40, height: 40, borderRadius: 12,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  title: { fontSize: 16, fontFamily: F.bold },
+  subtitle: { fontSize: 12, fontFamily: F.med, marginTop: 2 },
+  closeBtn: {
+    width: 32, height: 32, borderRadius: 16,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  grid: { gap: 6 },
+  week: { gap: 4, justifyContent: 'space-between' },
+  dayCell: { flex: 1, alignItems: 'center', gap: 3 },
+  dayDot: {
+    width: 32, height: 32, borderRadius: 10,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  dayLabel: { fontSize: 9, fontFamily: F.med },
+  legend: { marginTop: 14, gap: 14, justifyContent: 'center' },
+  legendItem: { alignItems: 'center', gap: 5 },
+  legendDot: { width: 14, height: 14, borderRadius: 5, borderWidth: 1 },
+  legendText: { fontSize: 11, fontFamily: F.med },
+});
+
+function HistoryDots({ history, color, isRTL }: { history: string[]; color: string; isRTL: boolean }) {
+  const today = new Date();
+  const dots = Array.from({ length: 7 }, (_, i) => {
+    const d = subDays(today, 6 - i);
+    const key = format(d, 'yyyy-MM-dd');
+    const done = history.includes(key);
+    return { key, done };
+  });
+  const ordered = isRTL ? [...dots].reverse() : dots;
+  return (
+    <View style={[hStyles.dotsRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+      {ordered.map(dot => (
+        <View
+          key={dot.key}
+          style={[hStyles.dot, { backgroundColor: dot.done ? color : color + '25', borderColor: dot.done ? color : color + '40' }]}
+        />
+      ))}
+    </View>
+  );
+}
+
+const hStyles = StyleSheet.create({
+  dotsRow: { gap: 4, alignItems: 'center', marginTop: 4 },
+  dot: { width: 8, height: 8, borderRadius: 4, borderWidth: 1 },
+});
+
+function HabitCard({
+  item, isDoneToday, isDark, isRTL, C, tFunc, onToggle, onEdit, onDelete, onShowHistory,
+}: {
+  item: Habit;
+  isDark: boolean;
+  isDoneToday: boolean;
+  isRTL: boolean;
+  C: ColorScheme;
+  tFunc: (k: string) => string;
+  onToggle: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+  onShowHistory: () => void;
+}) {
+  const scale = useSharedValue(1);
+  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+
+  const [confettiKey, setConfettiKey] = useState(0);
+  const prevDone = useRef(isDoneToday);
+  useEffect(() => {
+    if (isDoneToday && !prevDone.current) {
+      setConfettiKey(k => k + 1);
+    }
+    prevDone.current = isDoneToday;
+  }, [isDoneToday]);
+
+  const freqLabelKey = FREQ_LABEL_KEY[item.frequency ?? 'daily'];
+
+  return (
+    <AnimatedPressable
+      style={[
+        animStyle,
+        { position: 'relative' },
+        isDark ? ShadowDark.sm : Shadow.sm,
+        styles.habitCard,
+        {
+          flexDirection: isRTL ? 'row-reverse' : 'row',
+          backgroundColor: isDark ? 'transparent' : (isDoneToday ? item.color + '10' : C.card),
+          borderColor: isDoneToday ? item.color + '50' : C.border,
+          overflow: 'hidden',
+        },
+      ]}
+      onPressIn={() => { scale.value = withSpring(0.98, { damping: 15 }); }}
+      onPressOut={() => { scale.value = withSpring(1, { damping: 15 }); }}
+      onPress={onToggle}
+      accessibilityRole="button"
+      accessibilityState={{ checked: isDoneToday }}
+      accessibilityLabel={item.name}
+    >
+      {isDark && (
+        <LinearGradient
+          colors={isDoneToday ? [item.color + '22', item.color + '08'] : [...GRADIENT_DARK_CARD]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+      )}
+
+      {/* Thick colored accent bar */}
+      <LinearGradient
+        colors={isDoneToday ? [item.color, item.color + 'AA'] : [C.tint, C.tint + '60']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.habitAccent}
+      />
+
+      {/* Card content */}
+      <View style={[styles.habitBody, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+        {/* Icon bubble */}
+        <View style={[
+          styles.habitIconWrap,
+          {
+            backgroundColor: isDoneToday ? item.color + '22' : item.color + '15',
+            borderColor: isDoneToday ? item.color + '45' : item.color + '20',
+            borderWidth: 1.5,
+          },
+        ]}>
+          <Ionicons
+            name={(item.icon + (isDoneToday ? '' : '-outline')) as React.ComponentProps<typeof Ionicons>['name']}
+            size={24}
+            color={item.color}
+          />
+        </View>
+
+        {/* Info */}
+        <View style={[styles.habitInfo, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
+          <Text
+            style={[
+              styles.habitName,
+              {
+                color: isDoneToday ? item.color : C.text,
+                textAlign: isRTL ? 'right' : 'left',
+                textDecorationLine: isDoneToday ? 'line-through' : 'none',
+              },
+            ]}
+            numberOfLines={1}
+          >
+            {item.name}
+          </Text>
+
+          <View style={[styles.habitMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            {/* Streak badge — tappable to open 30-day calendar */}
+            <Pressable
+              onPress={(e) => { e.stopPropagation?.(); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onShowHistory(); }}
+              style={[styles.streakBadge, { backgroundColor: '#F97316' + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+              hitSlop={6}
+              accessibilityRole="button"
+              accessibilityLabel={tFunc('completionHistory30')}
+            >
+              <Ionicons name="flame" size={12} color="#F97316" />
+              <Text style={[styles.streakText, { color: '#F97316' }]}>{item.streak_days} {tFunc('days')}</Text>
+            </Pressable>
+
+            {/* Frequency badge */}
+            {freqLabelKey && (
+              <View style={[styles.doneBadge, { backgroundColor: C.tint + '12', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <Ionicons name="repeat" size={11} color={C.tint} />
+                <Text style={[styles.doneBadgeText, { color: C.tint }]}>{tFunc(freqLabelKey)}</Text>
+              </View>
+            )}
+
+            {isDoneToday && (
+              <View style={[styles.doneBadge, { backgroundColor: item.color + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <Ionicons name="checkmark-circle" size={12} color={item.color} />
+                <Text style={[styles.doneBadgeText, { color: item.color }]}>{tFunc('doneToday')}</Text>
+              </View>
+            )}
+          </View>
+
+          {/* 7-day history dots */}
+          {(item.completion_history?.length ?? 0) > 0 && (
+            <HistoryDots
+              history={item.completion_history ?? []}
+              color={item.color}
+              isRTL={isRTL}
+            />
+          )}
+        </View>
+
+        {/* Actions */}
+        <View style={[styles.habitActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+          {/* Complete toggle */}
+          <Pressable
+            onPress={(e) => { e.stopPropagation?.(); onToggle(); }}
+            style={({ pressed }) => [
+              styles.completeBtn,
+              {
+                borderColor: isDoneToday ? item.color : C.border,
+                overflow: 'hidden',
+                opacity: pressed ? 0.75 : 1,
+                backgroundColor: isDoneToday ? 'transparent' : C.surface,
+              },
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={isDoneToday ? tFunc('habitUncompleted') : tFunc('completeHabit')}
+          >
+            {isDoneToday && (
+              <LinearGradient
+                colors={[item.color, item.color + 'BB']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFill}
+              />
+            )}
+            <Ionicons
+              name={isDoneToday ? 'checkmark' : 'checkmark-outline'}
+              size={18}
+              color={isDoneToday ? '#fff' : C.textMuted}
+            />
+          </Pressable>
+
+          {/* Edit */}
+          <Pressable
+            onPress={(e) => { e.stopPropagation?.(); onEdit(); }}
+            style={({ pressed }) => [
+              styles.smallActionBtn,
+              { backgroundColor: C.tint + '12', borderColor: C.tint + '28', opacity: pressed ? 0.7 : 1 },
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={tFunc('editHabit')}
+          >
+            <Ionicons name="pencil-outline" size={13} color={C.tint} />
+          </Pressable>
+
+          {/* Delete */}
+          <Pressable
+            onPress={(e) => { e.stopPropagation?.(); onDelete(); }}
+            style={({ pressed }) => [
+              styles.smallActionBtn,
+              { backgroundColor: C.error + '12', borderColor: C.error + '28', opacity: pressed ? 0.7 : 1 },
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={tFunc('deleteHabit')}
+          >
+            <Ionicons name="trash-outline" size={13} color={C.error} />
+          </Pressable>
+        </View>
+      </View>
+      <MiniConfetti trigger={confettiKey} x={isRTL ? 18 : 82} y={50} />
+    </AnimatedPressable>
+  );
+}
 
 export default function HabitsScreen() {
   const { C, scheme } = useAppTheme();
@@ -42,6 +434,7 @@ export default function HabitsScreen() {
   const [showForm, setShowForm] = useState(false);
   const [editHabit, setEditHabit] = useState<Habit | null>(null);
   const [confirmHabit, setConfirmHabit] = useState<Habit | null>(null);
+  const [historyHabit, setHistoryHabit] = useState<Habit | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [celebrationPayload, setCelebrationPayload] = useState<StreakCelebrationPayload | null>(null);
 
@@ -181,6 +574,7 @@ export default function HabitsScreen() {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                   setConfirmHabit(item);
                 }}
+                onShowHistory={() => setHistoryHabit(item)}
               />
             </SwipeableRow>
           );
@@ -238,238 +632,17 @@ export default function HabitsScreen() {
           setCelebrationPayload(null);
         }}
       />
-    </View>
-  );
-}
 
-const FREQ_LABEL_KEY: Record<string, string> = {
-  daily: 'freqDaily',
-  '3x_week': 'freq3xWeek',
-  '5x_week': 'freq5xWeek',
-  weekdays: 'freqWeekdays',
-  weekends: 'freqWeekends',
-  weekly: 'freqWeekly',
-};
-
-function HistoryDots({ history, color, isRTL }: { history: string[]; color: string; isRTL: boolean }) {
-  const today = new Date();
-  const dots = Array.from({ length: 7 }, (_, i) => {
-    const d = subDays(today, 6 - i);
-    const key = format(d, 'yyyy-MM-dd');
-    const done = history.includes(key);
-    return { key, done };
-  });
-  const ordered = isRTL ? [...dots].reverse() : dots;
-  return (
-    <View style={[hStyles.dotsRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-      {ordered.map(dot => (
-        <View
-          key={dot.key}
-          style={[hStyles.dot, { backgroundColor: dot.done ? color : color + '25', borderColor: dot.done ? color : color + '40' }]}
-        />
-      ))}
-    </View>
-  );
-}
-
-const hStyles = StyleSheet.create({
-  dotsRow: { gap: 4, alignItems: 'center', marginTop: 4 },
-  dot: { width: 8, height: 8, borderRadius: 4, borderWidth: 1 },
-});
-
-function HabitCard({
-  item, isDoneToday, isDark, isRTL, C, tFunc, onToggle, onEdit, onDelete,
-}: {
-  item: Habit;
-  isDark: boolean;
-  isDoneToday: boolean;
-  isRTL: boolean;
-  C: ColorScheme;
-  tFunc: (k: string) => string;
-  onToggle: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
-}) {
-  const scale = useSharedValue(1);
-  const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
-
-  const [confettiKey, setConfettiKey] = useState(0);
-  const prevDone = useRef(isDoneToday);
-  useEffect(() => {
-    if (isDoneToday && !prevDone.current) {
-      setConfettiKey(k => k + 1);
-    }
-    prevDone.current = isDoneToday;
-  }, [isDoneToday]);
-
-  const freqLabelKey = FREQ_LABEL_KEY[item.frequency ?? 'daily'];
-
-  return (
-    <AnimatedPressable
-      style={[
-        animStyle,
-        { position: 'relative' },
-        isDark ? ShadowDark.sm : Shadow.sm,
-        styles.habitCard,
-        {
-          flexDirection: isRTL ? 'row-reverse' : 'row',
-          backgroundColor: isDark ? 'transparent' : (isDoneToday ? item.color + '10' : C.card),
-          borderColor: isDoneToday ? item.color + '50' : C.border,
-          overflow: 'hidden',
-        },
-      ]}
-      onPressIn={() => { scale.value = withSpring(0.98, { damping: 15 }); }}
-      onPressOut={() => { scale.value = withSpring(1, { damping: 15 }); }}
-      onPress={onToggle}
-      accessibilityRole="button"
-      accessibilityState={{ checked: isDoneToday }}
-      accessibilityLabel={item.name}
-    >
-      {isDark && (
-        <LinearGradient
-          colors={isDoneToday ? [item.color + '22', item.color + '08'] : [...GRADIENT_DARK_CARD]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-      )}
-
-      {/* Thick colored accent bar */}
-      <LinearGradient
-        colors={isDoneToday ? [item.color, item.color + 'AA'] : [C.tint, C.tint + '60']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={styles.habitAccent}
+      <HistoryCalendarModal
+        visible={!!historyHabit}
+        habit={historyHabit}
+        onClose={() => setHistoryHabit(null)}
+        lang={lang}
+        isRTL={isRTL}
+        C={C}
+        isDark={isDark}
       />
-
-      {/* Card content */}
-      <View style={[styles.habitBody, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        {/* Icon bubble */}
-        <View style={[
-          styles.habitIconWrap,
-          {
-            backgroundColor: isDoneToday ? item.color + '22' : item.color + '15',
-            borderColor: isDoneToday ? item.color + '45' : item.color + '20',
-            borderWidth: 1.5,
-          },
-        ]}>
-          <Ionicons
-            name={(item.icon + (isDoneToday ? '' : '-outline')) as React.ComponentProps<typeof Ionicons>['name']}
-            size={24}
-            color={item.color}
-          />
-        </View>
-
-        {/* Info */}
-        <View style={[styles.habitInfo, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
-          <Text
-            style={[
-              styles.habitName,
-              {
-                color: isDoneToday ? item.color : C.text,
-                textAlign: isRTL ? 'right' : 'left',
-                textDecorationLine: isDoneToday ? 'line-through' : 'none',
-              },
-            ]}
-            numberOfLines={1}
-          >
-            {item.name}
-          </Text>
-
-          <View style={[styles.habitMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            {/* Streak badge */}
-            <View style={[styles.streakBadge, { backgroundColor: '#F97316' + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <Ionicons name="flame" size={12} color="#F97316" />
-              <Text style={[styles.streakText, { color: '#F97316' }]}>{item.streak_days} {tFunc('days')}</Text>
-            </View>
-
-            {/* Frequency badge */}
-            {freqLabelKey && (
-              <View style={[styles.doneBadge, { backgroundColor: C.tint + '12', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <Ionicons name="repeat" size={11} color={C.tint} />
-                <Text style={[styles.doneBadgeText, { color: C.tint }]}>{tFunc(freqLabelKey)}</Text>
-              </View>
-            )}
-
-            {isDoneToday && (
-              <View style={[styles.doneBadge, { backgroundColor: item.color + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                <Ionicons name="checkmark-circle" size={12} color={item.color} />
-                <Text style={[styles.doneBadgeText, { color: item.color }]}>{tFunc('doneToday')}</Text>
-              </View>
-            )}
-          </View>
-
-          {/* 7-day history dots */}
-          {(item.completion_history?.length ?? 0) > 0 && (
-            <HistoryDots
-              history={item.completion_history ?? []}
-              color={item.color}
-              isRTL={isRTL}
-            />
-          )}
-        </View>
-
-        {/* Actions */}
-        <View style={[styles.habitActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          {/* Complete toggle */}
-          <Pressable
-            onPress={(e) => { e.stopPropagation?.(); onToggle(); }}
-            style={({ pressed }) => [
-              styles.completeBtn,
-              {
-                borderColor: isDoneToday ? item.color : C.border,
-                overflow: 'hidden',
-                opacity: pressed ? 0.75 : 1,
-                backgroundColor: isDoneToday ? 'transparent' : C.surface,
-              },
-            ]}
-            accessibilityRole="button"
-            accessibilityLabel={isDoneToday ? tFunc('habitUncompleted') : tFunc('completeHabit')}
-          >
-            {isDoneToday && (
-              <LinearGradient
-                colors={[item.color, item.color + 'BB']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={StyleSheet.absoluteFill}
-              />
-            )}
-            <Ionicons
-              name={isDoneToday ? 'checkmark' : 'checkmark-outline'}
-              size={18}
-              color={isDoneToday ? '#fff' : C.textMuted}
-            />
-          </Pressable>
-
-          {/* Edit */}
-          <Pressable
-            onPress={(e) => { e.stopPropagation?.(); onEdit(); }}
-            style={({ pressed }) => [
-              styles.smallActionBtn,
-              { backgroundColor: C.tint + '12', borderColor: C.tint + '28', opacity: pressed ? 0.7 : 1 },
-            ]}
-            accessibilityRole="button"
-            accessibilityLabel={tFunc('editHabit')}
-          >
-            <Ionicons name="pencil-outline" size={13} color={C.tint} />
-          </Pressable>
-
-          {/* Delete */}
-          <Pressable
-            onPress={(e) => { e.stopPropagation?.(); onDelete(); }}
-            style={({ pressed }) => [
-              styles.smallActionBtn,
-              { backgroundColor: C.error + '12', borderColor: C.error + '28', opacity: pressed ? 0.7 : 1 },
-            ]}
-            accessibilityRole="button"
-            accessibilityLabel={tFunc('deleteHabit')}
-          >
-            <Ionicons name="trash-outline" size={13} color={C.error} />
-          </Pressable>
-        </View>
-      </View>
-      <MiniConfetti trigger={confettiKey} x={isRTL ? 18 : 82} y={50} />
-    </AnimatedPressable>
+    </View>
   );
 }
 

@@ -10,7 +10,7 @@ import { useHabitsStore } from "../../src/store/habitsStore";
 import { useAppTheme } from "../../src/hooks/useAppTheme";
 import { t } from "../../src/utils/i18n";
 import { F } from "../../src/theme";
-import { format } from "date-fns";
+import { format, getDay } from "date-fns";
 
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
@@ -90,7 +90,13 @@ export default function TabLayout() {
   }, [tasks, today]);
 
   const remainingHabitsCount = useMemo(() => {
+    const todayDow = getDay(new Date());
+    const isWeekend = todayDow === 0 || todayDow === 6;
+    const isWeekday = !isWeekend;
     return habits.filter((h) => {
+      const freq = h.frequency ?? 'daily';
+      if (freq === 'weekdays' && isWeekend) return false;
+      if (freq === 'weekends' && isWeekday) return false;
       const lastDate = h.last_completed_at
         ? format(new Date(h.last_completed_at), "yyyy-MM-dd")
         : null;

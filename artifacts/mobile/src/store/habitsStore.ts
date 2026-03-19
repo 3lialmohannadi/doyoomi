@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Habit, HabitFrequency } from '../types';
-import { format, differenceInCalendarDays, parseISO } from 'date-fns';
+import { format, subDays, getDay } from 'date-fns';
 
 export interface StreakCelebrationPayload {
   habitName: string;
@@ -10,6 +10,101 @@ export interface StreakCelebrationPayload {
 
 const MILESTONES = new Set([3, 7, 14, 21, 30, 60, 100]);
 const sessionCelebrated = new Set<string>();
+
+function isWeekend(date: Date): boolean {
+  const d = getDay(date);
+  return d === 0 || d === 6;
+}
+
+function isWeekday(date: Date): boolean {
+  return !isWeekend(date);
+}
+
+function countCompletionsInWindow(history: string[], days: number): number {
+  const today = new Date();
+  let count = 0;
+  for (let i = 0; i < days; i++) {
+    const d = format(subDays(today, i), 'yyyy-MM-dd');
+    if (history.includes(d)) count++;
+  }
+  return count;
+}
+
+function computeStreak(history: string[], freq: HabitFrequency): number {
+  if (history.length === 0) return 0;
+
+  const today = new Date();
+
+  if (freq === 'daily') {
+    let streak = 0;
+    for (let i = 0; ; i++) {
+      const d = format(subDays(today, i), 'yyyy-MM-dd');
+      if (history.includes(d)) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }
+
+  if (freq === 'weekdays') {
+    let streak = 0;
+    for (let i = 0; ; i++) {
+      const d = subDays(today, i);
+      if (isWeekend(d)) continue;
+      const dStr = format(d, 'yyyy-MM-dd');
+      if (history.includes(dStr)) {
+        streak++;
+      } else {
+        break;
+      }
+      if (i > 60) break;
+    }
+    return streak;
+  }
+
+  if (freq === 'weekends') {
+    let streak = 0;
+    for (let i = 0; ; i++) {
+      const d = subDays(today, i);
+      if (isWeekday(d)) continue;
+      const dStr = format(d, 'yyyy-MM-dd');
+      if (history.includes(dStr)) {
+        streak++;
+      } else {
+        break;
+      }
+      if (i > 60) break;
+    }
+    return streak;
+  }
+
+  if (freq === '3x_week') {
+    return Math.floor(countCompletionsInWindow(history, 7) / 3);
+  }
+
+  if (freq === '5x_week') {
+    return Math.floor(countCompletionsInWindow(history, 7) / 5);
+  }
+
+  if (freq === 'weekly') {
+    let streak = 0;
+    for (let w = 0; w < 52; w++) {
+      const found = Array.from({ length: 7 }, (_, i) =>
+        format(subDays(today, w * 7 + i), 'yyyy-MM-dd')
+      ).some(d => history.includes(d));
+      if (found) {
+        streak++;
+      } else if (w > 0) {
+        break;
+      }
+    }
+    return streak;
+  }
+
+  return 0;
+}
 
 interface HabitsState {
   habits: Habit[];
@@ -68,16 +163,10 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
       : null;
     if (lastDate === todayStr) return null;
 
-    let newStreak = 1;
-    if (lastDate) {
-      const daysSinceLast = differenceInCalendarDays(now, parseISO(lastDate));
-      if (daysSinceLast === 1) {
-        newStreak = habit.streak_days + 1;
-      }
-    }
-
     const history = habit.completion_history ?? [];
     const updatedHistory = [todayStr, ...history.filter(d => d !== todayStr)].slice(0, 365);
+
+    const newStreak = computeStreak(updatedHistory, habit.frequency ?? 'daily');
     const newBest = Math.max(newStreak, habit.best_streak ?? 0);
 
     get().updateHabit(id, {
@@ -105,9 +194,10 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
     if (lastDate !== todayStr) return;
 
     const updatedHistory = (habit.completion_history ?? []).filter(d => d !== todayStr);
+    const newStreak = computeStreak(updatedHistory, habit.frequency ?? 'daily');
 
     get().updateHabit(id, {
-      streak_days: Math.max(0, habit.streak_days - 1),
+      streak_days: newStreak,
       last_completed_at: updatedHistory[0]
         ? new Date(updatedHistory[0] + 'T12:00:00').toISOString()
         : undefined,
