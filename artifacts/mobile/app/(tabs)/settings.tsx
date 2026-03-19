@@ -3,6 +3,7 @@ import {
   ScrollView, StyleSheet, Text, View, Pressable, Modal, TextInput,
   Platform, KeyboardAvoidingView, Image, Switch, Alert,
 } from 'react-native';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -476,74 +477,45 @@ export default function MoreScreen() {
             <View style={{ width: 36 }} />
           </View>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 24 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              {/* Hour */}
-              <View style={{ alignItems: 'center', gap: 8 }}>
+            {Platform.OS !== 'web' ? (
+              <DateTimePicker
+                value={(() => {
+                  const d = new Date();
+                  d.setHours(notifTimeHour, notifTimeMin, 0, 0);
+                  return d;
+                })()}
+                mode="time"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                is24Hour
+                onChange={(event: DateTimePickerEvent, date?: Date) => {
+                  if (date) {
+                    setNotifTimeHour(date.getHours());
+                    setNotifTimeMin(date.getMinutes());
+                  }
+                }}
+                style={{ width: 200 }}
+              />
+            ) : (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <Text style={{ color: C.textSecondary, fontSize: 12, fontFamily: F.med }}>{tFunc('hourLabel')}</Text>
-                <View style={[styles.timePill, { backgroundColor: C.card, paddingHorizontal: 0 }]}>
-                  <ScrollView
-                    style={{ height: 160, width: 80 }}
-                    showsVerticalScrollIndicator={false}
-                    snapToInterval={44}
-                    decelerationRate="fast"
-                    contentOffset={{ x: 0, y: notifTimeHour * 44 }}
-                    onMomentumScrollEnd={(e) => {
-                      const h = Math.round(e.nativeEvent.contentOffset.y / 44) % 24;
-                      setNotifTimeHour(h < 0 ? 0 : h);
-                    }}
-                    contentContainerStyle={{ paddingVertical: 58 }}
-                  >
-                    {Array.from({ length: 24 }).map((_, h) => (
-                      <Pressable key={h} onPress={() => setNotifTimeHour(h)}
-                        style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}>
-                        <Text style={{
-                          fontSize: h === notifTimeHour ? 24 : 16,
-                          fontFamily: h === notifTimeHour ? F.black : F.reg,
-                          color: h === notifTimeHour ? '#6366F1' : C.textSecondary,
-                        }}>
-                          {String(h).padStart(2, '0')}
-                        </Text>
-                      </Pressable>
-                    ))}
-                  </ScrollView>
-                </View>
-              </View>
-              <Text style={{ fontSize: 28, fontFamily: F.black, color: '#6366F1' }}>:</Text>
-              {/* Minute */}
-              <View style={{ alignItems: 'center', gap: 8 }}>
+                <TextInput
+                  value={String(notifTimeHour).padStart(2, '0')}
+                  onChangeText={v => { const n = parseInt(v, 10); if (!isNaN(n) && n >= 0 && n < 24) setNotifTimeHour(n); }}
+                  keyboardType="number-pad"
+                  maxLength={2}
+                  style={{ color: C.text, fontFamily: F.black, fontSize: 24, width: 48, textAlign: 'center', backgroundColor: C.card, borderRadius: 10, padding: 8 }}
+                />
+                <Text style={{ fontSize: 24, fontFamily: F.black, color: '#6366F1' }}>:</Text>
+                <TextInput
+                  value={String(notifTimeMin).padStart(2, '0')}
+                  onChangeText={v => { const n = parseInt(v, 10); if (!isNaN(n) && n >= 0 && n < 60) setNotifTimeMin(n); }}
+                  keyboardType="number-pad"
+                  maxLength={2}
+                  style={{ color: C.text, fontFamily: F.black, fontSize: 24, width: 48, textAlign: 'center', backgroundColor: C.card, borderRadius: 10, padding: 8 }}
+                />
                 <Text style={{ color: C.textSecondary, fontSize: 12, fontFamily: F.med }}>{tFunc('minLabel')}</Text>
-                <View style={[styles.timePill, { backgroundColor: C.card, paddingHorizontal: 0 }]}>
-                  <ScrollView
-                    style={{ height: 160, width: 80 }}
-                    showsVerticalScrollIndicator={false}
-                    snapToInterval={44}
-                    decelerationRate="fast"
-                    contentOffset={{ x: 0, y: Math.floor(notifTimeMin / 5) * 44 }}
-                    onMomentumScrollEnd={(e) => {
-                      const idx = Math.round(e.nativeEvent.contentOffset.y / 44);
-                      setNotifTimeMin(Math.max(0, Math.min(59, idx * 5)));
-                    }}
-                    contentContainerStyle={{ paddingVertical: 58 }}
-                  >
-                    {Array.from({ length: 12 }).map((_, i) => {
-                      const m = i * 5;
-                      return (
-                        <Pressable key={m} onPress={() => setNotifTimeMin(m)}
-                          style={{ height: 44, alignItems: 'center', justifyContent: 'center' }}>
-                          <Text style={{
-                            fontSize: m === notifTimeMin ? 24 : 16,
-                            fontFamily: m === notifTimeMin ? F.black : F.reg,
-                            color: m === notifTimeMin ? '#6366F1' : C.textSecondary,
-                          }}>
-                            {String(m).padStart(2, '0')}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </ScrollView>
-                </View>
               </View>
-            </View>
+            )}
             <View style={[{ backgroundColor: '#6366F1' + '18', borderRadius: 16, paddingVertical: 12, paddingHorizontal: 28 }]}>
               <Text style={{ fontSize: 26, fontFamily: F.black, color: '#6366F1' }}>
                 {String(notifTimeHour).padStart(2, '0')}:{String(notifTimeMin).padStart(2, '0')}
