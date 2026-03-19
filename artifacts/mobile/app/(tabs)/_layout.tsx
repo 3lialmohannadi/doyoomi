@@ -1,6 +1,5 @@
 import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
-import { SymbolView } from "expo-symbols";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
@@ -9,6 +8,8 @@ import { useSettingsStore } from "../../src/store/settingsStore";
 import { useAppTheme } from "../../src/hooks/useAppTheme";
 import { t } from "../../src/utils/i18n";
 import { F } from "../../src/theme";
+
+type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
 function TabIcon({
   children,
@@ -24,7 +25,7 @@ function TabIcon({
       {focused ? (
         <View style={[styles.activePill, { shadowColor: tint }]}>
           <LinearGradient
-            colors={[tint, tint + 'BB']}
+            colors={[tint, tint + "BB"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={[StyleSheet.absoluteFill, { borderRadius: 22 }]}
@@ -35,6 +36,30 @@ function TabIcon({
         <View style={styles.inactivePill}>{children}</View>
       )}
     </View>
+  );
+}
+
+function TabIonicon({
+  focused,
+  tint,
+  iconFocused,
+  iconBlur,
+  color,
+}: {
+  focused: boolean;
+  tint: string;
+  iconFocused: IoniconName;
+  iconBlur: IoniconName;
+  color: string;
+}) {
+  return (
+    <TabIcon focused={focused} tint={tint}>
+      <Ionicons
+        name={focused ? iconFocused : iconBlur}
+        size={20}
+        color={focused ? "#fff" : color}
+      />
+    </TabIcon>
   );
 }
 
@@ -52,7 +77,9 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: C.tint,
-        tabBarInactiveTintColor: isDark ? 'rgba(200,200,255,0.30)' : 'rgba(60,60,100,0.32)',
+        tabBarInactiveTintColor: isDark
+          ? "rgba(200,200,255,0.30)"
+          : "rgba(60,60,100,0.32)",
         headerShown: false,
         tabBarShowLabel: true,
         tabBarLabelStyle: {
@@ -71,20 +98,43 @@ export default function TabLayout() {
         tabBarBackground: () => (
           <View style={StyleSheet.absoluteFill}>
             {isDark ? (
-              <View style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]}>
+              <View style={[StyleSheet.absoluteFill, { overflow: "hidden" }]}>
                 {isIOS ? (
-                  <BlurView intensity={60} tint="dark" style={StyleSheet.absoluteFill} />
+                  <BlurView
+                    intensity={60}
+                    tint="dark"
+                    style={StyleSheet.absoluteFill}
+                  />
                 ) : null}
-                <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(11,11,20,0.93)' }]} />
+                <View
+                  style={[
+                    StyleSheet.absoluteFill,
+                    { backgroundColor: "rgba(11,11,20,0.93)" },
+                  ]}
+                />
                 <View style={styles.tabBorder} />
               </View>
             ) : (
               <View style={StyleSheet.absoluteFill}>
                 {isIOS ? (
-                  <BlurView intensity={80} tint="light" style={StyleSheet.absoluteFill} />
+                  <BlurView
+                    intensity={80}
+                    tint="light"
+                    style={StyleSheet.absoluteFill}
+                  />
                 ) : null}
-                <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(245,245,255,0.97)' }]} />
-                <View style={[styles.tabBorder, { borderTopColor: 'rgba(99,102,241,0.12)' }]} />
+                <View
+                  style={[
+                    StyleSheet.absoluteFill,
+                    { backgroundColor: "rgba(245,245,255,0.97)" },
+                  ]}
+                />
+                <View
+                  style={[
+                    styles.tabBorder,
+                    { borderTopColor: "rgba(99,102,241,0.12)" },
+                  ]}
+                />
               </View>
             )}
           </View>
@@ -96,13 +146,13 @@ export default function TabLayout() {
         options={{
           title: tFunc("home"),
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} tint={C.tint}>
-              {isIOS ? (
-                <SymbolView name="house.fill" tintColor={focused ? "#fff" : color} size={20} />
-              ) : (
-                <Ionicons name={focused ? "home" : "home-outline"} size={20} color={focused ? "#fff" : color} />
-              )}
-            </TabIcon>
+            <TabIonicon
+              focused={focused}
+              tint={C.tint}
+              iconFocused="home"
+              iconBlur="home-outline"
+              color={color}
+            />
           ),
         }}
       />
@@ -112,13 +162,13 @@ export default function TabLayout() {
         options={{
           title: tFunc("calendar"),
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} tint={C.tint}>
-              {isIOS ? (
-                <SymbolView name="calendar" tintColor={focused ? "#fff" : color} size={20} />
-              ) : (
-                <Ionicons name={focused ? "calendar" : "calendar-outline"} size={20} color={focused ? "#fff" : color} />
-              )}
-            </TabIcon>
+            <TabIonicon
+              focused={focused}
+              tint={C.tint}
+              iconFocused="calendar"
+              iconBlur="calendar-outline"
+              color={color}
+            />
           ),
         }}
       />
@@ -128,13 +178,13 @@ export default function TabLayout() {
         options={{
           title: tFunc("habits"),
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} tint={C.tintSecondary}>
-              {isIOS ? (
-                <SymbolView name="sparkles" tintColor={focused ? "#fff" : color} size={20} />
-              ) : (
-                <Ionicons name={focused ? "leaf" : "leaf-outline"} size={20} color={focused ? "#fff" : color} />
-              )}
-            </TabIcon>
+            <TabIonicon
+              focused={focused}
+              tint={C.tintSecondary}
+              iconFocused="leaf"
+              iconBlur="leaf-outline"
+              color={color}
+            />
           ),
         }}
       />
@@ -144,13 +194,13 @@ export default function TabLayout() {
         options={{
           title: tFunc("goals"),
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} tint={C.tint}>
-              {isIOS ? (
-                <SymbolView name="trophy.fill" tintColor={focused ? "#fff" : color} size={20} />
-              ) : (
-                <Ionicons name={focused ? "trophy" : "trophy-outline"} size={20} color={focused ? "#fff" : color} />
-              )}
-            </TabIcon>
+            <TabIonicon
+              focused={focused}
+              tint={C.tint}
+              iconFocused="trophy"
+              iconBlur="trophy-outline"
+              color={color}
+            />
           ),
         }}
       />
@@ -160,13 +210,13 @@ export default function TabLayout() {
         options={{
           title: tFunc("more"),
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon focused={focused} tint={C.tint}>
-              {isIOS ? (
-                <SymbolView name="ellipsis.circle.fill" tintColor={focused ? "#fff" : color} size={20} />
-              ) : (
-                <Ionicons name={focused ? "grid" : "grid-outline"} size={20} color={focused ? "#fff" : color} />
-              )}
-            </TabIcon>
+            <TabIonicon
+              focused={focused}
+              tint={C.tint}
+              iconFocused="grid"
+              iconBlur="grid-outline"
+              color={color}
+            />
           ),
         }}
       />
@@ -202,12 +252,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   tabBorder: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     height: 1,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(129,140,248,0.08)',
+    borderTopColor: "rgba(129,140,248,0.08)",
   },
 });
