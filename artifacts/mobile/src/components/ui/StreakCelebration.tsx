@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
   Modal,
   View,
@@ -34,7 +34,7 @@ const MILESTONE_CONFIG: Record<number, {
     particleColors: ['#6366F1', '#8B5CF6', '#EC4899', '#F9A8D4'],
   },
   14: {
-    emoji: '🏅',
+    emoji: '🔥',
     gradient: ['#10B981', '#06B6D4', '#3B82F6'] as const,
     particleColors: ['#10B981', '#34D399', '#06B6D4', '#93C5FD'],
   },
@@ -102,7 +102,7 @@ export function StreakCelebration({
   const emojiRotate = useRef(new Animated.Value(0)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
-  const particles = useRef<ParticleDef[]>(buildParticles(cfg.particleColors)).current;
+  const particles = useMemo(() => buildParticles(cfg.particleColors), [streakDays]);
   const autoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
