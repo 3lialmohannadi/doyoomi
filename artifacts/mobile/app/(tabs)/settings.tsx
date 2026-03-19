@@ -773,19 +773,19 @@ const styles = StyleSheet.create({
   // About card
   aboutCard: {
     borderRadius: Radius.xl, borderWidth: 1,
-    alignItems: 'center', padding: Spacing.xxl,
+    alignItems: 'center', paddingVertical: Spacing.md, paddingHorizontal: Spacing.lg,
     marginTop: Spacing.sm, marginBottom: Spacing.sm,
     shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
   },
   aboutLogo: {
-    width: 96, height: 96,
-    marginBottom: Spacing.md,
+    width: 56, height: 56,
+    marginBottom: Spacing.xs,
   },
-  aboutName: { fontSize: 24, fontFamily: F.brand, marginBottom: 2 },
-  aboutAr: { fontSize: 17, fontFamily: F.bold, marginBottom: Spacing.sm },
-  aboutTagline: { fontSize: 14, fontFamily: F.reg, marginBottom: Spacing.md },
-  versionPill: { borderRadius: Radius.full, paddingHorizontal: 16, paddingVertical: 6 },
-  versionText: { fontSize: 13, fontFamily: F.med },
+  aboutName: { fontSize: 17, fontFamily: F.brand, marginBottom: 1 },
+  aboutAr: { fontSize: 13, fontFamily: F.bold, marginBottom: Spacing.xs },
+  aboutTagline: { fontSize: 12, fontFamily: F.reg, marginBottom: Spacing.sm },
+  versionPill: { borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 4 },
+  versionText: { fontSize: 12, fontFamily: F.med },
 
   // Modals
   modal: { flex: 1 },
