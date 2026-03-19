@@ -78,7 +78,7 @@ export default function TasksScreen() {
     let result = [...tasks];
     if (search.trim()) {
       const q = search.toLowerCase();
-      result = result.filter(t => t.title.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q));
+      result = result.filter(t => t.title.toLowerCase().includes(q) || t.description?.toLowerCase().includes(q) || (t.title_ar?.toLowerCase().includes(q)));
     }
     switch (filter) {
       case 'today':     result = result.filter(t => t.due_date === today); break;

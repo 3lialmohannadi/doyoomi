@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
-  FlatList, StyleSheet, Text, View, TextInput, Pressable, Platform,
+  SectionList, ScrollView, StyleSheet, Text, View, TextInput, Pressable, Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +20,8 @@ import { JournalForm } from '../src/features/journal/JournalForm';
 import { Toast } from '../src/components/ui/Toast';
 import { ConfirmDialog } from '../src/components/ui/ConfirmDialog';
 import { JournalEntry, Mood } from '../src/types';
+
+const AR_MONTHS_JOURNAL = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 
 const MOOD_CONFIG: Partial<Record<Mood, { icon: string; color: string }>> = {
   happy:       { icon: 'happy',                   color: BOLD_GREEN },
@@ -65,6 +67,7 @@ export default function JournalScreen() {
   const isRTL = lang === 'ar';
 
   const [search, setSearch] = useState('');
+  const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editEntry, setEditEntry] = useState<JournalEntry | null>(null);
   const [confirmEntry, setConfirmEntry] = useState<JournalEntry | null>(null);
@@ -73,6 +76,12 @@ export default function JournalScreen() {
   const tFunc = (key: string) => t(key, lang);
   const topPad = isWeb ? 67 : insets.top;
   const bottomPad = isWeb ? 34 : 0;
+
+  const availableMoods = useMemo(() => {
+    const moodSet = new Set<Mood>();
+    entries.forEach(e => { if (e.mood) moodSet.add(e.mood); });
+    return Array.from(moodSet);
+  }, [entries]);
 
   const filteredEntries = useMemo(() => {
     let result = [...entries].sort((a, b) => b.date.localeCompare(a.date));
@@ -84,8 +93,30 @@ export default function JournalScreen() {
         e.tags?.some(tag => tag.toLowerCase().includes(q))
       );
     }
+    if (selectedMood) {
+      result = result.filter(e => e.mood === selectedMood);
+    }
     return result;
-  }, [entries, search]);
+  }, [entries, search, selectedMood]);
+
+  const journalSections = useMemo(() => {
+    const grouped: Record<string, JournalEntry[]> = {};
+    filteredEntries.forEach(e => {
+      const monthKey = e.date.slice(0, 7);
+      if (!grouped[monthKey]) grouped[monthKey] = [];
+      grouped[monthKey].push(e);
+    });
+    return Object.keys(grouped)
+      .sort((a, b) => b.localeCompare(a))
+      .map(monthKey => {
+        const [year, month] = monthKey.split('-');
+        const d = new Date(parseInt(year), parseInt(month) - 1, 1);
+        const title = isRTL
+          ? `${AR_MONTHS_JOURNAL[parseInt(month) - 1]} ${year}`
+          : format(d, 'MMMM yyyy');
+        return { title, data: grouped[monthKey] };
+      });
+  }, [filteredEntries, isRTL]);
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
@@ -140,17 +171,73 @@ export default function JournalScreen() {
         )}
       </View>
 
-      {/* Entries List */}
-      <FlatList
-        data={filteredEntries}
+      {/* Mood filter chips */}
+      {availableMoods.length > 0 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={[styles.moodChipRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
+        >
+          {selectedMood !== null && (
+            <Pressable
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setSelectedMood(null); }}
+              style={[styles.moodChip, styles.moodChipClear]}
+            >
+              <Ionicons name="close" size={13} color="#fff" />
+              <Text style={[styles.moodChipText, { color: '#fff' }]}>{tFunc('allMoods')}</Text>
+            </Pressable>
+          )}
+          {availableMoods.map(mood => {
+            const cfg = MOOD_CONFIG[mood];
+            if (!cfg) return null;
+            const isActive = selectedMood === mood;
+            return (
+              <Pressable
+                key={mood}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setSelectedMood(isActive ? null : mood);
+                }}
+                style={[
+                  styles.moodChip,
+                  {
+                    backgroundColor: isActive ? cfg.color : cfg.color + '18',
+                    borderColor: cfg.color + (isActive ? 'FF' : '40'),
+                  },
+                ]}
+              >
+                <Ionicons name={cfg.icon as React.ComponentProps<typeof Ionicons>['name']} size={13} color={isActive ? '#fff' : cfg.color} />
+                <Text style={[styles.moodChipText, { color: isActive ? '#fff' : cfg.color }]}>
+                  {tFunc(`mood${mood.charAt(0).toUpperCase() + mood.slice(1)}`)}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      )}
+
+      {/* Entries SectionList grouped by month */}
+      <SectionList
+        sections={journalSections}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: Spacing.lg, paddingBottom: bottomPad + 100, gap: Spacing.md }}
+        contentContainerStyle={{ paddingHorizontal: Spacing.lg, paddingBottom: bottomPad + 100 }}
+        stickySectionHeadersEnabled={false}
+        renderSectionHeader={({ section }) => (
+          <View style={[styles.sectionHeaderRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={[styles.sectionHeaderLine, { backgroundColor: C.tint }]} />
+            <Text style={[styles.sectionHeaderText, { color: C.text }]}>{section.title}</Text>
+            <View style={[styles.sectionCount, { backgroundColor: C.tint + '15' }]}>
+              <Text style={[styles.sectionCountText, { color: C.tint }]}>{section.data.length}</Text>
+            </View>
+          </View>
+        )}
         renderItem={({ item }) => {
           const moodCfg = item.mood ? MOOD_CONFIG[item.mood] : null;
 
           return (
             <Pressable
+              style={{ marginBottom: Spacing.md }}
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setEditEntry(item); setShowForm(true); }}
             >
               <View style={[
@@ -226,9 +313,11 @@ export default function JournalScreen() {
         ListEmptyComponent={() => (
           <EmptyState
             icon="book-outline"
-            title={search ? tFunc('noSearchResults') : tFunc('noEntries')}
-            subtitle={!search ? tFunc('noEntriesSubtitle') : undefined}
+            title={search || selectedMood ? tFunc('noSearchResults') : tFunc('noEntries')}
+            subtitle={!search && !selectedMood ? tFunc('noEntriesSubtitle') : undefined}
             gradient={['#EC4899', '#8B5CF6']}
+            actionLabel={!search && !selectedMood ? tFunc('addEntry') : undefined}
+            onAction={!search && !selectedMood ? () => { setEditEntry(null); setShowForm(true); } : undefined}
           />
         )}
       />
@@ -348,4 +437,35 @@ const styles = StyleSheet.create({
     width: 30, height: 30, borderRadius: 8,
     alignItems: 'center', justifyContent: 'center',
   },
+
+  moodChipRow: {
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.sm,
+    gap: Spacing.xs,
+  },
+  moodChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    borderRadius: Radius.full,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderWidth: 1,
+  },
+  moodChipClear: {
+    backgroundColor: '#9090A0',
+    borderColor: '#9090A0',
+  },
+  moodChipText: { fontSize: 12, fontFamily: F.bold },
+
+  sectionHeaderRow: {
+    alignItems: 'center', gap: Spacing.sm,
+    marginTop: Spacing.lg, marginBottom: Spacing.sm,
+  },
+  sectionHeaderLine: { width: 3, height: 16, borderRadius: 2 },
+  sectionHeaderText: { fontSize: 15, fontFamily: F.bold, flex: 1 },
+  sectionCount: {
+    borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2,
+  },
+  sectionCountText: { fontSize: 11, fontFamily: F.bold },
 });

@@ -23,9 +23,10 @@ interface TaskFormProps {
   visible: boolean;
   onClose: () => void;
   editTask?: Task | null;
+  defaultDate?: string;
 }
 
-export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
+export function TaskForm({ visible, onClose, editTask, defaultDate }: TaskFormProps) {
   const { addTask, updateTask } = useTasksStore();
   const { categories } = useCategoriesStore();
   const { profile } = useSettingsStore();
@@ -63,13 +64,13 @@ export function TaskForm({ visible, onClose, editTask }: TaskFormProps) {
       setTitleAr('');
       setTitleEn('');
       setDescription('');
-      setDueDate(getTodayString());
+      setDueDate(defaultDate ?? getTodayString());
       setDueTime('');
       setPriority('medium');
       setStatus('pending');
       setCategoryId('');
     }
-  }, [editTask, visible]);
+  }, [editTask, visible, defaultDate]);
 
   const handleSave = () => {
     if (!titleAr.trim() && !titleEn.trim()) {

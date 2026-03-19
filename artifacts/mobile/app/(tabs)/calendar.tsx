@@ -274,7 +274,13 @@ export default function CalendarScreen() {
               </View>
             </View>
             {selectedTasks.length === 0 ? (
-              <EmptyState icon="calendar-outline" title={tFunc('noTasksToday')} gradient={['#06B6D4', '#3B82F6']} />
+              <EmptyState
+                icon="calendar-outline"
+                title={tFunc('noTasksToday')}
+                gradient={['#06B6D4', '#3B82F6']}
+                actionLabel={tFunc('addTask')}
+                onAction={() => { setEditTask(null); setShowTaskForm(true); }}
+              />
             ) : (
               <View style={{ gap: Spacing.sm }}>
                 {selectedTasks.map(task => {
@@ -305,6 +311,7 @@ export default function CalendarScreen() {
         visible={showTaskForm}
         onClose={() => { setShowTaskForm(false); setEditTask(null); }}
         editTask={editTask}
+        defaultDate={editTask ? undefined : selectedDate}
       />
     </View>
   );

@@ -271,6 +271,8 @@ const translations: Record<Language, Record<string, string>> = {
     startWriting: 'Start Writing',
     searchEntries: 'Search entries...',
     entries: 'entries',
+    filterByMood: 'Filter by mood',
+    allMoods: 'All',
 
     // Quick Add menu
     quickAdd: 'Quick Add',
@@ -612,6 +614,8 @@ const translations: Record<Language, Record<string, string>> = {
     startWriting: 'ابدأ الكتابة',
     searchEntries: 'ابحث في الإدخالات...',
     entries: 'إدخالات',
+    filterByMood: 'تصفية حسب المزاج',
+    allMoods: 'الكل',
 
     // قائمة الإضافة السريعة
     quickAdd: 'إضافة سريعة',
