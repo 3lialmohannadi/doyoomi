@@ -129,10 +129,10 @@ export default function MoreScreen() {
             </LinearGradient>
 
             <View style={[styles.profileInfo, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
-              <Text style={[styles.profileName, { color: isDark ? C.text : '#2D1A0E', textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+              <Text style={[styles.profileName, { color: isDark ? C.text : '#1A1A3A', textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
                 {profile.name || tFunc('noNameSet')}
               </Text>
-              <Text style={[styles.profileEmail, { color: isDark ? C.textSecondary : '#7A5C48', textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
+              <Text style={[styles.profileEmail, { color: isDark ? C.textSecondary : '#6B7280', textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
                 {profile.email || tFunc('tapToEditProfile')}
               </Text>
             </View>

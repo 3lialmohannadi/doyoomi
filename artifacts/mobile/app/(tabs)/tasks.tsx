@@ -29,7 +29,7 @@ const FILTER_GRADIENTS: Record<FilterKey, readonly [string, string]> = {
   done:      GRADIENT_GREEN,
   overdue:   GRADIENT_CORAL,
   high:      GRADIENT_AMBER,
-  postponed: ['#9B8072', '#B5957E'],
+  postponed: ['#64748B', '#94A3B8'],
   nodate:    GRADIENT_SAGE,
 };
 

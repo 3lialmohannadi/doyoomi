@@ -51,7 +51,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: C.tint,
-        tabBarInactiveTintColor: isDark ? 'rgba(255,255,255,0.28)' : 'rgba(0,0,0,0.28)',
+        tabBarInactiveTintColor: isDark ? 'rgba(200,200,255,0.28)' : 'rgba(60,60,100,0.30)',
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
@@ -68,7 +68,7 @@ export default function TabLayout() {
                 {isIOS ? (
                   <BlurView intensity={60} tint="dark" style={StyleSheet.absoluteFill} />
                 ) : null}
-                <View style={[StyleSheet.absoluteFill, { backgroundColor: isDark ? 'rgba(13,13,13,0.92)' : 'rgba(247,243,239,0.95)' }]} />
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(11,11,20,0.93)' }]} />
                 <View style={styles.darkTabBorder} />
               </View>
             ) : (
@@ -76,8 +76,8 @@ export default function TabLayout() {
                 {isIOS ? (
                   <BlurView intensity={80} tint="light" style={StyleSheet.absoluteFill} />
                 ) : null}
-                <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(247,243,239,0.96)' }]} />
-                <View style={[styles.darkTabBorder, { borderTopColor: 'rgba(201,122,91,0.10)' }]} />
+                <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(245,245,255,0.97)' }]} />
+                <View style={[styles.darkTabBorder, { borderTopColor: 'rgba(99,102,241,0.12)' }]} />
               </View>
             )}
           </View>
@@ -182,9 +182,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     overflow: "hidden",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.45,
-    shadowRadius: 10,
-    elevation: 6,
+    shadowOpacity: 0.40,
+    shadowRadius: 12,
+    elevation: 8,
   },
   inactivePill: {
     width: 52,
@@ -201,8 +201,8 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    height: 0.5,
-    borderTopWidth: 0.5,
-    borderTopColor: 'rgba(255,255,255,0.08)',
+    height: 1,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(129,140,248,0.08)',
   },
 });

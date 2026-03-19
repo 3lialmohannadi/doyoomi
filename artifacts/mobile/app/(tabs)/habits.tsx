@@ -12,7 +12,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-na
 import { router, useLocalSearchParams } from 'expo-router';
 import { useHabitsStore } from '../../src/store/habitsStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Radius, Shadow, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_GREEN, GRADIENT_SAGE, cardShadow, ColorScheme, WARM_CORAL, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER } from '../../src/theme';
+import { Spacing, Radius, F, GRADIENT_H, GRADIENT_ORANGE, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t } from '../../src/utils/i18n';
 import { EmptyState } from '../../src/components/ui/EmptyState';
@@ -54,13 +54,17 @@ export default function HabitsScreen() {
     setToast({ message, type });
   };
 
+  const headerColors: [string, string] = isDark
+    ? ['#1A1A2E', '#0B0B14']
+    : ['#F97316', '#EF4444'];
+
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
-      {/* Header */}
+      {/* Header — Vivid Orange in light, dark in dark */}
       <LinearGradient
-        colors={isDark ? [...GRADIENT_DARK_HEADER] : [...GRADIENT_H]}
-        start={{ x: 1, y: 0 }}
-        end={{ x: 0, y: 1 }}
+        colors={isDark ? [...GRADIENT_DARK_HEADER] : headerColors}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + Spacing.md }, isDark && styles.headerDark]}
       >
         {!isDark && <View style={styles.headerDecor1} />}
@@ -69,8 +73,8 @@ export default function HabitsScreen() {
         <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={{ width: 46 }} />
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <Text style={[styles.headerTitle, { textAlign: 'center', color: isDark ? C.text : '#fff' }]}>{tFunc('habits')}</Text>
-            <Text style={[styles.headerSub, { textAlign: 'center', color: isDark ? C.textSecondary : 'rgba(255,255,255,0.75)' }]}>
+            <Text style={[styles.headerTitle, { textAlign: 'center', color: '#fff' }]}>{tFunc('habits')}</Text>
+            <Text style={[styles.headerSub, { textAlign: 'center', color: 'rgba(255,255,255,0.75)' }]}>
               {doneToday}/{habits.length} {tFunc('doneToday')}
             </Text>
           </View>
@@ -84,8 +88,8 @@ export default function HabitsScreen() {
             accessibilityRole="button"
             accessibilityLabel={tFunc('addHabit')}
           >
-            <View style={[styles.addBtnInner, isDark && { backgroundColor: C.surfaceElevated, borderColor: 'rgba(255,255,255,0.08)', borderWidth: 1 }]}>
-              <Ionicons name="add" size={26} color={isDark ? C.tint : PRIMARY} />
+            <View style={[styles.addBtnInner, isDark && { backgroundColor: C.surfaceElevated, borderColor: 'rgba(129,140,248,0.2)', borderWidth: 1 }]}>
+              <Ionicons name="add" size={26} color={isDark ? C.tintSecondary : '#F97316'} />
             </View>
           </Pressable>
         </View>
@@ -93,11 +97,13 @@ export default function HabitsScreen() {
         {habits.length > 0 && (
           <View style={[styles.progressWrap, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={[styles.progressTrack, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.25)' }]}>
-              <View
+              <LinearGradient
+                colors={isDark ? [C.tint, C.tintSecondary] : ['#fff', 'rgba(255,255,255,0.85)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
                 style={[
                   styles.progressFill,
                   {
-                    backgroundColor: isDark ? C.tint : '#fff',
                     width: `${Math.round((doneToday / habits.length) * 100)}%`,
                     alignSelf: isRTL ? 'flex-end' : 'flex-start',
                   },
@@ -157,6 +163,7 @@ export default function HabitsScreen() {
             icon="leaf-outline"
             title={tFunc('noHabits')}
             subtitle={tFunc('noHabitsSubtitle')}
+            gradient={['#F97316', '#EF4444']}
           />
         )}
       />
@@ -218,11 +225,15 @@ function HabitCard({
         styles.habitCard,
         {
           flexDirection: isRTL ? 'row-reverse' : 'row',
-          backgroundColor: isDark ? 'transparent' : (isDoneToday ? item.color + '12' : C.card),
-          borderColor: isDoneToday ? item.color + '60' : C.border,
+          backgroundColor: isDark ? 'transparent' : (isDoneToday ? item.color + '10' : C.card),
+          borderColor: isDoneToday ? item.color + '50' : C.border,
           overflow: 'hidden',
+          shadowColor: isDoneToday ? item.color : '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: isDark ? 0.5 : 0.08,
+          shadowRadius: 12,
+          elevation: 4,
         },
-        Shadow.sm,
       ]}
       onPressIn={() => { scale.value = withSpring(0.98, { damping: 15 }); }}
       onPressOut={() => { scale.value = withSpring(1, { damping: 15 }); }}
@@ -233,15 +244,16 @@ function HabitCard({
     >
       {isDark && (
         <LinearGradient
-          colors={isDoneToday ? [item.color + '28', item.color + '10'] : [...GRADIENT_DARK_CARD]}
+          colors={isDoneToday ? [item.color + '22', item.color + '08'] : [...GRADIENT_DARK_CARD]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
         />
       )}
-      {/* Gradient accent bar */}
+
+      {/* Thick colored accent bar */}
       <LinearGradient
-        colors={isDoneToday ? [item.color, item.color + 'AA'] : [...GRADIENT_H]}
+        colors={isDoneToday ? [item.color, item.color + 'AA'] : [C.tint, C.tint + '60']}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={styles.habitAccent}
@@ -249,13 +261,13 @@ function HabitCard({
 
       {/* Card content */}
       <View style={[styles.habitBody, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        {/* Icon */}
+        {/* Icon bubble */}
         <View style={[
           styles.habitIconWrap,
           {
-            backgroundColor: isDoneToday ? item.color + '25' : item.color + '15',
-            borderColor: isDoneToday ? item.color + '40' : 'transparent',
-            borderWidth: 1,
+            backgroundColor: isDoneToday ? item.color + '22' : item.color + '15',
+            borderColor: isDoneToday ? item.color + '45' : item.color + '20',
+            borderWidth: 1.5,
           },
         ]}>
           <Ionicons
@@ -282,9 +294,10 @@ function HabitCard({
           </Text>
 
           <View style={[styles.habitMeta, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <View style={[styles.streakBadge, { backgroundColor: WARM_CORAL + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <Ionicons name="flame" size={12} color={WARM_CORAL} />
-              <Text style={styles.streakText}>{item.streak_days} {tFunc('days')}</Text>
+            {/* Streak badge in bold orange */}
+            <View style={[styles.streakBadge, { backgroundColor: '#F97316' + '15', flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <Ionicons name="flame" size={12} color="#F97316" />
+              <Text style={[styles.streakText, { color: '#F97316' }]}>{item.streak_days} {tFunc('days')}</Text>
             </View>
 
             {isDoneToday && (
@@ -298,7 +311,7 @@ function HabitCard({
 
         {/* Actions */}
         <View style={[styles.habitActions, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          {/* Complete / Uncomplete toggle */}
+          {/* Complete toggle */}
           <Pressable
             onPress={(e) => { e.stopPropagation?.(); onToggle(); }}
             style={({ pressed }) => [
@@ -315,7 +328,7 @@ function HabitCard({
           >
             {isDoneToday && (
               <LinearGradient
-                colors={[...GRADIENT_H]}
+                colors={[item.color, item.color + 'BB']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
@@ -333,7 +346,7 @@ function HabitCard({
             onPress={(e) => { e.stopPropagation?.(); onEdit(); }}
             style={({ pressed }) => [
               styles.smallActionBtn,
-              { backgroundColor: C.tint + '12', borderColor: C.tint + '30', opacity: pressed ? 0.7 : 1 },
+              { backgroundColor: C.tint + '12', borderColor: C.tint + '28', opacity: pressed ? 0.7 : 1 },
             ]}
             accessibilityRole="button"
             accessibilityLabel={tFunc('editHabit')}
@@ -346,7 +359,7 @@ function HabitCard({
             onPress={(e) => { e.stopPropagation?.(); onDelete(); }}
             style={({ pressed }) => [
               styles.smallActionBtn,
-              { backgroundColor: C.error + '12', borderColor: C.error + '30', opacity: pressed ? 0.7 : 1 },
+              { backgroundColor: C.error + '12', borderColor: C.error + '28', opacity: pressed ? 0.7 : 1 },
             ]}
             accessibilityRole="button"
             accessibilityLabel={tFunc('deleteHabit')}
@@ -365,58 +378,53 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xxl,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
+    borderBottomLeftRadius: 36,
+    borderBottomRightRadius: 36,
     position: 'relative',
     overflow: 'hidden',
   },
   headerDark: {
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.06)',
+    borderBottomColor: 'rgba(129,140,248,0.08)',
   },
   headerDecor1: {
-    position: 'absolute', right: -30, top: -30,
-    width: 160, height: 160, borderRadius: 80,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    position: 'absolute', right: -40, top: -40,
+    width: 180, height: 180, borderRadius: 90,
+    backgroundColor: 'rgba(255,255,255,0.12)',
   },
   headerDecor2: {
-    position: 'absolute', left: 20, bottom: -10,
-    width: 90, height: 90, borderRadius: 45,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    position: 'absolute', left: 20, bottom: -20,
+    width: 100, height: 100, borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.08)',
   },
   headerRow: {
     alignItems: 'center', justifyContent: 'space-between',
   },
-  headerTitle: { fontSize: 28, fontFamily: F.bold },
-  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: F.med, marginTop: 2 },
-  backBtn: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center', justifyContent: 'center',
-  },
+  headerTitle: { fontSize: 30, fontFamily: F.black },
+  headerSub: { fontSize: 13, fontFamily: F.med, marginTop: 2 },
   addBtn: {},
   addBtnInner: {
     width: 46, height: 46, borderRadius: 23,
     backgroundColor: '#fff',
     alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.15, shadowRadius: 6, elevation: 5,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 5,
   },
   progressWrap: {
     alignItems: 'center', gap: Spacing.sm, marginTop: Spacing.lg,
   },
   progressTrack: {
-    flex: 1, height: 6, borderRadius: 3, overflow: 'hidden',
+    flex: 1, height: 8, borderRadius: 4, overflow: 'hidden',
   },
-  progressFill: { height: '100%', borderRadius: 3 },
+  progressFill: { height: '100%', borderRadius: 4 },
   progressLabel: {
-    fontSize: 13, fontFamily: F.bold, color: '#fff', minWidth: 40, textAlign: 'center',
+    fontSize: 13, fontFamily: F.black, minWidth: 44, textAlign: 'center',
   },
 
   habitCard: {
     borderRadius: Radius.xl, borderWidth: 1,
     overflow: 'hidden',
   },
-  habitAccent: { width: 4 },
+  habitAccent: { width: 5 },
   habitBody: {
     flex: 1,
     alignItems: 'center',
@@ -425,29 +433,29 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   habitIconWrap: {
-    width: 50, height: 50, borderRadius: Radius.md,
+    width: 52, height: 52, borderRadius: Radius.md,
     alignItems: 'center', justifyContent: 'center',
   },
   habitInfo: {
     flex: 1,
     gap: 5,
   },
-  habitName: { fontSize: 16, fontFamily: F.med },
+  habitName: { fontSize: 16, fontFamily: F.bold },
   habitMeta: { alignItems: 'center', gap: 6, flexWrap: 'wrap' },
   streakBadge: {
     alignItems: 'center', gap: 3,
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,
   },
-  streakText: { fontSize: 11, fontFamily: F.med, color: WARM_CORAL },
+  streakText: { fontSize: 11, fontFamily: F.bold },
   doneBadge: {
     alignItems: 'center', gap: 3,
     borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,
   },
-  doneBadgeText: { fontSize: 11, fontFamily: F.med },
+  doneBadgeText: { fontSize: 11, fontFamily: F.bold },
 
   habitActions: { alignItems: 'center', gap: 6 },
   completeBtn: {
-    width: 40, height: 40, borderRadius: 12, borderWidth: 1.5,
+    width: 40, height: 40, borderRadius: 13, borderWidth: 1.5,
     alignItems: 'center', justifyContent: 'center',
   },
   smallActionBtn: {

@@ -11,7 +11,7 @@ import * as Haptics from 'expo-haptics';
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Typography, Radius, Shadow, ShadowDark, F, PRIMARY, SECONDARY, GRADIENT_H, GRADIENT_SAGE, GRADIENT_DARK_HEADER, GRADIENT_DARK_CARD, cardShadow, ColorScheme } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow, F, SECONDARY, GRADIENT_H, GRADIENT_CYAN, GRADIENT_DARK_HEADER, GRADIENT_DARK_CARD, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, resolveDisplayName } from '../../src/utils/i18n';
 import { formatTime, formatDateKey, getTodayString, formatDate } from '../../src/utils/date';
@@ -100,11 +100,11 @@ export default function CalendarScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
-      {/* Header */}
+      {/* Header — Cyan/Blue gradient for distinct Calendar personality */}
       <LinearGradient
-        colors={isDark ? [...GRADIENT_DARK_HEADER] : [...GRADIENT_SAGE]}
-        start={{ x: 1, y: 0 }}
-        end={{ x: 0, y: 1 }}
+        colors={isDark ? [...GRADIENT_DARK_HEADER] : ['#06B6D4', '#3B82F6']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: topPad + Spacing.md }, isDark && styles.headerDark]}
       >
         {!isDark && <View style={styles.headerDecor1} />}
@@ -112,8 +112,8 @@ export default function CalendarScreen() {
         <View style={[styles.headerRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
           <View style={{ width: 46 }} />
           <View style={{ flex: 1, alignItems: 'center' }}>
-            <Text style={[styles.headerTitle, { color: isDark ? C.text : '#fff' }]}>{tFunc('calendar')}</Text>
-            <Text style={[styles.headerSub, { color: isDark ? C.textSecondary : 'rgba(255,255,255,0.75)' }]}>{headerLabel}</Text>
+            <Text style={[styles.headerTitle, { color: '#fff' }]}>{tFunc('calendar')}</Text>
+            <Text style={[styles.headerSub, { color: 'rgba(255,255,255,0.75)' }]}>{headerLabel}</Text>
           </View>
           <Pressable
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditTask(null); setShowTaskForm(true); }}
@@ -121,8 +121,8 @@ export default function CalendarScreen() {
             accessibilityRole="button"
             accessibilityLabel={tFunc('addTask')}
           >
-            <View style={[styles.addBtnInner, { backgroundColor: isDark ? C.surface : '#fff' }]}>
-              <Ionicons name="add" size={26} color={isDark ? C.tint : SECONDARY} />
+            <View style={[styles.addBtnInner, isDark && { backgroundColor: C.surfaceElevated, borderColor: 'rgba(129,140,248,0.2)', borderWidth: 1 }]}>
+              <Ionicons name="add" size={26} color={isDark ? C.tint : '#06B6D4'} />
             </View>
           </Pressable>
         </View>
@@ -141,7 +141,7 @@ export default function CalendarScreen() {
         <View style={[styles.navRow, isRTL && { flexDirection: 'row-reverse' }]}>
           <Pressable
             onPress={() => navigate(isRTL ? 1 : -1)}
-            style={({ pressed }) => [styles.navBtn, { opacity: pressed ? 0.6 : 1 }]}
+            style={({ pressed }) => [styles.navBtn, { backgroundColor: C.tint + '12', opacity: pressed ? 0.6 : 1 }]}
             accessibilityRole="button"
             accessibilityLabel={isRTL ? tFunc('next') : tFunc('back')}
           >
@@ -150,7 +150,7 @@ export default function CalendarScreen() {
           <Text style={[styles.navLabel, { color: C.text }]}>{headerLabel}</Text>
           <Pressable
             onPress={() => navigate(isRTL ? -1 : 1)}
-            style={({ pressed }) => [styles.navBtn, { opacity: pressed ? 0.6 : 1 }]}
+            style={({ pressed }) => [styles.navBtn, { backgroundColor: C.tint + '12', opacity: pressed ? 0.6 : 1 }]}
             accessibilityRole="button"
             accessibilityLabel={isRTL ? tFunc('back') : tFunc('next')}
           >
@@ -197,15 +197,18 @@ export default function CalendarScreen() {
         {(view === 'month' || view === 'week') && (
           <View style={styles.tasksSection}>
             <View style={[styles.tasksSectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+              <View style={[styles.tasksSectionLine, { backgroundColor: C.tint, alignSelf: isRTL ? 'flex-end' : 'flex-start' }]} />
               <Text style={[styles.selectedDateLabel, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>
                 {selectedDate === getTodayString() ? tFunc('today2') : formatDate(selectedDate, lang)}
               </Text>
-              <Text style={[styles.taskCount, { color: C.textMuted }]}>
-                {selectedTasks.length} {tFunc('taskCount')}
-              </Text>
+              <View style={[styles.taskCountPill, { backgroundColor: C.tint + '15' }]}>
+                <Text style={[styles.taskCount, { color: C.tint }]}>
+                  {selectedTasks.length}
+                </Text>
+              </View>
             </View>
             {selectedTasks.length === 0 ? (
-              <EmptyState icon="calendar-outline" title={tFunc('noTasksToday')} />
+              <EmptyState icon="calendar-outline" title={tFunc('noTasksToday')} gradient={['#06B6D4', '#3B82F6']} />
             ) : (
               <View style={{ gap: Spacing.sm }}>
                 {selectedTasks.map(task => {
@@ -259,7 +262,6 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
     ? [AR_DAYS_SHORT[0], AR_DAYS_SHORT[1], AR_DAYS_SHORT[2], AR_DAYS_SHORT[3], AR_DAYS_SHORT[4], AR_DAYS_SHORT[5], AR_DAYS_SHORT[6]]
     : [AR_DAYS_SHORT[1], AR_DAYS_SHORT[2], AR_DAYS_SHORT[3], AR_DAYS_SHORT[4], AR_DAYS_SHORT[5], AR_DAYS_SHORT[6], AR_DAYS_SHORT[0]];
 
-  // In RTL: reverse headers so Sunday appears on the right
   const dayHeaders = isRTL ? [...dayHeadersArBase].reverse() : dayHeadersEn;
 
   const daysInMonth = getDaysInMonth(date);
@@ -276,7 +278,6 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
   ];
   while (ltrCells.length % 7 !== 0) ltrCells.push(null);
 
-  // Build rows; in RTL reverse each row so the grid reads right-to-left
   const rows: (string | null)[][] = [];
   for (let i = 0; i < ltrCells.length; i += 7) {
     const row = ltrCells.slice(i, i + 7);
@@ -290,7 +291,7 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
       {!isMonthDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
       <View style={styles.dayHeadersRow}>
         {dayHeaders.map((d, idx) => (
-          <Text key={`${d}-${idx}`} style={[styles.dayHeader, { color: C.textMuted }]}>{d}</Text>
+          <Text key={`${d}-${idx}`} style={[styles.dayHeader, { color: C.tint }]}>{d}</Text>
         ))}
       </View>
       <View style={styles.calGrid}>
@@ -313,7 +314,7 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
               <View style={[
                 styles.calDayCircle,
                 isSelected && styles.calDayCircleSelected,
-                isToday && !isSelected && { borderWidth: 1.5, borderColor: C.tint },
+                isToday && !isSelected && { borderWidth: 2, borderColor: C.tint },
               ]}>
                 {isSelected && (
                   <LinearGradient
@@ -326,13 +327,13 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
                 <Text style={[
                   styles.calDay,
                   { color: isSelected ? '#fff' : isToday ? C.tint : C.text },
-                  isToday && !isSelected && { fontFamily: F.bold },
+                  isToday && !isSelected && { fontFamily: F.black },
                 ]}>
                   {day}
                 </Text>
               </View>
               {hasTasks && (
-                <View style={[styles.calDot, { backgroundColor: C.tint }]} />
+                <View style={[styles.calDot, { backgroundColor: isSelected ? '#fff' : C.tintSecondary }]} />
               )}
             </Pressable>
           );
@@ -348,7 +349,6 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
   const start = startOfWeek(date, { weekStartsOn: weekStart });
   const end = endOfWeek(date, { weekStartsOn: weekStart });
   const ltrDays = eachDayOfInterval({ start, end });
-  // In RTL: reverse so Sunday appears on the right
   const days = isRTL ? [...ltrDays].reverse() : ltrDays;
   const today = getTodayString();
   const { scheme: weekScheme } = useAppTheme();
@@ -372,7 +372,7 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
               style={({ pressed }) => [
                 styles.weekCell,
                 isSelected && styles.weekCellSelected,
-                isToday && !isSelected && { borderWidth: 1.5, borderColor: C.tint },
+                isToday && !isSelected && { borderWidth: 2, borderColor: C.tint },
                 { opacity: pressed ? 0.7 : 1 },
               ]}
               accessibilityRole="button"
@@ -390,11 +390,11 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
               <Text style={[styles.weekDayLabel, { color: isSelected ? 'rgba(255,255,255,0.8)' : C.textMuted }]}>
                 {isRTL ? AR_DAYS_SHORT[day.getDay()] : format(day, 'EEE').slice(0, 2)}
               </Text>
-              <Text style={[styles.weekDayNum, { color: isSelected ? '#fff' : isToday ? C.tint : C.text }]}>
+              <Text style={[styles.weekDayNum, { color: isSelected ? '#fff' : isToday ? C.tint : C.text }, isToday && !isSelected && { fontFamily: F.black }]}>
                 {format(day, 'd')}
               </Text>
               {hasTasks && (
-                <View style={[styles.weekDot, { backgroundColor: isSelected ? '#fff' : C.tint }]} />
+                <View style={[styles.weekDot, { backgroundColor: isSelected ? '#fff' : C.tintSecondary }]} />
               )}
             </Pressable>
           );
@@ -417,13 +417,13 @@ function DayView({ date, tasks, categories, C, tFunc, isRTL, lang }: DayViewProp
   return (
     <View style={styles.dayViewContainer}>
       {dayTasks.length === 0 ? (
-        <EmptyState icon="calendar-outline" title={tFunc('noTasksThisDay')} />
+        <EmptyState icon="calendar-outline" title={tFunc('noTasksThisDay')} gradient={['#06B6D4', '#3B82F6']} />
       ) : (
         dayTasks.map((task) => {
           const cat = categories.find((c) => c.id === task.category_id);
           const accentColor = task.priority === 'high' ? C.priorityHigh : task.priority === 'medium' ? C.priorityMedium : C.priorityLow;
           return (
-            <View key={task.id} style={[styles.dayTaskCard, { borderColor: C.border, flexDirection: isRTL ? 'row-reverse' : 'row', overflow: 'hidden' }]}>
+            <View key={task.id} style={[styles.dayTaskCard, { borderColor: accentColor + '30', flexDirection: isRTL ? 'row-reverse' : 'row', overflow: 'hidden' }]}>
               {isDayDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
               {!isDayDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
               <View style={[styles.dayTaskAccent, { backgroundColor: accentColor }]} />
@@ -444,37 +444,41 @@ function DayView({ date, tasks, categories, C, tFunc, isRTL, lang }: DayViewProp
   );
 }
 
-const DAY_CIRCLE_SIZE = 38;
+const DAY_CIRCLE_SIZE = 40;
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.xl,
-    borderBottomLeftRadius: 32,
-    borderBottomRightRadius: 32,
+    borderBottomLeftRadius: 36,
+    borderBottomRightRadius: 36,
     position: 'relative',
     overflow: 'hidden',
   },
   headerDecor1: {
-    position: 'absolute', right: -30, top: -30,
-    width: 160, height: 160, borderRadius: 80,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    position: 'absolute', right: -40, top: -40,
+    width: 180, height: 180, borderRadius: 90,
+    backgroundColor: 'rgba(255,255,255,0.12)',
   },
   headerDecor2: {
-    position: 'absolute', left: 20, bottom: -10,
-    width: 90, height: 90, borderRadius: 45,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    position: 'absolute', left: 20, bottom: -20,
+    width: 100, height: 100, borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.08)',
   },
   headerRow: { alignItems: 'center', justifyContent: 'space-between' },
-  headerTitle: { fontSize: 28, fontFamily: F.bold, color: '#fff', textAlign: 'center' },
-  headerSub: { fontSize: 13, color: 'rgba(255,255,255,0.75)', fontFamily: F.med, marginTop: 2, textAlign: 'center' },
+  headerTitle: { fontSize: 30, fontFamily: F.black, textAlign: 'center' },
+  headerSub: { fontSize: 13, fontFamily: F.med, marginTop: 2, textAlign: 'center' },
+  headerDark: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(129,140,248,0.08)',
+  },
   addBtn: {},
   addBtnInner: {
     width: 46, height: 46, borderRadius: 23,
     backgroundColor: '#fff',
     alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 3,
+    shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 4,
   },
   segmentContainer: { paddingHorizontal: Spacing.lg, marginTop: Spacing.md, marginBottom: Spacing.sm },
   navRow: {
@@ -485,14 +489,12 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
     paddingVertical: Spacing.xs,
   },
-  navBtn: { padding: Spacing.sm },
-  navLabel: { ...Typography.subtitle, fontFamily: F.med },
-
-  // Month calendar card
-  headerDark: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.06)',
+  navBtn: {
+    padding: Spacing.sm,
+    borderRadius: Radius.sm,
   },
+  navLabel: { ...Typography.subtitle, fontFamily: F.bold },
+
   calCard: {
     marginHorizontal: Spacing.lg,
     borderRadius: Radius.xl,
@@ -502,7 +504,7 @@ const styles = StyleSheet.create({
     ...Shadow.sm,
   },
   dayHeadersRow: { flexDirection: 'row', marginBottom: Spacing.sm },
-  dayHeader: { flex: 1, textAlign: 'center', fontSize: 13, fontFamily: F.med },
+  dayHeader: { flex: 1, textAlign: 'center', fontSize: 13, fontFamily: F.black },
   calGrid: { flexDirection: 'row', flexWrap: 'wrap' },
   calCell: {
     width: `${100 / 7}%`,
@@ -521,10 +523,9 @@ const styles = StyleSheet.create({
   calDayCircleSelected: {
     overflow: 'hidden',
   },
-  calDay: { fontSize: 15, fontFamily: F.med },
-  calDot: { width: 4, height: 4, borderRadius: 2, marginTop: 2 },
+  calDay: { fontSize: 15, fontFamily: F.bold },
+  calDot: { width: 5, height: 5, borderRadius: 3, marginTop: 2 },
 
-  // Week view
   weekCard: {
     marginHorizontal: Spacing.lg,
     borderRadius: Radius.xl,
@@ -547,31 +548,29 @@ const styles = StyleSheet.create({
   weekCellSelected: {
     overflow: 'hidden',
   },
-  weekDayLabel: { fontSize: 12, fontFamily: F.med },
-  weekDayNum: { fontSize: 18, fontFamily: F.bold },
-  weekDot: { width: 4, height: 4, borderRadius: 2, marginTop: 1 },
+  weekDayLabel: { fontSize: 12, fontFamily: F.bold },
+  weekDayNum: { fontSize: 18, fontFamily: F.black },
+  weekDot: { width: 5, height: 5, borderRadius: 3, marginTop: 1 },
 
-  // Tasks section
   tasksSection: { paddingHorizontal: Spacing.lg, gap: Spacing.md, marginTop: Spacing.xxl },
   tasksSectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.xs,
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.sm,
   },
-  selectedDateLabel: { fontSize: 19, fontFamily: F.bold },
-  taskCount: { fontSize: 14, fontFamily: F.med },
+  tasksSectionLine: { width: 4, height: 20, borderRadius: 2 },
+  selectedDateLabel: { fontSize: 17, fontFamily: F.black, flex: 1 },
+  taskCountPill: { borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3 },
+  taskCount: { fontSize: 13, fontFamily: F.black },
 
-  // Day view
-  dayViewContainer: { paddingHorizontal: Spacing.lg, gap: Spacing.sm, marginTop: Spacing.sm },
+  dayViewContainer: { padding: Spacing.lg, gap: Spacing.sm },
   dayTaskCard: {
-    flexDirection: 'row', borderRadius: Radius.lg, borderWidth: 1,
-    overflow: 'hidden', ...Shadow.sm,
+    borderRadius: Radius.lg, borderWidth: 1,
+    overflow: 'hidden',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 3,
   },
-  dayTaskAccent: { width: 4, alignSelf: 'stretch' },
+  dayTaskAccent: { width: 5, alignSelf: 'stretch' },
   dayTaskContent: { flex: 1, padding: Spacing.md, gap: 4 },
-  dayTaskTitle: { fontSize: 17, fontFamily: F.med },
-  dayTaskTime: { fontSize: 14, fontFamily: F.reg },
-  dayTaskCat: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, alignSelf: 'flex-start', marginTop: 2 },
-  dayTaskCatText: { fontSize: 11, fontFamily: F.med },
+  dayTaskTitle: { fontSize: 15, fontFamily: F.bold },
+  dayTaskTime: { fontSize: 13, fontFamily: F.med },
+  dayTaskCat: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, alignSelf: 'flex-start' },
+  dayTaskCatText: { fontSize: 11, fontFamily: F.bold },
 });

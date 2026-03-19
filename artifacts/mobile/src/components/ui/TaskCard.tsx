@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   accentBar: {
-    width: 3,
+    width: 5,
     alignSelf: 'stretch',
     borderTopLeftRadius: Radius.lg,
     borderBottomLeftRadius: Radius.lg,

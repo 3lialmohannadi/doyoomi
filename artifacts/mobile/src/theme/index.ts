@@ -1,90 +1,107 @@
 import { Platform } from 'react-native';
 
-export const PRIMARY   = '#C97A5B';
-export const SECONDARY = '#7BAE9E';
+// ── Bold & Colorful Core Palette ───────────────────────────────────────────────
+export const PRIMARY   = '#6366F1'; // Electric Indigo
+export const SECONDARY = '#F97316'; // Vivid Orange
 
-export const WARM_AMBER  = '#E8A87C';
-export const WARM_CORAL  = '#D48E6E';
-export const WARM_SAGE   = '#6BAF8A';
-export const WARM_TEAL   = '#5BA89E';
-export const WARM_ERROR  = '#C9605B';
-export const WARM_AMBER2 = '#E8A650';
+export const BOLD_INDIGO  = '#6366F1';
+export const BOLD_PURPLE  = '#8B5CF6';
+export const BOLD_ORANGE  = '#F97316';
+export const BOLD_RED     = '#EF4444';
+export const BOLD_CYAN    = '#06B6D4';
+export const BOLD_BLUE    = '#3B82F6';
+export const BOLD_GREEN   = '#10B981';
+export const BOLD_TEAL    = '#14B8A6';
+export const BOLD_GOLD    = '#EAB308';
+export const BOLD_AMBER   = '#F59E0B';
+export const BOLD_ROSE    = '#EC4899';
+export const BOLD_PINK    = '#F472B6';
 
+// Legacy aliases (kept for backward compat with component imports)
+export const WARM_AMBER  = '#F59E0B';
+export const WARM_CORAL  = '#F97316';
+export const WARM_SAGE   = '#10B981';
+export const WARM_TEAL   = '#14B8A6';
+export const WARM_ERROR  = '#EF4444';
+export const WARM_AMBER2 = '#EAB308';
+
+// ── Color Schemes ─────────────────────────────────────────────────────────────
 export const Colors = {
   light: {
-    background:      '#F7F3EF',
+    background:      '#F5F5FF',
     surface:         '#FFFFFF',
     surfaceElevated: '#FFFFFF',
-    border:          'rgba(201,122,91,0.10)',
-    borderLight:     'rgba(201,122,91,0.06)',
-    text:            '#1E1009',
-    textSecondary:   '#6B5548',
-    textMuted:       '#A8907E',
-    tint:            PRIMARY,
-    tintSecondary:   SECONDARY,
-    tabBar:          'rgba(247,243,239,0.96)',
+    border:          'rgba(99,102,241,0.12)',
+    borderLight:     'rgba(99,102,241,0.06)',
+    text:            '#0F0F23',
+    textSecondary:   '#4B4B6B',
+    textMuted:       '#9090A0',
+    tint:            BOLD_INDIGO,
+    tintSecondary:   BOLD_ORANGE,
+    tabBar:          'rgba(245,245,255,0.97)',
     card:            '#FFFFFF',
-    card2:           '#F7F3EF',
-    shadow:          'rgba(201,122,91,0.10)',
-    shadowMedium:    'rgba(201,122,91,0.18)',
-    success:         '#7BAE9E',
-    warning:         '#E8A650',
-    error:           '#C9605B',
-    overdue:         '#C9605B',
-    priorityHigh:    '#C9605B',
-    priorityMedium:  '#E8A650',
-    priorityLow:     '#7BAE9E',
-    streak:          '#E8A650',
-    habit:           '#7BAE9E',
-    goal:            PRIMARY,
-    gradientStart:   PRIMARY,
-    gradientEnd:     '#E8A87C',
-    gradientMid:     '#D48E6E',
-    pillActive:      PRIMARY,
-    pillInactive:    '#EDE7E2',
-    segmentBg:       '#EDE7E2',
-    inputBg:         '#FDFAF7',
-    dim:             '#A8907E',
+    card2:           '#F5F5FF',
+    shadow:          'rgba(99,102,241,0.12)',
+    shadowMedium:    'rgba(99,102,241,0.22)',
+    success:         BOLD_GREEN,
+    warning:         BOLD_GOLD,
+    error:           BOLD_RED,
+    overdue:         BOLD_RED,
+    priorityHigh:    BOLD_RED,
+    priorityMedium:  BOLD_GOLD,
+    priorityLow:     BOLD_GREEN,
+    streak:          BOLD_ORANGE,
+    habit:           BOLD_CYAN,
+    goal:            BOLD_PURPLE,
+    gradientStart:   BOLD_INDIGO,
+    gradientEnd:     BOLD_PURPLE,
+    gradientMid:     BOLD_BLUE,
+    pillActive:      BOLD_INDIGO,
+    pillInactive:    '#EBEBFF',
+    segmentBg:       '#EBEBFF',
+    inputBg:         '#FAFAFF',
+    dim:             '#9090A0',
   },
   dark: {
-    background:      '#0D0D0D',
-    surface:         '#161616',
-    surfaceElevated: '#1F1F1F',
-    border:          'rgba(255,255,255,0.07)',
-    borderLight:     'rgba(255,255,255,0.04)',
-    text:            '#F2EDE8',
-    textSecondary:   '#BBA898',
-    textMuted:       '#7A6456',
-    tint:            '#E8956E',
-    tintSecondary:   '#8FCABC',
-    tabBar:          'rgba(13,13,13,0.0)',
-    card:            '#191919',
-    card2:           '#1F1F1F',
-    shadow:          'rgba(0,0,0,0.55)',
-    shadowMedium:    'rgba(0,0,0,0.75)',
-    success:         '#8FCABC',
-    warning:         '#E8A650',
-    error:           '#E07068',
-    overdue:         '#E07068',
-    priorityHigh:    '#E07068',
-    priorityMedium:  '#E8A650',
-    priorityLow:     '#8FCABC',
-    streak:          '#E8A650',
-    habit:           '#8FCABC',
-    goal:            '#E8956E',
-    gradientStart:   '#E8956E',
-    gradientEnd:     '#F0B896',
-    gradientMid:     '#E8A87C',
-    pillActive:      '#E8956E',
-    pillInactive:    '#1F1F1F',
-    segmentBg:       '#161616',
-    inputBg:         '#1F1F1F',
-    dim:             '#7A6456',
+    background:      '#0B0B14',
+    surface:         '#13131F',
+    surfaceElevated: '#1C1C2E',
+    border:          'rgba(129,140,248,0.10)',
+    borderLight:     'rgba(129,140,248,0.05)',
+    text:            '#EEEEFF',
+    textSecondary:   '#9090B0',
+    textMuted:       '#55556A',
+    tint:            '#818CF8',
+    tintSecondary:   '#FB923C',
+    tabBar:          'rgba(11,11,20,0.0)',
+    card:            '#18182A',
+    card2:           '#1C1C2E',
+    shadow:          'rgba(0,0,0,0.6)',
+    shadowMedium:    'rgba(0,0,0,0.8)',
+    success:         '#34D399',
+    warning:         '#FBBF24',
+    error:           '#F87171',
+    overdue:         '#F87171',
+    priorityHigh:    '#F87171',
+    priorityMedium:  '#FBBF24',
+    priorityLow:     '#34D399',
+    streak:          '#FB923C',
+    habit:           '#22D3EE',
+    goal:            '#A78BFA',
+    gradientStart:   '#818CF8',
+    gradientEnd:     '#A78BFA',
+    gradientMid:     '#60A5FA',
+    pillActive:      '#818CF8',
+    pillInactive:    '#1C1C2E',
+    segmentBg:       '#13131F',
+    inputBg:         '#1C1C2E',
+    dim:             '#55556A',
   },
 };
 
 export type ColorScheme = typeof Colors.light;
 
+// ── Fonts ─────────────────────────────────────────────────────────────────────
 export const F = {
   reg:       'Cairo_400Regular',
   med:       'Cairo_600SemiBold',
@@ -95,6 +112,7 @@ export const F = {
   brand:     'Comfortaa_700Bold',
 } as const;
 
+// ── Spacing ───────────────────────────────────────────────────────────────────
 export const Spacing = {
   xs: 4,
   sm: 8,
@@ -105,6 +123,7 @@ export const Spacing = {
   xxxl: 32,
 };
 
+// ── Border Radius ─────────────────────────────────────────────────────────────
 export const Radius = {
   sm: 10,
   md: 16,
@@ -114,25 +133,26 @@ export const Radius = {
   full: 9999,
 };
 
+// ── Shadows ───────────────────────────────────────────────────────────────────
 export const Shadow = {
   sm: {
-    shadowColor: PRIMARY,
+    shadowColor: BOLD_INDIGO,
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.10,
     shadowRadius: 8,
     elevation: 3,
   },
   md: {
-    shadowColor: PRIMARY,
+    shadowColor: BOLD_INDIGO,
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.14,
     shadowRadius: 16,
     elevation: 6,
   },
   lg: {
-    shadowColor: PRIMARY,
+    shadowColor: BOLD_INDIGO,
     shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.20,
     shadowRadius: 24,
     elevation: 10,
   },
@@ -142,26 +162,27 @@ export const ShadowDark = {
   sm: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.40,
     shadowRadius: 10,
     elevation: 5,
   },
   md: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.55,
     shadowRadius: 20,
     elevation: 10,
   },
   lg: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 14 },
-    shadowOpacity: 0.65,
+    shadowOpacity: 0.70,
     shadowRadius: 30,
     elevation: 16,
   },
 };
 
+// ── Typography ────────────────────────────────────────────────────────────────
 export const Typography = {
   heading1: { fontSize: 36, fontFamily: F.black, lineHeight: 44 },
   heading2: { fontSize: 30, fontFamily: F.black, lineHeight: 38 },
@@ -174,29 +195,42 @@ export const Typography = {
   label: { fontSize: 13, fontFamily: F.med, lineHeight: 18 },
 };
 
-export const GRADIENT_H: readonly [string, string] = ['#C97A5B', '#E8A87C'];
-export const GRADIENT_D: readonly [string, string, string] = ['#C97A5B', '#D48E6E', '#7BAE9E'];
-export const GRADIENT_WARM: readonly [string, string] = ['#E8A87C', '#F5C89A'];
-export const GRADIENT_SAGE: readonly [string, string] = ['#7BAE9E', '#9ECCC0'];
-export const GRADIENT_TEAL: readonly [string, string, string] = ['#5B9A8B', '#7BAE9E', '#9ECCC0'];
-export const GRADIENT_AMBER: readonly [string, string] = ['#E8A650', '#F5C86A'];
-export const GRADIENT_CORAL: readonly [string, string] = ['#C9605B', '#E88078'];
-export const GRADIENT_GREEN: readonly [string, string] = [WARM_SAGE, '#4CAF82'];
+// ── Bold & Colorful Gradients ─────────────────────────────────────────────────
 
-export const GRADIENT_DARK_CARD: readonly [string, string] = ['#222222', '#181818'];
-export const GRADIENT_DARK_CARD_ELEVATED: readonly [string, string] = ['#2A2A2A', '#202020'];
-export const GRADIENT_DARK_HEADER: readonly [string, string, string] = ['#1A1A1A', '#0F0F0F', '#0D0D0D'];
-export const GRADIENT_DARK_BRAND: readonly [string, string] = ['#C97A5B', '#8A5540'];
-export const GRADIENT_DARK_BRAND_SUBTLE: readonly [string, string] = ['rgba(232,149,110,0.15)', 'rgba(232,149,110,0.03)'];
-export const GRADIENT_DARK_SAGE_SUBTLE: readonly [string, string] = ['rgba(143,202,188,0.15)', 'rgba(143,202,188,0.03)'];
+// Primary gradients (Indigo → Purple family)
+export const GRADIENT_H: readonly [string, string]        = ['#6366F1', '#8B5CF6'];
+export const GRADIENT_D: readonly [string, string, string]= ['#6366F1', '#8B5CF6', '#F97316'];
+export const GRADIENT_INDIGO: readonly [string, string]   = ['#6366F1', '#8B5CF6'];
+export const GRADIENT_PURPLE: readonly [string, string]   = ['#8B5CF6', '#EC4899'];
 
+// Accent gradients
+export const GRADIENT_ORANGE: readonly [string, string]   = ['#F97316', '#EF4444'];
+export const GRADIENT_CORAL: readonly [string, string]    = ['#EF4444', '#F97316'];
+export const GRADIENT_CYAN: readonly [string, string]     = ['#06B6D4', '#3B82F6'];
+export const GRADIENT_GOLD: readonly [string, string]     = ['#EAB308', '#F97316'];
+export const GRADIENT_AMBER: readonly [string, string]    = ['#F59E0B', '#EAB308'];
+export const GRADIENT_GREEN: readonly [string, string]    = ['#10B981', '#06B6D4'];
+export const GRADIENT_TEAL: readonly [string, string, string] = ['#14B8A6', '#06B6D4', '#3B82F6'];
+export const GRADIENT_SAGE: readonly [string, string]     = ['#10B981', '#14B8A6'];
+export const GRADIENT_ROSE: readonly [string, string]     = ['#EC4899', '#8B5CF6'];
+export const GRADIENT_WARM: readonly [string, string]     = ['#FB923C', '#F59E0B'];
+
+// Dark mode card/header gradients
+export const GRADIENT_DARK_CARD: readonly [string, string]            = ['#1C1C2E', '#16162A'];
+export const GRADIENT_DARK_CARD_ELEVATED: readonly [string, string]   = ['#21213A', '#1A1A2E'];
+export const GRADIENT_DARK_HEADER: readonly [string, string, string]  = ['#1A1A2E', '#12122A', '#0B0B14'];
+export const GRADIENT_DARK_BRAND: readonly [string, string]           = ['#6366F1', '#4F46E5'];
+export const GRADIENT_DARK_BRAND_SUBTLE: readonly [string, string]    = ['rgba(129,140,248,0.18)', 'rgba(129,140,248,0.03)'];
+export const GRADIENT_DARK_SAGE_SUBTLE: readonly [string, string]     = ['rgba(34,211,238,0.15)', 'rgba(34,211,238,0.03)'];
+
+// ── Shadow Helpers ────────────────────────────────────────────────────────────
 function shadowHelper(color = PRIMARY, strength = 4) {
   return Platform.select({
     ios: {
-      shadowColor:    color,
-      shadowOffset:   { width: 0, height: strength / 2 },
-      shadowOpacity:  0.10,
-      shadowRadius:   strength,
+      shadowColor:   color,
+      shadowOffset:  { width: 0, height: strength / 2 },
+      shadowOpacity: 0.12,
+      shadowRadius:  strength,
     },
     android: { elevation: strength },
   }) ?? {};
