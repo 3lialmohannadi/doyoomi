@@ -149,6 +149,16 @@ const translations: Record<Language, Record<string, string>> = {
     tryAgain: 'Try Again',
     fieldRequired: 'This field is required',
 
+    // Streak Celebrations
+    streakMilestone: 'Streak Milestone!',
+    streakDaysLabel: 'day streak',
+    streakCelebration3: "You're on a roll! 3 days strong! ⚡",
+    streakCelebration7: "One week! You're unstoppable! 🔥",
+    streakCelebration14: "Two weeks! Amazing dedication! 🏅",
+    streakCelebration30: "A whole month! Absolutely legendary! 🏆",
+    streakTapToDismiss: 'Tap anywhere to dismiss',
+    streakKeepItUp: 'Keep it up!',
+
     // Chart
     chartDone: 'Done',
     chartTotal: 'Total',
@@ -479,6 +489,16 @@ const translations: Record<Language, Record<string, string>> = {
     sendAnother: 'إرسال رسالة أخرى',
     tryAgain: 'حاول مجدداً',
     fieldRequired: 'هذا الحقل مطلوب',
+
+    // احتفالات التسلسل
+    streakMilestone: 'إنجاز التسلسل!',
+    streakDaysLabel: 'يوم متواصل',
+    streakCelebration3: 'أنت في المسار الصحيح! ٣ أيام متواصلة! ⚡',
+    streakCelebration7: 'أسبوع كامل! لا شيء يوقفك! 🔥',
+    streakCelebration14: 'أسبوعان! إصرار رائع! 🏅',
+    streakCelebration30: 'شهر كامل! أسطوري بحق! 🏆',
+    streakTapToDismiss: 'اضغط للإغلاق',
+    streakKeepItUp: 'استمر هكذا!',
 
     // الرسم البياني
     chartDone: 'منجز',

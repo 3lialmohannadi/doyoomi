@@ -20,7 +20,9 @@ import { SwipeableRow } from '../../src/components/ui/SwipeableRow';
 import { HabitForm } from '../../src/features/habits/HabitForm';
 import { Toast } from '../../src/components/ui/Toast';
 import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
+import { StreakCelebration } from '../../src/components/ui/StreakCelebration';
 import { Habit } from '../../src/types';
+import { StreakCelebrationPayload } from '../../src/store/habitsStore';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -40,6 +42,7 @@ export default function HabitsScreen() {
   const [editHabit, setEditHabit] = useState<Habit | null>(null);
   const [confirmHabit, setConfirmHabit] = useState<Habit | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [celebrationPayload, setCelebrationPayload] = useState<StreakCelebrationPayload | null>(null);
 
   const tFunc = (key: string) => t(key, lang);
   const topPad = isWeb ? 67 : insets.top;
@@ -150,8 +153,12 @@ export default function HabitsScreen() {
                     uncompleteHabit(item.id);
                     showToast(tFunc('habitUncompleted'), 'info');
                   } else {
-                    completeHabit(item.id);
-                    showToast(tFunc('habitCompleted'), 'success');
+                    const payload = completeHabit(item.id);
+                    if (payload) {
+                      setCelebrationPayload(payload);
+                    } else {
+                      showToast(tFunc('habitCompleted'), 'success');
+                    }
                   }
                 }}
                 onEdit={() => {
@@ -207,6 +214,17 @@ export default function HabitsScreen() {
           onHide={() => setToast(null)}
         />
       )}
+
+      <StreakCelebration
+        visible={!!celebrationPayload}
+        habitName={celebrationPayload?.habitName ?? ''}
+        streakDays={celebrationPayload?.streakDays ?? 0}
+        lang={lang}
+        onDismiss={() => {
+          showToast(tFunc('habitCompleted'), 'success');
+          setCelebrationPayload(null);
+        }}
+      />
     </View>
   );
 }

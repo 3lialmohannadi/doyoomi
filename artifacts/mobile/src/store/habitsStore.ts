@@ -41,12 +41,20 @@ const MOCK_HABITS: Habit[] = [
   },
 ];
 
+export interface StreakCelebrationPayload {
+  habitName: string;
+  streakDays: number;
+}
+
+const MILESTONES = new Set([3, 7, 14, 30]);
+const sessionCelebrated = new Set<string>();
+
 interface HabitsState {
   habits: Habit[];
   addHabit: (habit: Omit<Habit, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => void;
   updateHabit: (id: string, updates: Partial<Habit>) => void;
   deleteHabit: (id: string) => void;
-  completeHabit: (id: string) => void;
+  completeHabit: (id: string) => StreakCelebrationPayload | null;
   uncompleteHabit: (id: string) => void;
   loadHabits: () => Promise<void>;
 }
@@ -88,11 +96,11 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
     const now = new Date();
     const todayStr = format(now, 'yyyy-MM-dd');
     const habit = get().habits.find(h => h.id === id);
-    if (!habit) return;
+    if (!habit) return null;
     const lastDate = habit.last_completed_at
       ? format(new Date(habit.last_completed_at), 'yyyy-MM-dd')
       : null;
-    if (lastDate === todayStr) return; // Already completed today
+    if (lastDate === todayStr) return null; // Already completed today
 
     let newStreak = 1;
     if (lastDate) {
@@ -106,6 +114,13 @@ export const useHabitsStore = create<HabitsState>((set, get) => ({
       streak_days: newStreak,
       last_completed_at: now.toISOString(),
     });
+
+    const milestoneKey = `${id}-${newStreak}`;
+    if (MILESTONES.has(newStreak) && !sessionCelebrated.has(milestoneKey)) {
+      sessionCelebrated.add(milestoneKey);
+      return { habitName: habit.name, streakDays: newStreak };
+    }
+    return null;
   },
 
   uncompleteHabit: (id) => {
