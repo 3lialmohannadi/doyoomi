@@ -700,8 +700,8 @@ export function resolveDisplayName(
 
 export function getGreeting(lang: Language): string {
   const hour = new Date().getHours();
-  if (hour < 12) return t('goodMorning', lang);
-  if (hour < 18) return t('goodAfternoon', lang);
+  if (hour >= 5 && hour < 12) return t('goodMorning', lang);
+  if (hour >= 12 && hour < 18) return t('goodAfternoon', lang);
   return t('goodEvening', lang);
 }
 
@@ -717,9 +717,7 @@ export function getPersonalizedGreeting(name: string | undefined | null, lang: L
   const emoji = getGreetingEmoji();
   const trimmedName = (name ?? '').trim();
   if (trimmedName) {
-    return lang === 'ar'
-      ? `${greeting}، ${trimmedName} ${emoji}`
-      : `${greeting}, ${trimmedName} ${emoji}`;
+    return `${greeting} ${trimmedName} ${emoji}`;
   }
   return `${greeting} ${emoji}`;
 }

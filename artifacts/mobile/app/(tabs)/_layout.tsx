@@ -121,7 +121,7 @@ export default function TabLayout() {
           ...(isWeb ? {} : {
             marginHorizontal: 16,
             borderRadius: 28,
-            marginBottom: Platform.OS === 'ios' ? 8 : 12,
+            marginBottom: 8,
             shadowColor: isDark ? '#000000' : '#6366F1',
             shadowOffset: { width: 0, height: 8 },
             shadowOpacity: isDark ? 0.45 : 0.18,
