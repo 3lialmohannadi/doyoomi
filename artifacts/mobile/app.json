@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "buildNumber": "22",
+      "buildNumber": "23",
       "bundleIdentifier": "com.doyoomi.app"
     },
     "android": {
