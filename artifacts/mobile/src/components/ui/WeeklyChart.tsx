@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   pctLabel: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: F.bold,
     marginBottom: 2,
     textAlign: 'center',
