@@ -11,12 +11,13 @@ import * as Haptics from 'expo-haptics';
 import { useTasksStore } from '../../src/store/tasksStore';
 import { useCategoriesStore } from '../../src/store/categoriesStore';
 import { useSettingsStore } from '../../src/store/settingsStore';
-import { Spacing, Typography, Radius, Shadow, F, SECONDARY, GRADIENT_H, GRADIENT_CYAN, GRADIENT_DARK_HEADER, GRADIENT_DARK_CARD, ColorScheme } from '../../src/theme';
+import { Spacing, Typography, Radius, Shadow, F, GRADIENT_H, GRADIENT_DARK_HEADER, GRADIENT_DARK_CARD, ColorScheme } from '../../src/theme';
 import { useAppTheme } from '../../src/hooks/useAppTheme';
 import { t, resolveDisplayName } from '../../src/utils/i18n';
 import { formatTime, formatDateKey, getTodayString, formatDate } from '../../src/utils/date';
 import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
 import { TaskCard } from '../../src/components/ui/TaskCard';
+import { SwipeableRow } from '../../src/components/ui/SwipeableRow';
 import { EmptyState } from '../../src/components/ui/EmptyState';
 import { TaskForm } from '../../src/features/tasks/TaskForm';
 import type { Task, Category, Language, StartOfWeek } from '../../src/types';
@@ -70,6 +71,23 @@ export default function CalendarScreen() {
     return set;
   }, [tasks]);
 
+  const taskAllDoneDates = useMemo(() => {
+    const set = new Set<string>();
+    const byDate: Record<string, Task[]> = {};
+    tasks.forEach(task => {
+      if (task.due_date) {
+        if (!byDate[task.due_date]) byDate[task.due_date] = [];
+        byDate[task.due_date].push(task);
+      }
+    });
+    Object.entries(byDate).forEach(([date, dayTasks]) => {
+      if (dayTasks.length > 0 && dayTasks.every(task => task.status === 'completed')) {
+        set.add(date);
+      }
+    });
+    return set;
+  }, [tasks]);
+
   const selectedTasks = useMemo(() =>
     tasks.filter(t => t.due_date === selectedDate),
     [tasks, selectedDate]
@@ -98,6 +116,26 @@ export default function CalendarScreen() {
     return format(currentDate, 'EEEE, MMMM d');
   }, [currentDate, view, profile.start_of_week, isRTL]);
 
+  const isNotCurrentPeriod = useMemo(() => {
+    const todayStr = getTodayString();
+    if (view === 'month') {
+      return format(currentDate, 'yyyy-MM') !== format(new Date(), 'yyyy-MM');
+    }
+    if (view === 'week') {
+      const ws = profile.start_of_week === 'sunday' ? 0 : 1;
+      const weekStart = formatDateKey(startOfWeek(currentDate, { weekStartsOn: ws as 0 | 1 }));
+      const weekEnd = formatDateKey(endOfWeek(currentDate, { weekStartsOn: ws as 0 | 1 }));
+      return todayStr < weekStart || todayStr > weekEnd;
+    }
+    return formatDateKey(currentDate) !== todayStr;
+  }, [currentDate, view, profile.start_of_week]);
+
+  const jumpToToday = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setCurrentDate(new Date());
+    setSelectedDate(getTodayString());
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: C.background }]}>
       {/* Header — Cyan/Blue gradient for distinct Calendar personality */}
@@ -113,7 +151,6 @@ export default function CalendarScreen() {
           <View style={{ width: 46 }} />
           <View style={{ flex: 1, alignItems: 'center' }}>
             <Text style={[styles.headerTitle, { color: '#fff' }]}>{tFunc('calendar')}</Text>
-            <Text style={[styles.headerSub, { color: 'rgba(255,255,255,0.75)' }]}>{headerLabel}</Text>
           </View>
           <Pressable
             onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setEditTask(null); setShowTaskForm(true); }}
@@ -147,7 +184,22 @@ export default function CalendarScreen() {
           >
             <Ionicons name={isRTL ? 'chevron-forward' : 'chevron-back'} size={20} color={C.tint} />
           </Pressable>
-          <Text style={[styles.navLabel, { color: C.text }]}>{headerLabel}</Text>
+
+          <View style={styles.navCenter}>
+            <Text style={[styles.navLabel, { color: C.text }]}>{headerLabel}</Text>
+            {isNotCurrentPeriod && (
+              <Pressable
+                onPress={jumpToToday}
+                style={({ pressed }) => [styles.todayChip, { backgroundColor: C.tint + '18', opacity: pressed ? 0.7 : 1 }]}
+                accessibilityRole="button"
+                accessibilityLabel={tFunc('today')}
+              >
+                <Ionicons name="today-outline" size={12} color={C.tint} />
+                <Text style={[styles.todayChipText, { color: C.tint }]}>{tFunc('today')}</Text>
+              </Pressable>
+            )}
+          </View>
+
           <Pressable
             onPress={() => navigate(isRTL ? -1 : 1)}
             style={({ pressed }) => [styles.navBtn, { backgroundColor: C.tint + '12', opacity: pressed ? 0.6 : 1 }]}
@@ -168,6 +220,7 @@ export default function CalendarScreen() {
               setSelectedDate(d);
             }}
             taskDates={taskDates}
+            taskAllDoneDates={taskAllDoneDates}
             startOfWeek={profile.start_of_week}
             lang={lang}
             C={C}
@@ -190,7 +243,20 @@ export default function CalendarScreen() {
         )}
 
         {view === 'day' && (
-          <DayView date={currentDate} tasks={tasks} categories={categories} C={C} tFunc={tFunc} isRTL={isRTL} lang={lang} />
+          <DayView
+            date={currentDate}
+            tasks={tasks}
+            categories={categories}
+            C={C}
+            tFunc={tFunc}
+            isRTL={isRTL}
+            lang={lang}
+            onToggle={toggleComplete}
+            onDelete={deleteTask}
+            onPostpone={postponeTask}
+            onEdit={(task) => { setEditTask(task); setShowTaskForm(true); }}
+            timeFormat={profile.time_format}
+          />
         )}
 
         {/* Selected date tasks */}
@@ -246,10 +312,10 @@ export default function CalendarScreen() {
 
 interface CalendarViewProps {
   date: Date; selectedDate: string; onSelectDate: (d: string) => void;
-  taskDates: Set<string>; startOfWeek: StartOfWeek; lang: Language; C: ColorScheme;
+  taskDates: Set<string>; taskAllDoneDates?: Set<string>; startOfWeek: StartOfWeek; lang: Language; C: ColorScheme;
 }
 
-function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: startDay, lang, C }: CalendarViewProps) {
+function MonthView({ date, selectedDate, onSelectDate, taskDates, taskAllDoneDates, startOfWeek: startDay, lang, C }: CalendarViewProps) {
   const isRTL = lang === 'ar';
   const { scheme: monthScheme } = useAppTheme();
   const isMonthDark = monthScheme === 'dark';
@@ -300,6 +366,7 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
           const isToday = dayKey === today;
           const isSelected = dayKey === selectedDate;
           const hasTasks = taskDates.has(dayKey);
+          const allDone = taskAllDoneDates?.has(dayKey) ?? false;
           const day = parseISO(dayKey).getDate();
 
           return (
@@ -333,7 +400,9 @@ function MonthView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: s
                 </Text>
               </View>
               {hasTasks && (
-                <View style={[styles.calDot, { backgroundColor: isSelected ? '#fff' : C.tintSecondary }]} />
+                allDone
+                  ? <View style={[styles.calDotAllDone, { backgroundColor: isSelected ? '#fff' : C.tint }]} />
+                  : <View style={[styles.calDot, { backgroundColor: isSelected ? '#fff' : C.tintSecondary }]} />
               )}
             </Pressable>
           );
@@ -405,40 +474,57 @@ function WeekView({ date, selectedDate, onSelectDate, taskDates, startOfWeek: st
 }
 
 interface DayViewProps {
-  date: Date; tasks: Task[]; categories: Category[]; C: ColorScheme; tFunc: (k: string) => string; isRTL: boolean; lang: Language;
+  date: Date;
+  tasks: Task[];
+  categories: Category[];
+  C: ColorScheme;
+  tFunc: (k: string) => string;
+  isRTL: boolean;
+  lang: Language;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
+  onPostpone: (id: string) => void;
+  onEdit: (task: Task) => void;
+  timeFormat: string;
 }
 
-function DayView({ date, tasks, categories, C, tFunc, isRTL, lang }: DayViewProps) {
+function DayView({ date, tasks, categories, C, tFunc, isRTL, lang, onToggle, onDelete, onPostpone, onEdit, timeFormat }: DayViewProps) {
   const key = formatDateKey(date);
   const dayTasks = tasks.filter((t) => t.due_date === key);
-  const { scheme: dayScheme } = useAppTheme();
-  const isDayDark = dayScheme === 'dark';
 
   return (
     <View style={styles.dayViewContainer}>
       {dayTasks.length === 0 ? (
         <EmptyState icon="calendar-outline" title={tFunc('noTasksThisDay')} gradient={['#06B6D4', '#3B82F6']} />
       ) : (
-        dayTasks.map((task) => {
-          const cat = categories.find((c) => c.id === task.category_id);
-          const accentColor = task.priority === 'high' ? C.priorityHigh : task.priority === 'medium' ? C.priorityMedium : C.priorityLow;
-          return (
-            <View key={task.id} style={[styles.dayTaskCard, { borderColor: accentColor + '30', flexDirection: isRTL ? 'row-reverse' : 'row', overflow: 'hidden' }]}>
-              {isDayDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
-              {!isDayDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
-              <View style={[styles.dayTaskAccent, { backgroundColor: accentColor }]} />
-              <View style={[styles.dayTaskContent, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
-                <Text style={[styles.dayTaskTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>{resolveDisplayName(task.title_ar, task.title_en, lang, task.title)}</Text>
-                {task.due_time && <Text style={[styles.dayTaskTime, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>{task.due_time}</Text>}
-                {cat && (
-                  <View style={[styles.dayTaskCat, { backgroundColor: cat.color + '20', alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}>
-                    <Text style={[styles.dayTaskCatText, { color: cat.color }]}>{resolveDisplayName(cat.name_ar, cat.name_en, lang, cat.name)}</Text>
-                  </View>
-                )}
-              </View>
-            </View>
-          );
-        })
+        <View style={{ gap: Spacing.sm }}>
+          {dayTasks.map((task) => {
+            const cat = categories.find((c) => c.id === task.category_id);
+            return (
+              <SwipeableRow
+                key={task.id}
+                isRTL={isRTL}
+                onComplete={task.status !== 'completed' ? () => onToggle(task.id) : undefined}
+                onDelete={() => onDelete(task.id)}
+                completeLabel={tFunc('done')}
+                deleteLabel={tFunc('delete')}
+              >
+                <TaskCard
+                  task={task}
+                  onToggle={onToggle}
+                  onDelete={onDelete}
+                  onPostpone={onPostpone}
+                  onEdit={onEdit}
+                  priorityLabel={tFunc(task.priority)}
+                  timeStr={task.due_time ? formatTime(task.due_time, timeFormat === '12h') : undefined}
+                  categoryName={cat ? resolveDisplayName(cat.name_ar, cat.name_en, lang, cat.name) : undefined}
+                  categoryColor={cat?.color}
+                  t={tFunc}
+                />
+              </SwipeableRow>
+            );
+          })}
+        </View>
       )}
     </View>
   );
@@ -468,7 +554,6 @@ const styles = StyleSheet.create({
   },
   headerRow: { alignItems: 'center', justifyContent: 'space-between' },
   headerTitle: { fontSize: 30, fontFamily: F.black, textAlign: 'center' },
-  headerSub: { fontSize: 13, fontFamily: F.med, marginTop: 2, textAlign: 'center' },
   headerDark: {
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(129,140,248,0.08)',
@@ -489,11 +574,28 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
     paddingVertical: Spacing.xs,
   },
+  navCenter: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 6,
+  },
   navBtn: {
     padding: Spacing.sm,
     borderRadius: Radius.sm,
   },
   navLabel: { ...Typography.subtitle, fontFamily: F.bold },
+  todayChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: Radius.full,
+  },
+  todayChipText: {
+    fontSize: 11,
+    fontFamily: F.bold,
+  },
 
   calCard: {
     marginHorizontal: Spacing.lg,
@@ -525,6 +627,7 @@ const styles = StyleSheet.create({
   },
   calDay: { fontSize: 15, fontFamily: F.bold },
   calDot: { width: 5, height: 5, borderRadius: 3, marginTop: 2 },
+  calDotAllDone: { width: 7, height: 7, borderRadius: 4, marginTop: 2 },
 
   weekCard: {
     marginHorizontal: Spacing.lg,
@@ -562,15 +665,4 @@ const styles = StyleSheet.create({
   taskCount: { fontSize: 13, fontFamily: F.black },
 
   dayViewContainer: { padding: Spacing.lg, gap: Spacing.sm },
-  dayTaskCard: {
-    borderRadius: Radius.lg, borderWidth: 1,
-    overflow: 'hidden',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 6, elevation: 3,
-  },
-  dayTaskAccent: { width: 5, alignSelf: 'stretch' },
-  dayTaskContent: { flex: 1, padding: Spacing.md, gap: 4 },
-  dayTaskTitle: { fontSize: 15, fontFamily: F.bold },
-  dayTaskTime: { fontSize: 13, fontFamily: F.med },
-  dayTaskCat: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, alignSelf: 'flex-start' },
-  dayTaskCatText: { fontSize: 11, fontFamily: F.bold },
 });
