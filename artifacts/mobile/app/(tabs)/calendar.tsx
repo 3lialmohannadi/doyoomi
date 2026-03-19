@@ -504,10 +504,13 @@ function DayView({ date, tasks, categories, C, tFunc, isRTL, lang, onToggle, onD
               <SwipeableRow
                 key={task.id}
                 isRTL={isRTL}
-                onComplete={task.status !== 'completed' ? () => onToggle(task.id) : undefined}
+                onComplete={() => onPostpone(task.id)}
                 onDelete={() => onDelete(task.id)}
-                completeLabel={tFunc('done')}
+                completeLabel={tFunc('postpone')}
                 deleteLabel={tFunc('delete')}
+                completeIcon="time-outline"
+                completeColor="#8B5CF6"
+                completeHaptic="light"
               >
                 <TaskCard
                   task={task}
@@ -515,6 +518,7 @@ function DayView({ date, tasks, categories, C, tFunc, isRTL, lang, onToggle, onD
                   onDelete={onDelete}
                   onPostpone={onPostpone}
                   onEdit={onEdit}
+                  onPress={onEdit}
                   priorityLabel={tFunc(task.priority)}
                   timeStr={task.due_time ? formatTime(task.due_time, timeFormat === '12h') : undefined}
                   categoryName={cat ? resolveDisplayName(cat.name_ar, cat.name_en, lang, cat.name) : undefined}

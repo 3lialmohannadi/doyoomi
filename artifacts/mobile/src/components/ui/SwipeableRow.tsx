@@ -13,12 +13,15 @@ interface SwipeableRowProps {
   onDelete: () => void;
   completeLabel?: string;
   deleteLabel?: string;
+  completeIcon?: React.ComponentProps<typeof Ionicons>['name'];
+  completeColor?: string;
+  completeHaptic?: 'success' | 'light';
 }
 
-function CompletePanel({ label }: { label?: string }) {
+function CompletePanel({ label, icon, color }: { label?: string; icon?: React.ComponentProps<typeof Ionicons>['name']; color?: string }) {
   return (
-    <View style={[styles.actionPanel, styles.completePanel]}>
-      <Ionicons name="checkmark-circle" size={26} color="#fff" />
+    <View style={[styles.actionPanel, styles.completePanel, color ? { backgroundColor: color } : undefined]}>
+      <Ionicons name={icon ?? 'checkmark-circle'} size={26} color="#fff" />
       {label ? <Text style={styles.actionLabel}>{label}</Text> : null}
     </View>
   );
@@ -40,6 +43,9 @@ export function SwipeableRow({
   onDelete,
   completeLabel,
   deleteLabel,
+  completeIcon,
+  completeColor,
+  completeHaptic = 'success',
 }: SwipeableRowProps) {
   const swipeRef = useRef<SwipeableMethods | null>(null);
   const actionFired = useRef(false);
@@ -54,7 +60,11 @@ export function SwipeableRow({
         : direction === 'left';
 
       if (isCompleteDir && onComplete) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        if (completeHaptic === 'light') {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        } else {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
         onComplete();
       } else {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -62,7 +72,7 @@ export function SwipeableRow({
       }
       swipeRef.current?.close();
     },
-    [isRTL, onComplete, onDelete],
+    [isRTL, onComplete, onDelete, completeHaptic],
   );
 
   const handleClose = useCallback(() => {
@@ -71,9 +81,9 @@ export function SwipeableRow({
 
   const renderComplete = useCallback(
     (_progress: SharedValue<number>, _translation: SharedValue<number>, _methods: SwipeableMethods) => (
-      <CompletePanel label={completeLabel} />
+      <CompletePanel label={completeLabel} icon={completeIcon} color={completeColor} />
     ),
-    [completeLabel],
+    [completeLabel, completeIcon, completeColor],
   );
 
   const renderDelete = useCallback(

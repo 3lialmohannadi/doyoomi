@@ -20,6 +20,7 @@ interface TaskCardProps {
   onDeleteRequest?: (task: Task) => void;
   onPostpone: (id: string) => void;
   onEdit: (task: Task) => void;
+  onPress?: (task: Task) => void;
   priorityLabel: string;
   timeStr?: string;
   categoryName?: string;
@@ -30,7 +31,7 @@ interface TaskCardProps {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function TaskCard({
-  task, onToggle, onDelete, onDeleteRequest, onPostpone, onEdit,
+  task, onToggle, onDelete, onDeleteRequest, onPostpone, onEdit, onPress,
   priorityLabel, timeStr, categoryName, categoryColor, t,
 }: TaskCardProps) {
   const { C, scheme } = useAppTheme();
@@ -88,6 +89,7 @@ export function TaskCard({
   return (
     <AnimatedPressable
       style={[animStyle, { position: 'relative' }, isDark ? ShadowDark.sm : Shadow.sm]}
+      onPress={onPress ? () => onPress(task) : undefined}
       onPressIn={() => { scale.value = withSpring(0.985, { damping: 18 }); }}
       onPressOut={() => { scale.value = withSpring(1, { damping: 18 }); }}
       onLongPress={handleLongPress}
