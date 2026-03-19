@@ -1,5 +1,5 @@
 import React, { useRef, useCallback } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import ReanimatedSwipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { SharedValue } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
@@ -22,22 +22,28 @@ interface SwipeableRowProps {
   completeHaptic?: 'success' | 'light';
 }
 
-function ActionPanel({
+function ActionButton({
   icon,
   label,
   color,
   width = 80,
+  onPress,
 }: {
   icon: React.ComponentProps<typeof Ionicons>['name'];
   label?: string;
   color: string;
   width?: number;
+  onPress: () => void;
 }) {
   return (
-    <View style={[styles.actionPanel, { backgroundColor: color, width }]}>
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={onPress}
+      style={[styles.actionPanel, { backgroundColor: color, width }]}
+    >
       <Ionicons name={icon} size={22} color="#fff" />
       {label ? <Text style={styles.actionLabel}>{label}</Text> : null}
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -57,150 +63,139 @@ export function SwipeableRow({
   completeHaptic = 'success',
 }: SwipeableRowProps) {
   const swipeRef = useRef<SwipeableMethods | null>(null);
-  const actionFired = useRef(false);
 
-  const handleOpen = useCallback(
-    (direction: 'left' | 'right') => {
-      if (actionFired.current) return;
-      actionFired.current = true;
-
-      swipeRef.current?.close();
-
-      if (!isRTL) {
-        if (direction === 'left') {
-          if (onPostpone) {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            onPostpone();
-          } else if (onComplete) {
-            if (completeHaptic === 'light') {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            } else {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            }
-            onComplete();
-          }
-        } else {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-          onDelete();
-        }
-      } else {
-        if (direction === 'right') {
-          if (onPostpone) {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            onPostpone();
-          } else if (onComplete) {
-            if (completeHaptic === 'light') {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            } else {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            }
-            onComplete();
-          }
-        } else {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-          onDelete();
-        }
-      }
-    },
-    [isRTL, onComplete, onDelete, onPostpone, onCancel, completeHaptic],
-  );
-
-  const handleClose = useCallback(() => {
-    actionFired.current = false;
+  const close = useCallback(() => {
+    swipeRef.current?.close();
   }, []);
+
+  const handleComplete = useCallback(() => {
+    close();
+    if (completeHaptic === 'light') {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+    onComplete?.();
+  }, [close, completeHaptic, onComplete]);
+
+  const handlePostpone = useCallback(() => {
+    close();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onPostpone?.();
+  }, [close, onPostpone]);
+
+  const handleCancel = useCallback(() => {
+    close();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onCancel?.();
+  }, [close, onCancel]);
+
+  const handleDelete = useCallback(() => {
+    close();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    onDelete();
+  }, [close, onDelete]);
 
   const renderLeftLTR = useCallback(
     (_progress: SharedValue<number>, _translation: SharedValue<number>) => {
       if (onPostpone) {
         return (
-          <ActionPanel
+          <ActionButton
             icon="time-outline"
             label={postponeLabel}
             color="#F59E0B"
+            onPress={handlePostpone}
           />
         );
       }
       if (onComplete) {
         return (
-          <ActionPanel
+          <ActionButton
             icon={completeIcon ?? 'checkmark-circle'}
             label={completeLabel}
             color={completeColor ?? '#22C55E'}
+            onPress={handleComplete}
           />
         );
       }
       return null;
     },
-    [onPostpone, onComplete, postponeLabel, completeLabel, completeIcon, completeColor],
+    [onPostpone, onComplete, postponeLabel, completeLabel, completeIcon, completeColor, handlePostpone, handleComplete],
   );
 
   const renderRightLTR = useCallback(
     (_progress: SharedValue<number>, _translation: SharedValue<number>) => (
       <View style={styles.multiPanel}>
         {onCancel && (
-          <ActionPanel
+          <ActionButton
             icon="close-circle-outline"
             label={cancelLabel}
             color="#94A3B8"
             width={72}
+            onPress={handleCancel}
           />
         )}
-        <ActionPanel
+        <ActionButton
           icon="trash-outline"
           label={deleteLabel}
           color="#EF4444"
           width={72}
+          onPress={handleDelete}
         />
       </View>
     ),
-    [onCancel, cancelLabel, deleteLabel],
+    [onCancel, cancelLabel, deleteLabel, handleCancel, handleDelete],
   );
 
   const renderLeftRTL = useCallback(
     (_progress: SharedValue<number>, _translation: SharedValue<number>) => (
       <View style={styles.multiPanel}>
-        <ActionPanel
+        <ActionButton
           icon="trash-outline"
           label={deleteLabel}
           color="#EF4444"
           width={72}
+          onPress={handleDelete}
         />
         {onCancel && (
-          <ActionPanel
+          <ActionButton
             icon="close-circle-outline"
             label={cancelLabel}
             color="#94A3B8"
             width={72}
+            onPress={handleCancel}
           />
         )}
       </View>
     ),
-    [onCancel, cancelLabel, deleteLabel],
+    [onCancel, cancelLabel, deleteLabel, handleCancel, handleDelete],
   );
 
   const renderRightRTL = useCallback(
     (_progress: SharedValue<number>, _translation: SharedValue<number>) => {
       if (onPostpone) {
         return (
-          <ActionPanel
+          <ActionButton
             icon="time-outline"
             label={postponeLabel}
             color="#F59E0B"
+            onPress={handlePostpone}
           />
         );
       }
       if (onComplete) {
         return (
-          <ActionPanel
+          <ActionButton
             icon={completeIcon ?? 'checkmark-circle'}
             label={completeLabel}
             color={completeColor ?? '#22C55E'}
+            onPress={handleComplete}
           />
         );
       }
       return null;
     },
-    [onPostpone, onComplete, postponeLabel, completeLabel, completeIcon, completeColor],
+    [onPostpone, onComplete, postponeLabel, completeLabel, completeIcon, completeColor, handlePostpone, handleComplete],
   );
 
   const hasLeftLTR = !isRTL && (onPostpone != null || onComplete != null);
@@ -208,7 +203,8 @@ export function SwipeableRow({
   const hasLeftRTL = isRTL;
   const hasRightRTL = isRTL && (onPostpone != null || onComplete != null);
 
-  const thresholdRight = onCancel ? 144 : 72;
+  const rightThreshold = onCancel ? 144 : 72;
+  const leftThreshold = onCancel && isRTL ? 144 : 72;
 
   return (
     <ReanimatedSwipeable
@@ -216,12 +212,10 @@ export function SwipeableRow({
       friction={2}
       overshootLeft={false}
       overshootRight={false}
-      leftThreshold={72}
-      rightThreshold={thresholdRight}
+      leftThreshold={leftThreshold}
+      rightThreshold={rightThreshold}
       renderLeftActions={!isRTL ? (hasLeftLTR ? renderLeftLTR : undefined) : (hasLeftRTL ? renderLeftRTL : undefined)}
       renderRightActions={!isRTL ? (hasRightLTR ? renderRightLTR : undefined) : (hasRightRTL ? renderRightRTL : undefined)}
-      onSwipeableOpen={handleOpen}
-      onSwipeableClose={handleClose}
     >
       {children}
     </ReanimatedSwipeable>
@@ -230,7 +224,6 @@ export function SwipeableRow({
 
 const styles = StyleSheet.create({
   actionPanel: {
-    width: 80,
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
