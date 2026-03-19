@@ -137,7 +137,6 @@ export default function HabitsScreen() {
             <SwipeableRow
               isRTL={isRTL}
               onComplete={!isDoneToday ? () => {
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 const payload = completeHabit(item.id);
                 if (payload) {
                   setCelebrationPayload(payload);

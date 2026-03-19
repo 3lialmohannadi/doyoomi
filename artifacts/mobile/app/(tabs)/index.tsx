@@ -667,7 +667,7 @@ function FunTaskRow({ task, catName, catColor, catIcon, timeStr, onToggle, onLon
       {!isRowDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
       <LinearGradient colors={grad} start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }} style={styles.taskAccent} />
       <Pressable
-        onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onToggle(); }}
+        onPress={() => { Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); onToggle(); }}
         style={({ pressed }) => [styles.taskCheck, { opacity: pressed ? 0.7 : 1 }]}
         accessibilityRole="checkbox"
         accessibilityState={{ checked: isCompleted }}
@@ -726,9 +726,13 @@ function FunHabitCard({
   const handlePress = () => {
     scale.value = withSpring(0.92, { damping: 10 });
     setTimeout(() => { scale.value = withSpring(1, { damping: 12 }); }, 120);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    if (isDone) onUncomplete(habit.id);
-    else onComplete(habit.id);
+    if (isDone) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onUncomplete(habit.id);
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      onComplete(habit.id);
+    }
   };
 
   return (
