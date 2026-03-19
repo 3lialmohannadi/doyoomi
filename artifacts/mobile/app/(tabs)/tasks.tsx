@@ -121,7 +121,9 @@ export default function TasksScreen() {
         <View style={{ alignItems: isRTL ? 'flex-end' : 'flex-start' }}>
           <Text style={[styles.headerTitle, { color: isDark ? C.text : '#fff', textAlign: isRTL ? 'right' : 'left' }]}>{tFunc('tasks')}</Text>
           <Text style={[styles.headerSub, { color: isDark ? C.textSecondary : 'rgba(255,255,255,0.75)', textAlign: isRTL ? 'right' : 'left' }]}>
-            {filteredTasks.length} {tFunc('taskCount')}
+            {hasActiveFilter || search.trim()
+              ? `${filteredTasks.length} / ${tasks.length} ${tFunc('taskCount')}`
+              : `${tasks.length} ${tFunc('taskCount')}`}
           </Text>
         </View>
 

@@ -78,7 +78,7 @@ export default function TabLayout() {
   const isWeb = Platform.OS === "web";
   const tabBarHeight = isWeb ? 80 : 76;
 
-  const today = useMemo(() => format(new Date(), "yyyy-MM-dd"), []);
+  const today = format(new Date(), "yyyy-MM-dd");
 
   const pendingTasksTodayCount = useMemo(() => {
     return tasks.filter(
