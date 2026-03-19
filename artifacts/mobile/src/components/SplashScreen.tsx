@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useSettingsStore } from "../store/settingsStore";
 
 const { width, height } = Dimensions.get("window");
 
@@ -27,6 +28,8 @@ const features = [
 ];
 
 export default function SplashScreen({ onFinish, duration = 3000 }: Props) {
+  const { profile } = useSettingsStore();
+  const isRTL = profile.language === "ar";
   const contentOpacity    = useRef(new Animated.Value(0)).current;
   const contentTranslateY = useRef(new Animated.Value(20)).current;
   const iconTranslateY    = useRef(new Animated.Value(0)).current;
@@ -173,10 +176,11 @@ export default function SplashScreen({ onFinish, duration = 3000 }: Props) {
           marginTop: 24,
         }}>
           <Image
-            source={require("../../assets/images/logo-wordmark-transparent.png")}
+            source={isRTL
+              ? require("../../assets/images/logo-ar-transparent.png")
+              : require("../../assets/images/logo-en-transparent.png")}
             style={styles.wordmark}
             resizeMode="contain"
-            tintColor="#FFF9F5"
           />
         </Animated.View>
 

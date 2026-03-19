@@ -94,10 +94,11 @@ export default function HomeScreen() {
           <View style={[styles.heroContent, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <View style={[styles.heroLeft, { alignItems: isRTL ? 'flex-end' : 'flex-start' }]}>
               <Image
-                source={require('../../assets/images/logo-wordmark-transparent.png')}
+                source={isRTL
+                  ? require('../../assets/images/logo-ar-transparent.png')
+                  : require('../../assets/images/logo-en-transparent.png')}
                 style={[styles.heroLogo, { alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}
                 resizeMode="contain"
-                tintColor="#fff"
               />
               <Text style={[styles.greeting, { textAlign: isRTL ? 'right' : 'left' }]}>{getGreeting(lang)}</Text>
               <Text style={[styles.heroTitle, { textAlign: isRTL ? 'right' : 'left', width: '100%' }]} numberOfLines={2}>
