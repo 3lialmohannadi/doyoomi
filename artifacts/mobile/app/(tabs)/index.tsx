@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
-  ScrollView, StyleSheet, Text, View, Pressable, Platform, Modal, Alert, Image,
+  ScrollView, StyleSheet, Text, View, Pressable, Platform, Modal, Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,6 +30,8 @@ import { GoalForm } from '../../src/features/goals/GoalForm';
 import { SwipeableRow } from '../../src/components/ui/SwipeableRow';
 import { WeeklyChart, WeekDayData } from '../../src/components/ui/WeeklyChart';
 import { MiniConfetti } from '../../src/components/ui/MiniConfetti';
+import { ActionSheet } from '../../src/components/ui/ActionSheet';
+import { ConfirmDialog } from '../../src/components/ui/ConfirmDialog';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -55,6 +57,8 @@ export default function HomeScreen() {
   const [editHabit, setEditHabit] = useState<Habit | null>(null);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [selectedDay, setSelectedDay] = useState(getTodayString());
+  const [taskSheetTask, setTaskSheetTask] = useState<Task | null>(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const isRTL = lang === 'ar';
 
   const weekDays = useMemo(() => getWeekDays(profile.start_of_week), [profile.start_of_week]);
@@ -329,11 +333,7 @@ export default function HomeScreen() {
                       onToggle={() => toggleComplete(task.id)}
                       onLongPress={() => {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-                        Alert.alert(resolveDisplayName(task.title_ar, task.title_en, lang, task.title), undefined, [
-                          { text: tFunc('cancel'), style: 'cancel' },
-                          { text: tFunc('postpone'), onPress: () => postponeTask(task.id) },
-                          { text: tFunc('deleteTask'), style: 'destructive', onPress: () => deleteTask(task.id) },
-                        ]);
+                        setTaskSheetTask(task);
                       }}
                       C={C} isRTL={isRTL} lang={lang}
                     />
@@ -358,16 +358,7 @@ export default function HomeScreen() {
           )}
           {dayTasks.some(t => t.status === 'completed') && (
             <Pressable
-              onPress={() => {
-                Alert.alert(
-                  tFunc('clearCompleted'),
-                  tFunc('clearCompletedConfirm'),
-                  [
-                    { text: tFunc('cancel'), style: 'cancel' },
-                    { text: tFunc('clear'), style: 'destructive', onPress: clearCompleted },
-                  ]
-                );
-              }}
+              onPress={() => setShowClearConfirm(true)}
               style={({ pressed }) => [styles.clearCompletedBtn, { opacity: pressed ? 0.7 : 1, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
               accessibilityRole="button"
             >
@@ -474,6 +465,41 @@ export default function HomeScreen() {
       <HabitForm visible={showHabitForm} onClose={() => { setShowHabitForm(false); setEditHabit(null); }} editHabit={editHabit} />
       <JournalForm visible={showJournalForm} onClose={() => setShowJournalForm(false)} />
       <GoalForm visible={showGoalForm} onClose={() => setShowGoalForm(false)} editGoal={null} />
+      <ActionSheet
+        visible={!!taskSheetTask}
+        title={taskSheetTask ? resolveDisplayName(taskSheetTask.title_ar, taskSheetTask.title_en, lang, taskSheetTask.title) : ''}
+        actions={taskSheetTask ? [
+          {
+            label: tFunc('postpone'),
+            icon: 'time-outline',
+            style: 'default' as const,
+            onPress: () => postponeTask(taskSheetTask.id),
+          },
+          {
+            label: tFunc('deleteTask'),
+            icon: 'trash-outline',
+            style: 'destructive' as const,
+            onPress: () => deleteTask(taskSheetTask.id),
+          },
+          {
+            label: tFunc('cancel'),
+            icon: 'close',
+            style: 'cancel' as const,
+            onPress: () => {},
+          },
+        ] : []}
+        onClose={() => setTaskSheetTask(null)}
+      />
+      <ConfirmDialog
+        visible={showClearConfirm}
+        title={tFunc('clearCompleted')}
+        message={tFunc('clearCompletedConfirm')}
+        confirmLabel={tFunc('clear')}
+        cancelLabel={tFunc('cancel')}
+        type="danger"
+        onConfirm={() => { setShowClearConfirm(false); clearCompleted(); }}
+        onCancel={() => setShowClearConfirm(false)}
+      />
       <QuickAddMenu
         visible={showQuickAdd}
         onClose={() => setShowQuickAdd(false)}
@@ -813,9 +839,11 @@ function FunGoalCard({ goal, progress, gradient, C, isRTL, lang }: FunGoalCardPr
     <View style={[styles.goalCard, { borderColor: C.border, overflow: 'hidden' }, isGoalDark ? ShadowDark.sm : Shadow.sm]}>
       {isGoalDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
       {!isGoalDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
-      <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md }}>
+      {/* Gradient top accent line */}
+      <LinearGradient colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.goalTopLine} />
+      <View style={{ flexDirection: isRTL ? 'row-reverse' : 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md, marginTop: Spacing.sm }}>
         <LinearGradient colors={gradient} style={styles.goalIcon}>
-          <Ionicons name={((goal.icon ?? 'star') + '-outline') as IoniconsName} size={18} color="#fff" />
+          <Ionicons name={((goal.icon ?? 'star') + '-outline') as IoniconsName} size={20} color="#fff" />
         </LinearGradient>
         <View style={{ flex: 1 }}>
           <Text style={[styles.goalTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>{resolveDisplayName(goal.title_ar, goal.title_en, lang ?? 'en', goal.title)}</Text>
@@ -893,27 +921,34 @@ function JournalHomeCard({ entry, onWrite, onOpen, C, tFunc, isRTL }: { entry?: 
       accessibilityRole="button"
       accessibilityLabel={tFunc('startWriting')}
     >
-      <View style={[styles.journalCard, { backgroundColor: C.card, borderColor: C.border }]}>
+      <LinearGradient
+        colors={[SECONDARY + '22', SECONDARY + '08']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.journalCard, { borderColor: SECONDARY + '35' }]}
+      >
         <View style={[styles.journalCardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <View style={[styles.journalIconBox, { backgroundColor: SECONDARY + '18' }]}>
-            <Ionicons name="book-outline" size={20} color={SECONDARY} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.journalCardTitle, { color: C.textMuted, textAlign: isRTL ? 'right' : 'left' }]}>
+          <LinearGradient
+            colors={[SECONDARY, SECONDARY + 'CC']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.journalIconBox}
+          >
+            <Ionicons name="book" size={20} color="#fff" />
+          </LinearGradient>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={[styles.journalCardTitle, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]}>
               {tFunc('noEntryToday')}
             </Text>
+            <Text style={[styles.journalPreview, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
+              {tFunc('startWriting')}
+            </Text>
+          </View>
+          <View style={[styles.journalWriteIcon, { backgroundColor: SECONDARY + '20' }]}>
+            <Ionicons name="create-outline" size={18} color={SECONDARY} />
           </View>
         </View>
-        <Pressable
-          onPress={onWrite}
-          style={({ pressed }) => [styles.journalWriteBtn, { backgroundColor: SECONDARY + '15', flexDirection: isRTL ? 'row-reverse' : 'row', opacity: pressed ? 0.7 : 1 }]}
-          accessibilityRole="button"
-          accessibilityLabel={tFunc('startWriting')}
-        >
-          <Ionicons name="create-outline" size={16} color={SECONDARY} />
-          <Text style={[styles.journalWriteText, { color: SECONDARY }]}>{tFunc('startWriting')}</Text>
-        </Pressable>
-      </View>
+      </LinearGradient>
     </Pressable>
   );
 }
@@ -1109,13 +1144,14 @@ const styles = StyleSheet.create({
   // Goal card
   goalCard: {
     borderRadius: Radius.xl, borderWidth: 1,
-    paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg, paddingBottom: Spacing.md,
     position: 'relative' as const,
   },
-  goalIcon: { width: 44, height: 44, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
+  goalTopLine: { height: 5, borderTopLeftRadius: Radius.xl, borderTopRightRadius: Radius.xl },
+  goalIcon: { width: 48, height: 48, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
   goalTitle: { fontSize: 15, fontFamily: F.bold },
   goalSub: { fontSize: 12, fontFamily: F.reg, marginTop: 1 },
-  goalPct: { fontSize: 22, fontFamily: F.bold },
+  goalPct: { fontSize: 26, fontFamily: F.black },
   goalTrack: { height: 10, borderRadius: 6, overflow: 'hidden', marginTop: 4 },
   goalFill: { height: '100%', borderRadius: 6 },
 
@@ -1161,6 +1197,10 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg, paddingVertical: Spacing.sm + 2, marginTop: Spacing.xs,
   },
   journalWriteText: { fontSize: 14, fontFamily: F.med },
+  journalWriteIcon: {
+    width: 38, height: 38, borderRadius: Radius.md,
+    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+  },
 });
 
 const qaStyles = StyleSheet.create({

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, Pressable, Alert, AlertButton } from 'react-native';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -12,6 +12,7 @@ import { useSettingsStore } from '../../store/settingsStore';
 import { resolveDisplayName } from '../../utils/i18n';
 import { SECONDARY } from '../../theme';
 import { MiniConfetti } from './MiniConfetti';
+import { ActionSheet } from './ActionSheet';
 
 interface TaskCardProps {
   task: Task;
@@ -69,22 +70,45 @@ export function TaskCard({
   const subtaskDone = subtasks.filter(s => s.done).length;
   const hasSubtasks = subtaskTotal > 0;
   const isRecurring = !!task.recurrence;
+  const [showSheet, setShowSheet] = useState(false);
 
   const handleLongPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const actions: AlertButton[] = [
-      { text: t('postpone'), onPress: () => onPostpone(task.id) },
-    ];
-    if (onCancel && !isCancelled) {
-      actions.push({ text: t('cancelTask'), onPress: () => onCancel(task.id) });
-    }
-    actions.push({
-      text: t('deleteTask'), style: 'destructive',
-      onPress: () => onDeleteRequest ? onDeleteRequest(task) : onDelete(task.id),
-    });
-    actions.push({ text: t('cancel'), style: 'cancel' });
-    Alert.alert(task.title, undefined, actions);
+    setShowSheet(true);
   };
+
+  const sheetActions = [
+    {
+      label: t('editTask'),
+      icon: 'pencil-outline' as const,
+      style: 'default' as const,
+      onPress: () => onEdit(task),
+    },
+    {
+      label: t('postpone'),
+      icon: 'time-outline' as const,
+      style: 'default' as const,
+      onPress: () => onPostpone(task.id),
+    },
+    ...(onCancel && !isCancelled ? [{
+      label: t('cancelTask'),
+      icon: 'close-circle-outline' as const,
+      style: 'default' as const,
+      onPress: () => onCancel!(task.id),
+    }] : []),
+    {
+      label: t('deleteTask'),
+      icon: 'trash-outline' as const,
+      style: 'destructive' as const,
+      onPress: () => onDeleteRequest ? onDeleteRequest(task) : onDelete(task.id),
+    },
+    {
+      label: t('cancel'),
+      icon: 'close' as const,
+      style: 'cancel' as const,
+      onPress: () => {},
+    },
+  ];
 
   const handleDelete = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -259,6 +283,12 @@ export function TaskCard({
         </View>
       </View>
       <MiniConfetti trigger={confettiKey} x={isRTL ? 82 : 18} y={50} />
+      <ActionSheet
+        visible={showSheet}
+        title={resolveDisplayName(task.title_ar, task.title_en, profile.language, task.title)}
+        actions={sheetActions}
+        onClose={() => setShowSheet(false)}
+      />
     </AnimatedPressable>
   );
 }

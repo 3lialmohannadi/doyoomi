@@ -972,7 +972,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.lg,
+    paddingBottom: Spacing.xxl,
     borderBottomLeftRadius: 28,
     borderBottomRightRadius: 28,
   },
@@ -981,7 +981,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(129,140,248,0.08)',
   },
   headerRow: { alignItems: 'center', justifyContent: 'space-between' },
-  headerTitle: { fontSize: 22, fontFamily: F.black },
+  headerTitle: { fontSize: 30, fontFamily: F.black },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
   grid2: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
 });
