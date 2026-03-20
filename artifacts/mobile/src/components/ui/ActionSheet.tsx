@@ -180,7 +180,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: F.reg,
     lineHeight: 18,
-    paddingLeft: 34 + Spacing.md,
   },
   actionsBlock: {
     borderRadius: Radius.xl,

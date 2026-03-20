@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import {
-  FlatList, StyleSheet, Text, View, Platform, Pressable,
+  FlatList, StyleSheet, Text, View, Platform, Pressable, LayoutChangeEvent,
 } from 'react-native';
+import Animated, { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -37,6 +38,39 @@ function formatDeadline(deadline: string, lang: string) {
   const d = parseISO(deadline);
   if (lang === 'ar') return `${d.getDate()} ${AR_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
   return format(d, 'MMM d, yyyy');
+}
+
+function AnimatedGoalTrack({ pct, grad, isRTL }: { pct: number; grad: readonly [string, string]; isRTL: boolean }) {
+  const fillWidth = useSharedValue(0);
+  const trackWidth = useSharedValue(0);
+
+  const animStyle = useAnimatedStyle(() => ({
+    width: fillWidth.value,
+  }));
+
+  const handleLayout = (e: LayoutChangeEvent) => {
+    const w = e.nativeEvent.layout.width;
+    if (w > 0 && trackWidth.value === 0) {
+      trackWidth.value = w;
+      fillWidth.value = withTiming(Math.min(pct, 1) * w, { duration: 750 });
+    }
+  };
+
+  return (
+    <View
+      style={[styles.track, { backgroundColor: grad[0] + '18' }]}
+      onLayout={handleLayout}
+    >
+      <Animated.View style={[{ height: '100%', borderRadius: 6, overflow: 'hidden' }, animStyle]}>
+        <LinearGradient
+          colors={[...grad]}
+          start={{ x: isRTL ? 1 : 0, y: 0 }}
+          end={{ x: isRTL ? 0 : 1, y: 0 }}
+          style={{ flex: 1 }}
+        />
+      </Animated.View>
+    </View>
+  );
 }
 
 export default function GoalsScreen() {
@@ -261,14 +295,7 @@ export default function GoalsScreen() {
                   </Text>
                 </View>
 
-                <View style={[styles.track, { backgroundColor: grad[0] + '18' }]}>
-                  <LinearGradient
-                    colors={grad}
-                    start={{ x: isRTL ? 1 : 0, y: 0 }}
-                    end={{ x: isRTL ? 0 : 1, y: 0 }}
-                    style={[styles.trackFill, { width: `${Math.min(pct * 100, 100)}%`, alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}
-                  />
-                </View>
+                <AnimatedGoalTrack pct={pct} grad={grad} isRTL={isRTL} />
 
                 {goal.deadline && (
                   <View style={[styles.deadlineRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
