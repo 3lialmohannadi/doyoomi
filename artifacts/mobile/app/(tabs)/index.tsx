@@ -185,28 +185,22 @@ export default function HomeScreen() {
           )}
         </LinearGradient>
 
-        {/* Stats Row */}
-        <View style={[styles.statsRow, { borderColor: C.border, overflow: 'hidden' }, isDark ? ShadowDark.sm : Shadow.sm]}>
-          {isDark && (
-            <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
-          )}
-          {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
-          <StatPill icon="checkmark-done" value={completedToday} label={tFunc('completed')} color={C.tintSecondary} C={C} />
-          <View style={[styles.statDivider, { backgroundColor: C.border }]} />
-          <StatPill icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color={C.error} C={C} />
-          <View style={[styles.statDivider, { backgroundColor: C.border }]} />
-          <StatPill icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color={C.tint} C={C} />
-        </View>
-
-        {/* Weekly Chart */}
+        {/* Unified Stats + Weekly Chart Card */}
         <WeeklyChart
           data={weeklyStats}
           C={C}
           isDark={isDark}
           isRTL={isRTL}
           title={tFunc('weeklyAchievement')}
+          completedToday={completedToday}
+          overdueCount={overdueCount}
+          thisWeek={thisWeek}
           streakDays={maxStreak}
           bestStreak={bestStreak}
+          labelCompleted={tFunc('completed')}
+          labelOverdue={tFunc('overdue')}
+          labelThisWeek={tFunc('thisWeek')}
+          labelStreak={tFunc('streak')}
           onBarPress={(date) => setSelectedDay(date)}
         />
 
