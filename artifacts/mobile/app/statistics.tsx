@@ -18,8 +18,8 @@ import { useJournalStore } from '../src/store/journalStore';
 import { useSettingsStore } from '../src/store/settingsStore';
 import {
   Spacing, Radius, F, PRIMARY, SECONDARY,
-  GRADIENT_H, GRADIENT_GREEN, GRADIENT_CORAL, GRADIENT_AMBER,
-  GRADIENT_SAGE, GRADIENT_CYAN, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER,
+  GRADIENT_H, GRADIENT_GREEN,
+  GRADIENT_SAGE, GRADIENT_DARK_CARD, GRADIENT_DARK_HEADER,
   Shadow, ShadowDark, ColorScheme,
   BOLD_GREEN, BOLD_GOLD, BOLD_ORANGE, BOLD_RED, BOLD_CYAN, BOLD_TEAL,
 } from '../src/theme';
@@ -308,144 +308,105 @@ export default function StatisticsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingTop: Spacing.lg, paddingBottom: bottomPad + 80, gap: Spacing.lg }}
       >
-        {/* ════════════════════════════════════════════
-            TASKS SECTION
-        ════════════════════════════════════════════ */}
+        {/* ══ TASKS ══ */}
         <SectionHeader icon="checkmark-circle-outline" title={tFunc('tasks')} grad={GRADIENT_H} isRTL={isRTL} C={C} />
 
-        {/* Weekly bar chart */}
         {hasTaskData && (
-          <WeeklyChart
-            data={taskWeekData}
-            C={C}
-            isDark={isDark}
-            isRTL={isRTL}
-            title={tFunc('weeklyAchievement')}
-          />
+          <WeeklyChart data={taskWeekData} C={C} isDark={isDark} isRTL={isRTL} title={tFunc('weeklyAchievement')} />
         )}
 
-        {/* Week-over-week delta card */}
         <View style={{ paddingHorizontal: Spacing.lg }}>
           <WeekDeltaCard
-            thisWeek={stats.completedThisWeek}
-            lastWeek={stats.completedLastWeek}
-            delta={stats.weekDelta}
-            C={C}
-            isDark={isDark}
-            isRTL={isRTL}
-            tFunc={tFunc}
-            fmt={fmt}
+            thisWeek={stats.completedThisWeek} lastWeek={stats.completedLastWeek} delta={stats.weekDelta}
+            C={C} isDark={isDark} isRTL={isRTL} tFunc={tFunc} fmt={fmt}
           />
         </View>
 
-        <View style={[styles.grid2, { paddingHorizontal: Spacing.lg }]}>
-          <StatCard label={tFunc('total')} value={fmt(stats.totalTasks)} icon="list-outline" grad={GRADIENT_H} C={C} isDark={isDark} />
-          <StatCard label={tFunc('done')} value={fmt(stats.completedTasks)} icon="checkmark-circle-outline" grad={GRADIENT_GREEN} C={C} isDark={isDark} />
-          <StatCard label={tFunc('thisWeek')} value={fmt(stats.completedThisWeek)} icon="calendar-outline" grad={GRADIENT_SAGE} C={C} isDark={isDark} />
-          <StatCard label={tFunc('thisMonth')} value={fmt(stats.completedThisMonth)} icon="calendar-number-outline" grad={GRADIENT_CYAN} C={C} isDark={isDark} />
-          <StatCard label={tFunc('overdue')} value={fmt(stats.overdueTasks)} icon="alert-circle-outline" grad={GRADIENT_CORAL} C={C} isDark={isDark} />
-          <StatCard label={tFunc('cancelled')} value={fmt(stats.cancelledTasks)} icon="close-circle-outline" grad={['#94A3B8', '#64748B']} C={C} isDark={isDark} />
-        </View>
-
         <View style={{ paddingHorizontal: Spacing.lg }}>
-          <ProgressCard label={tFunc('completionRate')} value={stats.taskCompletionRate} grad={GRADIENT_GREEN} C={C} isDark={isDark} isRTL={isRTL} fmt={fmt} />
+          <SectionMetricsCard
+            metrics={[
+              { label: tFunc('total'),     value: fmt(stats.totalTasks),          icon: 'list-outline',            color: PRIMARY    },
+              { label: tFunc('done'),      value: fmt(stats.completedTasks),       icon: 'checkmark-circle-outline', color: BOLD_GREEN  },
+              { label: tFunc('thisWeek'),  value: fmt(stats.completedThisWeek),    icon: 'calendar-outline',         color: BOLD_CYAN   },
+              { label: tFunc('thisMonth'), value: fmt(stats.completedThisMonth),   icon: 'calendar-number-outline',  color: BOLD_TEAL   },
+            ]}
+            progressLabel={tFunc('completionRate')}
+            progressValue={stats.taskCompletionRate}
+            progressGrad={GRADIENT_GREEN}
+            alert={stats.overdueTasks > 0
+              ? { count: stats.overdueTasks, label: tFunc('overdue'), color: C.error, icon: 'alert-circle-outline' as IoniconName }
+              : undefined}
+            C={C} isDark={isDark} isRTL={isRTL} fmt={fmt}
+          />
         </View>
 
-        {/* ════════════════════════════════════════════
-            HABITS SECTION
-        ════════════════════════════════════════════ */}
+        {/* ══ HABITS ══ */}
         <SectionHeader icon="leaf-outline" title={tFunc('habits')} grad={['#F97316', '#EF4444']} isRTL={isRTL} C={C} />
 
-        <View style={[styles.grid2, { paddingHorizontal: Spacing.lg }]}>
-          <StatCard label={tFunc('total')} value={fmt(stats.totalHabits)} icon="leaf-outline" grad={['#F97316', '#EF4444']} C={C} isDark={isDark} />
-          <StatCard label={tFunc('todayDone')} value={`${fmt(stats.completedTodayHabits)}/${fmt(stats.totalHabits)}`} icon="today-outline" grad={GRADIENT_AMBER} C={C} isDark={isDark} />
-          <StatCard label={tFunc('avgStreak')} value={`${fmt(stats.avgStreak)} ${tFunc('days')}`} icon="flame-outline" grad={['#F97316', '#EF4444']} C={C} isDark={isDark} />
-          <StatCard label={tFunc('bestStreak')} value={`${fmt(stats.bestStreak)} ${tFunc('days')}`} icon="trophy-outline" grad={GRADIENT_AMBER} C={C} isDark={isDark} />
-          <StatCard label={tFunc('thisWeek')} value={fmt(stats.totalCompletionsThisWeek)} icon="bar-chart-outline" grad={['#F97316', '#EF4444']} C={C} isDark={isDark} />
-          <StatCard label={tFunc('thisMonth')} value={fmt(stats.totalCompletionsThisMonth)} icon="calendar-number-outline" grad={GRADIENT_AMBER} C={C} isDark={isDark} />
+        <View style={{ paddingHorizontal: Spacing.lg }}>
+          <SectionMetricsCard
+            metrics={[
+              { label: tFunc('todayDone'),  value: `${fmt(stats.completedTodayHabits)}/${fmt(stats.totalHabits)}`, icon: 'today-outline',           color: '#F97316'   },
+              { label: tFunc('bestStreak'), value: fmt(stats.bestStreak),                                           icon: 'trophy-outline',           color: BOLD_GOLD   },
+              { label: tFunc('avgStreak'),  value: fmt(stats.avgStreak),                                            icon: 'flame-outline',            color: '#F97316'   },
+              { label: tFunc('thisMonth'),  value: fmt(stats.totalCompletionsThisMonth),                            icon: 'calendar-number-outline',  color: BOLD_ORANGE },
+            ]}
+            C={C} isDark={isDark} isRTL={isRTL} fmt={fmt}
+          />
         </View>
 
-        {/* Per-habit sparkline rows */}
         {habitSparklines.length > 0 && (
           <View style={{ paddingHorizontal: Spacing.lg }}>
-            <HabitsSparklineCard
-              sparklines={habitSparklines}
-              lang={lang}
-              C={C}
-              isDark={isDark}
-              isRTL={isRTL}
-              tFunc={tFunc}
-              todayStr={todayStr}
-              fmt={fmt}
-            />
+            <HabitsSparklineCard sparklines={habitSparklines} lang={lang} C={C} isDark={isDark} isRTL={isRTL} tFunc={tFunc} todayStr={todayStr} fmt={fmt} />
           </View>
         )}
 
-        {/* ════════════════════════════════════════════
-            GOALS SECTION
-        ════════════════════════════════════════════ */}
+        {/* ══ GOALS ══ */}
         <SectionHeader icon="trophy-outline" title={tFunc('goals')} grad={['#8B5CF6', '#EC4899']} isRTL={isRTL} C={C} />
 
-        <View style={[styles.grid2, { paddingHorizontal: Spacing.lg }]}>
-          <StatCard label={tFunc('total')} value={fmt(goals.length)} icon="trophy-outline" grad={['#8B5CF6', '#EC4899']} C={C} isDark={isDark} />
-          <StatCard label={tFunc('completed')} value={fmt(stats.completedGoals)} icon="checkmark-done-circle-outline" grad={GRADIENT_GREEN} C={C} isDark={isDark} />
-          <StatCard label={tFunc('archivedGoalsTab')} value={fmt(stats.archivedGoals)} icon="archive-outline" grad={['#94A3B8', '#64748B']} C={C} isDark={isDark} />
-        </View>
-
         <View style={{ paddingHorizontal: Spacing.lg }}>
-          <ProgressCard label={tFunc('avgGoalProgress')} value={stats.avgGoalProgress} grad={['#8B5CF6', '#EC4899']} C={C} isDark={isDark} isRTL={isRTL} fmt={fmt} />
+          <SectionMetricsCard
+            metrics={[
+              { label: tFunc('total'),            value: fmt(goals.length),           icon: 'trophy-outline',               color: '#8B5CF6'  },
+              { label: tFunc('completed'),         value: fmt(stats.completedGoals),   icon: 'checkmark-done-circle-outline', color: BOLD_GREEN },
+              { label: tFunc('archivedGoalsTab'),  value: fmt(stats.archivedGoals),    icon: 'archive-outline',              color: '#94A3B8'  },
+            ]}
+            progressLabel={tFunc('avgGoalProgress')}
+            progressValue={stats.avgGoalProgress}
+            progressGrad={['#8B5CF6', '#EC4899']}
+            C={C} isDark={isDark} isRTL={isRTL} fmt={fmt}
+          />
         </View>
 
-        {/* Per-goal progress bars with deadline countdown */}
         {stats.activeGoals.length > 0 && (
           <View style={{ paddingHorizontal: Spacing.lg }}>
-            <GoalsProgressCard
-              activeGoals={stats.activeGoals}
-              lang={lang}
-              C={C}
-              isDark={isDark}
-              isRTL={isRTL}
-              tFunc={tFunc}
-              today={today}
-              fmt={fmt}
-            />
+            <GoalsProgressCard activeGoals={stats.activeGoals} lang={lang} C={C} isDark={isDark} isRTL={isRTL} tFunc={tFunc} today={today} fmt={fmt} />
           </View>
         )}
 
-        {/* ════════════════════════════════════════════
-            JOURNAL SECTION
-        ════════════════════════════════════════════ */}
+        {/* ══ JOURNAL ══ */}
         <SectionHeader icon="journal-outline" title={tFunc('journal')} grad={GRADIENT_SAGE} isRTL={isRTL} C={C} />
 
-        <View style={[styles.grid2, { paddingHorizontal: Spacing.lg }]}>
-          <StatCard label={tFunc('total')} value={fmt(stats.totalEntries)} icon="journal-outline" grad={GRADIENT_SAGE} C={C} isDark={isDark} />
-          <StatCard label={tFunc('thisWeek')} value={fmt(stats.entriesThisWeek)} icon="calendar-outline" grad={GRADIENT_SAGE} C={C} isDark={isDark} />
-          <StatCard label={tFunc('thisMonth')} value={fmt(stats.entriesThisMonth)} icon="calendar-number-outline" grad={GRADIENT_CYAN} C={C} isDark={isDark} />
-          {stats.avgMoodScore > 0 && (
-            <StatCard
-              label={tFunc('avgMood')}
-              value={`${stats.avgMoodScore}/10`}
-              icon="happy-outline"
-              grad={stats.avgMoodScore >= 7 ? GRADIENT_GREEN : stats.avgMoodScore >= 5 ? GRADIENT_AMBER : GRADIENT_CORAL}
-              C={C}
-              isDark={isDark}
-            />
-          )}
+        <View style={{ paddingHorizontal: Spacing.lg }}>
+          <SectionMetricsCard
+            metrics={[
+              { label: tFunc('total'),     value: fmt(stats.totalEntries),     icon: 'journal-outline',          color: BOLD_TEAL },
+              { label: tFunc('thisWeek'),  value: fmt(stats.entriesThisWeek),  icon: 'calendar-outline',         color: BOLD_CYAN },
+              { label: tFunc('thisMonth'), value: fmt(stats.entriesThisMonth), icon: 'calendar-number-outline',  color: BOLD_GREEN },
+              ...(stats.avgMoodScore > 0 ? [{
+                label: tFunc('avgMood'),
+                value: `${stats.avgMoodScore.toFixed(1)}/10`,
+                icon: 'happy-outline' as IoniconName,
+                color: stats.avgMoodScore >= 7 ? BOLD_GREEN : stats.avgMoodScore >= 5 ? BOLD_GOLD : BOLD_RED,
+              }] : []),
+            ]}
+            C={C} isDark={isDark} isRTL={isRTL} fmt={fmt}
+          />
         </View>
 
-        {/* Mood distribution with top-mood highlight */}
         {stats.moodDistribution.length > 0 && (
           <View style={{ paddingHorizontal: Spacing.lg }}>
-            <MoodDistributionCard
-              distribution={stats.moodDistribution}
-              topMood={stats.topMood}
-              lang={lang}
-              C={C}
-              isDark={isDark}
-              isRTL={isRTL}
-              tFunc={tFunc}
-              fmt={fmt}
-            />
+            <MoodDistributionCard distribution={stats.moodDistribution} topMood={stats.topMood} lang={lang} C={C} isDark={isDark} isRTL={isRTL} tFunc={tFunc} fmt={fmt} />
           </View>
         )}
       </ScrollView>
@@ -471,9 +432,104 @@ function SectionHeader({
 }
 
 const shStyles = StyleSheet.create({
-  row: { alignItems: 'center', gap: 10 },
-  iconBox: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 18, fontFamily: F.black },
+  row: { alignItems: 'center', gap: 12 },
+  iconBox: { width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  title: { fontSize: 20, fontFamily: F.black },
+});
+
+// ── Metric Item ───────────────────────────────────────────────────────────────
+function MetricItem({ label, value, icon, color, C }: {
+  label: string; value: string | number; icon: IoniconName;
+  color: string; C: ColorScheme;
+}) {
+  return (
+    <View style={miStyles.item}>
+      <View style={[miStyles.iconBox, { backgroundColor: color + '18' }]}>
+        <Ionicons name={icon} size={18} color={color} />
+      </View>
+      <View style={miStyles.textBlock}>
+        <Text style={[miStyles.value, { color }]} numberOfLines={1}>{value}</Text>
+        <Text style={[miStyles.label, { color: C.textSecondary }]} numberOfLines={1}>{label}</Text>
+      </View>
+    </View>
+  );
+}
+
+const miStyles = StyleSheet.create({
+  item: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10,
+    minWidth: '45%',
+  },
+  iconBox: {
+    width: 38, height: 38, borderRadius: 11,
+    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+  },
+  textBlock: { gap: 1, flex: 1, minWidth: 0 },
+  value: { fontSize: 20, fontFamily: F.black, lineHeight: 24 },
+  label: { fontSize: 11, fontFamily: F.med },
+});
+
+// ── Section Metrics Card ──────────────────────────────────────────────────────
+function SectionMetricsCard({ metrics, progressLabel, progressValue, progressGrad, C, isDark, isRTL, fmt, alert }: {
+  metrics: Array<{ label: string; value: string | number; icon: IoniconName; color: string }>;
+  progressLabel?: string; progressValue?: number; progressGrad?: readonly [string, string];
+  C: ColorScheme; isDark: boolean; isRTL: boolean; fmt: (v: number) => string;
+  alert?: { count: number; label: string; color: string; icon: IoniconName };
+}) {
+  return (
+    <View style={[smcStyles.card, isDark ? ShadowDark.sm : Shadow.sm, { borderColor: C.border }]}>
+      {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
+      {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
+
+      <View style={smcStyles.grid}>
+        {metrics.map((m, i) => <MetricItem key={i} {...m} C={C} />)}
+      </View>
+
+      {progressLabel !== undefined && progressValue !== undefined && progressGrad && (
+        <>
+          <View style={[smcStyles.divider, { backgroundColor: C.border }]} />
+          <View style={[smcStyles.progressRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <Text style={[smcStyles.progressLabel, { color: C.textSecondary }]}>{progressLabel}</Text>
+            <Text style={[smcStyles.progressValue, { color: progressGrad[0] }]}>{fmt(progressValue)}%</Text>
+          </View>
+          <View style={[smcStyles.track, { backgroundColor: progressGrad[0] + '18' }]}>
+            <LinearGradient
+              colors={[...progressGrad]}
+              start={{ x: isRTL ? 1 : 0, y: 0 }}
+              end={{ x: isRTL ? 0 : 1, y: 0 }}
+              style={[smcStyles.fill, { width: `${Math.min(progressValue, 100)}%` as `${number}%`, alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}
+            />
+          </View>
+        </>
+      )}
+
+      {alert && alert.count > 0 && (
+        <>
+          <View style={[smcStyles.divider, { backgroundColor: C.border }]} />
+          <View style={[smcStyles.alertRow, { flexDirection: isRTL ? 'row-reverse' : 'row', backgroundColor: alert.color + '0D' }]}>
+            <Ionicons name={alert.icon} size={14} color={alert.color} />
+            <Text style={[smcStyles.alertText, { color: alert.color }]}>{fmt(alert.count)} {alert.label}</Text>
+          </View>
+        </>
+      )}
+    </View>
+  );
+}
+
+const smcStyles = StyleSheet.create({
+  card: { borderRadius: Radius.xl, borderWidth: 1, overflow: 'hidden' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', padding: Spacing.lg, gap: Spacing.lg },
+  divider: { height: StyleSheet.hairlineWidth },
+  progressRow: {
+    alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg, paddingTop: Spacing.md, paddingBottom: Spacing.xs,
+  },
+  progressLabel: { fontSize: 13, fontFamily: F.med },
+  progressValue: { fontSize: 22, fontFamily: F.black },
+  track: { height: 8, marginHorizontal: Spacing.lg, marginBottom: Spacing.md, borderRadius: 4, overflow: 'hidden' },
+  fill: { height: '100%', borderRadius: 4 },
+  alertRow: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: Spacing.lg, paddingVertical: 10 },
+  alertText: { fontSize: 13, fontFamily: F.med },
 });
 
 // ── Week Delta Card ────────────────────────────────────────────────────────────
@@ -533,70 +589,6 @@ const wdStyles = StyleSheet.create({
   deltaText: { fontSize: 15, fontFamily: F.bold },
 });
 
-// ── Stat Card ─────────────────────────────────────────────────────────────────
-function StatCard({ label, value, icon, grad, C, isDark }: {
-  label: string; value: string | number; icon: IoniconName;
-  grad: readonly [string, string]; C: ColorScheme; isDark: boolean;
-}) {
-  return (
-    <View style={[scStyles.card, isDark ? ShadowDark.sm : Shadow.sm, { borderColor: C.border }]}>
-      {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
-      {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
-      <LinearGradient colors={[...grad]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={scStyles.topBar} />
-      <View style={scStyles.body}>
-        <LinearGradient colors={[...grad]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={scStyles.iconCircle}>
-          <Ionicons name={icon} size={16} color="#fff" />
-        </LinearGradient>
-        <Text style={[scStyles.value, { color: grad[0] }]}>{value}</Text>
-        <Text style={[scStyles.label, { color: C.textSecondary }]} numberOfLines={2}>{label}</Text>
-      </View>
-    </View>
-  );
-}
-
-const scStyles = StyleSheet.create({
-  card: { flex: 1, borderRadius: Radius.lg, borderWidth: 1, minWidth: '45%', overflow: 'hidden' },
-  topBar: { height: 3 },
-  body: { padding: Spacing.md, gap: 6, alignItems: 'center' },
-  iconCircle: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  value: { fontSize: 22, fontFamily: F.black, textAlign: 'center' },
-  label: { fontSize: 12, fontFamily: F.med, textAlign: 'center', lineHeight: 16 },
-});
-
-// ── Progress Card ─────────────────────────────────────────────────────────────
-function ProgressCard({ label, value, grad, C, isDark, isRTL, fmt }: {
-  label: string; value: number;
-  grad: readonly [string, string]; C: ColorScheme; isDark: boolean; isRTL: boolean;
-  fmt: (v: number) => string;
-}) {
-  return (
-    <View style={[pcStyles.card, isDark ? ShadowDark.sm : Shadow.sm, { borderColor: C.border }]}>
-      {isDark && <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />}
-      {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
-      <View style={[pcStyles.body, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-        <Text style={[pcStyles.label, { color: C.textSecondary }]}>{label}</Text>
-        <Text style={[pcStyles.value, { color: grad[0] }]}>{fmt(value)}%</Text>
-      </View>
-      <View style={[pcStyles.track, { backgroundColor: grad[0] + '18' }]}>
-        <LinearGradient
-          colors={[...grad]}
-          start={{ x: isRTL ? 1 : 0, y: 0 }}
-          end={{ x: isRTL ? 0 : 1, y: 0 }}
-          style={[pcStyles.fill, { width: `${Math.min(value, 100)}%`, alignSelf: isRTL ? 'flex-end' : 'flex-start' }]}
-        />
-      </View>
-    </View>
-  );
-}
-
-const pcStyles = StyleSheet.create({
-  card: { borderRadius: Radius.lg, borderWidth: 1, overflow: 'hidden' },
-  body: { alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md },
-  label: { fontSize: 14, fontFamily: F.med },
-  value: { fontSize: 24, fontFamily: F.black },
-  track: { height: 10, margin: Spacing.sm, marginTop: 0, borderRadius: 5, overflow: 'hidden' },
-  fill: { height: '100%', borderRadius: 5 },
-});
 
 // ── Habits Sparkline Card ─────────────────────────────────────────────────────
 type SparklineItem = {
@@ -983,5 +975,4 @@ const styles = StyleSheet.create({
   headerRow: { alignItems: 'center', justifyContent: 'space-between' },
   headerTitle: { fontSize: 30, fontFamily: F.black },
   backBtn: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  grid2: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
 });
