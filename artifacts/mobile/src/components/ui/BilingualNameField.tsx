@@ -3,7 +3,7 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { Language } from '../../types';
-import { F, Radius, Spacing } from '../../theme';
+import { F, Radius, Spacing, PRIMARY } from '../../theme';
 import { t } from '../../utils/i18n';
 
 interface BilingualNameFieldProps {
@@ -33,17 +33,19 @@ export function BilingualNameField({
 }: BilingualNameFieldProps) {
   const { C } = useAppTheme();
   const isRTL = lang === 'ar';
+  const [focusedAr, setFocusedAr] = React.useState(false);
+  const [focusedEn, setFocusedEn] = React.useState(false);
 
   const arLabel  = labelKey === 'title' ? t('titleInArabic',  lang) : t('nameInArabic',  lang);
   const enLabel  = labelKey === 'title' ? t('titleInEnglish', lang) : t('nameInEnglish', lang);
   const errLabel = labelKey === 'title' ? t('atLeastOneTitle', lang) : t('atLeastOneName', lang);
   const optLabel = t('optional', lang);
+  const hasError = error && !nameAr.trim() && !nameEn.trim();
 
   const inputBase = {
     backgroundColor: C.inputBg,
     color: C.text,
     borderRadius: Radius.md,
-    borderWidth: 1,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     fontSize: 15,
@@ -67,7 +69,12 @@ export function BilingualNameField({
           placeholder={placeholderAr}
           placeholderTextColor={C.textMuted}
           textAlign="right"
-          style={[inputBase, { borderColor: error && !nameAr.trim() && !nameEn.trim() ? C.error : C.border }]}
+          onFocus={() => setFocusedAr(true)}
+          onBlur={() => setFocusedAr(false)}
+          style={[inputBase, {
+            borderColor: hasError ? C.error : focusedAr ? PRIMARY : C.border,
+            borderWidth: hasError || focusedAr ? 1.5 : 1,
+          }]}
           autoCapitalize="none"
           autoCorrect={false}
         />
@@ -87,7 +94,12 @@ export function BilingualNameField({
           placeholder={placeholderEn}
           placeholderTextColor={C.textMuted}
           textAlign="left"
-          style={[inputBase, { borderColor: error && !nameAr.trim() && !nameEn.trim() ? C.error : C.border }]}
+          onFocus={() => setFocusedEn(true)}
+          onBlur={() => setFocusedEn(false)}
+          style={[inputBase, {
+            borderColor: hasError ? C.error : focusedEn ? PRIMARY : C.border,
+            borderWidth: hasError || focusedEn ? 1.5 : 1,
+          }]}
           autoCapitalize="sentences"
         />
       </View>

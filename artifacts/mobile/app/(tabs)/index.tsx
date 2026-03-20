@@ -1091,7 +1091,7 @@ const styles = StyleSheet.create({
   hangDivider: { width: 1, height: 36, marginHorizontal: 2 },
   dayPill: { flex: 1, borderRadius: Radius.lg, alignItems: 'center', paddingVertical: 8, gap: 2 },
   dayLbl: { fontSize: 10, fontFamily: F.med },
-  dayNum: { fontSize: 16, fontFamily: F.med },
+  dayNum: { fontSize: 16, fontFamily: F.black },
   dot: { width: 4, height: 4, borderRadius: 2, marginTop: 1 },
 
   // All done
@@ -1143,7 +1143,7 @@ const styles = StyleSheet.create({
   taskCheck: { padding: Spacing.md, paddingRight: Spacing.sm },
   checkCircle: { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
   taskInfo: { flex: 1, paddingVertical: Spacing.md, paddingRight: Spacing.sm },
-  taskTitle: { fontSize: 15, fontFamily: F.med },
+  taskTitle: { fontSize: 15, fontFamily: F.bold },
   taskTime: { fontSize: 12, fontFamily: F.reg },
   catPill: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, flexDirection: 'row', alignItems: 'center', gap: 3 },
   catPillText: { fontSize: 11, fontFamily: F.med },
@@ -1163,7 +1163,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     borderWidth: 2, borderColor: '#fff',
   },
-  habitName: { fontSize: 13, fontFamily: F.med, lineHeight: 18 },
+  habitName: { fontSize: 13, fontFamily: F.bold, lineHeight: 18 },
   streakRow: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 3 },
   streakNum: { fontSize: 12, fontFamily: F.med },
 
@@ -1199,7 +1199,7 @@ const styles = StyleSheet.create({
     width: 52, height: 52, borderRadius: 26,
     alignItems: 'center', justifyContent: 'center',
   },
-  habitsEmptyTitle: { fontSize: 15, fontFamily: F.med },
+  habitsEmptyTitle: { fontSize: 15, fontFamily: F.bold },
   habitsEmptySubtitle: { fontSize: 12, fontFamily: F.reg, marginTop: 2 },
 
   // Journal card

@@ -131,6 +131,7 @@ export function FormInput({ value, onChangeText, placeholder, multiline, keyboar
   const { C } = useAppTheme();
   const { profile } = useSettingsStore();
   const isRTL = profile.language === 'ar';
+  const [focused, setFocused] = React.useState(false);
 
   return (
     <TextInput
@@ -142,15 +143,17 @@ export function FormInput({ value, onChangeText, placeholder, multiline, keyboar
       keyboardType={keyboardType}
       accessibilityLabel={placeholder}
       textAlign={isRTL ? 'right' : 'left'}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
       style={[
         styles.input,
         {
           backgroundColor: C.inputBg,
-          borderColor: error ? C.error : C.border,
+          borderColor: error ? C.error : focused ? PRIMARY : C.border,
           color: C.text,
           minHeight: multiline ? 90 : 48,
           textAlignVertical: multiline ? 'top' : 'center',
-          borderWidth: error ? 1.5 : 1,
+          borderWidth: error || focused ? 1.5 : 1,
         },
       ]}
     />
