@@ -959,7 +959,8 @@ export function getPersonalizedGreeting(name: string | undefined | null, lang: L
   const emoji = getGreetingEmoji();
   const trimmedName = (name ?? '').trim();
   if (trimmedName) {
-    return `${greeting} ${trimmedName} ${emoji}`;
+    const comma = lang === 'ar' ? '،' : ',';
+    return `${greeting}${comma} ${trimmedName} ${emoji}`;
   }
   return `${greeting} ${emoji}`;
 }
