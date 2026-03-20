@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xl,
+    paddingBottom: Spacing.xxl,
     borderBottomLeftRadius: 36,
     borderBottomRightRadius: 36,
     position: 'relative',
