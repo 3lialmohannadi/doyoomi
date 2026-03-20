@@ -229,7 +229,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabIonicon
               focused={focused}
-              tint={C.tintSecondary}
+              tint={C.tint}
               iconFocused="leaf"
               iconBlur="leaf-outline"
               color={color}
