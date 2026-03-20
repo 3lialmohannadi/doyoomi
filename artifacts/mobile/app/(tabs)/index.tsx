@@ -189,16 +189,6 @@ export default function HomeScreen() {
           )}
         </LinearGradient>
 
-        {/* Weekly Chart */}
-        <WeeklyChart
-          data={weeklyStats}
-          C={C}
-          isDark={isDark}
-          isRTL={isRTL}
-          title={tFunc('weeklyAchievement')}
-          onBarPress={(date) => setSelectedDay(date)}
-        />
-
         {/* Week Strip + Stats Card */}
         <View style={[styles.weekCard, { borderColor: C.border, borderWidth: 1, overflow: 'hidden' }, isDark ? ShadowDark.sm : Shadow.sm]}>
           {isDark && (
@@ -268,6 +258,16 @@ export default function HomeScreen() {
             ))}
           </View>
         </View>
+
+        {/* Weekly Chart — shown below the days strip */}
+        <WeeklyChart
+          data={weeklyStats}
+          C={C}
+          isDark={isDark}
+          isRTL={isRTL}
+          title={tFunc('weeklyAchievement')}
+          onBarPress={(date) => setSelectedDay(date)}
+        />
 
         {/* All done banner */}
         {allDone && (
@@ -1065,8 +1065,9 @@ const styles = StyleSheet.create({
   weekCard: {
     flexDirection: 'column',
     marginHorizontal: Spacing.lg,
+    marginTop: Spacing.lg,
     borderRadius: Radius.xl,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
     position: 'relative' as const,
     overflow: 'hidden',
   },
