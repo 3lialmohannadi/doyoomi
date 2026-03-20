@@ -71,6 +71,7 @@ export default function HomeScreen() {
   const weekKeys = useMemo(() => new Set(weekDays.map(d => formatDateKey(d))), [weekDays]);
   const thisWeek = useMemo(() => tasks.filter(task => task.due_date && weekKeys.has(task.due_date)).length, [tasks, weekKeys]);
   const maxStreak = habits.reduce((max, h) => Math.max(max, h.streak_days), 0);
+  const bestStreak = habits.reduce((max, h) => Math.max(max, h.best_streak ?? 0), 0);
   const dayTasks = tasks.filter(task => task.due_date === selectedDay);
   const allDone = todayTasks.length > 0 && todayTasks.every(task => task.status === 'completed');
   const topGoals = goals.slice(0, 2);
@@ -195,8 +196,6 @@ export default function HomeScreen() {
           <StatPill icon="alert-circle" value={overdueCount} label={tFunc('overdue')} color={C.error} C={C} />
           <View style={[styles.statDivider, { backgroundColor: C.border }]} />
           <StatPill icon="calendar" value={thisWeek} label={tFunc('thisWeek')} color={C.tint} C={C} />
-          <View style={[styles.statDivider, { backgroundColor: C.border }]} />
-          <StatPill icon="flame" value={maxStreak} label={tFunc('streak')} color={C.warning} C={C} />
         </View>
 
         {/* Weekly Chart */}
@@ -206,6 +205,8 @@ export default function HomeScreen() {
           isDark={isDark}
           isRTL={isRTL}
           title={tFunc('weeklyAchievement')}
+          streakDays={maxStreak}
+          bestStreak={bestStreak}
           onBarPress={(date) => setSelectedDay(date)}
         />
 
