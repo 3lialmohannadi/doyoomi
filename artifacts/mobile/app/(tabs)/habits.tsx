@@ -549,23 +549,20 @@ export default function HabitsScreen() {
         </View>
 
         {habits.length > 0 && (
-          <View style={[styles.progressWrap, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <View style={[styles.progressTrack, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.25)' }]}>
+          <View style={styles.progressWrap}>
+            <View style={[styles.progressTrack, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.22)' }]}>
               <LinearGradient
-                colors={isDark ? [C.tint, C.tintSecondary] : ['#fff', 'rgba(255,255,255,0.85)']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+                colors={isDark ? [C.tint, C.tintSecondary] : ['#fff', 'rgba(255,255,255,0.8)']}
+                start={{ x: isRTL ? 1 : 0, y: 0 }}
+                end={{ x: isRTL ? 0 : 1, y: 0 }}
                 style={[
                   styles.progressFill,
-                  {
-                    width: `${Math.round((doneToday / habits.length) * 100)}%`,
-                    alignSelf: isRTL ? 'flex-end' : 'flex-start',
-                  },
+                  { width: `${Math.round((doneToday / habits.length) * 100)}%` as `${number}%` },
                 ]}
               />
             </View>
             <Text style={[styles.progressLabel, { color: isDark ? C.tint : '#fff' }]}>
-              {Math.round((doneToday / habits.length) * 100)}%
+              {Math.round((doneToday / habits.length) * 100)}% {tFunc('completed')}
             </Text>
           </View>
         )}
@@ -741,14 +738,14 @@ const styles = StyleSheet.create({
     shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 5,
   },
   progressWrap: {
-    alignItems: 'center', gap: Spacing.sm, marginTop: Spacing.lg,
+    marginTop: Spacing.md, gap: 6,
   },
   progressTrack: {
-    flex: 1, height: 8, borderRadius: 4, overflow: 'hidden',
+    height: 8, borderRadius: 4, overflow: 'hidden',
   },
   progressFill: { height: '100%', borderRadius: 4 },
   progressLabel: {
-    fontSize: 13, fontFamily: F.black, minWidth: 44, textAlign: 'center',
+    fontSize: 11, fontFamily: F.bold, textAlign: 'center',
   },
 
   habitCard: {
