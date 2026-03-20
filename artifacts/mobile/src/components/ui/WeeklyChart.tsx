@@ -3,7 +3,6 @@ import {
   View, Text, StyleSheet, Animated, Pressable,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { F, Spacing, Radius, ColorScheme, Shadow, ShadowDark, GRADIENT_H, GRADIENT_DARK_CARD } from '../../theme';
 
@@ -17,33 +16,17 @@ export interface WeekDayData {
   isFuture: boolean;
 }
 
-interface StatItem {
-  icon: React.ComponentProps<typeof Ionicons>['name'];
-  value: number;
-  label: string;
-  color: string;
-}
-
 interface WeeklyChartProps {
   data: WeekDayData[];
   C: ColorScheme;
   isDark: boolean;
   isRTL: boolean;
   title: string;
-  completedToday?: number;
-  overdueCount?: number;
-  thisWeek?: number;
-  streakDays?: number;
-  bestStreak?: number;
-  labelCompleted?: string;
-  labelOverdue?: string;
-  labelThisWeek?: string;
-  labelStreak?: string;
   onBarPress?: (date: string) => void;
 }
 
-const MAX_BAR_H = 64;
-const BAR_ANIM_DURATION = 580;
+const MAX_BAR_H = 68;
+const BAR_ANIM_DURATION = 550;
 
 function ChartBar({
   day,
@@ -64,13 +47,22 @@ function ChartBar({
     Animated.timing(anim, {
       toValue: day.pct,
       duration: BAR_ANIM_DURATION,
-      delay: index * 60,
+      delay: index * 50,
       useNativeDriver: false,
     }).start();
   }, [day.pct, index]);
 
-  const barH = anim.interpolate({ inputRange: [0, 1], outputRange: [0, MAX_BAR_H] });
-  const trackBg = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(99,102,241,0.08)';
+  const barH = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, MAX_BAR_H],
+  });
+
+  const trackBg = isDark
+    ? 'rgba(255,255,255,0.06)'
+    : 'rgba(99,102,241,0.07)';
+
+  const showLabel = !day.isFuture && day.totalCount > 0;
+  const countLabel = showLabel ? `${day.completedCount}/${day.totalCount}` : '';
 
   return (
     <Pressable
@@ -78,9 +70,27 @@ function ChartBar({
       onPress={onPress}
       disabled={!onPress}
     >
+      <Text
+        style={[
+          styles.pctLabel,
+          {
+            color: day.isToday ? C.tint : C.textMuted,
+            opacity: showLabel ? 1 : 0,
+          },
+        ]}
+      >
+        {countLabel}
+      </Text>
+
       <View style={[styles.barTrack, { backgroundColor: trackBg }]}>
         {!day.isFuture && (
-          <Animated.View style={[styles.barFill, { height: barH }, day.isToday && { overflow: 'hidden' }]}>
+          <Animated.View
+            style={[
+              styles.barFill,
+              { height: barH },
+              day.isToday && { overflow: 'hidden' },
+            ]}
+          >
             {day.isToday ? (
               <LinearGradient
                 colors={[...GRADIENT_H]}
@@ -89,15 +99,30 @@ function ChartBar({
                 style={StyleSheet.absoluteFill}
               />
             ) : (
-              <View style={[StyleSheet.absoluteFill, { backgroundColor: C.tint + '65' }]} />
+              <View
+                style={[
+                  StyleSheet.absoluteFill,
+                  { backgroundColor: C.tint + '55' },
+                ]}
+              />
             )}
           </Animated.View>
         )}
       </View>
-      <Text style={[styles.dayLabel, { color: day.isToday ? C.tint : C.textMuted }, day.isToday && { fontFamily: F.bold }]}>
+
+      <Text
+        style={[
+          styles.dayLabel,
+          { color: day.isToday ? C.tint : C.textSecondary },
+          day.isToday && { fontFamily: F.bold },
+        ]}
+      >
         {day.dayLabel}
       </Text>
-      {day.isToday && <View style={[styles.todayDot, { backgroundColor: C.tint }]} />}
+
+      {day.isToday && (
+        <View style={[styles.todayDot, { backgroundColor: C.tint }]} />
+      )}
     </Pressable>
   );
 }
@@ -108,124 +133,56 @@ export function WeeklyChart({
   isDark,
   isRTL,
   title,
-  completedToday = 0,
-  overdueCount = 0,
-  thisWeek = 0,
-  streakDays = 0,
-  bestStreak = 0,
-  labelCompleted = 'Completed',
-  labelOverdue = 'Overdue',
-  labelThisWeek = 'This Week',
-  labelStreak = 'Streak',
   onBarPress,
 }: WeeklyChartProps) {
   const hasData = data.some((d) => d.totalCount > 0);
-  const hasStats = completedToday > 0 || overdueCount > 0 || thisWeek > 0 || streakDays > 0;
-  if (!hasData && !hasStats) return null;
-
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  useEffect(() => {
-    if (streakDays > 0) {
-      const loop = Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, { toValue: 1.2, duration: 900, useNativeDriver: true }),
-          Animated.timing(pulseAnim, { toValue: 1, duration: 900, useNativeDriver: true }),
-        ])
-      );
-      loop.start();
-      return () => loop.stop();
-    }
-  }, [streakDays]);
+  if (!hasData) return null;
 
   const displayData = isRTL ? [...data].reverse() : data;
 
-  const stats: StatItem[] = [
-    { icon: 'checkmark-done', value: completedToday, label: labelCompleted, color: C.tintSecondary },
-    { icon: 'alert-circle',   value: overdueCount,   label: labelOverdue,   color: C.error },
-    { icon: 'calendar',       value: thisWeek,        label: labelThisWeek,  color: C.tint },
-    { icon: 'flame',          value: streakDays,      label: labelStreak,    color: '#F97316' },
-  ];
-
   return (
-    <View style={[styles.card, isDark ? ShadowDark.md : Shadow.md, { borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(99,102,241,0.13)' }]}>
-
-      {/* Background */}
-      {isDark ? (
+    <View
+      style={[
+        styles.card,
+        { borderColor: C.border },
+        isDark ? ShadowDark.sm : Shadow.sm,
+      ]}
+    >
+      {isDark && (
         <LinearGradient
-          colors={['rgba(28,25,52,0.98)', 'rgba(14,12,30,0.98)']}
+          colors={[...GRADIENT_DARK_CARD]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
         />
-      ) : (
+      )}
+      {!isDark && (
         <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />
       )}
 
-      {/* Top gradient accent */}
-      <LinearGradient
-        colors={['#6366F1', '#8B5CF6', '#EC4899', '#F97316']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.topAccent}
-      />
+      <Text
+        style={[
+          styles.cardTitle,
+          { color: C.text, textAlign: isRTL ? 'right' : 'left' },
+        ]}
+      >
+        {title}
+      </Text>
 
-      <View style={styles.inner}>
-
-        {/* ── Stats Row ── */}
-        <View style={[styles.statsGrid, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          {stats.map((s, i) => (
-            <React.Fragment key={s.label}>
-              {i > 0 && <View style={[styles.statSep, { backgroundColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)' }]} />}
-              <View style={styles.statCell}>
-                <View style={[styles.statIconRing, { backgroundColor: s.color + '18' }]}>
-                  {s.icon === 'flame' && streakDays > 0 ? (
-                    <Animated.Text style={[styles.flameEmoji, { transform: [{ scale: pulseAnim }] }]}>🔥</Animated.Text>
-                  ) : (
-                    <Ionicons name={s.icon} size={16} color={s.color} />
-                  )}
-                </View>
-                <Text style={[styles.statNum, { color: s.value > 0 ? s.color : C.textMuted }]}>
-                  {s.value}
-                </Text>
-                <Text style={[styles.statLabel, { color: C.textSecondary }]} numberOfLines={1}>
-                  {s.label}
-                </Text>
-                {s.icon === 'flame' && bestStreak > streakDays && bestStreak > 0 && (
-                  <Text style={[styles.bestHint, { color: '#F97316' + '99' }]}>🏆{bestStreak}</Text>
-                )}
-              </View>
-            </React.Fragment>
-          ))}
-        </View>
-
-        {/* ── Divider with chart title ── */}
-        {hasData && (
-          <>
-            <View style={[styles.sectionDivider, { borderTopColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)' }]}>
-              <Text style={[styles.chartTitle, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]}>
-                {title}
-              </Text>
-            </View>
-
-            {/* ── Bar Chart ── */}
-            <View style={[styles.chartRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              {displayData.map((day, i) => (
-                <ChartBar
-                  key={day.date}
-                  day={day}
-                  index={i}
-                  C={C}
-                  isDark={isDark}
-                  onPress={onBarPress ? () => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    onBarPress(day.date);
-                  } : undefined}
-                />
-              ))}
-            </View>
-          </>
-        )}
-
+      <View style={styles.chartRow}>
+        {displayData.map((day, i) => (
+          <ChartBar
+            key={day.date}
+            day={day}
+            index={i}
+            C={C}
+            isDark={isDark}
+            onPress={onBarPress ? () => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              onBarPress(day.date);
+            } : undefined}
+          />
+        ))}
       </View>
     </View>
   );
@@ -233,95 +190,52 @@ export function WeeklyChart({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: Radius.xl + 4,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     overflow: 'hidden',
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.md,
     marginHorizontal: Spacing.lg,
     marginBottom: Spacing.md,
   },
-  topAccent: { height: 3 },
-  inner: {
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.md,
-  },
-
-  // Stats
-  statsGrid: {
-    alignItems: 'stretch',
-  },
-  statSep: {
-    width: 1,
-    marginVertical: Spacing.xs,
-  },
-  statCell: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: Spacing.sm,
-    gap: 3,
-  },
-  statIconRing: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 2,
-  },
-  flameEmoji: { fontSize: 18 },
-  statNum: {
-    fontSize: 20,
-    fontFamily: F.black,
-    lineHeight: 24,
-  },
-  statLabel: {
-    fontSize: 10,
-    fontFamily: F.med,
-    textAlign: 'center',
-  },
-  bestHint: {
-    fontSize: 10,
+  cardTitle: {
+    fontSize: 13,
     fontFamily: F.bold,
-    marginTop: 1,
-  },
-
-  // Chart section
-  sectionDivider: {
-    marginTop: Spacing.sm,
-    paddingTop: Spacing.sm,
-    borderTopWidth: 1,
-  },
-  chartTitle: {
-    fontSize: 11,
-    fontFamily: F.bold,
+    marginBottom: Spacing.sm,
     letterSpacing: 0.3,
-    marginBottom: Spacing.xs,
-    opacity: 0.7,
   },
   chartRow: {
+    flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    height: MAX_BAR_H + 26,
+    height: MAX_BAR_H + 36,
   },
   barCol: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
+  pctLabel: {
+    fontSize: 11,
+    fontFamily: F.bold,
+    marginBottom: 2,
+    textAlign: 'center',
+  },
   barTrack: {
-    width: 20,
+    width: 22,
     height: MAX_BAR_H,
     borderRadius: 6,
     overflow: 'hidden',
     justifyContent: 'flex-end',
   },
   barFill: {
-    width: 20,
+    width: 22,
     borderRadius: 6,
     overflow: 'hidden',
   },
   dayLabel: {
-    fontSize: 10,
+    fontSize: 11,
     fontFamily: F.med,
     marginTop: 4,
     textAlign: 'center',

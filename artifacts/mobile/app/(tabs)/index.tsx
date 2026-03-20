@@ -185,73 +185,84 @@ export default function HomeScreen() {
           )}
         </LinearGradient>
 
-        {/* Unified Stats + Weekly Chart Card */}
+        {/* Weekly Chart */}
         <WeeklyChart
           data={weeklyStats}
           C={C}
           isDark={isDark}
           isRTL={isRTL}
           title={tFunc('weeklyAchievement')}
-          completedToday={completedToday}
-          overdueCount={overdueCount}
-          thisWeek={thisWeek}
-          streakDays={maxStreak}
-          bestStreak={bestStreak}
-          labelCompleted={tFunc('completed')}
-          labelOverdue={tFunc('overdue')}
-          labelThisWeek={tFunc('thisWeek')}
-          labelStreak={tFunc('streak')}
           onBarPress={(date) => setSelectedDay(date)}
         />
 
-        {/* Week Strip */}
-        <View style={[styles.weekCard, { borderColor: C.border, borderWidth: 1, overflow: 'hidden' }, isDark ? ShadowDark.sm : Shadow.sm]}> 
+        {/* Week Strip + Stats Card */}
+        <View style={[styles.weekCard, { borderColor: C.border, borderWidth: 1, overflow: 'hidden' }, isDark ? ShadowDark.sm : Shadow.sm]}>
           {isDark && (
             <LinearGradient colors={[...GRADIENT_DARK_CARD]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill} />
           )}
           {!isDark && <View style={[StyleSheet.absoluteFill, { backgroundColor: C.card }]} />}
-          {weekStripDays.map((day) => {
-            const key = formatDateKey(day);
-            const isSelected = key === selectedDay;
-            const isToday = key === today;
-            const hasDots = tasks.some(task => task.due_date === key);
 
-            return (
-              <Pressable
-                key={key}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setSelectedDay(key);
-                }}
-                style={({ pressed }) => [styles.dayPill, { overflow: 'hidden', opacity: pressed ? 0.75 : 1 }]}
-                accessibilityRole="button"
-                accessibilityState={{ selected: isSelected }}
-                accessibilityLabel={`${getDayLabel(day, lang)} ${format(day, 'd')}`}
-              >
-                {isSelected && (
-                  <LinearGradient
-                    colors={[...GRADIENT_H]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    style={[StyleSheet.absoluteFill, { borderRadius: Radius.lg }]}
-                  />
+          {/* Days row */}
+          <View style={[styles.daysRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            {weekStripDays.map((day) => {
+              const key = formatDateKey(day);
+              const isSelected = key === selectedDay;
+              const isToday = key === today;
+              const hasDots = tasks.some(task => task.due_date === key);
+              return (
+                <Pressable
+                  key={key}
+                  onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setSelectedDay(key); }}
+                  style={({ pressed }) => [styles.dayPill, { overflow: 'hidden', opacity: pressed ? 0.75 : 1 }]}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: isSelected }}
+                  accessibilityLabel={`${getDayLabel(day, lang)} ${format(day, 'd')}`}
+                >
+                  {isSelected && (
+                    <LinearGradient
+                      colors={[...GRADIENT_H]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 0, y: 1 }}
+                      style={[StyleSheet.absoluteFill, { borderRadius: Radius.lg }]}
+                    />
+                  )}
+                  <Text style={[styles.dayLbl, { color: isSelected ? 'rgba(255,255,255,0.8)' : C.textMuted }]}>
+                    {getDayLabel(day, lang)}
+                  </Text>
+                  <Text style={[styles.dayNum, { color: isSelected ? '#fff' : isToday ? C.tint : C.text }, isToday && !isSelected && { fontFamily: F.bold }]}>
+                    {format(day, 'd')}
+                  </Text>
+                  {hasDots && !isSelected && <View style={[styles.dot, { backgroundColor: C.tint }]} />}
+                </Pressable>
+              );
+            })}
+          </View>
+
+          {/* Divider */}
+          <View style={[styles.stripDivider, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }]} />
+
+          {/* Stats row — hanging below the calendar strip */}
+          <View style={[styles.statsHangRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            {[
+              { icon: 'checkmark-done' as const, value: completedToday, label: tFunc('completed'), color: C.tintSecondary },
+              { icon: 'alert-circle'   as const, value: overdueCount,   label: tFunc('overdue'),   color: C.error },
+              { icon: 'calendar'       as const, value: thisWeek,        label: tFunc('thisWeek'),  color: C.tint },
+              { icon: 'flame'          as const, value: maxStreak,       label: tFunc('streak'),    color: '#F97316' },
+            ].map((s, i, arr) => (
+              <React.Fragment key={s.label}>
+                <View style={styles.hangStat}>
+                  <View style={[styles.hangIconWrap, { backgroundColor: s.color + '18' }]}>
+                    <Ionicons name={s.icon} size={15} color={s.color} />
+                  </View>
+                  <Text style={[styles.hangNum, { color: s.value > 0 ? s.color : C.textMuted }]}>{s.value}</Text>
+                  <Text style={[styles.hangLabel, { color: C.textSecondary }]} numberOfLines={1}>{s.label}</Text>
+                </View>
+                {i < arr.length - 1 && (
+                  <View style={[styles.hangDivider, { backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }]} />
                 )}
-                <Text style={[styles.dayLbl, { color: isSelected ? 'rgba(255,255,255,0.8)' : C.textMuted }]}>
-                  {getDayLabel(day, lang)}
-                </Text>
-                <Text style={[
-                  styles.dayNum,
-                  { color: isSelected ? '#fff' : isToday ? C.tint : C.text },
-                  isToday && !isSelected && { fontFamily: F.bold },
-                ]}>
-                  {format(day, 'd')}
-                </Text>
-                {hasDots && !isSelected && (
-                  <View style={[styles.dot, { backgroundColor: C.tint }]} />
-                )}
-              </Pressable>
-            );
-          })}
+              </React.Fragment>
+            ))}
+          </View>
         </View>
 
         {/* All done banner */}
@@ -992,13 +1003,32 @@ const styles = StyleSheet.create({
 
   // Week strip
   weekCard: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     marginHorizontal: Spacing.lg,
     borderRadius: Radius.xl,
-    padding: Spacing.sm,
     marginBottom: Spacing.lg,
     position: 'relative' as const,
+    overflow: 'hidden',
   },
+  daysRow: {
+    paddingHorizontal: Spacing.sm,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.xs,
+  },
+  stripDivider: { height: 1, marginHorizontal: Spacing.sm },
+  statsHangRow: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.sm,
+    alignItems: 'center',
+  },
+  hangStat: { flex: 1, alignItems: 'center', gap: 3 },
+  hangIconWrap: {
+    width: 32, height: 32, borderRadius: 16,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  hangNum: { fontSize: 16, fontFamily: F.black, lineHeight: 20 },
+  hangLabel: { fontSize: 10, fontFamily: F.med, textAlign: 'center' },
+  hangDivider: { width: 1, height: 36, marginHorizontal: 2 },
   dayPill: { flex: 1, borderRadius: Radius.lg, alignItems: 'center', paddingVertical: 8, gap: 2 },
   dayLbl: { fontSize: 10, fontFamily: F.med },
   dayNum: { fontSize: 16, fontFamily: F.med },
