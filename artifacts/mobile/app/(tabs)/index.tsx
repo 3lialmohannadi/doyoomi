@@ -8,7 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { format } from 'date-fns';
 import { ar as arLocale } from 'date-fns/locale';
 import * as Haptics from 'expo-haptics';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { router } from 'expo-router';
 
 import { useTasksStore } from '../../src/store/tasksStore';
@@ -290,6 +290,7 @@ export default function HomeScreen() {
         {/* Today Tasks */}
         <Section
           title={selectedDay === today ? tFunc('today2') : formatShortDate(selectedDay, lang)}
+          icon="checkmark-circle-outline"
           C={C} isRTL={isRTL}
           action={tFunc('addNew')}
           onAction={() => setShowTaskForm(true)}
@@ -371,6 +372,7 @@ export default function HomeScreen() {
         {/* Habits */}
         <Section
           title={tFunc('habits')}
+          icon="leaf-outline"
           C={C} isRTL={isRTL}
           action={tFunc('addNew')}
           onAction={() => { setEditHabit(null); setShowHabitForm(true); }}
@@ -404,7 +406,7 @@ export default function HomeScreen() {
 
         {/* Goals */}
         <Section
-          title={tFunc('goalsSection')} C={C} isRTL={isRTL}
+          title={tFunc('goalsSection')} icon="trophy-outline" C={C} isRTL={isRTL}
           action={tFunc('addNew')}
           onAction={() => setShowGoalForm(true)}
           onTitlePress={() => router.push('/goals')}
@@ -445,6 +447,7 @@ export default function HomeScreen() {
         {/* Journal Card */}
         <Section
           title={tFunc('journal')}
+          icon="book-outline"
           C={C} isRTL={isRTL}
           onTitlePress={() => router.push('/journal')}
         >
@@ -607,11 +610,12 @@ function StatPill({ icon, value, label, color, C }: { icon: IoniconsName; value:
 
 interface SectionProps {
   title: string; children: React.ReactNode; C: ColorScheme;
+  icon?: React.ComponentProps<typeof Ionicons>['name'];
   action?: string; onAction?: () => void; onTitlePress?: () => void; isRTL?: boolean;
   badge?: number; badgeTotal?: number;
 }
 
-function Section({ title, children, C, action, onAction, onTitlePress, isRTL, badge, badgeTotal }: SectionProps) {
+function Section({ title, children, C, icon, action, onAction, onTitlePress, isRTL, badge, badgeTotal }: SectionProps) {
   const showProgress = badge !== undefined && badgeTotal !== undefined && badgeTotal > 0;
   const allDone = showProgress && badge === badgeTotal;
 
@@ -625,7 +629,13 @@ function Section({ title, children, C, action, onAction, onTitlePress, isRTL, ba
           accessibilityRole={onTitlePress ? 'button' : 'text'}
           hitSlop={8}
         >
-          <View style={[styles.sectionAccent, { backgroundColor: C.tint, marginRight: isRTL ? 0 : 7, marginLeft: isRTL ? 7 : 0 }]} />
+          {icon ? (
+            <View style={[styles.sectionIconBox, { backgroundColor: C.tint + '18' }]}>
+              <Ionicons name={icon} size={15} color={C.tint} />
+            </View>
+          ) : (
+            <View style={[styles.sectionAccent, { backgroundColor: C.tint, marginRight: isRTL ? 0 : 7, marginLeft: isRTL ? 7 : 0 }]} />
+          )}
           <Text style={[styles.sectionTitle, { color: C.text }]}>{title}</Text>
           {showProgress && (
             <View style={[styles.sectionBadge, { backgroundColor: allDone ? SECONDARY + '20' : C.tint + '15' }]}>
@@ -834,6 +844,16 @@ function FunGoalCard({ goal, progress, gradient, C, isRTL, lang }: FunGoalCardPr
   const pct = Math.round(progress * 100);
   const { scheme: goalScheme } = useAppTheme();
   const isGoalDark = goalScheme === 'dark';
+  const [trackWidth, setTrackWidth] = useState(0);
+  const progressAnim = useSharedValue(0);
+  const animFillStyle = useAnimatedStyle(() => ({
+    width: (progressAnim.value / 100) * trackWidth,
+  }));
+
+  useEffect(() => {
+    progressAnim.value = 0;
+    progressAnim.value = withTiming(Math.min(pct, 100), { duration: 750 });
+  }, [pct, trackWidth]);
 
   return (
     <View style={[styles.goalCard, { borderColor: C.border, overflow: 'hidden' }, isGoalDark ? ShadowDark.sm : Shadow.sm]}>
@@ -853,13 +873,18 @@ function FunGoalCard({ goal, progress, gradient, C, isRTL, lang }: FunGoalCardPr
         </View>
         <Text style={[styles.goalPct, { color: gradient[0] }]}>{pct}%</Text>
       </View>
-      <View style={[styles.goalTrack, { backgroundColor: C.borderLight }]}>
-        <LinearGradient
-          colors={gradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={[styles.goalFill, { width: `${Math.min(pct, 100)}%` }]}
-        />
+      <View
+        style={[styles.goalTrack, { backgroundColor: C.borderLight }]}
+        onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+      >
+        <Animated.View style={[{ height: '100%', borderRadius: 6, overflow: 'hidden' }, animFillStyle]}>
+          <LinearGradient
+            colors={gradient}
+            start={{ x: isRTL ? 1 : 0, y: 0 }}
+            end={{ x: isRTL ? 0 : 1, y: 0 }}
+            style={{ flex: 1 }}
+          />
+        </Animated.View>
       </View>
     </View>
   );
@@ -1085,8 +1110,9 @@ const styles = StyleSheet.create({
   // Section
   section: { paddingHorizontal: Spacing.lg, marginBottom: Spacing.xl },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.md },
-  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   sectionAccent: { width: 4, height: 22, borderRadius: 3 },
+  sectionIconBox: { width: 30, height: 30, borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
   sectionTitle: { fontSize: 20, fontFamily: F.bold },
   sectionBadge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2 },
   sectionBadgeText: { fontSize: 12, fontFamily: F.bold },

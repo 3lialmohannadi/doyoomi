@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
-import { Radius, Spacing, F, GRADIENT_H } from '../../theme';
+import { Radius, Spacing, F, GRADIENT_H, PRIMARY } from '../../theme';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useSettingsStore } from '../../store/settingsStore';
 
@@ -66,12 +66,22 @@ export function ActionSheet({ visible, title, subtitle, actions, onClose }: Acti
           <View style={[styles.handle, { backgroundColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)' }]} />
 
           {(title || subtitle) && (
-            <View style={[styles.titleBlock, { alignItems: isRTL ? 'flex-end' : 'flex-start', borderBottomColor: C.border }]}>
-              {title && (
-                <Text style={[styles.titleText, { color: C.text, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
-                  {title}
-                </Text>
-              )}
+            <View style={[styles.titleBlock, { borderBottomColor: C.border }]}>
+              <View style={[styles.titleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+                <LinearGradient
+                  colors={[...GRADIENT_H]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.titleGradientIcon}
+                >
+                  <Ionicons name="ellipsis-horizontal" size={16} color="#fff" />
+                </LinearGradient>
+                {title && (
+                  <Text style={[styles.titleText, { color: C.text, textAlign: isRTL ? 'right' : 'left', flex: 1 }]} numberOfLines={1}>
+                    {title}
+                  </Text>
+                )}
+              </View>
               {subtitle && (
                 <Text style={[styles.subtitleText, { color: C.textSecondary, textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={2}>
                   {subtitle}
@@ -149,10 +159,18 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   titleBlock: {
-    gap: 3,
+    gap: 5,
     paddingBottom: Spacing.md,
     marginBottom: Spacing.md,
     borderBottomWidth: 1,
+  },
+  titleRow: {
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  titleGradientIcon: {
+    width: 34, height: 34, borderRadius: 10,
+    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
   },
   titleText: {
     fontSize: 17,
@@ -162,6 +180,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: F.reg,
     lineHeight: 18,
+    paddingLeft: 34 + Spacing.md,
   },
   actionsBlock: {
     borderRadius: Radius.xl,

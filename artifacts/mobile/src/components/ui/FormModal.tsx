@@ -66,20 +66,8 @@ export function FormModal({
               paddingBottom: insets.bottom + Spacing.md,
               backgroundColor: C.background,
               borderTopColor: C.border,
-              flexDirection: isRTL ? 'row-reverse' : 'row',
             },
           ]}>
-            <Pressable
-              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onClose(); }}
-              style={({ pressed }) => [
-                styles.bottomBtn,
-                { backgroundColor: C.surface, borderColor: C.border, borderWidth: 1, opacity: pressed ? 0.7 : 1 },
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel={cancelLabel}
-            >
-              <Text style={[styles.bottomBtnText, { color: C.textSecondary }]}>{cancelLabel}</Text>
-            </Pressable>
             <Pressable
               onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onSave(); }}
               style={({ pressed }) => [styles.bottomBtnSave, { opacity: pressed ? 0.85 : 1, flexDirection: isRTL ? 'row-reverse' : 'row' }]}
@@ -88,12 +76,20 @@ export function FormModal({
             >
               <LinearGradient
                 colors={[...GRADIENT_H]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+                start={{ x: isRTL ? 1 : 0, y: 0 }}
+                end={{ x: isRTL ? 0 : 1, y: 0 }}
                 style={[StyleSheet.absoluteFill, { borderRadius: Radius.xl }]}
               />
-              <Ionicons name="checkmark" size={20} color="#fff" />
+              <Ionicons name="checkmark-circle" size={22} color="#fff" />
               <Text style={styles.bottomBtnSaveText}>{saveLabel}</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onClose(); }}
+              style={({ pressed }) => [styles.bottomCancelLink, { opacity: pressed ? 0.5 : 1 }]}
+              accessibilityRole="button"
+              accessibilityLabel={cancelLabel}
+            >
+              <Text style={[styles.bottomCancelText, { color: C.textSecondary }]}>{cancelLabel}</Text>
             </Pressable>
           </View>
         </View>
@@ -446,36 +442,37 @@ const styles = StyleSheet.create({
     fontFamily: F.med,
   },
   bottomBar: {
-    flexDirection: 'row',
-    gap: Spacing.md,
+    gap: Spacing.sm,
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.lg,
     borderTopWidth: 1,
   },
-  bottomBtn: {
-    flex: 1,
-    borderRadius: Radius.xl,
-    height: 54,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bottomBtnText: {
-    fontSize: 17,
-    fontFamily: F.med,
-  },
   bottomBtnSave: {
-    flex: 2,
     flexDirection: 'row',
-    borderRadius: Radius.xl,
-    height: 54,
+    borderRadius: Radius.xxl,
+    height: 58,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
     overflow: 'hidden',
+    shadowColor: '#6366F1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
   },
   bottomBtnSaveText: {
-    fontSize: 17,
+    fontSize: 18,
     fontFamily: F.bold,
     color: '#fff',
+  },
+  bottomCancelLink: {
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bottomCancelText: {
+    fontSize: 16,
+    fontFamily: F.med,
   },
 });
